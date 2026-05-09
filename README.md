@@ -56,6 +56,7 @@ git clone https://github.com/tsetsugekka/codex-market-calendar-google.git ~/.cod
 - 标题只放重点 ticker。
 - 详情保留该时段全部 ticker。
 - 详情用中文写重点看点，不写“解析来源”、本地文件路径，也不重复标题和日历时间已经表达的信息。
+- 详情项目符号用 `・`，不要用行首 `-`，避免 Google Calendar 连接器把它保存成 `\-`。
 
 ### 日股
 
@@ -76,10 +77,10 @@ git clone https://github.com/tsetsugekka/codex-market-calendar-google.git ~/.cod
 
 ```text
 具体时刻：
-- ＴＯＷＡ（6315，15:30）
+・ＴＯＷＡ（6315，15:30）
 
 重点看点：
-- ＴＯＷＡ：半导体封装设备，关注先进封装、HBM/AI 订单和出货节奏。
+・ＴＯＷＡ：半导体封装设备，关注先进封装、HBM/AI 订单和出货节奏。
 ```
 
 - 不写“时间分区”“标题重点”“本分区全部财报”等重复信息。
@@ -96,6 +97,7 @@ git clone https://github.com/tsetsugekka/codex-market-calendar-google.git ~/.cod
   - 高于预期的影响
   - 低于预期的影响
 - 影响尽量写清楚利多/利空对象，例如美元、美债收益率、纳指、成长股、黄金、加密、中概、日元、日本银行股等。
+- 详情不重复标题和日历时间已经表达的信息；不写“事件：xxx”“类型：xxx”这类低信息量字段。
 
 ## 备注
 

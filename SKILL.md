@@ -30,6 +30,7 @@ Default timezone is `Asia/Tokyo`. Use the current date and timezone from the env
 - Prefer transparent events for informational market calendar items unless the existing event uses a different setting or the user asks to block the calendar.
 - Do not include process/source boilerplate such as "parsed from image", local file paths, or explanations of why something was included. Include actionable market notes instead.
 - Do not repeat information that is already obvious from the calendar title or time slot. For example, avoid writing "title focus", "Japan time", session labels, or the same event list twice unless that detail adds new useful context.
+- In Google Calendar descriptions, use `・` for bullet-like lines instead of leading hyphen bullets. The connector may persist leading `-` as escaped `\-`.
 
 ## Earnings Workflow
 
@@ -83,8 +84,8 @@ Description structure:
 
 ```text
 重点看点：
-- AAA：一句话写业务/交易看点和财报重点。
-- BBB：一句话写业务/交易看点和财报重点。
+・AAA：一句话写业务/交易看点和财报重点。
+・BBB：一句话写业务/交易看点和财报重点。
 
 其他留意：只写少量非标题但值得关注的名字和原因。
 ```
@@ -131,12 +132,12 @@ Description:
 
 ```text
 具体时刻：
-- 会社名（コード，HH:MM）
-- 会社名（コード，HH:MM）
+・会社名（コード，HH:MM）
+・会社名（コード，HH:MM）
 
 重点看点：
-- 会社名：一句话写业务/交易看点和财报重点。
-- 会社名：一句话写业务/交易看点和财报重点。
+・会社名：一句话写业务/交易看点和财报重点。
+・会社名：一句话写业务/交易看点和财报重点。
 ```
 
 - Do not write redundant blocks like "时间分区", "标题重点", "本分区全部财报", or generic source disclaimers.
@@ -190,19 +191,17 @@ Combined title examples:
 Description structure:
 
 ```text
-事件：事件名称
-类型：数据发布/讲话/央行文件/拍卖/政治财经事件
 重要度：★★★★
 
 预期/前值：
-- 预期：...
-- 前值：...
+・预期：...
+・前值：...
 
 如果高于预期：
-- 利多/利空...
+・利多/利空...
 
 如果低于预期：
-- 利多/利空...
+・利多/利空...
 ```
 
 For combined events, repeat the same block per event separated by:
@@ -210,6 +209,8 @@ For combined events, repeat the same block per event separated by:
 ```text
 ---
 ```
+
+Do not repeat the event name, country, type, or calendar time in the description when the title and calendar slot already show them. Keep the description focused on importance, forecasts, and directional market impact.
 
 ## Updating Existing Events
 
