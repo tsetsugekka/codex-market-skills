@@ -1,0 +1,4 @@
+interface:
+  display_name: "Market Calendar Google"
+  short_description: "整理美股财报与中美日财经事件，并写入 Google Calendar。"
+  default_prompt: "整理本周或下周的美股财报/中美日财经事件，并按我的规则添加到 Google Calendar。"
