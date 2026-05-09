@@ -7,10 +7,11 @@ description: Organize a selected week of US earnings calendars or China/US/Japan
 
 ## Overview
 
-Use this skill to turn weekly market calendars into concise Google Calendar events for the user. Support two workflows:
+Use this skill to turn weekly market calendars into concise Google Calendar events for the user. Support three workflows:
 
 1. US earnings calendar for a week, usually from the Earnings Whispers "Most Anticipated Earnings Releases" image.
 2. China/US/Japan macro, central-bank, auction, and market-event calendar for a week.
+3. Japan stock earnings calendar for a week, usually from SBI Securities settlement announcement data.
 
 Default timezone is `Asia/Tokyo`. Use the current date and timezone from the environment to resolve "this week" and "next week".
 
@@ -28,6 +29,7 @@ Default timezone is `Asia/Tokyo`. Use the current date and timezone from the env
 - For 5-star events, set Google Calendar event color to red (`color_id: "11"` after confirming colors if needed).
 - Prefer transparent events for informational market calendar items unless the existing event uses a different setting or the user asks to block the calendar.
 - Do not include process/source boilerplate such as "parsed from image", local file paths, or explanations of why something was included. Include actionable market notes instead.
+- Do not repeat information that is already obvious from the calendar title or time slot. For example, avoid writing "title focus", "Japan time", session labels, or the same event list twice unless that detail adds new useful context.
 
 ## Earnings Workflow
 
@@ -80,20 +82,66 @@ Title:
 Description structure:
 
 ```text
-美股时段：周X盘前/周X盘后
-日本时间：YYYY-MM-DD HH:MM-HH:MM
-
-标题重点：AAA、BBB、CCC
-
-本时段全部财报：
-AAA、BBB、CCC、...
-
 重点看点：
 - AAA：一句话写业务/交易看点和财报重点。
 - BBB：一句话写业务/交易看点和财报重点。
 
 其他留意：只写少量非标题但值得关注的名字和原因。
 ```
+
+Do not include redundant blocks such as "美股时段", "日本时间", or "标题重点" when the title and calendar slot already make them clear.
+
+## Japan Earnings Workflow
+
+### 1. Source And Scope
+
+- Prefer SBI Securities settlement announcement data when available. The public page loads JSONP from `vc.iris.sbisec.co.jp/calendar/settlement/stock/announcement_info_date.do`.
+- Query one selected date at a time; the JSONP response contains the full day's body and the website pagination is only front-end display. Do not scrape page-by-page if the JSONP endpoint is available.
+- Use `selectedDate=YYYYMMDD` for each trading day in the requested week.
+- If SBI is unavailable, use Traders Web `https://www.traders.co.jp/market_jp/earnings_calendar` as fallback. It is easy to parse but may require pagination.
+
+### 2. Watchlist And Filtering
+
+- If the user provides a Japan stock CSV, add only matching stock codes from that CSV. Detect columns such as `代码`, `コード`, `Ticker`, or `Symbol`.
+- Use the CSV order as priority. Earlier rows are more important and should appear first in titles and details.
+- If the user does not provide a Japan stock CSV or similar watchlist, have the AI select a small set of important names by market cap, liquidity, index relevance, sector read-through, and user preferences. Never add every Japan earnings item by default.
+
+### 3. Calendar Grouping
+
+- Use Japan local time directly.
+- Group events by 30-minute bucket: `:00-:29` and `:30-:59`.
+- Create one 0-minute event per bucket.
+- If a stock has no concrete time, place it at `08:00 Asia/Tokyo` on that day.
+- Disable reminders explicitly with `reminders: { use_default: false, overrides: [] }`.
+- Prefer transparent events.
+
+### 4. Title And Details
+
+Title:
+
+```text
+🇯🇵決算｜会社名、会社名、会社名
+```
+
+- Use company short names after `決算｜`, not numeric stock codes.
+- Keep only the highest-priority names in the title, usually up to 5. If more names are in the bucket, append `等N只`.
+- Put stock codes in the description, not as the title's primary signal.
+
+Description:
+
+```text
+具体时刻：
+- 会社名（コード，HH:MM）
+- 会社名（コード，HH:MM）
+
+重点看点：
+- 会社名：一句话写业务/交易看点和财报重点。
+- 会社名：一句话写业务/交易看点和财报重点。
+```
+
+- Do not write redundant blocks like "时间分区", "标题重点", "本分区全部财报", or generic source disclaimers.
+- Do not mechanically list `本決算`, forecast, or consensus for every stock. Mention estimates/consensus only when they are directly useful to the market note.
+- The note should explain why the stock matters: business line, sector read-through, orders, margins, guidance, shareholder returns, FX sensitivity, AI/semiconductor exposure, bank net interest margin, defense orders, commodity price exposure, or similar.
 
 ## Macro/Event Workflow
 
