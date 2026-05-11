@@ -37,7 +37,9 @@ Useful options:
 - News: primary evidence for concrete catalysts.
 - Yahoo 掲示板: secondary evidence for market psychology, rumors, expectations, and retail attention. Never treat it as confirmed fact unless the same item appears in news.
 
-5. If the analysis produces a durable new lesson, update `EXPERIENCE.md` after the task. Follow its `Compression Protocol`: merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
+5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
+
+6. If the analysis or multi-turn correction produces a durable new lesson, update `EXPERIENCE.md` after answering. Follow its `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## Output Style
 

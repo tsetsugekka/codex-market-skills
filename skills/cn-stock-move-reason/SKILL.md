@@ -39,7 +39,9 @@ Useful options:
 - Sohu index and sector/concept board context plus Eastmoney intraday advance-decline counts and Sohu historical advance-decline / limit-up / limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
 
-5. If the analysis produces a durable new lesson, update `EXPERIENCE.md` after the task. Follow its `Compression Protocol`: merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
+5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
+
+6. If the analysis or multi-turn correction produces a durable new lesson, update `EXPERIENCE.md` after answering. Follow its `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## A-share Emotion Cycle
 

@@ -50,6 +50,15 @@ Keep this file readable by compressing before it becomes too large.
 - Never paste long raw source output here. Store only distilled lessons, dates, tickers, and the rule learned.
 - Do not store personal positions, watchlists, unpublished research notes, credentials, cookies, private URLs, or any content that should not be committed to a public repository.
 
+## Conversation Learning Protocol
+
+Use this protocol after multi-turn discussion about the same stock.
+
+- Auto-update this file only when the follow-up reveals a reusable lesson, such as a missed catalyst type, wrong source priority, poor expectation-gap framing, bad valuation weighting, overconfidence, or a recurring output weakness.
+- Do not update for one-off ticker facts, ordinary user preferences, speculative claims without support, or information that is only useful for the current stock.
+- Convert the correction into a general rule before writing it. Prefer one concise bullet in `Active Playbook`; use `Archive` only for distinct dated examples that still teach the rule.
+- If the lesson came from a user challenge, capture the analytical failure mode, not the user's private wording. Example: write "When 掲示板 focuses on consensus fear, compare the result against that fear explicitly", not a transcript of the exchange.
+
 ## Archive
 
 - 2026-05-11 JP earnings review distilled into the active rules above; ticker-specific details intentionally removed from active guidance to keep the playbook reusable.

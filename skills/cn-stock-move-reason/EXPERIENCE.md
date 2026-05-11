@@ -26,6 +26,15 @@ Keep this file readable by compressing before it becomes too large.
 - Never paste long raw source output here. Store only distilled lessons, dates, tickers, and the rule learned.
 - Do not store personal positions, watchlists, unpublished research notes, credentials, cookies, private URLs, or any content that should not be committed to a public repository.
 
+## Conversation Learning Protocol
+
+Use this protocol after multi-turn discussion about the same stock.
+
+- Auto-update this file only when the follow-up reveals a reusable lesson, such as a missed catalyst type, wrong source priority, poor sector共振 framing, bad emotion-cycle judgment, overconfidence, or a recurring output weakness.
+- Do not update for one-off ticker facts, ordinary user preferences, speculative claims without support, or information that is only useful for the current stock.
+- Convert the correction into a general rule before writing it. Prefer one concise bullet in `Active Playbook`; use `Archive` only for distinct dated examples that still teach the rule.
+- If the lesson came from a user challenge, capture the analytical failure mode, not the user's private wording. Example: write "When a stock is weak on a strong sector day, explicitly test for stock-specific overhang", not a transcript of the exchange.
+
 ## Archive
 
 No archived lessons yet.
