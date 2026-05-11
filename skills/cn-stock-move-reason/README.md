@@ -53,7 +53,7 @@ python3 skills/cn-stock-move-reason/scripts/stock_move_sources.py 600519 --forma
 
 `EXPERIENCE.md` 用来保存可复用的 A 股分析经验，例如确认催化、题材思惑、板块共振、股吧情绪和短线情绪周期的判断规则。Codex 默认只读取其中的 `Active Playbook`、`Compression Protocol` 和 `Conversation Learning Protocol`，避免历史经验越来越长后拖慢每次分析。
 
-如果用户围绕同一只股票连续追加信息、质疑前次判断或讨论遗漏点，Codex 会在必要时把暴露出的可复用分析失误自动总结进 `EXPERIENCE.md`。一次性的股票事实和未经证实的思惑不应写入经验模块。
+如果用户围绕同一只股票连续追加信息、质疑前次判断或讨论遗漏点，Codex 会在必要时把暴露出的可复用分析失误自动总结进经验模块。适用于 A 股和日股的经验会同步更新两边；只适合 A 股市场结构或数据源的经验才只写入本目录。一次性的股票事实和未经证实的思惑不应写入经验模块。
 
 这个文件可以公开提交，但只应记录抽象后的经验规则。不要写入个人仓位、关注列表、私有研究笔记、凭据、Cookie 或原始长输出。
 

@@ -39,7 +39,7 @@ Useful options:
 
 5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
 
-6. If the analysis or multi-turn correction produces a durable new lesson, update `EXPERIENCE.md` after answering. Follow its `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
+6. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both Japanese stocks and A-shares, update both stock-skill `EXPERIENCE.md` files; if it is specific to Japanese stocks, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## Output Style
 
