@@ -4,7 +4,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 
 ## 含まれる skills
 
-### `market-calendar-google`
+### [`market-calendar-google`](skills/market-calendar-google/README.md)
 
 米国株決算、日本株決算、中国・米国・日本のマクロ指標、中央銀行イベント、国債入札、その他の重要市場イベントを整理し、ユーザーのルールに従って Google Calendar に追加します。
 
@@ -15,7 +15,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 中国・米国・日本の重要度が高い経済イベントを整理する。
 - 日本時間で Google Calendar に登録し、重複を避ける。
 
-### `jp-stock-move-reason`
+### [`jp-stock-move-reason`](skills/jp-stock-move-reason/README.md)
 
 入力された日本株コードについて、Yahoo Finance のリアルタイム株価欄、Yahoo 掲示板、Yahoo/Kabutan/Traders のニュース、基本指標を収集し、Codex が株価変動理由を分析するための材料を作ります。この skill は Gemini などの LLM API を呼び出さず、認証情報も読みません。
 
@@ -68,9 +68,11 @@ ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/j
 skills/
   market-calendar-google/
     SKILL.md
+    README.md
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
+    README.md
     scripts/stock_move_sources.py
 ```
 

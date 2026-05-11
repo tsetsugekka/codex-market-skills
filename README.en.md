@@ -4,7 +4,7 @@ Codex Market Skills is a collection of Codex skills for trading, investment rese
 
 ## Included Skills
 
-### `market-calendar-google`
+### [`market-calendar-google`](skills/market-calendar-google/README.md)
 
 Organizes US earnings, Japan earnings, China/US/Japan macro data, central-bank events, Treasury auctions, and other market-moving events, then writes them to Google Calendar according to the user's rules.
 
@@ -15,7 +15,7 @@ Use it to:
 - Build a high-importance China/US/Japan market-event calendar.
 - Add events in Japan time while avoiding duplicates.
 
-### `jp-stock-move-reason`
+### [`jp-stock-move-reason`](skills/jp-stock-move-reason/README.md)
 
 Collects evidence for a user-provided Japanese stock code from Yahoo Finance's live quote page, Yahoo message board, Yahoo/Kabutan/Traders news, and basic stock metrics, then lets Codex analyze the likely reason for the move. This skill does not call Gemini or any other LLM API, and it does not read credentials.
 
@@ -68,9 +68,11 @@ Check whether 6217 is moving on confirmed news or message-board speculation.
 skills/
   market-calendar-google/
     SKILL.md
+    README.md
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
+    README.md
     scripts/stock_move_sources.py
 ```
 
