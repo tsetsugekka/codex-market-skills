@@ -37,12 +37,16 @@ Useful options:
 
 ## Output Style
 
-Reply in Chinese unless the user asks otherwise. The answer can be detailed because this is a single-stock local script workflow: start from at least 3-4 lines, and when evidence is rich, write up to the length of a short market news note. Stay evidence-based:
+Reply in Chinese unless the user asks otherwise. The answer can be detailed because this is a local script workflow: start from at least 3-4 lines, and when evidence is rich, write up to the length of a short market news note. Stay evidence-based.
+
+For every stock analyzed, always use these five numbered sections in this exact order:
 
 1. `最有力理由`: the most likely catalyst, with source names and timing.
 2. `补助理由`: secondary drivers such as theme buying, short-term speculation, or market-cap/liquidity context.
 3. `掲示板温度`: summarize heat level, recent post volume, and high-like comments.
 4. `确定度`: high / medium / low, with one sentence explaining why.
 5. `注意点`: what remains unconfirmed or what could invalidate the read.
+
+When the user gives multiple stocks, write the five numbered sections separately for each stock first. After all individual stock sections, add a final comparison section such as `两只对比` or `多只对比`, covering common drivers, differences in catalyst quality, sentiment heat, and relative risk. You may add extra sections when useful, but the five required sections and the final comparison for multi-stock requests must remain present.
 
 If the evidence is weak, say so plainly and use wording like `思惑`, `期待`, `传闻`, or `确认待ち`. Do not invent catalysts absent from the collected news/comments.
