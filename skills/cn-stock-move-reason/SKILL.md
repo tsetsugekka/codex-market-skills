@@ -15,7 +15,9 @@ The skill accepts one stock at a time. It may also collect broad market context 
 
 ## Workflow
 
-1. Run the collector script from the repository root:
+1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, and A-share emotion-cycle position.
+
+2. Run the collector script from the repository root:
 
 ```bash
 python3 skills/cn-stock-move-reason/scripts/stock_move_sources.py 600519 --format markdown
@@ -28,14 +30,16 @@ Useful options:
 - `--announcements 10`: maximum announcements to include.
 - `--skip-market-context`: skip indexes, sector/concept boards, and advance/decline counts when the user wants only single-stock materials.
 
-2. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy.
+3. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy.
 
-3. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
+4. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
 
 - Announcements, earnings, regulatory filings, and confirmed company materials: primary evidence.
 - Eastmoney 股吧资讯/high-read posts: secondary evidence; useful for discovering what the market is discussing.
 - Sohu index and sector/concept board context plus Eastmoney intraday advance-decline counts and Sohu historical advance-decline / limit-up / limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
+
+5. If the analysis produces a durable new lesson, update `EXPERIENCE.md` after the task. Follow its `Compression Protocol`: merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## A-share Emotion Cycle
 

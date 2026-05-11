@@ -49,6 +49,12 @@ python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 6758 --format 
 - 不写入任何外部服务。
 - 不调用 Gemini、OpenAI API 或其他 LLM API；分析由当前 Codex 会话完成。
 
+## 经验模块
+
+`EXPERIENCE.md` 用来保存可复用的分析经验，例如财报反应、预期差、估值和掲示板情绪的判断规则。Codex 默认只读取其中的 `Active Playbook` 和 `Compression Protocol`，避免历史经验越来越长后拖慢每次分析。
+
+这个文件可以公开提交，但只应记录抽象后的经验规则。不要写入个人仓位、关注列表、私有研究笔记、凭据、Cookie 或原始长输出。
+
 ## 输出风格
 
 Codex 会基于脚本输出，用中文写出类似短新闻长度的解释。一般包括最有力理由、补助理由、掲示板温度、确定度和注意点。若证据不足，会明确标注为思惑、期待、传闻或确认待ち。

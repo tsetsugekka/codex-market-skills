@@ -13,7 +13,9 @@ The bundled script is safe to keep in a public repository: it uses only public w
 
 ## Workflow
 
-1. Run the collector script from the repo root:
+1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, and 掲示板 sentiment.
+
+2. Run the collector script from the repo root:
 
 ```bash
 python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 7203 --format markdown
@@ -27,13 +29,15 @@ Useful options:
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
 
-2. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy.
+3. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy.
 
-3. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
+4. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
 
 - Current quote and basic metrics: establish whether there is a real price move and the stock's size/liquidity context.
 - News: primary evidence for concrete catalysts.
 - Yahoo 掲示板: secondary evidence for market psychology, rumors, expectations, and retail attention. Never treat it as confirmed fact unless the same item appears in news.
+
+5. If the analysis produces a durable new lesson, update `EXPERIENCE.md` after the task. Follow its `Compression Protocol`: merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## Output Style
 

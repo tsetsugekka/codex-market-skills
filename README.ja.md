@@ -89,10 +89,12 @@ skills/
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
+    EXPERIENCE.md
     README.md
     scripts/stock_move_sources.py
   cn-stock-move-reason/
     SKILL.md
+    EXPERIENCE.md
     README.md
     agents/openai.yaml
     scripts/stock_move_sources.py

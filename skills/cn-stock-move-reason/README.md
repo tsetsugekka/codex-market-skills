@@ -49,6 +49,12 @@ python3 skills/cn-stock-move-reason/scripts/stock_move_sources.py 600519 --forma
 - 不写入任何外部服务。
 - 不调用 Gemini、OpenAI API 或其他 LLM API；分析由当前 Codex 会话完成。
 
+## 经验模块
+
+`EXPERIENCE.md` 用来保存可复用的 A 股分析经验，例如确认催化、题材思惑、板块共振、股吧情绪和短线情绪周期的判断规则。Codex 默认只读取其中的 `Active Playbook` 和 `Compression Protocol`，避免历史经验越来越长后拖慢每次分析。
+
+这个文件可以公开提交，但只应记录抽象后的经验规则。不要写入个人仓位、关注列表、私有研究笔记、凭据、Cookie 或原始长输出。
+
 ## 公开安全说明
 
 这个 skill 和脚本可以放在公开仓库中。请不要提交个人关注列表、私有分析输出、运行缓存、`.env`、token 或任何含有登录信息的文件。
