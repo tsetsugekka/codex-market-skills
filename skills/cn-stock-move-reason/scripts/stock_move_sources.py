@@ -823,8 +823,18 @@ def infer_market_phase(breadth: dict[str, Any]) -> str:
     history = breadth.get("history") or []
     recent_limit_up = [int(row.get("limit_up") or 0) for row in history[:5]]
     avg_recent_limit_up = sum(recent_limit_up) / len(recent_limit_up) if recent_limit_up else 0
-    if limit_down > limit_up * 1.5 and down > up * 1.5:
-        phase = "冰点期/退潮期"
+    prev = history[1] if len(history) > 1 else {}
+    prev_limit_up = int(prev.get("limit_up") or 0)
+    prev_limit_down = int(prev.get("limit_down") or 0)
+    limit_up_falling = bool(prev_limit_up and limit_up < prev_limit_up * 0.8)
+    limit_down_rising = bool(prev_limit_down and limit_down > prev_limit_down * 1.2)
+    breadth_split = bool(up and down and up <= down * 1.25)
+    if limit_up <= 20 and (limit_down >= 40 or down > up * 1.5):
+        phase = "冰点期"
+    elif limit_down > limit_up * 1.2 and down > up * 1.2:
+        phase = "退潮期"
+    elif (limit_up >= 80 or avg_recent_limit_up >= 90) and (breadth_split or limit_up_falling or limit_down_rising):
+        phase = "高位分歧/分化期"
     elif limit_up >= 100 or (avg_recent_limit_up >= 100 and limit_up >= 80):
         phase = "高潮期"
     elif limit_up >= 60 and up > down * 1.3:
@@ -833,7 +843,7 @@ def infer_market_phase(breadth: dict[str, Any]) -> str:
         phase = "启动期"
     elif up > down * 1.3 and limit_down <= max(10, limit_up):
         phase = "修复期"
-    elif down >= up:
+    elif down >= up * 1.1:
         phase = "退潮期"
     else:
         phase = "混沌/轮动期"
@@ -1062,7 +1072,7 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
         "优先级为：公告/业绩/监管等确认材料 > 股吧资讯帖和高阅读材料 > 普通股吧观点。"
         "股吧只做情绪面和未确认思惑，不当作事实。"
         f"{market_instruction}"
-        "情绪周期按六阶段判断：冰点期、修复期、启动期、加速期、高潮期、退潮期；"
+        "情绪周期按七段判断：冰点期、修复/潜伏期、启动期、加速期、高潮期、高位分歧/分化期、退潮期；"
         "同时区分情绪票和趋势票。"
         "输出顺序：1) 最有力理由 2) 补助理由 3) 共振判断 4) 情绪面/周期位置 5) 确定度 6) 注意点。"
         "材料弱时要明确写“未确认”“思惑”“低信息量”，不要编造催化。"

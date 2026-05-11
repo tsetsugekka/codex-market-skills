@@ -39,18 +39,19 @@ Useful options:
 
 ## A-share Emotion Cycle
 
-Classify the short-term emotion backdrop qualitatively into one of six stages from the single-stock materials, price action, 股吧 discussion, market indexes, sector/concept boards, today's breadth, and recent Sohu zdt history:
+Classify the short-term emotion backdrop qualitatively into one of seven stages from the single-stock materials, price action, 股吧 discussion, market indexes, sector/concept boards, today's breadth, and recent Sohu zdt history:
 
 1. `冰点期`: many limit-downs or large losers, high failed-board/亏钱效应, shrinking participation. Observe who resists the selloff.
-2. `修复期`: panic eases, limit-downs decrease, front-row names begin to rebound. Small trial positions only.
+2. `修复/潜伏期`: panic eases, limit-downs decrease, front-row names begin to rebound, but most traders are still skeptical. Small trial positions only.
 3. `启动期`: new theme appears, first/second boards increase, capital starts focusing. Prefer front-row names in the core theme.
 4. `加速期`: leaders continue limit-up, followers spread, sector赚钱效应 is strong. Hold strength, avoid random laggards.
 5. `高潮期`: everyone discusses the theme, limit-up wave or one-word boards, retail emotion is hot. Take profits progressively; do not chase heavily.
-6. `退潮期`: leaders break boards, 天地板/炸板 rise,亏钱效应 spreads. Reduce exposure or wait.
+6. `高位分歧/分化期`: after高潮, leaders may炸板/断板/long upper shadow while back-row names weaken, but the whole market has not fully collapsed yet. Treat it as the transition from emotion top to退潮.
+7. `退潮期`: leaders break down, 天地板/核按钮 rise,亏钱效应 spreads. Reduce exposure or wait.
 
-Useful loop: `冰点 -> 修复 -> 启动 -> 加速 -> 高潮 -> 退潮 -> 再冰点`.
+Useful loop: `冰点 -> 修复/潜伏 -> 启动 -> 加速 -> 高潮 -> 高位分歧/分化 -> 退潮 -> 再冰点`.
 
-The favorable windows are usually late 修复 to early 启动, and the main-line divergence pullback before 加速. The most dangerous windows are late 高潮 and early 退潮.
+`分歧` is not always bearish. A healthy divergence during 启动/加速 can be a换手 test or main-line pullback before renewed agreement; a high-level divergence after高潮 is usually a risk signal. The favorable windows are usually late 修复 to early 启动, and healthy main-line divergence before 加速. The most dangerous windows are late 高潮, 高位分歧/分化, and early 退潮.
 
 ## Reading News And Emotion
 
@@ -68,7 +69,7 @@ Reply in Chinese unless the user asks otherwise. The answer can be detailed beca
 1. `最有力理由`: most likely catalyst, with source names and timing.
 2. `补助理由`: secondary drivers such as theme, sector rotation, liquidity, valuation, or positioning.
 3. `共振判断`: whether the stock is moving with the market, its sector/concept, or mostly on stock-specific news.
-4. `情绪面/周期位置`: qualitative 股吧 emotion plus the six-stage A-share emotion cycle.
+4. `情绪面/周期位置`: qualitative 股吧 emotion plus the seven-stage A-share emotion cycle.
 5. `确定度`: high / medium / low, with one sentence explaining why.
 6. `注意点`: what remains unconfirmed or what could invalidate the read.
 
