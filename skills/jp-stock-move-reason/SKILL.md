@@ -13,7 +13,7 @@ The bundled script is safe to keep in a public repository: it uses only public w
 
 ## Workflow
 
-1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, and 掲示板 sentiment.
+1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, 掲示板 sentiment, theme leadership, peer follow-through, and whether the stock is a leader, follower, defensive alternative, old-leader rebound, or noise.
 
 2. Run the collector script from the repo root:
 
@@ -36,6 +36,7 @@ Useful options:
 - Current quote and basic metrics: establish whether there is a real price move and the stock's size/liquidity context.
 - News: primary evidence for concrete catalysts.
 - Yahoo 掲示板: secondary evidence for market psychology, rumors, expectations, and retail attention. Never treat it as confirmed fact unless the same item appears in news.
+- Peer and theme reactions: use them to judge whether the move is theme-wide leadership, same-theme follow-through, or only stock-specific sentiment.
 
 5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
 
@@ -56,3 +57,13 @@ For every stock analyzed, always use these five numbered sections in this exact 
 When the user gives multiple stocks, write the five numbered sections separately for each stock first. After all individual stock sections, add a final comparison section such as `两只对比` or `多只对比`, covering common drivers, differences in catalyst quality, sentiment heat, and relative risk. You may add extra sections when useful, but the five required sections and the final comparison for multi-stock requests must remain present.
 
 If the evidence is weak, say so plainly and use wording like `思惑`, `期待`, `传闻`, or `确认待ち`. Do not invent catalysts absent from the collected news/comments.
+
+## Valuation Requests
+
+When the user asks for `合理估值`, `目标价`, `估值`, `贵不贵`, `空间`, `fair value`, or similar:
+
+- Still collect current quote/news materials first, then add financial guidance, EPS/share-count, capital policy, and peer/sector context when available.
+- Use the `Reasonable Valuation Framework` from `EXPERIENCE.md`.
+- Provide scenario ranges rather than one exact target: conservative / base / bull.
+- State the anchors used, such as forward EPS/PER, operating or recurring profit, ROE/PBR, EV/EBITDA, orders/backlog, buyback/CB dilution, and peer multiples.
+- Explicitly say what the current price already prices in, what must happen to justify upside, and what would invalidate the valuation.

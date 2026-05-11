@@ -17,6 +17,15 @@ Read this section before using the JP stock skill. Keep it compact and current.
 - Yahoo 掲示板 is useful for reading the expectation gap. If many posts fear "good results still get sold" or "consensus is too high", then a result that clears those exact worries can trigger stronger positive feedback.
 - In strong market regimes, the market may reward "strong theme + strong guidance" more than conventional valuation discipline. Adjust the weight of valuation after observing same-day reactions in comparable stocks.
 
+### Cross-Market Theme And Reaction Structure
+
+- Before a catalyst, classify the stock as core theme leader, same-theme follower, defensive/cyclical alternative, old leader rebound, or noise. A good result in a non-core bucket may react less than a merely solid result in the current core theme.
+- Theme strength is confirmed by repeated capital return, sector breadth, and peer follow-through, not by one strong stock alone. If only one famous name rises while peers do not follow, treat it as stock-specific or short-term sentiment until proven otherwise.
+- After a strong theme run, prepare for both continuation and profit-taking. The question is whether the result extends the next 6-18 month narrative enough to keep money in the theme.
+- When the market is strong, broad liquidity can hide weak details; when liquidity cools, guidance quality, order/backlog durability, and valuation discipline matter more.
+- Do not pre-commit to the next theme winner. Keep candidates equal until one shows stronger price reaction, guidance surprise, peer confirmation, and 掲示板 expectation reset.
+- Old leader rebounds after a new leader weakens can be a warning: it may mean residual positioning and exit liquidity rather than a fresh leadership cycle.
+
 ### Practical Checklist Before A Japanese Earnings Release
 
 1. Identify the stock's accepted theme: e.g. EUV/photoresist, AI package substrate, HBM backend, transformer/data-center power, AI semiconductor distribution.
@@ -38,6 +47,19 @@ Read this section before using the JP stock skill. Keep it compact and current.
 - If sentiment is skeptical before release and the result clears the feared issue, the reaction can be stronger than the absolute numbers suggest.
 - If a stock is a core theme asset, investors may focus on operating profit, recurring profit, order/backlog, capacity contribution, or EBITDA instead of near-term net income.
 - If the result is already fully expected, even a good print can produce profit-taking. Look for whether the result changes the next 6-18 month narrative.
+
+### Reasonable Valuation Framework
+
+Use this section when the user asks whether a stock is cheap/expensive, asks for fair value, target range, upside/downside, or valuation after earnings.
+
+- First classify the valuation identity: cyclical resource, semiconductor material, equipment, distributor, power infrastructure, consumer/entertainment, financial, or mixed business. Do not apply one PER range to every company.
+- Build at least three anchors: `earnings anchor` such as forward EPS/PER, `quality anchor` such as margin/ROE/FCF/order durability, and `market anchor` such as peer multiples and current theme premium.
+- Adjust EPS for capital actions when material: buybacks, tender offers, treasury shares, CB dilution, secondary offerings, splits, parent-company stake reductions, and dividend policy changes.
+- Do not count a buyback as purely positive if it is funded by CB or other dilution. Estimate the net effect on share count, EPS, balance sheet, and future dilution risk.
+- Separate operating quality from accounting noise. For core-theme stocks, operating profit, recurring profit, orders/backlog, capacity contribution, and EBITDA may matter more than one-year net income; for cyclical stocks, commodity price and FX sensitivity may deserve a lower multiple.
+- Use scenario valuation instead of a single point: conservative, base, and bull. State the key assumptions that move the stock from one scenario to another.
+- After setting the fair range, compare current price to the range and explain whether the market is pricing current fundamentals, future upgrades, capital policy, or pure sentiment.
+- Valuation output should end with a "what must happen to justify upside" test and a "what invalidates the valuation" test.
 
 ## Compression Protocol
 
@@ -63,3 +85,4 @@ Use this protocol after multi-turn discussion about the same stock.
 ## Archive
 
 - 2026-05-11 JP earnings review distilled into the active rules above; ticker-specific details intentionally removed from active guidance to keep the playbook reusable.
+- 2026-05-11 Added cross-market emotion-structure rules from an A-share sector discussion transcript; A-share-specific examples and current calls were intentionally omitted.

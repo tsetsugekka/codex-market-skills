@@ -15,7 +15,7 @@ The skill accepts one stock at a time. It may also collect broad market context 
 
 ## Workflow
 
-1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, and A-share emotion-cycle position.
+1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise.
 
 2. Run the collector script from the repository root:
 
@@ -62,6 +62,7 @@ Useful loop: `冰点 -> 修复/潜伏 -> 启动 -> 加速 -> 高潮 -> 高位分
 ## Reading News And Emotion
 
 - Separate `confirmed catalyst` from `market imagination`. A confirmed order, policy, earnings beat, regulatory approval, or buyback is stronger than a forum narrative.
+- Use the emotion-structure checklist from `EXPERIENCE.md`: classify market phase, main-line versus defensive bucket, capital return frequency, breadth/赚钱效应, first healthy divergence versus high-level divergence, institution-style trend versus 游资PK, and whether a rebound is new leadership or old-leader exit liquidity.
 - Decide whether the stock is an `情绪票` or a `趋势票`:
   - 情绪票: topic-driven, high volatility, limit-up relay, fast climax/retreat.
   - 趋势票: supported by industry cycle, earnings, policy, or institutional logic; slower but more durable.
@@ -80,3 +81,14 @@ Reply in Chinese unless the user asks otherwise. The answer can be detailed beca
 6. `注意点`: what remains unconfirmed or what could invalidate the read.
 
 If evidence is weak, say so plainly and use wording like `思惑`, `低信息量`, `未确认`, or `确认待ち`. Do not invent catalysts absent from the collected evidence.
+
+## Valuation Requests
+
+When the user asks for `合理估值`, `目标价`, `估值`, `贵不贵`, `空间`, `fair value`, or similar:
+
+- Still collect current quote/news/公告/股吧/market-context materials first, then add financial guidance, EPS/share-count, capital policy, and peer/sector context when available.
+- Use the `Reasonable Valuation Framework` from `EXPERIENCE.md`.
+- Provide scenario ranges rather than one exact target: conservative / base / bull.
+- State the anchors used, such as forward EPS/PE, operating profit, ROE/PB, EV/EBITDA, orders/backlog, buyback/convertible bond dilution, and peer multiples.
+- Explicitly separate fundamental fair value from A-share emotion-cycle premium/discount.
+- Explicitly say what the current price already prices in, what must happen to justify upside, and what would invalidate the valuation.
