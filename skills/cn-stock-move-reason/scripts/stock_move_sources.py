@@ -29,6 +29,7 @@ from typing import Any
 
 
 CST = dt.timezone(dt.timedelta(hours=8), "CST")
+EASTMONEY_QUOTE_API = "https://push2delay.eastmoney.com"
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
@@ -226,7 +227,7 @@ def eastmoney_quote_url(secid: str) -> str:
             "f292",
         ]
     )
-    return f"https://push2.eastmoney.com/api/qt/stock/get?secid={urllib.parse.quote(secid)}&fields={fields}"
+    return f"{EASTMONEY_QUOTE_API}/api/qt/stock/get?secid={urllib.parse.quote(secid)}&fields={fields}"
 
 
 def scaled(value: Any, divisor: float = 100.0) -> float | None:
@@ -603,7 +604,7 @@ def eastmoney_clist_url(fs: str, fields: str, *, pn: int = 1, pz: int = 100, po:
             "fields": fields,
         }
     )
-    return f"https://push2.eastmoney.com/api/qt/clist/get?{params}"
+    return f"{EASTMONEY_QUOTE_API}/api/qt/clist/get?{params}"
 
 
 def parse_eastmoney_rows(url: str) -> tuple[int, list[dict[str, Any]]]:
@@ -615,7 +616,7 @@ def parse_eastmoney_rows(url: str) -> tuple[int, list[dict[str, Any]]]:
 def fetch_eastmoney_market_indexes() -> dict[str, Any]:
     fields = "f12,f14,f2,f3,f4,f6"
     secids = "1.000001,0.399001,0.399006,1.000688,1.000300,0.399905"
-    url = f"https://push2.eastmoney.com/api/qt/ulist.np/get?secids={urllib.parse.quote(secids)}&fields={fields}"
+    url = f"{EASTMONEY_QUOTE_API}/api/qt/ulist.np/get?secids={urllib.parse.quote(secids)}&fields={fields}"
     try:
         _, rows = parse_eastmoney_rows(url)
         return {"url": url, "indexes": rows, "source": "Eastmoney index quotes"}
@@ -640,35 +641,51 @@ def fetch_board_rank(name: str, fs: str, limit: int = 8) -> dict[str, Any]:
         return {"url": gain_url, "top_gain": [], "top_loss": [], "source": f"Eastmoney {name} board rank", "error": str(exc)}
 
 
-def fetch_tonghuashun_intraday_breadth() -> dict[str, Any]:
-    url = "http://q.10jqka.com.cn/api.php?t=indexflash&"
+def fetch_eastmoney_intraday_breadth() -> dict[str, Any]:
+    fields = "f12,f14,f2,f3,f104,f105,f106"
+    secids = "1.000001,0.399001"
+    url = f"{EASTMONEY_QUOTE_API}/api/qt/ulist.np/get?secids={urllib.parse.quote(secids)}&fields={fields}"
     try:
-        text = fetch_url(url, referer="https://q.10jqka.com.cn/", pause=False)
-        if text.lstrip().startswith("<"):
-            raise ValueError("non-json response from Tonghuashun breadth endpoint")
-        payload = json.loads(text)
-        zdfb = payload.get("zdfb_data") or {}
-        zdt = payload.get("zdt_data") or {}
-        up = int(zdfb.get("znum") or 0)
-        down = int(zdfb.get("dnum") or 0)
-        last_zdt = zdt.get("last_zdt") or {}
-        zdt_time = zdt.get("zd_time") or []
+        _, rows = parse_eastmoney_rows(url)
+        markets: list[dict[str, Any]] = []
+        up = down = flat = 0
+        for row in rows:
+            market_up = parse_int(row.get("f104"))
+            market_down = parse_int(row.get("f105"))
+            market_flat = parse_int(row.get("f106"))
+            up += market_up
+            down += market_down
+            flat += market_flat
+            markets.append(
+                {
+                    "code": row.get("f12"),
+                    "name": row.get("f14"),
+                    "change_pct": row.get("f3"),
+                    "up": market_up,
+                    "down": market_down,
+                    "flat": market_flat,
+                }
+            )
+        if not markets or not (up or down or flat):
+            raise ValueError("missing Eastmoney index breadth fields f104/f105/f106")
         return {
             "url": url,
-            "reference_url": "https://q.10jqka.com.cn/",
+            "reference_url": "https://quote.eastmoney.com/zs000001.html",
             "date": now_cst().strftime("%m/%d"),
-            "total": up + down if up or down else None,
+            "total": up + down + flat if up or down or flat else None,
             "up": up,
             "down": down,
-            "flat": None,
-            "limit_up": int(last_zdt.get("ztzs") or 0),
-            "limit_down": int(last_zdt.get("dtzs") or 0),
-            "distribution_bins": zdfb.get("zdfb") or [],
-            "updated_time": zdt_time[-1] if zdt_time else "",
-            "source": "同花顺行情中心今日盘中涨跌家数",
+            "flat": flat,
+            "markets": markets,
+            "source": "东方财富指数页今日涨跌家数",
         }
     except Exception as exc:
-        return {"url": url, "reference_url": "https://q.10jqka.com.cn/", "error": str(exc), "source": "同花顺行情中心今日盘中涨跌家数"}
+        return {
+            "url": url,
+            "reference_url": "https://quote.eastmoney.com/zs000001.html",
+            "error": str(exc),
+            "source": "东方财富指数页今日涨跌家数",
+        }
 
 
 def fetch_sohu_zdt_history() -> dict[str, Any]:
@@ -734,8 +751,9 @@ def fetch_sohu_zdt_history() -> dict[str, Any]:
 
 
 def fetch_market_breadth() -> dict[str, Any]:
-    intraday = fetch_tonghuashun_intraday_breadth()
+    intraday = fetch_eastmoney_intraday_breadth()
     history = fetch_sohu_zdt_history()
+    history_latest = (history.get("history") or [{}])[0] if history.get("history") else {}
     source_parts = []
     if intraday.get("error"):
         source_parts.append(f"{intraday.get('source')}失败")
@@ -750,16 +768,17 @@ def fetch_market_breadth() -> dict[str, Any]:
         "url": intraday.get("url"),
         "reference_url": intraday.get("reference_url"),
         "history_reference_url": history.get("reference_url"),
-        "sample_mode": "tonghuashun_intraday_plus_sohu_history",
+        "sample_mode": "eastmoney_intraday_plus_sohu_history",
         "date": base.get("date", ""),
         "total": base.get("total"),
         "up": base.get("up"),
         "down": base.get("down"),
         "flat": base.get("flat"),
-        "limit_up": base.get("limit_up"),
-        "limit_down": base.get("limit_down"),
+        "limit_up": base.get("limit_up") if base.get("limit_up") is not None else history_latest.get("limit_up"),
+        "limit_down": base.get("limit_down") if base.get("limit_down") is not None else history_latest.get("limit_down"),
+        "markets": intraday.get("markets", []),
         "history": history.get("history", []),
-        "history_latest": (history.get("history") or [{}])[0] if history.get("history") else {},
+        "history_latest": history_latest,
         "intraday_error": intraday.get("error", ""),
         "history_error": history.get("error", ""),
         "error": intraday.get("error") if intraday.get("error") and history.get("error") else "",
@@ -921,7 +940,7 @@ def render_market_context(data: dict[str, Any], lines: list[str]) -> None:
         lines.append(f"- 主要指数: {index_text or '-'}")
     if breadth:
         lines.append(
-            f"- 涨跌家数来源: {breadth.get('source', '-')} / 今日页: {breadth.get('reference_url', 'https://q.10jqka.com.cn/')} / "
+            f"- 涨跌家数来源: {breadth.get('source', '-')} / 今日页: {breadth.get('reference_url', 'https://quote.eastmoney.com/zs000001.html')} / "
             f"历史页: {breadth.get('history_reference_url', 'https://q.stock.sohu.com/cn/zdt.shtml')}"
         )
         lines.append(
@@ -929,6 +948,12 @@ def render_market_context(data: dict[str, Any], lines: list[str]) -> None:
             f"上涨:{breadth.get('up', '-')}，下跌:{breadth.get('down', '-')}，"
             f"平盘:{breadth.get('flat', '-')}，涨停附近:{breadth.get('limit_up', '-')}，跌停附近:{breadth.get('limit_down', '-')}"
         )
+        market_text = "、".join(
+            f"{row.get('name')} 涨{row.get('up')}/跌{row.get('down')}/平{row.get('flat')}"
+            for row in breadth.get("markets", [])[:4]
+        )
+        if market_text:
+            lines.append(f"- 分市场涨跌家数: {market_text}")
         history_text = "、".join(
             f"{row.get('date')} 涨停{row.get('limit_up')} 跌停{row.get('limit_down')} 涨{row.get('up')}/跌{row.get('down')}"
             for row in breadth.get("history", [])[:5]
@@ -936,7 +961,7 @@ def render_market_context(data: dict[str, Any], lines: list[str]) -> None:
         lines.append(f"- 近几日情绪历史: {history_text or '-'}")
         notes = []
         if breadth.get("intraday_error"):
-            notes.append(f"今日同花顺接口失败: {breadth.get('intraday_error')}")
+            notes.append(f"今日东方财富接口失败: {breadth.get('intraday_error')}")
         if breadth.get("history_error"):
             notes.append(f"搜狐历史页失败: {breadth.get('history_error')}")
         if notes:

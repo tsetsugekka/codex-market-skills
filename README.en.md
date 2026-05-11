@@ -76,7 +76,7 @@ Analyze whether 300750 is moving on confirmed announcements or short-term theme 
 
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
-- `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, Tonghuashun market pages, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
+- `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
 - Do not commit personal watchlists, credentials, `.env` files, runtime caches, or private outputs to this repository.
 
 ## Repository Layout

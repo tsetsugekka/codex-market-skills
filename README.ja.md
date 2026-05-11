@@ -76,7 +76,7 @@ ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/c
 
 - `market-calendar-google` は、ユーザーが明示的に依頼した場合に Google Calendar コネクタで予定を作成・更新します。
 - `jp-stock-move-reason` は公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
-- `cn-stock-move-reason` は Eastmoney、Sohu 証券、Tonghuashun 行情センターなどの公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
+- `cn-stock-move-reason` は Eastmoney、Sohu 証券などの公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
 - 個人のウォッチリスト、認証情報、`.env`、実行キャッシュ、私的な出力はこのリポジトリにコミットしないでください。
 
 ## リポジトリ構成

@@ -34,7 +34,7 @@ Useful options:
 
 - Announcements, earnings, regulatory filings, and confirmed company materials: primary evidence.
 - Eastmoney 股吧资讯/high-read posts: secondary evidence; useful for discovering what the market is discussing.
-- Sohu index and sector/concept board context plus intraday/historical advance-decline and limit-up/limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
+- Sohu index and sector/concept board context plus Eastmoney intraday advance-decline counts and Sohu historical advance-decline / limit-up / limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
 
 ## A-share Emotion Cycle

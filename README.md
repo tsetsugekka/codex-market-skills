@@ -76,7 +76,7 @@ ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/c
 
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
-- `cn-stock-move-reason` 只读取东方财富、搜狐证券、同花顺行情中心等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
+- `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - 不要把个人关注列表、凭据、`.env`、运行缓存或私有输出提交到本仓库。
 
 ## 仓库结构
