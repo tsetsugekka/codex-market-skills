@@ -1,30 +1,42 @@
-# Codex Market Calendar Google
+# Codex Market Skills
 
-一个用于 Codex 的市场日历 skill：整理某一周的美股财报日历，或中美日重要财经数据/事件日历，并按规则写入 Google Calendar。
+Codex Market Skills 是一组面向交易、投资研究和市场日程管理的 Codex skills。项目原先只包含 `market-calendar-google`，现在扩展为一个多 skill 仓库：同一个 GitHub 项目中保存多个边界清晰、可单独安装和维护的市场工作流。
 
-## 能做什么
+## 当前包含的 skills
 
-- 查找并整理某一周的美股财报日历。
-- 从 SBI 证券日股决算日历整理某一周的日股财报。
-- 优先从 Reddit `r/EarningsWhisper` 找 Earnings Whispers 周度财报图，并确认周次。
-- 读取用户提供的美股/日股关注列表 CSV，用关注顺序决定日历标题里的重点标的。
-- 整理中美日宏观数据、央行事件、美债拍卖、重要财经事件。
-- 按日本时间写入 Google Calendar。
-- 自动使用国旗标记国家：`🇺🇸`、`🇨🇳`、`🇯🇵`。
-- 五星事件自动改为 Google Calendar 红色。
-- 同一 30 分钟时间段内的多个事件自动合并。
-- 日股财报事件默认关闭 Google Calendar 提醒。
+### `market-calendar-google`
+
+整理美股财报、日股财报、中美日宏观数据、央行事件、拍卖和其他重要财经事件，并按用户规则写入 Google Calendar。
+
+适用场景：
+
+- 整理本周或下周 Earnings Whispers 美股财报图。
+- 根据关注列表筛选美股或日股财报。
+- 整理中美日四星以上财经事件。
+- 把事件按日本时间写入 Google Calendar，并避免重复。
+
+### `jp-stock-move-reason`
+
+针对用户输入的日本股票代码，抓取 Yahoo Finance 实时板、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻以及基础指标，让 Codex 分析个股异动理由。该 skill 不调用 Gemini 或其他 LLM API，也不读取任何凭据。
+
+适用场景：
+
+- 分析某只日股为什么急涨、急跌或突然放量。
+- 区分新闻确认的催化和 Yahoo 掲示板上的市场思惑。
+- 查看当前涨跌幅、市值、PER/PBR、信用倍率、掲示板温度等辅助信息。
 
 ## 安装
 
-把仓库目录放到 Codex skills 目录下：
+把仓库 clone 到任意位置，然后把需要使用的 skill 目录复制或软链接到 `~/.codex/skills/`。
 
 ```bash
+git clone https://github.com/tsetsugekka/codex-market-skills.git
 mkdir -p ~/.codex/skills
-git clone https://github.com/tsetsugekka/codex-market-calendar-google.git ~/.codex/skills/market-calendar-google
+ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
+ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ```
 
-重启 Codex 或开启新会话后，skill 会被自动发现。
+也可以只安装其中一个 skill。
 
 ## 示例请求
 
@@ -37,68 +49,33 @@ git clone https://github.com/tsetsugekka/codex-market-calendar-google.git ~/.cod
 ```
 
 ```text
-用这个 CSV 里的关注顺序，整理下周美股财报日历。
+分析一下 6758 今天异动原因。
 ```
-
-## 财报日历规则
-
-### 美股
-
-- 标题格式：
 
 ```text
-🇺🇸 ER | TICKER TICKER TICKER
+看一下 6217 是新闻驱动还是掲示板思惑。
 ```
 
-- 美股盘前：按美东 `08:30` 换算到日本时间，持续 30 分钟。
-- 美股盘后：按美东 `16:00` 换算到日本时间，持续 30 分钟。
-- 自动处理美国夏令时/冬令时；夏令时通常对应日本时间 `20:30` / 次日 `05:00`，冬令时通常对应 `22:30` / 次日 `06:00`。
-- 标题只放重点 ticker。
-- 详情保留该时段全部 ticker。
-- 详情用中文写重点看点，不写“解析来源”、本地文件路径，也不重复标题和日历时间已经表达的信息。
-- 详情项目符号用 `・`，不要用行首 `-`，避免 Google Calendar 连接器把它保存成 `\-`。
+## 安全说明
 
-### 日股
+- `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
+- `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
+- 不要把个人关注列表、凭据、`.env`、运行缓存或私有输出提交到本仓库。
 
-- 默认优先使用 SBI 证券日股决算日历；SBI 后台按日期返回当天全量 JSONP，通常不需要翻页。
-- 如果用户提供日股 CSV，只加入 CSV 命中的股票，并用 CSV 顺序决定优先级。
-- 如果用户没有提供日股关注列表，AI 只挑重要股票，不能把全部日股财报都加进日历。
-- 标题格式：
+## 仓库结构
 
 ```text
-🇯🇵決算｜会社名、会社名、会社名
+skills/
+  market-calendar-google/
+    SKILL.md
+    agents/openai.yaml
+  jp-stock-move-reason/
+    SKILL.md
+    scripts/stock_move_sources.py
 ```
 
-- `決算｜` 后面写股票名字简称，不写数字代码。
-- 每 30 分钟一个分区，`:00-:29` 和 `:30-:59` 分开；同一分区多只股票只写一个日程。
-- 日股财报日程持续时间为 0 分钟。
-- 没有具体时刻的股票放在当天日本时间 `08:00`。
-- 详情只写有用信息，例如：
+## 语言
 
-```text
-具体时刻：
-・ＴＯＷＡ（6315，15:30）
-
-重点看点：
-・ＴＯＷＡ：半导体封装设备，关注先进封装、HBM/AI 订单和出货节奏。
-```
-
-- 不写“时间分区”“标题重点”“本分区全部财报”等重复信息。
-- 不机械列出 `本決算`、预想、共识；只有在它们对判断有帮助时才写进看点。
-
-## 财经事件规则
-
-- 四星以上、有具体发布时间的事件才默认写入日历。
-- 数据发布类事件持续时间为 0 分钟。
-- 讲话/发布会类事件持续时间为 30 分钟。
-- 详情包含：
-  - 重要度
-  - 预期/前值
-  - 高于预期的影响
-  - 低于预期的影响
-- 影响尽量写清楚利多/利空对象，例如美元、美债收益率、纳指、成长股、黄金、加密、中概、日元、日本银行股等。
-- 详情不重复标题和日历时间已经表达的信息；不写“事件：xxx”“类型：xxx”这类低信息量字段。
-
-## 备注
-
-这个 skill 默认不使用 X，因为 X 经常需要登录或额外浏览器权限。默认优先使用 Reddit `r/EarningsWhisper`、Earnings Whispers 官网日历，以及其他可验证来源交叉确认。
+- 中文：`README.md`
+- 日本語：`README.ja.md`
+- English: `README.en.md`
