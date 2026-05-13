@@ -42,8 +42,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 适用场景：
 
-- 分析 BA、MP、TEL、MRVL、SLV、SPY、QQQ、`.SPX`/SPXW 等的 gamma 结构。
-- 把 SPY/ES/CFD 盘面换算成 SPX 关键位，判断盘中支撑、阻力、修复位和失效位。
+- 分析普通美股或美股 ETF 的期权 gamma 结构。
+- 分析 `.SPX`/SPXW 指数期权结构；如果拿不到指数实时行情或期权链，则用 SPY 期权、ES/CFD 或用户提供的指数锚进行换算并明确说明。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用于评估回本、止盈或止损点。
 - 需要时生成本地 HTML gamma 报告；快速盘中问题可以只输出文字结论。
 
@@ -97,7 +97,7 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
-查一下 BA 的 gamma，阻力位和这周可能去的位置。
+查一下这只美股的 gamma，阻力位和这周可能去的位置。
 ```
 
 ```text

@@ -4,16 +4,16 @@
 
 ## 能做什么
 
-- 分析 BA、MP、TEL、MRVL、SLV、SPY、QQQ、`.SPX`/SPXW 等的 gamma 结构。
+- 分析普通美股或美股 ETF 的期权 gamma 结构。
+- 分析 `.SPX`/SPXW 指数期权结构；如果拿不到指数实时行情或期权链，则用 SPY 期权、ES/CFD 或用户提供的指数锚进行换算并明确说明。
 - 识别正 gamma wall、负 gamma pit、gamma flip、pin/阻力/支撑区域。
-- 在 SPX 盘中分析里，把 SPY、ES 或 CFD 水准换算成 SPX 等效点位。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用来评估回本、止盈、止损或是否值得继续拿。
 - 需要时生成本地 HTML 报告；盘中快问可以只输出文字结论。
 
 ## 典型请求
 
 ```text
-查一下 BA 的 gamma，阻力位和这周可能去的位置。
+查一下这只美股的 gamma，阻力位和这周可能去的位置。
 ```
 
 ```text

@@ -1,6 +1,6 @@
 ---
 name: us-stock-gamma-moomoo
-description: Analyze US stock option gamma exposure with moomoo OpenD. Use when the user asks to check a US stock's gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, or wants a web report for tickers such as BA, MP, TSLA, NVDA, SPY, QQQ, .SPX/SPXW. Produces plain-language conclusions plus a local HTML report using moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price.
+description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, or a web report. Produces plain-language conclusions plus a local HTML report using moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price.
 metadata:
   version: 0.1.3
 ---

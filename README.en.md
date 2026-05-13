@@ -42,8 +42,8 @@ Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/G
 
 Use it to:
 
-- Analyze gamma structure for BA, MP, TEL, MRVL, SLV, SPY, QQQ, `.SPX`/SPXW, and similar names.
-- Convert SPY/ES/CFD context into SPX-equivalent levels for intraday support, resistance, repair, and invalidation zones.
+- Analyze option gamma structure for ordinary US stocks or US-listed ETFs.
+- Analyze `.SPX`/SPXW index-option structure; when direct index data or chains are unavailable, use SPY options, ES/CFD, or a user-provided index anchor for conversion and state the proxy clearly.
 - Build time-by-underlying theoretical value tables for 0DTE calls/puts to evaluate recovery, take-profit, or stop levels.
 - Generate a local HTML gamma report when useful, or answer quickly in chat for fast intraday questions.
 
@@ -97,7 +97,7 @@ Analyze whether 300750 is moving on confirmed announcements or short-term theme 
 ```
 
 ```text
-Check BA gamma and identify resistance plus the most likely levels this week.
+Check this US stock's gamma and identify resistance plus the most likely levels this week.
 ```
 
 ```text

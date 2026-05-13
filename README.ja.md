@@ -42,8 +42,8 @@ moomoo OpenD から米国株・米国オプションデータを取得し、Code
 
 主な用途：
 
-- BA、MP、TEL、MRVL、SLV、SPY、QQQ、`.SPX`/SPXW などの gamma 構造を分析する。
-- SPY/ES/CFD の水準を SPX 相当へ換算し、日中の支持、抵抗、修復水準、無効化水準を判断する。
+- 通常の米国株または米国 ETF のオプション gamma 構造を分析する。
+- `.SPX`/SPXW の指数オプション構造を分析する。指数データやチェーンが直接取れない場合は、SPY オプション、ES/CFD、またはユーザー提供の指数アンカーで換算し、プロキシを明示する。
 - 0DTE call/put について、時間 x 原資産価格の理論価値表を作り、回復、利確、損切り水準を検討する。
 - 必要に応じてローカル HTML gamma レポートを生成し、急ぎの日中質問ではチャットだけで結論を返す。
 
@@ -97,7 +97,7 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
-BA の gamma を見て、抵抗帯と今週行きやすい水準を出して。
+この米国株の gamma を見て、抵抗帯と今週行きやすい水準を出して。
 ```
 
 ```text
