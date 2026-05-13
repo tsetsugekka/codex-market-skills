@@ -2,8 +2,6 @@
 
 Codex Market Skills は、取引、投資リサーチ、市場カレンダー管理のための Codex skills 集です。もともとは `market-calendar-google` だけのプロジェクトでしたが、現在は複数の市場関連 skill を同じ GitHub リポジトリで管理する構成に変更しています。
 
-このリポジトリが役に立った場合は、[Support](SUPPORT.md) もご覧ください。
-
 ## 含まれる skills
 
 ### [`market-calendar-google`](docs/skills/market-calendar-google.md)
