@@ -2,7 +2,7 @@
 
 `jp-stock-move-reason` 是一个用于 Codex 的日本股票异动解析 skill。它针对用户输入的日股代码，从 Yahoo Finance、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻和公开指标中收集证据，再由 Codex 归纳可能的上涨、下跌或放量原因。
 
-这个目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本 `README.md` 是给 GitHub 用户阅读的公开说明。
+skill 目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本文档是给 GitHub 用户阅读的公开说明。
 
 ## 能做什么
 
@@ -51,7 +51,7 @@ python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 6758 --format 
 
 ## 经验模块
 
-`EXPERIENCE.md` 用来保存可复用的分析经验，例如财报反应、预期差、估值和掲示板情绪的判断规则。Codex 默认只读取其中的 `Active Playbook`、`Compression Protocol` 和 `Conversation Learning Protocol`，避免历史经验越来越长后拖慢每次分析。
+`skills/jp-stock-move-reason/references/experience.md` 用来保存可复用的分析经验，例如财报反应、预期差、估值和掲示板情绪的判断规则。Codex 默认只读取其中的 `Active Playbook`、`Compression Protocol` 和 `Conversation Learning Protocol`，避免历史经验越来越长后拖慢每次分析。
 
 如果用户围绕同一只股票连续追加信息、质疑前次判断或讨论遗漏点，Codex 会在必要时把暴露出的可复用分析失误自动总结进经验模块。适用于 A 股和日股的经验会同步更新两边；只适合日股市场结构或数据源的经验才只写入本目录。一次性的股票事实和未经证实的思惑不应写入经验模块。
 

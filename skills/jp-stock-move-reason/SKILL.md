@@ -13,7 +13,7 @@ The bundled script is safe to keep in a public repository: it uses only public w
 
 ## Workflow
 
-1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, 掲示板 sentiment, theme leadership, peer follow-through, and whether the stock is a leader, follower, defensive alternative, old-leader rebound, or noise.
+1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, 掲示板 sentiment, theme leadership, peer follow-through, and whether the stock is a leader, follower, defensive alternative, old-leader rebound, or noise.
 
 2. Run the collector script from the repo root:
 
@@ -40,7 +40,7 @@ Useful options:
 
 5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
 
-6. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both Japanese stocks and A-shares, update both stock-skill `EXPERIENCE.md` files; if it is specific to Japanese stocks, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
+6. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both Japanese stocks and A-shares, update both stock-skill `references/experience.md` files; if it is specific to Japanese stocks, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## Output Style
 
@@ -63,7 +63,7 @@ If the evidence is weak, say so plainly and use wording like `思惑`, `期待`,
 When the user asks for `合理估值`, `目标价`, `估值`, `贵不贵`, `空间`, `fair value`, or similar:
 
 - Still collect current quote/news materials first, then add financial guidance, EPS/share-count, capital policy, and peer/sector context when available.
-- Use the `Reasonable Valuation Framework` from `EXPERIENCE.md`.
+- Use the `Reasonable Valuation Framework` from `references/experience.md`.
 - Provide scenario ranges rather than one exact target: conservative / base / bull.
 - State the anchors used, such as forward EPS/PER, operating or recurring profit, ROE/PBR, EV/EBITDA, orders/backlog, buyback/CB dilution, and peer multiples.
 - Explicitly say what the current price already prices in, what must happen to justify upside, and what would invalidate the valuation.

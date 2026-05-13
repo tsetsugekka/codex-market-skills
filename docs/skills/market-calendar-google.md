@@ -2,7 +2,7 @@
 
 `market-calendar-google` 是一个用于 Codex 的市场日历 skill。它把美股财报、日股财报、中美日宏观数据、央行事件、美债拍卖和其他重要市场事件整理成 Google Calendar 日程。
 
-这个目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本 `README.md` 是给 GitHub 用户阅读的公开说明。
+skill 目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本文档是给 GitHub 用户阅读的公开说明。
 
 ## 能做什么
 

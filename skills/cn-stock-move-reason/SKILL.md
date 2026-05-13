@@ -15,7 +15,7 @@ The skill accepts one stock at a time. It may also collect broad market context 
 
 ## Workflow
 
-1. Read `EXPERIENCE.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise.
+1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise.
 
 2. Run the collector script from the repository root:
 
@@ -41,7 +41,7 @@ Useful options:
 
 5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
 
-6. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both A-shares and Japanese stocks, update both stock-skill `EXPERIENCE.md` files; if it is specific to A-shares, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
+6. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both A-shares and Japanese stocks, update both stock-skill `references/experience.md` files; if it is specific to A-shares, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## A-share Emotion Cycle
 
@@ -62,7 +62,7 @@ Useful loop: `冰点 -> 修复/潜伏 -> 启动 -> 加速 -> 高潮 -> 高位分
 ## Reading News And Emotion
 
 - Separate `confirmed catalyst` from `market imagination`. A confirmed order, policy, earnings beat, regulatory approval, or buyback is stronger than a forum narrative.
-- Use the emotion-structure checklist from `EXPERIENCE.md`: classify market phase, main-line versus defensive bucket, capital return frequency, breadth/赚钱效应, first healthy divergence versus high-level divergence, institution-style trend versus 游资PK, and whether a rebound is new leadership or old-leader exit liquidity.
+- Use the emotion-structure checklist from `references/experience.md`: classify market phase, main-line versus defensive bucket, capital return frequency, breadth/赚钱效应, first healthy divergence versus high-level divergence, institution-style trend versus 游资PK, and whether a rebound is new leadership or old-leader exit liquidity.
 - Decide whether the stock is an `情绪票` or a `趋势票`:
   - 情绪票: topic-driven, high volatility, limit-up relay, fast climax/retreat.
   - 趋势票: supported by industry cycle, earnings, policy, or institutional logic; slower but more durable.
@@ -87,7 +87,7 @@ If evidence is weak, say so plainly and use wording like `思惑`, `低信息量
 When the user asks for `合理估值`, `目标价`, `估值`, `贵不贵`, `空间`, `fair value`, or similar:
 
 - Still collect current quote/news/公告/股吧/market-context materials first, then add financial guidance, EPS/share-count, capital policy, and peer/sector context when available.
-- Use the `Reasonable Valuation Framework` from `EXPERIENCE.md`.
+- Use the `Reasonable Valuation Framework` from `references/experience.md`.
 - Provide scenario ranges rather than one exact target: conservative / base / bull.
 - State the anchors used, such as forward EPS/PE, operating profit, ROE/PB, EV/EBITDA, orders/backlog, buyback/convertible bond dilution, and peer multiples.
 - Explicitly separate fundamental fair value from A-share emotion-cycle premium/discount.

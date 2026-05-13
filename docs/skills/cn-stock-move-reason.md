@@ -2,7 +2,7 @@
 
 `cn-stock-move-reason` 是一个用于 Codex 的 A 股异动解析 skill。它针对用户输入的单只 A 股代码，从东方财富公开行情、公告、股吧/资讯帖，以及搜狐指数/板块页面、A 股涨跌家数背景中收集证据，再由 Codex 分析个股异动原因和短线情绪周期位置。
 
-这个目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本 `README.md` 是给 GitHub 用户阅读的公开说明。
+skill 目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本文档是给 GitHub 用户阅读的公开说明。
 
 ## 能做什么
 
@@ -51,7 +51,7 @@ python3 skills/cn-stock-move-reason/scripts/stock_move_sources.py 600519 --forma
 
 ## 经验模块
 
-`EXPERIENCE.md` 用来保存可复用的 A 股分析经验，例如确认催化、题材思惑、板块共振、股吧情绪和短线情绪周期的判断规则。Codex 默认只读取其中的 `Active Playbook`、`Compression Protocol` 和 `Conversation Learning Protocol`，避免历史经验越来越长后拖慢每次分析。
+`skills/cn-stock-move-reason/references/experience.md` 用来保存可复用的 A 股分析经验，例如确认催化、题材思惑、板块共振、股吧情绪和短线情绪周期的判断规则。Codex 默认只读取其中的 `Active Playbook`、`Compression Protocol` 和 `Conversation Learning Protocol`，避免历史经验越来越长后拖慢每次分析。
 
 如果用户围绕同一只股票连续追加信息、质疑前次判断或讨论遗漏点，Codex 会在必要时把暴露出的可复用分析失误自动总结进经验模块。适用于 A 股和日股的经验会同步更新两边；只适合 A 股市场结构或数据源的经验才只写入本目录。一次性的股票事实和未经证实的思惑不应写入经验模块。
 

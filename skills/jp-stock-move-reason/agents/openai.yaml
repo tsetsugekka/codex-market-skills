@@ -1,0 +1,4 @@
+interface:
+  display_name: "JP Stock Move Reason"
+  short_description: "用日本新闻、Yahoo掲示板和指标分析日股异动。"
+  default_prompt: "分析这只日股今天为什么异动，并区分新闻催化、掲示板思惑和主题跟随。"

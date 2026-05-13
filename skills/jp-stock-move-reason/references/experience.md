@@ -77,7 +77,7 @@ Keep this file readable by compressing before it becomes too large.
 Use this protocol after multi-turn discussion about the same stock.
 
 - Auto-update experience only when the follow-up reveals a reusable lesson, such as a missed catalyst type, wrong source priority, poor expectation-gap framing, bad valuation weighting, overconfidence, or a recurring output weakness.
-- Decide scope before writing: if the lesson applies to both Japanese stocks and A-shares, update both stock-skill `EXPERIENCE.md` files; if it relies on Japan-specific sources, rules, or market structure, update only this file.
+- Decide scope before writing: if the lesson applies to both Japanese stocks and A-shares, update both stock-skill `references/experience.md` files; if it relies on Japan-specific sources, rules, or market structure, update only this file.
 - Do not update for one-off ticker facts, ordinary user preferences, speculative claims without support, or information that is only useful for the current stock.
 - Convert the correction into a general rule before writing it. Prefer one concise bullet in `Active Playbook`; use `Archive` only for distinct dated examples that still teach the rule. The ticker may appear only as a compact example in `Archive`, never as the center of the active rule.
 - If the lesson came from a user challenge, capture the analytical failure mode, not the user's private wording. Example: write "When 掲示板 focuses on consensus fear, compare the result against that fear explicitly", not a transcript of the exchange.

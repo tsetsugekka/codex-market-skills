@@ -1,0 +1,4 @@
+interface:
+  display_name: "US Stock Gamma Moomoo"
+  short_description: "用 moomoo OpenD 分析美股期权 gamma、SPX 结构和 0DTE 情景表。"
+  default_prompt: "用 moomoo OpenD 分析这只美股或 SPX/SPY 的 gamma 结构，并给出关键点位和操作框架。"

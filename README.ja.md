@@ -4,7 +4,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 
 ## 含まれる skills
 
-### [`market-calendar-google`](skills/market-calendar-google/README.md)
+### [`market-calendar-google`](docs/skills/market-calendar-google.md)
 
 米国株決算、日本株決算、中国・米国・日本のマクロ指標、中央銀行イベント、国債入札、その他の重要市場イベントを整理し、ユーザーのルールに従って Google Calendar に追加します。
 
@@ -15,7 +15,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 中国・米国・日本の重要度が高い経済イベントを整理する。
 - 日本時間で Google Calendar に登録し、重複を避ける。
 
-### [`jp-stock-move-reason`](skills/jp-stock-move-reason/README.md)
+### [`jp-stock-move-reason`](docs/skills/jp-stock-move-reason.md)
 
 入力された日本株コードについて、Yahoo Finance のリアルタイム株価欄、Yahoo 掲示板、Yahoo/Kabutan/Traders のニュース、基本指標を収集し、Codex が株価変動理由を分析するための材料を作ります。この skill は Gemini などの LLM API を呼び出さず、認証情報も読みません。
 
@@ -25,7 +25,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - ニュースで確認できる材料と、掲示板上の思惑を分けて見る。
 - 現在の騰落率、時価総額、PER/PBR、信用倍率、掲示板の温度感を確認する。
 
-### [`cn-stock-move-reason`](skills/cn-stock-move-reason/README.md)
+### [`cn-stock-move-reason`](docs/skills/cn-stock-move-reason.md)
 
 入力された単一の A 株コードについて、Eastmoney の公開株価データ、公告、股吧/资讯投稿を収集し、Sohu の指数・セクター情報と A 株の騰落銘柄数も合わせて、Codex が株価変動理由、市場/セクター/個別株の共振、短期センチメントサイクルを分析するための材料を作ります。この skill は Gemini などの LLM API を呼び出さず、認証情報も読みません。
 
@@ -36,7 +36,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 主要指数、業種/テーマ板、騰落銘柄数から、市場全体の共振、セクター主導、個別材料主導を切り分ける。
 - 冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮の七段階で短期情緒を確認する。
 
-### [`us-stock-gamma-moomoo`](skills/us-stock-gamma-moomoo/SKILL.md)
+### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 moomoo OpenD から米国株・米国オプションデータを取得し、Codex が gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES の日中構造、0DTE オプションのシナリオ価格表を分析するための skill です。ローカルで moomoo OpenD が起動している必要があり、環境がない場合は先にインストールまたは起動を案内します。
 
@@ -106,24 +106,27 @@ SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
 skills/
   market-calendar-google/
     SKILL.md
-    README.md
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
-    EXPERIENCE.md
-    README.md
+    references/experience.md
     scripts/stock_move_sources.py
   cn-stock-move-reason/
     SKILL.md
-    EXPERIENCE.md
-    README.md
     agents/openai.yaml
+    references/experience.md
     scripts/stock_move_sources.py
   us-stock-gamma-moomoo/
     SKILL.md
     references/
     scripts/gamma_report.py
     scripts/option_scenario_table.py
+docs/
+  skills/
+    market-calendar-google.md
+    jp-stock-move-reason.md
+    cn-stock-move-reason.md
+    us-stock-gamma-moomoo.md
 ```
 
 ## 言語

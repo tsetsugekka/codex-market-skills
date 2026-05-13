@@ -4,7 +4,7 @@ Codex Market Skills is a collection of Codex skills for trading, investment rese
 
 ## Included Skills
 
-### [`market-calendar-google`](skills/market-calendar-google/README.md)
+### [`market-calendar-google`](docs/skills/market-calendar-google.md)
 
 Organizes US earnings, Japan earnings, China/US/Japan macro data, central-bank events, Treasury auctions, and other market-moving events, then writes them to Google Calendar according to the user's rules.
 
@@ -15,7 +15,7 @@ Use it to:
 - Build a high-importance China/US/Japan market-event calendar.
 - Add events in Japan time while avoiding duplicates.
 
-### [`jp-stock-move-reason`](skills/jp-stock-move-reason/README.md)
+### [`jp-stock-move-reason`](docs/skills/jp-stock-move-reason.md)
 
 Collects evidence for a user-provided Japanese stock code from Yahoo Finance's live quote page, Yahoo message board, Yahoo/Kabutan/Traders news, and basic stock metrics, then lets Codex analyze the likely reason for the move. This skill does not call Gemini or any other LLM API, and it does not read credentials.
 
@@ -25,7 +25,7 @@ Use it to:
 - Separate confirmed news catalysts from Yahoo message-board speculation.
 - Inspect current change, market cap, PER/PBR, margin ratio, and message-board heat.
 
-### [`cn-stock-move-reason`](skills/cn-stock-move-reason/README.md)
+### [`cn-stock-move-reason`](docs/skills/cn-stock-move-reason.md)
 
 Collects evidence for one user-provided A-share stock code from Eastmoney public quote data, announcements, and guba/news-like posts, then adds Sohu index/sector context and A-share advance/decline counts so Codex can analyze the likely move reason, market/sector/stock-level resonance, and short-term sentiment-cycle position. This skill does not call Gemini or any other LLM API, and it does not read credentials.
 
@@ -36,7 +36,7 @@ Use it to:
 - Separate market-wide resonance, sector/concept leadership, and stock-specific catalysts using indexes, sector/concept boards, and advance/decline counts.
 - Classify the short-term emotion cycle: ice point, repair, launch, acceleration, climax, or retreat.
 
-### [`us-stock-gamma-moomoo`](skills/us-stock-gamma-moomoo/SKILL.md)
+### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/GEX, gamma walls, gamma flip levels, SPX/SPY/ES intraday structure, and 0DTE option scenario value tables. This skill requires moomoo OpenD to be running locally; if the environment is missing, guide the user to install or launch OpenD first.
 
@@ -106,24 +106,27 @@ Price this SPXW 0DTE 7370C across different times and SPX levels.
 skills/
   market-calendar-google/
     SKILL.md
-    README.md
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
-    EXPERIENCE.md
-    README.md
+    references/experience.md
     scripts/stock_move_sources.py
   cn-stock-move-reason/
     SKILL.md
-    EXPERIENCE.md
-    README.md
     agents/openai.yaml
+    references/experience.md
     scripts/stock_move_sources.py
   us-stock-gamma-moomoo/
     SKILL.md
     references/
     scripts/gamma_report.py
     scripts/option_scenario_table.py
+docs/
+  skills/
+    market-calendar-google.md
+    jp-stock-move-reason.md
+    cn-stock-move-reason.md
+    us-stock-gamma-moomoo.md
 ```
 
 ## Languages
