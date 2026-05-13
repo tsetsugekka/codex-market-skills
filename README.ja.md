@@ -36,6 +36,17 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 主要指数、業種/テーマ板、騰落銘柄数から、市場全体の共振、セクター主導、個別材料主導を切り分ける。
 - 冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮の七段階で短期情緒を確認する。
 
+### [`us-stock-gamma-moomoo`](skills/us-stock-gamma-moomoo/SKILL.md)
+
+moomoo OpenD から米国株・米国オプションデータを取得し、Codex が gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES の日中構造、0DTE オプションのシナリオ価格表を分析するための skill です。ローカルで moomoo OpenD が起動している必要があり、環境がない場合は先にインストールまたは起動を案内します。
+
+主な用途：
+
+- BA、MP、TEL、MRVL、SLV、SPY、QQQ、`.SPX`/SPXW などの gamma 構造を分析する。
+- SPY/ES/CFD の水準を SPX 相当へ換算し、日中の支持、抵抗、修復水準、無効化水準を判断する。
+- 0DTE call/put について、時間 x 原資産価格の理論価値表を作り、回復、利確、損切り水準を検討する。
+- 必要に応じてローカル HTML gamma レポートを生成し、急ぎの日中質問ではチャットだけで結論を返す。
+
 ## インストール
 
 リポジトリを任意の場所に clone し、使いたい skill ディレクトリを `~/.codex/skills/` にコピーまたはシンボリックリンクします。
@@ -46,6 +57,7 @@ mkdir -p ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
+ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ```
 
 必要な skill だけをインストールしても構いません。
@@ -72,11 +84,20 @@ ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/c
 300750 は公告材料なのか短期テーマ情緒なのか分析して。
 ```
 
+```text
+BA の gamma を見て、抵抗帯と今週行きやすい水準を出して。
+```
+
+```text
+SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
+```
+
 ## セキュリティ
 
 - `market-calendar-google` は、ユーザーが明示的に依頼した場合に Google Calendar コネクタで予定を作成・更新します。
 - `jp-stock-move-reason` は公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
 - `cn-stock-move-reason` は Eastmoney、Sohu 証券などの公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
+- `us-stock-gamma-moomoo` はローカルの moomoo OpenD の行情インターフェースを使い、取引ロック解除 API は呼び出しません。個人口座情報、OpenD ログ、スクリーンショット、私的な行情出力はコミットしないでください。
 - 個人のウォッチリスト、認証情報、`.env`、実行キャッシュ、私的な出力はこのリポジトリにコミットしないでください。
 
 ## リポジトリ構成
@@ -98,6 +119,11 @@ skills/
     README.md
     agents/openai.yaml
     scripts/stock_move_sources.py
+  us-stock-gamma-moomoo/
+    SKILL.md
+    references/
+    scripts/gamma_report.py
+    scripts/option_scenario_table.py
 ```
 
 ## 言語

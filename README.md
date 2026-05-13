@@ -36,6 +36,17 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 结合大盘指数、行业/概念板块和涨跌家数，判断是市场共振、板块主线，还是个股独立催化。
 - 按冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮判断短线情绪阶段。
 
+### [`us-stock-gamma-moomoo`](skills/us-stock-gamma-moomoo/SKILL.md)
+
+通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
+
+适用场景：
+
+- 分析 BA、MP、TEL、MRVL、SLV、SPY、QQQ、`.SPX`/SPXW 等的 gamma 结构。
+- 把 SPY/ES/CFD 盘面换算成 SPX 关键位，判断盘中支撑、阻力、修复位和失效位。
+- 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用于评估回本、止盈或止损点。
+- 需要时生成本地 HTML gamma 报告；快速盘中问题可以只输出文字结论。
+
 ## 安装
 
 把仓库 clone 到任意位置，然后把需要使用的 skill 目录复制或软链接到 `~/.codex/skills/`。
@@ -46,6 +57,7 @@ mkdir -p ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
+ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ```
 
 也可以只安装其中一个 skill。
@@ -72,11 +84,20 @@ ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/c
 分析一下 300750 今天是公告驱动还是情绪题材。
 ```
 
+```text
+查一下 BA 的 gamma，阻力位和这周可能去的位置。
+```
+
+```text
+算一下 SPXW 0DTE 7370C 在不同时间和 SPX 点位下的理论价值。
+```
+
 ## 安全说明
 
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
+- `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口，不应提交个人账号、OpenD 日志、截图或私有行情输出。
 - 不要把个人关注列表、凭据、`.env`、运行缓存或私有输出提交到本仓库。
 
 ## 仓库结构
@@ -98,6 +119,11 @@ skills/
     README.md
     agents/openai.yaml
     scripts/stock_move_sources.py
+  us-stock-gamma-moomoo/
+    SKILL.md
+    references/
+    scripts/gamma_report.py
+    scripts/option_scenario_table.py
 ```
 
 ## 语言

@@ -36,6 +36,17 @@ Use it to:
 - Separate market-wide resonance, sector/concept leadership, and stock-specific catalysts using indexes, sector/concept boards, and advance/decline counts.
 - Classify the short-term emotion cycle: ice point, repair, launch, acceleration, climax, or retreat.
 
+### [`us-stock-gamma-moomoo`](skills/us-stock-gamma-moomoo/SKILL.md)
+
+Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/GEX, gamma walls, gamma flip levels, SPX/SPY/ES intraday structure, and 0DTE option scenario value tables. This skill requires moomoo OpenD to be running locally; if the environment is missing, guide the user to install or launch OpenD first.
+
+Use it to:
+
+- Analyze gamma structure for BA, MP, TEL, MRVL, SLV, SPY, QQQ, `.SPX`/SPXW, and similar names.
+- Convert SPY/ES/CFD context into SPX-equivalent levels for intraday support, resistance, repair, and invalidation zones.
+- Build time-by-underlying theoretical value tables for 0DTE calls/puts to evaluate recovery, take-profit, or stop levels.
+- Generate a local HTML gamma report when useful, or answer quickly in chat for fast intraday questions.
+
 ## Installation
 
 Clone the repository anywhere, then copy or symlink the skills you want into `~/.codex/skills/`.
@@ -46,6 +57,7 @@ mkdir -p ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
+ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ```
 
 You can install only one skill if that is all you need.
@@ -72,11 +84,20 @@ Check whether 6217 is moving on confirmed news or message-board speculation.
 Analyze whether 300750 is moving on confirmed announcements or short-term theme emotion.
 ```
 
+```text
+Check BA gamma and identify resistance plus the most likely levels this week.
+```
+
+```text
+Price this SPXW 0DTE 7370C across different times and SPX levels.
+```
+
 ## Safety Notes
 
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
+- `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface, does not call trade-unlock APIs, and should not commit personal account data, OpenD logs, screenshots, or private quote outputs.
 - Do not commit personal watchlists, credentials, `.env` files, runtime caches, or private outputs to this repository.
 
 ## Repository Layout
@@ -98,6 +119,11 @@ skills/
     README.md
     agents/openai.yaml
     scripts/stock_move_sources.py
+  us-stock-gamma-moomoo/
+    SKILL.md
+    references/
+    scripts/gamma_report.py
+    scripts/option_scenario_table.py
 ```
 
 ## Languages
