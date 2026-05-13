@@ -47,6 +47,17 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用于评估回本、止盈或止损点。
 - 需要时生成本地 HTML gamma 报告；快速盘中问题可以只输出文字结论。
 
+### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
+
+针对美股、日股和 A 股做技术分析，重点看趋势结构、支撑压力、量价、KDJ/MACD/RSI、Vegas 通道、分时确认，以及“能不能到某个价位”的盘中判断。
+
+适用场景：
+
+- 判断当前走势是强趋势延续、空中加油候选、回踩确认、冲高回落、高位分歧，还是破位反抽。
+- 区分 touch、break、tradable hold，避免把一根影线误判为有效突破。
+- 读取 moomoo/Yahoo/券商图表或截图，给出当前读数、技术结构、量价动能和下一验证点。
+- 与日股/A股异动原因或美股 gamma skill 配合，判断催化是否被图形确认。
+
 ## 安装
 
 把仓库 clone 到任意位置，然后把需要使用的 skill 目录复制或软链接到 `~/.codex/skills/`。
@@ -58,6 +69,7 @@ ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
+ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
 ```
 
 也可以只安装其中一个 skill。
@@ -92,12 +104,18 @@ ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/
 算一下 SPXW 0DTE 7370C 在不同时间和 SPX 点位下的理论价值。
 ```
 
+```text
+这个股票现在技术面怎么看，压力位和支撑位在哪里？
+```
+
 ## 安全说明
 
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
-- `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口，不应提交个人账号、OpenD 日志、截图或私有行情输出。
+- `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖本地 `Stocks` 文件夹，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
+- `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖本地 `Stocks` 文件夹，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
+- 如果要结合个人学习资料，请在公开仓库外建立私有 RAG/知识库；只把抽象后的通用经验写回 skill。
 - 不要把个人关注列表、凭据、`.env`、运行缓存或私有输出提交到本仓库。
 
 ## 仓库结构
@@ -121,12 +139,17 @@ skills/
     references/
     scripts/gamma_report.py
     scripts/option_scenario_table.py
+  stock-technical-analysis/
+    SKILL.md
+    agents/openai.yaml
+    references/
 docs/
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md
     cn-stock-move-reason.md
     us-stock-gamma-moomoo.md
+    stock-technical-analysis.md
 ```
 
 ## 语言

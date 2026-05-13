@@ -2,12 +2,14 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock option gamma exposure with moomoo OpenD. Use when the user asks to check a US stock's gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, or wants a web report for tickers such as BA, MP, TSLA, NVDA, SPY, QQQ, .SPX/SPXW. Produces plain-language conclusions plus a local HTML report using moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price.
 metadata:
-  version: 0.1.2
+  version: 0.1.3
 ---
 
 # US Stock Gamma With moomoo
 
 Use this skill to turn moomoo OpenD option data into an actionable gamma map and a plain-language trading note.
+
+This public-safe skill is self-contained. It does not depend on a local `Stocks` folder or private research files during normal analysis. It may include distilled reusable experience, but must not store private source paths, personal positions, original strategy names, private person names/handles, proprietary labels, or private document titles. Generic market concepts such as gamma, GEX, dealer hedging, FVG, KDJ, MACD, RSI, VWAP, Vegas, and 老鸭头 may be retained.
 
 ## Environment Check
 
@@ -52,6 +54,15 @@ Read extra references only when the request needs them:
 - For `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmap, or intraday index judgment, read `references/spx-intraday.md`.
 - For short-dated option value tables, account-recovery option targets, or “what is this call/put worth if price reaches X by time Y”, read `references/option-scenario-tables.md`.
 
+## Optional User Knowledge Base
+
+Do not read local research folders by default. If a user wants to incorporate their own study materials, guide them to build a private RAG/knowledge base outside this public repository:
+
+- keep raw PDFs, screenshots, notes, and proprietary indicators in a private local folder or private vector store;
+- extract only reusable, public-safe rules into this skill when the user explicitly asks to update the skill;
+- strip private paths, account details, ticker-specific trade logs, original strategy names, private person names/handles, and unique document labels;
+- keep this skill functional even when that private RAG corpus is unavailable.
+
 ## Required Interpretation Style
 
 Write like a pre-market trading memo:
@@ -59,7 +70,7 @@ Write like a pre-market trading memo:
 1. **一句话**: where the stock is now and whether it is near a wall, support, or flip.
 2. **我会怎么做**: concrete scenario handling, e.g. “do not chase until it holds X”, “treat X-Y as chop”, “above Z opens next target”.
 3. **什么情况说明我错了**: exact invalidation levels.
-4. **怎么和策略2配合**: use gamma as the map, then confirm entries/exits with KDJ, MACD, MA144/Vegas, FVG, volume, and price action.
+4. **怎么和技术确认配合**: use gamma as the map, then confirm entries/exits with KDJ, MACD, MA144/Vegas, FVG, volume, and price action.
 
 Avoid only dumping tables. The user wants judgment, assumptions, and a clear action framework.
 

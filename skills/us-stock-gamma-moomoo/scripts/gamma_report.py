@@ -484,7 +484,7 @@ def render_html(data, a):
         core_take = simple_now
 
     strategy_take = (
-        "Gamma 只告诉我哪里容易卡住、哪里容易加速；真正进出场仍看策略2。"
+        "Gamma 只告诉我哪里容易卡住、哪里容易加速；真正进出场仍看技术确认和交易计划。"
         f"在 {wall_text} 附近，如果 KDJ 高位拐头、MACD 走弱或 FVG 被打回，我会把它看成冲高失败；"
         f"如果放量站稳 {wall_text}，再用 KDJ/MACD 确认是否能去 {next_wall_text}。"
     )
@@ -587,7 +587,7 @@ def render_html(data, a):
       <p>{html.escape(simple_action)}</p>
       <h3>什么情况说明我错了</h3>
       <p class="callout danger">{html.escape(simple_wrong)}</p>
-      <h3>怎么和策略2配合</h3>
+      <h3>怎么和技术确认配合</h3>
       <p>{html.escape(strategy_take)}</p>
 
       <h3>关键读数</h3>
@@ -602,7 +602,7 @@ def render_html(data, a):
         <div class="metric"><b>{a["j"]:.1f}</b><span>日线 KDJ J 值</span></div>
       </div>
 
-      <h3>策略2怎么用</h3>
+      <h3>技术确认怎么用</h3>
       <div class="pill-row">
         <span class="pill">240-250：先看阻力/钉扎</span>
         <span class="pill">站稳 250：再看 255/260</span>

@@ -47,6 +47,17 @@ Use it to:
 - Build time-by-underlying theoretical value tables for 0DTE calls/puts to evaluate recovery, take-profit, or stop levels.
 - Generate a local HTML gamma report when useful, or answer quickly in chat for fast intraday questions.
 
+### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
+
+Analyzes technical structure for US, Japanese, and A-share stocks, including intraday trend, support/resistance, volume-price behavior, KDJ/MACD/RSI, Vegas channels, chart reads, and whether a stock can reach a target level. This is a self-contained public-safe skill and does not depend on a local `Stocks` folder.
+
+Use it to:
+
+- Classify setups such as trend continuation, high-level consolidation, pullback confirmation, failed breakout, divergence, or breakdown rebound.
+- Distinguish touch, break, and tradable hold so one wick is not mistaken for a confirmed breakout.
+- Read moomoo/Yahoo/broker charts or screenshots and produce current read, structure, momentum, execution meaning, and next validation level.
+- Combine with move-reason or US gamma skills to judge whether the chart confirms or contradicts a catalyst.
+
 ## Installation
 
 Clone the repository anywhere, then copy or symlink the skills you want into `~/.codex/skills/`.
@@ -58,6 +69,7 @@ ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
+ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
 ```
 
 You can install only one skill if that is all you need.
@@ -92,12 +104,18 @@ Check BA gamma and identify resistance plus the most likely levels this week.
 Price this SPXW 0DTE 7370C across different times and SPX levels.
 ```
 
+```text
+Analyze this stock's technical setup, support, and resistance right now.
+```
+
 ## Safety Notes
 
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
-- `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface, does not call trade-unlock APIs, and should not commit personal account data, OpenD logs, screenshots, or private quote outputs.
+- `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on a local `Stocks` folder and should not commit personal account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
+- `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on a local `Stocks` folder and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
+- If personal study materials are useful, keep them in a private RAG/knowledge base outside this public repository and copy back only distilled generic rules.
 - Do not commit personal watchlists, credentials, `.env` files, runtime caches, or private outputs to this repository.
 
 ## Repository Layout
@@ -121,12 +139,17 @@ skills/
     references/
     scripts/gamma_report.py
     scripts/option_scenario_table.py
+  stock-technical-analysis/
+    SKILL.md
+    agents/openai.yaml
+    references/
 docs/
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md
     cn-stock-move-reason.md
     us-stock-gamma-moomoo.md
+    stock-technical-analysis.md
 ```
 
 ## Languages

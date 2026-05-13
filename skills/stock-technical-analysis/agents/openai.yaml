@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stock Technical Analysis"
+  short_description: "用技术结构、量价、均线和指标分析美股、日股、A股走势。"
+  default_prompt: "分析这只股票的技术结构、支撑压力、量价动能和关键确认/失效点。"
