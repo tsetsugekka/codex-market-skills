@@ -2,6 +2,8 @@
 
 Codex Market Skills is a collection of Codex skills for trading, investment research, and market-calendar workflows. The project originally contained only `market-calendar-google`; it is now organized as a multi-skill repository with separate, clearly scoped market workflows.
 
+If this repository is useful to you, see [Support](SUPPORT.md).
+
 ## Included Skills
 
 ### [`market-calendar-google`](docs/skills/market-calendar-google.md)
