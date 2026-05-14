@@ -17,6 +17,9 @@ Default timezone is `Asia/Tokyo`. Use the current date and timezone from the env
 
 ## Shared Rules
 
+- This skill depends on the `google-calendar:google-calendar` skill/connector whenever the user wants events written to Google Calendar.
+- When Calendar writing is requested, first ensure Google Calendar tools are available. If they are not already loaded, use `tool_search` with a query such as `Google Calendar search create event` to surface the Google Calendar tools before doing calendar work.
+- If Google Calendar tools still are not available, tell the user to connect/install or explicitly mention `[$google-calendar:google-calendar](/Users/tong/.codex/plugins/cache/openai-curated/google-calendar/1b89ff49/skills/google-calendar/SKILL.md)`, then stop before claiming events were written.
 - Use Google Calendar tools. Search the target week first to avoid duplicates before creating or updating events.
 - Preserve existing user-created calendar details unless the user asks to overwrite them.
 - Put a country flag at the start of titles when the event has a clear country:
