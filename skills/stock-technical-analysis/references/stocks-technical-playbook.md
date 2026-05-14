@@ -44,6 +44,13 @@ Intraday timing cues:
 - Around 13:15, the first afternoon lift should have volume; no volume often leads to pullback.
 - Around 14:50, a sudden late ramp can be fragile next day if unsupported by broader structure.
 
+Headline expectation gap:
+
+- For U.S. stocks with active news, compare `prior market expectation` versus `actual news`: expected outcome, actual outcome, whether it is above expectation, in line/landed, or below expectation. A positive headline can still pressure the stock if the market expected a larger number, faster timing, cleaner wording, or higher certainty.
+- If bullish news produces an early spike that fails below VWAP/short averages, loses the opening range, or prints lower highs with heavy volume, classify the setup as `sell-the-news / expectation gap` until the failed level is reclaimed with volume.
+- Apply the same framework to numeric and qualitative headlines. Numeric gaps include order size, guide, delivery pace, margins, and deal value. Qualitative gaps include management tone, regulatory language, approval certainty, timing, geopolitical wording, and whether the news solves the market's real concern.
+- Separate the fundamental read from the intraday tape: `positive for backlog/story` can coexist with `bearish intraday price action` when orders, deals, approvals, or political headlines do not immediately solve delivery, cash flow, margin, or execution concerns.
+
 ## 3. Moving Averages And Vegas Framework
 
 Use multiple timeframes. Do not let a 1-minute chart overrule a damaged 5-minute or daily structure.
@@ -275,6 +282,7 @@ Chart elements to read:
 - Volume: whether attack bars expand, pullback bars contract, and whether heavy volume fails to move price.
 - Moving averages/price bands: whether price is above/below the short average cluster, whether a reclaimed level becomes support, and whether price is stretched outside bands.
 - Momentum: KDJ, MACD, RSI, and VWAP-based RSI if visible. Treat high oscillators as heat warnings; do not override orderly higher lows in a strong trend.
+- News tape: for headline-driven U.S. stocks, compare the visible news with prior rumor/consensus and decide whether it is above expectation, in line/landed, or below expectation. Include qualitative tone and certainty, not only numbers. Note whether price accepts or rejects the news instead of assuming headline direction equals price direction.
 - Funding/order-flow panels: use large/small order flow, capital-flow charts, bid/ask quality, and sector/peer list as context, not as standalone proof.
 - Peer/sector watchlist: confirm whether same-theme leaders/followers are moving together or whether the stock is isolated.
 

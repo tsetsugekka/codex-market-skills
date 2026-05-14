@@ -9,6 +9,7 @@ Read this section before using the CN stock skill. Keep it compact and current.
 ### Current Core Rules
 
 - Separate confirmed catalysts from market imagination. Announcements, orders, earnings, regulatory approvals, and company filings outrank 股吧 narratives.
+- For every sharp move, explicitly compare `prior market expectation` versus `actual news`: what the market was pricing, what actually landed, whether it is above expectation, merely landed/in line, or below expectation. Apply this to numeric news such as orders, earnings, guidance, policy size, and buybacks, and to qualitative news such as wording strength, timing, certainty, regulatory tone, management confidence, and whether the announcement solves the market's real concern.
 - Judge the move in context: market breadth, sector rank, concept strength, and whether the stock is leading, following, or diverging from its sector.
 - Treat 股吧 as expectation-gap and emotion data, not as fact. High-read posts can reveal what the market is pricing, but ordinary posts are only sentiment.
 - For high-theme stocks, classify whether the stock is an `情绪票`, `趋势票`, or hybrid. Do not use the same risk rules for all three.
@@ -67,3 +68,4 @@ Use this protocol after multi-turn discussion about the same stock.
 ## Archive
 
 - 2026-05-11 从一份A股板块讨论转写稿中提炼了情绪结构规则；具体板块和个股观点已删除，只保留可复用的方法。
+- 2026-05-15 Added a generalized expectation-gap rule: compare prior expectation with actual numeric and qualitative news before explaining a sharp move, and treat forum/news heat as evidence of what was priced rather than proof of fact.

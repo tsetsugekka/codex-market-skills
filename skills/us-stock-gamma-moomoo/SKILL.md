@@ -74,6 +74,8 @@ Write like a pre-market trading memo:
 
 Avoid only dumping tables. The user wants judgment, assumptions, and a clear action framework.
 
+When news is driving the underlying or index, add an expectation-gap check before relying on the gamma map: `prior market expectation` -> `actual news` -> `above expectation / in line or merely landed / below expectation`. Apply this to numeric headlines such as orders, CPI/FOMC data, earnings, guidance, and ETF flows, and to qualitative headlines such as regulatory wording, geopolitical tone, management confidence, timing, certainty, and whether the news solves the market's real concern. Gamma explains likely hedging pressure after price moves; it does not by itself explain whether the headline was accepted or rejected.
+
 ## Gamma Reading Rules
 
 - `gamma wall`: a price where positive GEX is concentrated; price often slows, pins, or rejects there.

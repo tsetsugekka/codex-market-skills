@@ -62,6 +62,7 @@ Useful loop: `冰点 -> 修复/潜伏 -> 启动 -> 加速 -> 高潮 -> 高位分
 ## Reading News And Emotion
 
 - Separate `confirmed catalyst` from `market imagination`. A confirmed order, policy, earnings beat, regulatory approval, or buyback is stronger than a forum narrative.
+- For each meaningful catalyst, do an expectation-gap check: `市场原来预期什么` -> `实际消息落地什么` -> `超预期 / 符合预期或只是落地 / 不及预期`. This applies to numeric news such as orders, earnings, guidance, policy size, and buybacks, and to qualitative news such as wording strength, timing, certainty, regulatory tone, management confidence, and whether the news solves the market's real concern.
 - Use the emotion-structure checklist from `references/experience.md`: classify market phase, main-line versus defensive bucket, capital return frequency, breadth/赚钱效应, first healthy divergence versus high-level divergence, institution-style trend versus 游资PK, and whether a rebound is new leadership or old-leader exit liquidity.
 - Decide whether the stock is an `情绪票` or a `趋势票`:
   - 情绪票: topic-driven, high volatility, limit-up relay, fast climax/retreat.

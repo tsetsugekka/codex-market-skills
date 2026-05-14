@@ -58,6 +58,8 @@ When the user gives multiple stocks, write the five numbered sections separately
 
 If the evidence is weak, say so plainly and use wording like `思惑`, `期待`, `传闻`, or `确认待ち`. Do not invent catalysts absent from the collected news/comments.
 
+When explaining a catalyst, always check the expectation gap: `市场原来预期什么` -> `实际消息落地什么` -> `超预期 / 符合预期或只是落地 / 不及预期`. This applies to numeric news such as guidance, earnings, orders, dividends, and buybacks, and to qualitative news such as wording strength, timing, certainty, management confidence, regulatory tone, and whether the news solves the market's real concern.
+
 ## Valuation Requests
 
 When the user asks for `合理估值`, `目标价`, `估值`, `贵不贵`, `空间`, `fair value`, or similar:
