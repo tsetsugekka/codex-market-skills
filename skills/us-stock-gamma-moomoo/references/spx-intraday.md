@@ -13,7 +13,9 @@ Use this only for `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmaps, or intr
 
 ## SPY/ES Conversion
 
-- Prefer `.SPX` option chains from moomoo as `US..SPX` when available.
+- Prefer `.SPX` option chains from moomoo as `US..SPX` when available. Moomoo can reject `get_market_snapshot(["US..SPX"])` with an unsupported-index error while still returning `get_option_expiration_date("US..SPX")` and `get_option_chain("US..SPX")`.
+- Treat `SPX`, `SP500`, `S&P 500`, and `标普500` gamma requests as direct SPX-index-option work first. Use SPX/SPXW strikes directly; use SPY/ES conversion only when the SPX option chain itself is unavailable or permission-blocked.
+- For 0DTE intraday gamma, prefer PM-settled `SPXW` contracts. If the same date includes AM-settled monthly `SPX` contracts, exclude those AM contracts from the intraday pin/gamma map unless the user explicitly asks about AM settlement.
 - If using SPY options as a proxy, compute the same-day conversion ratio from simultaneous prices: `SPX_equiv = SPY_strike * (current_SPX_or_ES_anchor / current_SPY_price)`.
 - If using ES, state the futures basis explicitly. Do not carry yesterday's ratio into today.
 - If moomoo cannot provide ES due to permissions, accept user-provided ES/CFD screenshots as the anchor and disclose that limitation.
