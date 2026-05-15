@@ -152,6 +152,13 @@ Description:
 ### 1. Build The Weekly List
 
 - Cover China, US, and Japan events that can move equity, rates, FX, commodities, crypto, or the user's watched stocks.
+- Prioritize Japan because the user trades Japan most actively. Include Japan events that can realistically move JGB yields, USDJPY/JPY crosses, Japanese banks, exporters, growth stocks, real estate, semiconductors, or broad TOPIX/Nikkei risk appetite.
+- Do not turn this into a generic economic calendar. If there are too many candidates, keep only the events that are tied to the current market theme and have a plausible trading impact.
+- Always identify the current market theme before ranking events. Examples:
+  - Japan inflation acceleration, BOJ hiking risk, and super-long JGB yield pressure.
+  - US inflation/Fed repricing driving USDJPY and global growth stocks.
+  - China policy or demand affecting Japan exporters, commodities, and Hong Kong/China equities.
+- Raise the priority of events that match the current theme; lower or exclude events that are normally important but not relevant to the current trading narrative.
 - Exclude categories the user already says they are handling separately, such as earnings or Treasury auctions.
 - Include only events with enough confidence in date/time. Treat unconfirmed diplomacy or political headlines as an observation item unless there is recent official confirmation.
 - For current or future event calendars, browse current sources. Prefer official release calendars for US/Japan/China data when available; use reputable economic calendars and news sources for consensus.
@@ -160,6 +167,9 @@ Description:
 
 - Assign importance stars from `★` to `★★★★★`.
 - For Calendar writing, if the user asks for "四星以上", include only `★★★★` and `★★★★★`.
+- Even when the user says "四星以上", do not add every `★★★★` event automatically. Add `★★★★` only when it is connected to the current market theme and has a clear impact path. Add all `★★★★★` unless there is no concrete time or the event is unconfirmed.
+- Default to a smaller, higher-signal calendar. The goal is not coverage; the goal is to prevent noise while preserving events that can change trading decisions.
+- Treat Japan inflation, BOJ communication, and JGB supply/demand events as high priority only when Japan rates/JPY are an active market driver. Examples include national CPI, Tokyo CPI, CGPI, BOJ decision/outlook/report, Summary of Opinions, BOJ minutes, Governor/deputy governor speeches, and 10y/20y/30y/40y JGB auctions.
 - Require a concrete time for Calendar insertion unless the user explicitly wants all-day/undated watch items.
 - Data releases use duration 0 minutes. Speeches or press conferences use duration 30 minutes unless the user specifies otherwise.
 
@@ -172,6 +182,7 @@ For each event, collect or estimate:
 - "If higher than expected" impact.
 - "If lower than expected" impact.
 - Make impacts concrete where possible: USD, JPY, CNH, yields, Nasdaq/growth stocks, value/cyclicals, gold, crypto, commodities, China/HK equities, Japanese banks/exporters.
+- For Japan-relevant events, explicitly state the likely direction for JGB yields, JPY, and affected Japanese equity groups when applicable: banks, exporters, growth stocks, real estate, semiconductors, domestic demand, or commodities.
 
 ### 4. Calendar Format
 
