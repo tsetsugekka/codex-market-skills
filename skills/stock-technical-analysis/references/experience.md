@@ -6,6 +6,12 @@ Purpose: keep reusable technical-analysis lessons without forcing the model to r
 
 Read this section before using the stock technical analysis skill.
 
+### Direct Sell/Hold Answers
+
+- For direct stock questions such as `怎么看`, `该不该卖`, `能不能拿`, `要不要加`, or `合理估值如何`, do not answer from the individual chart alone. Start with a compact `个股-板块-大盘` read when market data is available: whether the stock is stronger or weaker than its sector, whether the sector is leading, rotating, or退潮, and whether broad-market breadth supports risk-taking.
+- Separate `short-term execution` from `medium-term valuation`. A stock can be fundamentally reasonable but technically broken for short-term trading; it can also be technically weak without being fundamentally expensive. State which timeframe drives the answer and give different invalidation/confirmation levels for each when needed.
+- When valuation is requested after a sell/hold discussion, provide conservative/base/bull ranges, compare current price with the base range, and explicitly say whether valuation gives enough margin of safety or only explains why a bottom may form later.
+
 ### Intraday Execution And Pressure Zones
 
 - Separate `touch`, `break`, and `tradable hold`. A one-tick or one-minute wick above resistance may prove demand exists, but it is not actionable for most exits if price is immediately hit back. For practical judgment, prefer a 5-minute hold, repeated bids above the level, or a clean retest that turns resistance into support.
