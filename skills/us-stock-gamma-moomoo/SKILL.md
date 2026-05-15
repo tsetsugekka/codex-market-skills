@@ -106,15 +106,18 @@ When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversio
 - Use live SPX/ES/CFD price as the spot anchor for index levels, then use SPX option strikes directly whenever possible.
 - If using SPY options as a proxy, compute the same-day conversion ratio from simultaneous prices: `SPX_equiv = SPY_strike * (current_SPX_or_ES_anchor / current_SPY_price)`.
 - If using ES as the price anchor, remember ES can trade at a futures basis versus SPX cash. State the anchor and basis explicitly, e.g. “SPY 734 with ES/SPX anchor 7355 implies ratio about 10.02 today.”
+- If live SPX/ES is unavailable, an external SPX/SPY ratio such as prior close from Yahoo Finance, Investing.com, Barchart, or another current quote source can be used as an approximate fallback. Clearly state the source/time and that it is not a live simultaneous conversion.
 - Recompute the ratio every session and after large moves; do not carry yesterday's ratio into today's levels.
 
 ## Option Expiry Selection
 
-Use a broader but still relevant option window instead of blindly taking the first few expiries:
+Use a broader but still relevant option window instead of blindly taking the first few expiries. Keep horizons clean instead of mixing daily, weekly, and monthly expiries:
 
-- **Future 2 weeks**: include listed weekly expiries within the next 14 calendar days when they exist. If the ticker has no weeklies, do not invent a substitute.
-- **Future 3 months monthly options**: include monthly expiries for the current month and the next 2 months. Include the current month only when that monthly expiry has not passed.
-- **High-frequency option tickers**: for very active names with daily/near-daily expiries, also include the next 2 trading-day/daily expiries when listed. Examples include broad index ETFs and very liquid single names such as `SPY`, `QQQ`, `IWM`, `DIA`, `TSLA`, `NVDA`, `AMD`, `AAPL`, `MSFT`, `AMZN`, `META`, `GOOGL`, `PLTR`.
+- **0DTE / expiry day**: when the user asks about an expiry-day gamma pin, analyze the same-day expiry as its own bucket.
+- **Next 2 trading days**: for high-frequency option tickers, include the next 2 listed trading-day/daily expiries after today. Do not include today in this bucket when 0DTE is already shown separately.
+- **Future 2 weeks weekly options**: include only Friday expiries after today within the next 14 calendar days. Do not mix Monday-Thursday daily expiries into this weekly bucket.
+- **Future monthly options**: include only standard monthly expiries for the current month and next 2 months, and only include the current month if it has not passed and is not already being handled as the same-day 0DTE bucket.
+- **High-frequency option tickers**: examples include broad index ETFs and very liquid single names such as `SPY`, `QQQ`, `IWM`, `DIA`, `TSLA`, `NVDA`, `AMD`, `AAPL`, `MSFT`, `AMZN`, `META`, `GOOGL`, `PLTR`.
 - In the writeup, mention when the ticker only has monthly expiries or when the near-term weekly/daily window is unavailable.
 
 ## Moomoo Data Caveats
