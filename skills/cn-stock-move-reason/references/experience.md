@@ -11,6 +11,8 @@ Read this section before using the CN stock skill. Keep it compact and current.
 - Separate confirmed catalysts from market imagination. Announcements, orders, earnings, regulatory approvals, and company filings outrank 股吧 narratives.
 - For every sharp move, explicitly compare `prior market expectation` versus `actual news`: what the market was pricing, what actually landed, whether it is above expectation, merely landed/in line, or below expectation. Apply this to numeric news such as orders, earnings, guidance, policy size, and buybacks, and to qualitative news such as wording strength, timing, certainty, regulatory tone, management confidence, and whether the announcement solves the market's real concern.
 - Judge the move in context: market breadth, sector rank, concept strength, and whether the stock is leading, following, or diverging from its sector.
+- For direct A-share questions such as `怎么看`, `该不该卖`, `能不能拿`, `要不要加`, or `是不是弱了`, always give a `个股-板块-大盘` assessment before the final view: individual price/volume and relative strength; sector/concept trend, leader/follower status, and回流/退潮; broad-market index, breadth, and emotion-cycle state. Explicitly state whether weakness is systematic, sector-led, or stock-specific.
+- When a sell/hold decision involves valuation, separate `fundamental fair value`, `theme/emotion premium or discount`, and `technical invalidation`. Do not let a fair or cheap valuation override a broken short-term structure, and do not let a short-term break automatically imply fundamental overvaluation.
 - Treat 股吧 as expectation-gap and emotion data, not as fact. High-read posts can reveal what the market is pricing, but ordinary posts are only sentiment.
 - For high-theme stocks, classify whether the stock is an `情绪票`, `趋势票`, or hybrid. Do not use the same risk rules for all three.
 - In `高潮期` and `高位分歧/分化期`, do not assume good industry logic protects the stock from short-term drawdown. Watch turnover, long upper shadows, failed boards, and back-row weakening.
@@ -42,6 +44,7 @@ Use this section when the user asks whether a stock is cheap/expensive, asks for
 - Separate operating quality from accounting noise. For hardware/materials leaders, revenue mix, gross margin, backlog/orders, capacity release, and customer validation can matter more than one-quarter net profit; for cyclical stocks, price/FX sensitivity should lower the multiple.
 - Use scenario valuation instead of a single point: conservative, base, and bull. State the key assumptions that move the stock from one scenario to another.
 - After setting the fair range, compare current price to the range and explain whether the market is pricing current fundamentals, future upgrades, sector theme, or pure emotion.
+- For `该不该卖` or `能不能拿` follow-ups, translate valuation into timeframe-specific action meaning: whether current price has enough margin of safety for a medium-term holder, and whether it protects a short-term or leveraged position.
 - Valuation output should end with a "what must happen to justify upside" test and a "what invalidates the valuation" test.
 
 
