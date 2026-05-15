@@ -4,7 +4,7 @@ Use this only for `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmaps, or intr
 
 ## Analysis Order
 
-1. **Anchor**: current SPX cash when available; otherwise ES/CFD anchor with basis disclosed; SPY only as a converted proxy.
+1. **Anchor**: current SPX cash when available from a live source. If moomoo rejects the SPX index snapshot but `US..SPX` 0DTE chains are available, infer the intraday anchor from liquid SPXW put-call parity (`spot/forward ~= strike + call_mid - put_mid`) using same-expiry PM-settled pairs near the market. Do not use delayed/static TradingView page text as the intraday anchor unless a live chart value is explicitly confirmed. SPY is only a sanity check or last-resort proxy.
 2. **0DTE structure**: net GEX, call/put volume balance, largest positive walls above, largest negative pits below, and gamma flip if meaningful.
 3. **Vanna structure**: compute vanna from SPXW spot/strike/IV/DTE, aggregate VEX by strike, and name the top positive/negative vanna pressure zones. This is required when the user asks for SPX/SP500 gamma unless speed is explicitly more important than completeness.
 4. **Opening context**: distinguish prior close, current price, and same-day open. If the user says the market gapped down, do not treat prior close as the open.
@@ -25,6 +25,8 @@ Use this only for `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmaps, or intr
 - Treat `SPX`, `SP500`, `S&P 500`, and `标普500` gamma requests as direct SPX-index-option work first. Use SPX/SPXW strikes directly; use SPY/ES conversion only when the SPX option chain itself is unavailable or permission-blocked.
 - If `US..SPX` chains are available, skip SPY conversion entirely for gamma levels; SPY is only a proxy fallback, not the normal SPX workflow.
 - For 0DTE intraday gamma, prefer PM-settled `SPXW` contracts. If the same date includes AM-settled monthly `SPX` contracts, exclude those AM contracts from the intraday pin/gamma map unless the user explicitly asks about AM settlement.
+- When live SPX cash is unavailable, estimate the anchor from liquid same-day SPXW pairs with put-call parity. Prefer multiple near-ATM strikes with tight bid/ask and meaningful volume/OI, then use a weighted median or trimmed weighted mean. State this as a parity-implied SPX/forward anchor.
+- Do not use cached or delayed TradingView page text as the intraday anchor. If TradingView is mentioned, assume it is stale unless the value is explicitly confirmed from a live chart/front-end tick.
 - If using SPY options as a proxy, compute the same-day conversion ratio from simultaneous prices: `SPX_equiv = SPY_strike * (current_SPX_or_ES_anchor / current_SPY_price)`.
 - If using ES, state the futures basis explicitly. Do not carry yesterday's ratio into today.
 - If moomoo cannot provide ES due to permissions, accept user-provided ES/CFD screenshots as the anchor and disclose that limitation.
