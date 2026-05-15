@@ -46,8 +46,10 @@ The script:
 - reads stock snapshot, option expirations, option chain, option snapshots, and daily K lines from moomoo OpenD;
 - uses `pre_price` when available, otherwise bid/ask midpoint, otherwise regular-session last price;
 - gathers option `OI`, `IV`, `delta`, `gamma`, `theta`, `vega`, bid/ask, volume;
+- calculates Black-Scholes vanna from live/anchor spot, strike, IV, and DTE because moomoo snapshots may not provide `option_vanna`;
 - selects option expiries by default as: all weeklies within the next 2 calendar weeks when available, plus monthly expiries for the current month and next 2 months; for high-frequency option names also include the next 2 trading-day/daily expiries when listed;
 - calculates signed GEX with the common assumption `Call = +`, `Put = -`;
+- calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
 - writes a local HTML report with conclusions first and charts second.
 
@@ -94,9 +96,12 @@ When news or broad risk sentiment is driving the underlying or index, use `stock
 
 - `gamma wall`: a price where positive GEX is concentrated; price often slows, pins, or rejects there.
 - `gamma flip`: estimated transition between positive and negative gamma regimes.
+- `vanna`: estimated change in option delta as IV changes. Moomoo usually provides enough inputs to compute it even when it does not provide a direct `option_vanna` field.
+- `VEX`: aggregate vanna exposure by strike. Use it to identify where IV crush/IV expansion can force meaningful delta adjustment; do not treat it as a standalone direction signal.
 - Positive gamma: more chop/pinning/mean-reversion; avoid chasing into walls without confirmation.
 - Negative gamma: more trend amplification; be quicker with stops and avoid casual dip-buying.
 - Low-gamma trough: path of least resistance; price may move faster through it.
+- Vanna pressure matters most around macro/news vol crushes, 0DTE IV resets, and strong spot moves that also reprice IV. Report the top positive and negative vanna zones alongside gamma walls.
 
 ## SPX, SPY, And ES Point Conversion
 
@@ -104,6 +109,7 @@ When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversio
 
 - Prefer `.SPX` option chains from moomoo as `US..SPX` when available. Moomoo may reject the SPX index snapshot while still allowing SPX/SPXW option expiries and chains.
 - Treat user requests for `SPX`, `SP500`, `S&P 500`, or `标普500` gamma as SPX-index-option requests by default. Query `US..SPX` expiries/chains first and use the returned SPX/SPXW strikes directly; do not default to SPY options just because the SPX index snapshot is unavailable.
+- When `US..SPX` chains are available, do not use SPY conversion for SPX/SP500 gamma. SPY/ES/CFD conversion is only a fallback when the SPX/SPXW chain is unavailable, permission-blocked, or user-provided data is explicitly proxy-based.
 - For same-day intraday/0DTE gamma, prefer PM-settled `SPXW` contracts from the `US..SPX` chain. On dates that also list AM-settled monthly `SPX` contracts, exclude the AM-settled series from the intraday pin/gamma map unless the user specifically asks about AM settlement.
 - Use live SPX/ES/CFD price as the spot anchor for index levels, then use SPX option strikes directly whenever possible.
 - If using SPY options as a proxy, compute the same-day conversion ratio from simultaneous prices: `SPX_equiv = SPY_strike * (current_SPX_or_ES_anchor / current_SPY_price)`.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate a local gamma exposure report from moomoo OpenD.
+Generate a local gamma/vanna exposure report from moomoo OpenD.
 
 The report is intentionally opinionated: charts are evidence, while the
 summary turns gamma structure into trading scenarios that can be combined
@@ -80,10 +80,27 @@ def black_scholes_gamma(spot: float, strike: float, iv: float, dte: float) -> fl
     return normal_pdf(d1) / (spot * iv * math.sqrt(t))
 
 
+def black_scholes_vanna(spot: float, strike: float, iv: float, dte: float) -> float:
+    """Delta change per 1.00 vol unit; multiply by 0.01 for one IV point."""
+    if spot <= 0 or strike <= 0 or iv <= 0:
+        return 0.0
+    t = max(dte, 0.25) / 365.0
+    sqrt_t = math.sqrt(t)
+    d1 = (math.log(spot / strike) + 0.5 * iv * iv * t) / (iv * sqrt_t)
+    d2 = d1 - iv * sqrt_t
+    return -normal_pdf(d1) * d2 / iv
+
+
 def signed_gex(row: OptionRow, spot: float, use_model_gamma: bool = False) -> float:
     gamma = black_scholes_gamma(spot, row.strike, row.iv, row.dte) if use_model_gamma else row.gamma
     sign = 1 if row.option_type == "CALL" else -1
     return sign * gamma * row.oi * 100 * spot * spot * 0.01
+
+
+def signed_vex(row: OptionRow, spot: float) -> float:
+    sign = 1 if row.option_type == "CALL" else -1
+    # Spot-equivalent delta-dollar change for a one-vol-point IV move.
+    return sign * black_scholes_vanna(spot, row.strike, row.iv, row.dte) * 0.01 * row.oi * 100 * spot
 
 
 def moving_average(values: list[float], n: int) -> float | None:
@@ -333,10 +350,12 @@ def analyze(data):
     rows: list[OptionRow] = data["options"]
     net_current = sum(signed_gex(row, spot) for row in rows)
     by_strike: dict[float, float] = {}
+    vanna_by_strike: dict[float, float] = {}
     call_oi_by_strike: dict[float, int] = {}
     put_oi_by_strike: dict[float, int] = {}
     for row in rows:
         by_strike[row.strike] = by_strike.get(row.strike, 0.0) + signed_gex(row, spot)
+        vanna_by_strike[row.strike] = vanna_by_strike.get(row.strike, 0.0) + signed_vex(row, spot)
         if row.option_type == "CALL":
             call_oi_by_strike[row.strike] = call_oi_by_strike.get(row.strike, 0) + row.oi
         else:
@@ -363,6 +382,8 @@ def analyze(data):
     max_abs = max(abs(x["gex"]) for x in grid) or 1
     walls = sorted(by_strike.items(), key=lambda kv: kv[1], reverse=True)[:10]
     pits = sorted(by_strike.items(), key=lambda kv: kv[1])[:10]
+    vanna_walls = sorted(vanna_by_strike.items(), key=lambda kv: kv[1], reverse=True)[:10]
+    vanna_pits = sorted(vanna_by_strike.items(), key=lambda kv: kv[1])[:10]
     nearest_wall_above = next((w for w in sorted(walls) if w[0] >= spot), None)
     nearest_support_wall = next((w for w in sorted(walls, reverse=True) if w[0] <= spot), None)
     flip = flips[0] if flips else None
@@ -383,10 +404,13 @@ def analyze(data):
 
     return {
         "net_current": net_current,
+        "net_vanna": sum(signed_vex(row, spot) for row in rows),
         "grid": grid,
         "max_abs_grid": max_abs,
         "walls": walls,
         "pits": pits,
+        "vanna_walls": vanna_walls,
+        "vanna_pits": vanna_pits,
         "nearest_wall_above": nearest_wall_above,
         "nearest_support_wall": nearest_support_wall,
         "flip": flip,
@@ -448,7 +472,7 @@ def option_table(rows: list[OptionRow], spot: float):
             "<tr>"
             f"<td>{html.escape(r.expiry)}</td><td>{html.escape(r.option_type)}</td><td>{r.strike:g}</td>"
             f"<td>{r.oi:,}</td><td>{r.volume:,}</td><td>{r.iv*100:.1f}%</td>"
-            f"<td>{r.delta:.2f}</td><td>{r.gamma:.4f}</td><td>{mid:.2f}</td>"
+            f"<td>{r.delta:.2f}</td><td>{r.gamma:.4f}</td><td>{black_scholes_vanna(spot, r.strike, r.iv, r.dte):.4f}</td><td>{mid:.2f}</td>"
             "</tr>"
         )
     return "\n".join(body)
@@ -595,6 +619,7 @@ def render_html(data, a):
         <div class="metric"><b>{spot:.2f}</b><span>{html.escape(stock["spot_basis"])}基准价</span></div>
         <div class="metric"><b>{stock["bid"]:.2f}/{stock["ask"]:.2f}</b><span>盘前 bid/ask</span></div>
         <div class="metric"><b class="{'blue' if a["net_current"] > 0 else 'red'}">{money(a["net_current"])}</b><span>当前净 GEX</span></div>
+        <div class="metric"><b class="{'blue' if a["net_vanna"] > 0 else 'red'}">{money(a["net_vanna"])}</b><span>1 vol point 净 VEX</span></div>
         <div class="metric"><b>{flip_text}</b><span>估算 gamma flip</span></div>
         <div class="metric"><b>{wall_text}</b><span>上方最近 gamma wall</span></div>
         <div class="metric"><b>{support_text}</b><span>下方正 gamma 支撑墙</span></div>
@@ -610,6 +635,7 @@ def render_html(data, a):
         <span class="pill">J 高位转弱：追多降权</span>
       </div>
       <p class="small">术语翻译：gamma wall = 容易卡住的价格；gamma flip = 市场性格切换线；正 gamma = 更容易震荡和钉住，负 gamma = 更容易加速。</p>
+      <p class="small">Vanna 使用 Black-Scholes 从 spot、strike、IV、DTE 重算；VEX 表示 IV 每变化 1 个 vol point 时的 spot-equivalent delta-dollar 变化，按 Call 正、Put 负的同一方向假设汇总。</p>
       <p class="small">日线 MA20：{a["ma20"]:.2f}，MA50：{a["ma50"]:.2f}；快速 MACD DIF/DEA：{a["dif"]:.2f}/{a["dea"]:.2f}。这些不是替代 gamma，而是用来确认 wall 处的突破、失败或反转。</p>
       <p class="small">常规盘最后价：{stock["last_price"]:.2f}；盘前价：{stock["pre_price"]:.2f}，盘前涨幅：{stock["pre_change_rate"]:.2f}%，盘前区间：{stock["pre_low"]:.2f}-{stock["pre_high"]:.2f}，盘前成交量：{stock["pre_volume"]:,}。</p>
       <p class="small">{html.escape(risk_take)}</p>
@@ -643,13 +669,15 @@ def render_html(data, a):
           <h3>我会盯的价格</h3>
           <p><b class="green">支撑/阻力墙：</b>{", ".join(f"{k:g}" for k, _ in a["walls"][:6])}</p>
           <p><b class="red">负 gamma 洼地：</b>{", ".join(f"{k:g}" for k, _ in a["pits"][:6])}</p>
+          <p><b class="green">正 vanna 区：</b>{", ".join(f"{k:g}" for k, _ in a["vanna_walls"][:6])}</p>
+          <p><b class="red">负 vanna 区：</b>{", ".join(f"{k:g}" for k, _ in a["vanna_pits"][:6])}</p>
           <p><b>Flip：</b>{flip_text}。在它上方，倾向用“震荡、钉扎、突破确认”；在它下方，倾向用“趋势放大、快进快出”。</p>
         </div>
       </div>
 
       <h3>ATM 附近期权样本</h3>
       <table>
-        <thead><tr><th>到期</th><th>类型</th><th>Strike</th><th>OI</th><th>Vol</th><th>IV</th><th>Delta</th><th>Gamma</th><th>Mid</th></tr></thead>
+        <thead><tr><th>到期</th><th>类型</th><th>Strike</th><th>OI</th><th>Vol</th><th>IV</th><th>Delta</th><th>Gamma</th><th>Vanna</th><th>Mid</th></tr></thead>
         <tbody>{option_table(data["options"], spot)}</tbody>
       </table>
     </section>
