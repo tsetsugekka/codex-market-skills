@@ -10,6 +10,7 @@ Read this section before using the JP stock skill. Keep it compact and current.
 
 - Predict with `probability x expectation gap x price setup`, not with a single yes/no call.
 - For every sharp move, explicitly compare `prior market expectation` versus `actual news`: what investors expected, what actually landed, whether it is above expectation, merely landed/in line, or below expectation. Use both numeric signals such as guidance, profit, orders, dividends, and buybacks, and qualitative signals such as wording strength, timing, certainty, management confidence, regulatory tone, and whether the news solves the market's real concern.
+- For earnings analysis, do not stop at the headline financial numbers or 掲示板 reaction. Read company disclosure and explanation materials such as 決算説明資料, 補足説明資料, 事業計画及び成長可能性に関する事項, 中期経営計画, business updates, project/product releases, and IR Q&A when available. Use them to judge whether the result proves business-model progress, project conversion, pipeline certainty, customer demand, timing, capex/funding burden, dilution, and cash-collection risk.
 - Set numeric surprise thresholds before the release. Use company guidance, consensus, prior-quarter progress, and peer reactions to define the "strong pass" line before seeing the result.
 - For earnings trades, next-period guidance usually matters more than the just-finished period. A clean positive reaction often needs: prior period beat, next year strong guidance, and preferably dividend hike or buyback.
 - Low expectations can be powerful. If the market fears "good results still get sold", a merely solid result plus strong guidance/shareholder return can flip the narrative.
@@ -33,8 +34,9 @@ Read this section before using the JP stock skill. Keep it compact and current.
 2. Record the current price move, PER/PBR, recent run-up, and 掲示板 heat.
 3. From the latest quarter and company forecast, compute the implied remaining-period hurdle.
 4. Set a "must beat" line for the release: current-period profit, next-year guidance, orders/backlog, and shareholder returns.
-5. State both probabilities: `earnings beat probability` and `positive stock reaction probability`.
-6. After the release, classify the result as:
+5. Check whether explanation materials or business-update releases change the story behind the numbers: new service start, project pipeline, customer conversion, capacity schedule, product generation, financing, dilution, and cash-flow quality.
+6. State both probabilities: `earnings beat probability` and `positive stock reaction probability`.
+7. After the release, classify the result as:
    - `clean positive surprise`
    - `positive but already priced`
    - `mixed but theme strong`
@@ -91,3 +93,4 @@ Use this protocol after multi-turn discussion about the same stock.
 - 2026-05-11 JP earnings review distilled into the active rules above; ticker-specific details intentionally removed from active guidance to keep the playbook reusable.
 - 2026-05-11 Added cross-market emotion-structure rules from an A-share sector discussion transcript; A-share-specific examples and current calls were intentionally omitted.
 - 2026-05-15 Added a generalized expectation-gap rule for numeric and qualitative catalysts, so move explanations compare prior expectation with actual news before assigning causality.
+- 2026-05-15 Added a JP earnings disclosure-material rule from an AI data-center case: beyond headline numbers and 掲示板, check explanation materials, business updates, project/product releases, pipeline certainty, funding, dilution, and cash-flow quality.
