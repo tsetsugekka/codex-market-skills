@@ -1,0 +1,4 @@
+name: stock-sentiment-analysis
+display_name: Stock Sentiment Analysis
+short_description: 用公开安全的情绪周期、主线/跟随、预期差和拥挤度框架分析股票与市场情绪。
+default_prompt: 分析这只股票或市场当前的情绪周期、主线地位、预期差和风险验证点。

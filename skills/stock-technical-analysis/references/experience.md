@@ -27,6 +27,9 @@ Read this section before using the stock technical analysis skill.
 - In long multi-turn analysis of one stock, update experience only when the discussion reveals a reusable rule: execution feasibility, level confirmation, pressure-zone behavior, timeframe conflict, indicator weighting, or a repeated analytical failure/success.
 - Convert the lesson into a general rule. Do not preserve private position details, exact personal trade plans, or ticker-specific play-by-play as active knowledge.
 
+
+- For reusable sentiment lessons that apply across markets, update `stock-sentiment-analysis/references/experience.md` as the shared layer, then keep only market-specific details here.
+
 ## Compression Protocol
 
 - Always read only `Active Playbook` first.

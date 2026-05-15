@@ -9,7 +9,20 @@ metadata:
 
 Use this skill to turn moomoo OpenD option data into an actionable gamma map and a plain-language trading note.
 
-This public-safe skill is self-contained. It does not depend on a local `Stocks` folder or private research files during normal analysis. It may include distilled reusable experience, but must not store private source paths, personal positions, original strategy names, private person names/handles, proprietary labels, or private document titles. Generic market concepts such as gamma, GEX, dealer hedging, FVG, KDJ, MACD, RSI, VWAP, Vegas, and 老鸭头 may be retained.
+This public-safe skill is self-contained. Do not commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub. It may use a user-specified private RAG folder during a session, but it must not store private source paths, personal positions, original strategy names, private person names/handles, proprietary labels, or private document titles. Generic market concepts such as gamma, GEX, dealer hedging, FVG, KDJ, MACD, RSI, VWAP, and Vegas may be retained.
+
+
+## Public And Private Versions
+
+If both public and private versions of this skill exist, prefer the private version for local analysis when the user permits it. The private version may use local RAG indexes and user-specific study material.
+
+When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
+
+When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in `stock-sentiment-analysis/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+
+## Experience
+
+Before deep analysis, read `references/experience.md` if it exists, but only `Active Playbook` and `Compression Protocol` unless the user explicitly asks for historical lessons. If a multi-turn correction produces a durable reusable lesson about gamma interpretation, option scenario handling, news/gamma interaction, or chart confirmation, update that file after answering. Generalize the lesson and strip private details.
 
 ## Environment Check
 
@@ -56,11 +69,12 @@ Read extra references only when the request needs them:
 
 ## Optional User Knowledge Base
 
-Do not read local research folders by default. If a user wants to incorporate their own study materials, guide them to build a private RAG/knowledge base outside this public repository:
+Do not read local research folders by default. If a user wants to incorporate their own study materials, ask them to specify a private RAG or index folder outside this public repository:
 
 - keep raw PDFs, screenshots, notes, and proprietary indicators in a private local folder or private vector store;
+- offer to create or update a lightweight local index for repeated use, with only user-approved aliases, topics, page/slide ranges, keywords, and public-safe summaries;
 - extract only reusable, public-safe rules into this skill when the user explicitly asks to update the skill;
-- strip private paths, account details, ticker-specific trade logs, original strategy names, private person names/handles, and unique document labels;
+- strip private paths, account details, ticker-specific trade logs, original strategy names, private person names/handles, unique document labels, and memorable private labels;
 - keep this skill functional even when that private RAG corpus is unavailable.
 
 ## Required Interpretation Style
@@ -70,11 +84,11 @@ Write like a pre-market trading memo:
 1. **一句话**: where the stock is now and whether it is near a wall, support, or flip.
 2. **我会怎么做**: concrete scenario handling, e.g. “do not chase until it holds X”, “treat X-Y as chop”, “above Z opens next target”.
 3. **什么情况说明我错了**: exact invalidation levels.
-4. **怎么和技术确认配合**: use gamma as the map, then confirm entries/exits with KDJ, MACD, MA144/Vegas, FVG, volume, and price action.
+4. **怎么和技术确认配合**: use gamma as the map, then confirm entries/exits with `stock-technical-analysis` concepts such as KDJ, MACD, MA144/Vegas, FVG, volume, and price action.
 
 Avoid only dumping tables. The user wants judgment, assumptions, and a clear action framework.
 
-When news is driving the underlying or index, add an expectation-gap check before relying on the gamma map: `prior market expectation` -> `actual news` -> `above expectation / in line or merely landed / below expectation`. Apply this to numeric headlines such as orders, CPI/FOMC data, earnings, guidance, and ETF flows, and to qualitative headlines such as regulatory wording, geopolitical tone, management confidence, timing, certainty, and whether the news solves the market's real concern. Gamma explains likely hedging pressure after price moves; it does not by itself explain whether the headline was accepted or rejected.
+When news or broad risk sentiment is driving the underlying or index, use `stock-sentiment-analysis` if needed and add an expectation-gap check before relying on the gamma map: `prior market expectation` -> `actual news` -> `above expectation / in line or merely landed / below expectation`. Apply this to numeric headlines such as orders, CPI/FOMC data, earnings, guidance, and ETF flows, and to qualitative headlines such as regulatory wording, geopolitical tone, management confidence, timing, certainty, and whether the news solves the market's real concern. Gamma explains likely hedging pressure after price moves; it does not by itself explain whether the headline was accepted or rejected.
 
 ## Gamma Reading Rules
 

@@ -9,11 +9,21 @@ metadata:
 
 Use this skill from the DTM repo root when the user asks why a specific Japanese stock is rising, falling, 急騰, 急落, 異動, or otherwise moving, and wants Codex to analyze it instead of Gemini.
 
-The bundled script is safe to keep in a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service.
+The bundled script is safe to keep in a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service. Never commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub.
 
 ## Workflow
 
-1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, 掲示板 sentiment, theme leadership, peer follow-through, and whether the stock is a leader, follower, defensive alternative, old-leader rebound, or noise.
+
+## Public And Private Versions
+
+If both public and private versions of this skill exist, prefer the private version for local analysis when the user permits it. The private version may use local RAG indexes and user-specific study material.
+
+When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
+
+When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in `stock-sentiment-analysis/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+
+
+1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, 掲示板 sentiment, theme leadership, peer follow-through, and whether the stock is a leader, follower, defensive alternative, old-leader rebound, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.
 
 2. Run the collector script from the repo root:
 
@@ -38,9 +48,11 @@ Useful options:
 - Yahoo 掲示板: secondary evidence for market psychology, rumors, expectations, and retail attention. Never treat it as confirmed fact unless the same item appears in news.
 - Peer and theme reactions: use them to judge whether the move is theme-wide leadership, same-theme follow-through, or only stock-specific sentiment.
 
-5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
+5. Prefer this skill as the first pass for Japanese stocks. Call `stock-technical-analysis` only when the user asks for chart/levels/timing, when a 1h+ or swing judgment is needed, or after repeated research requires technical confirmation. When using moomoo, Yahoo charts, or another platform, first finish the news/掲示板/theme read, then use the chart to verify support, resistance, volume-price behavior, and whether the narrative is accepted or rejected.
 
-6. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both Japanese stocks and A-shares, update both stock-skill `references/experience.md` files; if it is specific to Japanese stocks, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
+6. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
+
+7. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both Japanese stocks and A-shares, update both stock-skill `references/experience.md` files and consider `stock-sentiment-analysis/references/experience.md`; if it is specific to Japanese stocks, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## Output Style
 
@@ -50,7 +62,7 @@ For every stock analyzed, always use these five numbered sections in this exact 
 
 1. `最有力理由`: the most likely catalyst, with source names and timing.
 2. `补助理由`: secondary drivers such as theme buying, short-term speculation, or market-cap/liquidity context.
-3. `掲示板温度`: summarize heat level, recent post volume, and high-like comments.
+3. `掲示板温度`: summarize heat level, recent post volume, high-like comments, expectation gap, and crowding risk.
 4. `确定度`: high / medium / low, with one sentence explaining why.
 5. `注意点`: what remains unconfirmed or what could invalidate the read.
 

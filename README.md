@@ -36,6 +36,16 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 结合大盘指数、行业/概念板块和涨跌家数，判断是市场共振、板块主线，还是个股独立催化。
 - 按冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮判断短线情绪阶段。
 
+### [`stock-sentiment-analysis`](docs/skills/stock-sentiment-analysis.md)
+
+给其他股票 skill 复用的情绪面分析框架，用于判断 A 股情绪周期、主线/跟随、预期差、论坛/掲示板温度、拥挤交易和跨市场 risk-on/risk-off。公开版不包含私人 RAG、`Stocks` 文件夹、个人标签或原始资料。
+
+适用场景：
+
+- 把股吧/掲示板热度、新闻预期差、板块广度和图形确认整合成情绪结论。
+- 给 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 提供统一情绪框架。
+- 在用户指定私有 RAG 目录时，可帮助用户建立本地索引，只记录主题、来源别名、页码/slide 范围、关键词和公开安全摘要；不把私有材料写入公开仓库。
+
 ### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
@@ -68,6 +78,7 @@ mkdir -p ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
+ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
 ```
@@ -97,6 +108,10 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
+分析一下这只股票现在是主线启动、高潮分歧，还是退潮反抽。
+```
+
+```text
 查一下这只美股的 gamma，阻力位和这周可能去的位置。
 ```
 
@@ -113,10 +128,13 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
+- `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、`Stocks` 文件夹、个人标签、原始笔记、截图或交易日志。
 - `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖本地 `Stocks` 文件夹，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
 - `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖本地 `Stocks` 文件夹，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
-- 如果要结合个人学习资料，请在公开仓库外建立私有 RAG/知识库；只把抽象后的通用经验写回 skill。
-- 不要把个人关注列表、凭据、`.env`、运行缓存或私有输出提交到本仓库。
+- 本地安装目录里的 skill 可视为私密/本地工作版；本仓库里的 skill 是 GitHub 公开版。若本地同时存在公开版和私密版，本地分析可优先使用私密版；但上传 GitHub 或发布时必须使用本仓库公开版，并按 `stock-sentiment-analysis/references/release-and-privacy.md` 做检查。
+- 更新成对的公开版/私密版时，公开安全的通用规则要同步到公开版；私有路径、私有标签、原始资料、截图、个人交易上下文只留在私密版或私有 RAG。
+- 如果要结合个人学习资料，请在公开仓库外建立私有 RAG/知识库；它可以服务情绪面、技术分析、gamma/期权结构等多个 skill；只把抽象后的通用经验写回 skill，并删除私有路径、专有名词、账号信息和可识别个人信息。
+- 不要把个人关注列表、凭据、API key、`.env`、`Stocks/`、私有 RAG、运行缓存或私有输出提交到本仓库。
 
 ## 仓库结构
 
@@ -134,6 +152,11 @@ skills/
     agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
+  stock-sentiment-analysis/
+    SKILL.md
+    agents/openai.yaml
+    references/experience.md
+    references/sentiment-framework.md
   us-stock-gamma-moomoo/
     SKILL.md
     references/
@@ -148,6 +171,7 @@ docs/
     market-calendar-google.md
     jp-stock-move-reason.md
     cn-stock-move-reason.md
+    stock-sentiment-analysis.md
     us-stock-gamma-moomoo.md
     stock-technical-analysis.md
 ```

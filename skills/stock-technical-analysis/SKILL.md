@@ -9,7 +9,16 @@ metadata:
 
 Use this skill when the user asks about price action, technical setup, intraday odds, support/resistance, trend continuation, pullback risk, or chart-based timing for US stocks, Japanese stocks, or A-shares.
 
-This public-safe skill is self-contained and contains only generalized technical-analysis methods. Do not depend on a local `Stocks` folder or private research files during normal analysis. It must not store personal positions, private research paths, proprietary indicator names, private person names/handles, or private strategy labels.
+This public-safe skill is self-contained and contains only generalized technical-analysis methods. Do not commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub. It must not store personal positions, private research paths, proprietary indicator names, private person names/handles, or private strategy labels. It may use a user-specified private RAG folder during a session, but the skill must remain usable without it.
+
+
+## Public And Private Versions
+
+If both public and private versions of this skill exist, prefer the private version for local analysis when the user permits it. The private version may use local RAG indexes and user-specific study material.
+
+When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
+
+When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in `stock-sentiment-analysis/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Core Rule
 
@@ -19,12 +28,12 @@ When a live chart is visible in moomoo or another trading/chart app, use the cha
 
 Never answer only by following the latest tick. Use the sequence:
 
-1. Determine the timeframe: intraday trade, swing, trend holding, or post-event reaction.
+1. Determine the timeframe: intraday trade, 1h+ swing, trend holding, or post-event reaction. For 1h+ and swing judgments, combine technicals with sentiment/news context instead of reading the chart alone.
 2. Read price location: current price versus prior high/low, opening price, yesterday close, VWAP if available, 5/20-day lines, and obvious pressure/support.
 3. Check volume-price confirmation: breakout must show volume and stand above the level; volume without price progress is possible distribution; shrinking pullback can be healthy only if support holds.
 4. Check momentum: KDJ, MACD, RSI, and whether price makes a new high while momentum does not.
 5. Check structure: trend continuation, high-level divergence, 空中加油, 回踩确认, 破位反抽, or 冲高回落.
-6. Check market context: sector/peer confirmation, broad market tone, and for A-shares the emotion cycle.
+6. Check market context: sector/peer confirmation, broad market tone, rates/FX/volatility when relevant, and for A-shares the emotion cycle. Use `stock-sentiment-analysis` for a deeper shared sentiment framework.
 7. Give conditional conclusions rather than one-point predictions.
 
 If a long multi-turn discussion about one stock produces a verified reusable lesson, update `references/experience.md` after answering. Generalize the lesson; do not store ticker-specific notes as the main content.
@@ -33,7 +42,7 @@ Do not read local research folders or indicator files by default. If the user ex
 
 ## Optional User Knowledge Base
 
-If a user wants to use their own study materials, guide them to build a private RAG/knowledge base outside this public repository. Raw PDFs, screenshots, indicators, notes, and private labels should stay private. Only distilled, generic rules should be copied into `references/experience.md` or `references/stocks-technical-playbook.md`, and only when the user explicitly asks to update the skill. The skill must remain usable without that private corpus.
+If a user wants to use their own study materials, ask them to specify a private RAG or index folder outside this public repository. Raw PDFs, screenshots, indicators, notes, and private labels should stay private. Offer to create or update a lightweight local index for repeated use, with only user-approved aliases, topics, page/slide ranges, keywords, and public-safe summaries. Only distilled, generic rules should be copied into `references/experience.md` or `references/stocks-technical-playbook.md`, and only when the user explicitly asks to update the skill. Do not write the private path, private labels, or raw source text into public files. The skill must remain usable without that private corpus.
 
 ## When To Load The Reference
 
@@ -50,6 +59,8 @@ For any of the following, read `references/stocks-technical-playbook.md` first:
 If the user asks for a post-mortem, review, or lesson update after the stock moves as discussed, read and update `references/experience.md` first, then edit references only if a core checklist needs to change.
 
 For chart-app workflows, read the `Chart App Visual Workflow` section in `references/stocks-technical-playbook.md`.
+
+For Japanese stocks and A-shares, prefer `jp-stock-move-reason` or `cn-stock-move-reason` as the first pass for news/emotion/catalyst context. Use this skill after that first pass when the user asks for chart timing, when the discussion becomes repeated/deeper, or when a 1h+ chart must confirm whether the narrative is accepted.
 
 ## Output Style
 
@@ -71,6 +82,9 @@ This skill handles chart and technical structure. For catalysts, valuation, news
 
 - Japanese stocks: `jp-stock-move-reason`
 - A-shares: `cn-stock-move-reason`
+- Shared emotion framework: `stock-sentiment-analysis`
 - US option gamma: `us-stock-gamma-moomoo`
+
+For US stocks, choose based on the question: use `us-stock-gamma-moomoo` when option positioning, gamma walls, 0DTE, IV, or dealer hedging matter; use this skill when chart structure and timing matter; use both when an options map needs price-action confirmation.
 
 When both fundamentals/catalysts and technicals matter, gather source evidence first, then use this skill to judge whether the chart confirms, overextends, or contradicts the story.

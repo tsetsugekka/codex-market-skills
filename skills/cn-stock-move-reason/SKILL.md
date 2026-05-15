@@ -9,13 +9,23 @@ metadata:
 
 Use this skill when the user asks why one A-share stock is rising, falling, 涨停, 跌停, 炸板, 异动, or moving unusually, and wants Codex to analyze it instead of Gemini.
 
-The bundled script is safe for a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service.
+The bundled script is safe for a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service. Never commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub.
 
 The skill accepts one stock at a time. It may also collect broad market context (indexes, sector/concept boards, and advance/decline counts) to judge whether the move is market-wide, sector-led, or stock-specific.
 
 ## Workflow
 
-1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise.
+
+## Public And Private Versions
+
+If both public and private versions of this skill exist, prefer the private version for local analysis when the user permits it. The private version may use local RAG indexes and user-specific study material.
+
+When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
+
+When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in `stock-sentiment-analysis/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+
+
+1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.
 
 2. Run the collector script from the repository root:
 
@@ -39,9 +49,11 @@ Useful options:
 - Sohu index and sector/concept board context plus Eastmoney intraday advance-decline counts and Sohu historical advance-decline / limit-up / limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
 
-5. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
+5. Prefer this skill as the first pass for A-shares. Call `stock-technical-analysis` only when the user asks for chart/levels/timing, when a 1h+ or swing judgment is needed, or after repeated research requires technical confirmation. When using chart software, first finish the news/emotion read, then use the chart to verify support, resistance, volume-price behavior, and whether the narrative is accepted or rejected.
 
-6. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both A-shares and Japanese stocks, update both stock-skill `references/experience.md` files; if it is specific to A-shares, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
+6. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
+
+7. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both A-shares and Japanese stocks, update both stock-skill `references/experience.md` files and consider `stock-sentiment-analysis/references/experience.md`; if it is specific to A-shares, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
 ## A-share Emotion Cycle
 

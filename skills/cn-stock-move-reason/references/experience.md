@@ -44,6 +44,9 @@ Use this section when the user asks whether a stock is cheap/expensive, asks for
 - After setting the fair range, compare current price to the range and explain whether the market is pricing current fundamentals, future upgrades, sector theme, or pure emotion.
 - Valuation output should end with a "what must happen to justify upside" test and a "what invalidates the valuation" test.
 
+
+- For reusable sentiment lessons that apply across markets, update `stock-sentiment-analysis/references/experience.md` as the shared layer, then keep only market-specific details here.
+
 ## Compression Protocol
 
 Keep this file readable by compressing before it becomes too large.
