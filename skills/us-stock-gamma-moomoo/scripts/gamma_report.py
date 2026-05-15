@@ -223,10 +223,19 @@ def select_option_expiries(underlying: str, expiry_values: list[str], ref_date: 
     # Very active names can have daily expiries. Include the next two listed
     # near-term expiries as a proxy for the next two trading-day/daily options.
     if is_high_frequency_options_name(underlying):
-        near_daily = [s for d, s in parsed if d <= ref_date + timedelta(days=7)]
+        near_daily = []
+        for d, s in parsed:
+            if d <= ref_date + timedelta(days=7) and s not in near_daily:
+                near_daily.append(s)
         selected.update(near_daily[:2])
 
-    return [s for d, s in parsed if s in selected]
+    out = []
+    seen = set()
+    for _, s in parsed:
+        if s in selected and s not in seen:
+            out.append(s)
+            seen.add(s)
+    return out
 
 
 def fetch_report_data(underlying: str):
