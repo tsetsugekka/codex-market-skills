@@ -32,6 +32,14 @@ When preparing anything for GitHub, use only the public version of the skill as 
 
 Also confirm `.gitignore` excludes private folders such as `Stocks/`, `private-rag/`, `RAG_INDEX/`, `.env*`, logs, caches, and index files.
 
+### Branch Discipline
+
+- Do not create, switch to, or push a new working branch for a GitHub release unless the user explicitly asks for a branch, PR, draft PR, or experimental branch.
+- Default to the repository's intended target branch, usually `main`, for direct publish requests such as "commit", "push", "publish to GitHub", or "update GitHub".
+- Before staging or committing, run `git branch --show-current` and confirm it is the intended target branch. If it is not, switch or fast-forward to the target branch before committing.
+- If a temporary branch already exists from earlier work, do not keep using it by inertia. Either merge/fast-forward the target branch when safe, or ask the user before publishing from that branch.
+- After a temporary branch has been merged into the target branch and is no longer needed, delete the local and remote temporary branch.
+
 ## Local RAG Index Rule
 
 It is public-safe to teach the technique of building a local private RAG/index. Private RAG can support sentiment analysis, technical patterns, gamma/option structure, market calendar heuristics, and other user study materials. The public skill may say how to create an index with aliases, topics, page/slide ranges, keywords, categories such as `sentiment`, `technical`, `gamma`, and short public-safe summaries. The index content itself stays outside the public repository unless it has been stripped to public-safe generalized rules.
