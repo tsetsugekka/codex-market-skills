@@ -19,7 +19,13 @@ Default timezone is `Asia/Tokyo`. Use the current date and timezone from the env
 
 - This skill depends on the `google-calendar:google-calendar` skill/connector whenever the user wants events written to Google Calendar.
 - When Calendar writing is requested, first ensure Google Calendar tools are available. If they are not already loaded, use `tool_search` with a query such as `Google Calendar search create event` to surface the Google Calendar tools before doing calendar work.
-- If Google Calendar tools still are not available, tell the user to connect or install the Google Calendar connector/skill, then stop before claiming events were written.
+- If Google Calendar tools still are not available, tell the user the exact next action: connect or install the Google Calendar connector/skill, then stop before claiming events were written.
+- If a Calendar write fails with an authorization/authentication error such as `401`, `UNAUTHORIZED`, `PERMISSION_DENIED`, expired token, missing scope, or write access failure, do not just repeat the raw error. Handle it as an actionable connector state:
+  - First, try the least disruptive recovery path available in the current environment, such as loading the `google-calendar:google-calendar` skill/tools with `tool_search`, re-reading a bounded calendar window, and retrying the same write once if the connector becomes available.
+  - If the environment exposes a connector install/authorization flow, ask the user to approve that concrete flow or invoke the relevant install/authorization request instead of asking them to diagnose OAuth/scopes.
+  - If automatic recovery is not possible, tell the user exactly what to do in one sentence, for example: "请在 Codex 的 Google Calendar 连接里重新授权写入权限，然后我会继续创建这些日程。"
+  - Preserve the prepared event payloads and duplicate-check results in the response so the user can retry without reconstructing the calendar work.
+  - Never claim events were written unless a follow-up bounded search verifies the created or updated events.
 - Use Google Calendar tools. Search the target week first to avoid duplicates before creating or updating events.
 - Preserve existing user-created calendar details unless the user asks to overwrite them.
 - Put a country flag at the start of titles when the event has a clear country:
