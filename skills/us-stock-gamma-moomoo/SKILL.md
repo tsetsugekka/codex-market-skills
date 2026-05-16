@@ -18,11 +18,13 @@ If both public and private versions of this skill exist, prefer the private vers
 
 When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in `stock-sentiment-analysis/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Experience
 
 Before deep analysis, read `references/experience.md` if it exists, but only `Active Playbook` and `Compression Protocol` unless the user explicitly asks for historical lessons. If a multi-turn correction produces a durable reusable lesson about gamma interpretation, option scenario handling, news/gamma interaction, or chart confirmation, update that file after answering. Generalize the lesson and strip private details.
+
+Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
 ## Environment Check
 

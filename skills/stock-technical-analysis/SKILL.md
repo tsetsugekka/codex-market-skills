@@ -18,11 +18,13 @@ If both public and private versions of this skill exist, prefer the private vers
 
 When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in `stock-sentiment-analysis/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Core Rule
 
 Before deep analysis, read `references/experience.md` if it exists, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons to intraday execution realism, pressure/support confirmation, and post-discussion learning.
+
+Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
 When a live chart is visible in moomoo or another trading/chart app, use the chart directly if the user asks for `现在`, `再看看`, `moomoo`, `分时`, `图表`, `资金流`, `盘口`, or asks whether a level is being confirmed. Confirm the ticker and chart timeframe before reading signals.
 

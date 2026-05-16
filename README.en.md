@@ -36,6 +36,16 @@ Use it to:
 - Separate market-wide resonance, sector/concept leadership, and stock-specific catalysts using indexes, sector/concept boards, and advance/decline counts.
 - Classify the short-term emotion cycle: ice point, repair, launch, acceleration, climax, or retreat.
 
+### [`stock-sentiment-analysis`](docs/skills/stock-sentiment-analysis.md)
+
+Provides a reusable public-safe sentiment and market-emotion framework for A-shares, Japanese stocks, US stocks, indexes, and sector themes. It helps other stock skills classify emotion cycles, main-line versus follower status, expectation gaps, forum/message-board heat, crowded trades, and cross-market risk-on/risk-off context without committing private RAG material or a local `Stocks` folder.
+
+Use it to:
+
+- Synthesize forum/message-board heat, news expectation gaps, breadth, and chart confirmation into a sentiment conclusion.
+- Provide a shared sentiment framework for `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
+- When the user provides a private RAG directory, guide them to build a local index with topics, source aliases, page/slide ranges, keywords, and public-safe summaries; never write private source material into this public repository.
+
 ### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/GEX, gamma walls, gamma flip levels, SPX/SPY/ES intraday structure, and 0DTE option scenario value tables. This skill requires moomoo OpenD to be running locally; if the environment is missing, guide the user to install or launch OpenD first.
@@ -68,6 +78,7 @@ mkdir -p ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
+ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
 ```
@@ -97,6 +108,10 @@ Analyze whether 300750 is moving on confirmed announcements or short-term theme 
 ```
 
 ```text
+Analyze whether this stock is in main-line launch, climax divergence, or retreat rebound.
+```
+
+```text
 Check this US stock's gamma and identify resistance plus the most likely levels this week.
 ```
 
@@ -113,10 +128,12 @@ Analyze this stock's technical setup, support, and resistance right now.
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
+- `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, a local `Stocks` folder, personal labels, raw notes, screenshots, or trade logs.
 - `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on a local `Stocks` folder and should not commit personal account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
 - `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on a local `Stocks` folder and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
 - If personal study materials are useful, keep them in a private RAG/knowledge base outside this public repository and copy back only distilled generic rules.
 - Do not commit personal watchlists, credentials, `.env` files, runtime caches, or private outputs to this repository.
+- The public release/privacy summary is in [`docs/release-and-privacy.md`](docs/release-and-privacy.md); the Codex runtime rule lives in `shared/references/release-and-privacy.md`.
 
 ## Repository Layout
 
@@ -127,6 +144,7 @@ skills/
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
+    agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
   cn-stock-move-reason/
@@ -134,8 +152,14 @@ skills/
     agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
+  stock-sentiment-analysis/
+    SKILL.md
+    agents/openai.yaml
+    references/experience.md
+    references/sentiment-framework.md
   us-stock-gamma-moomoo/
     SKILL.md
+    agents/openai.yaml
     references/
     scripts/gamma_report.py
     scripts/option_scenario_table.py
@@ -144,12 +168,16 @@ skills/
     agents/openai.yaml
     references/
 docs/
+  release-and-privacy.md
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md
     cn-stock-move-reason.md
+    stock-sentiment-analysis.md
     us-stock-gamma-moomoo.md
     stock-technical-analysis.md
+shared/
+  references/release-and-privacy.md
 ```
 
 ## Languages

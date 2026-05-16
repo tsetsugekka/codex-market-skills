@@ -22,10 +22,12 @@ If both public and private versions of this skill exist, prefer the private vers
 
 When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in `stock-sentiment-analysis/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 
 1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.
+
+   Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
 2. Run the collector script from the repository root:
 
@@ -40,7 +42,7 @@ Useful options:
 - `--announcements 10`: maximum announcements to include.
 - `--skip-market-context`: skip indexes, sector/concept boards, and advance/decline counts when the user wants only single-stock materials.
 
-3. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy.
+3. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy. In this local environment, the collector may fail inside the sandbox with DNS-style errors such as `nodename nor servname provided, or not known`, `urlopen error`, or repeated empty Eastmoney/Sohu results. Treat those as sandbox/network failures, not as evidence that there is no announcement, 股吧 discussion, or market-context data. Escalate and rerun before concluding that sources are empty.
 
 4. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
 

@@ -131,11 +131,8 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 - `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、`Stocks` 文件夹、个人标签、原始笔记、截图或交易日志。
 - `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖本地 `Stocks` 文件夹，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
 - `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖本地 `Stocks` 文件夹，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
-- 本地安装目录里的 skill 可视为私密/本地工作版；本仓库里的 skill 是 GitHub 公开版。若本地同时存在公开版和私密版，本地分析可优先使用私密版；但上传 GitHub 或发布时必须使用本仓库公开版，并按 `stock-sentiment-analysis/references/release-and-privacy.md` 做检查。
-- 更新成对的公开版/私密版时，公开安全的通用规则要同步到公开版；私有路径、私有标签、原始资料、截图、个人交易上下文只留在私密版或私有 RAG。
-- 如果要结合个人学习资料，请在公开仓库外建立私有 RAG/知识库；它可以服务情绪面、技术分析、gamma/期权结构等多个 skill；只把抽象后的通用经验写回 skill，并删除私有路径、专有名词、账号信息和可识别个人信息。
 - 不要把个人关注列表、凭据、API key、`.env`、`Stocks/`、私有 RAG、运行缓存或私有输出提交到本仓库。
-- 发布到 GitHub 时不要擅自创建或沿用临时工作分支；除非明确要求 PR/分支，直接确认并使用目标分支（通常是 `main`）提交和推送。
+- 面向 GitHub 用户的发布/隐私摘要见 [`docs/release-and-privacy.md`](docs/release-and-privacy.md)；Codex runtime 规则以 `shared/references/release-and-privacy.md` 为准。
 
 ## 仓库结构
 
@@ -146,6 +143,7 @@ skills/
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
+    agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
   cn-stock-move-reason/
@@ -160,6 +158,7 @@ skills/
     references/sentiment-framework.md
   us-stock-gamma-moomoo/
     SKILL.md
+    agents/openai.yaml
     references/
     scripts/gamma_report.py
     scripts/option_scenario_table.py
@@ -168,6 +167,7 @@ skills/
     agents/openai.yaml
     references/
 docs/
+  release-and-privacy.md
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md
@@ -175,6 +175,8 @@ docs/
     stock-sentiment-analysis.md
     us-stock-gamma-moomoo.md
     stock-technical-analysis.md
+shared/
+  references/release-and-privacy.md
 ```
 
 ## 语言

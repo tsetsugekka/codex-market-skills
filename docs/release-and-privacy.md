@@ -1,5 +1,7 @@
 # Release And Privacy Policy
 
+这是给 GitHub 用户阅读的公开摘要。Codex runtime 读取的详细规则位于 `shared/references/release-and-privacy.md`；更新发布/隐私规则时，两处应保持一致，runtime 规则以 `shared/` 下的 reference 为准。
+
 本仓库公开版 skill 可以说明如何使用私有版和本地 RAG，但不能包含私有材料本身。私有 RAG 可服务情绪面、技术分析、gamma/期权结构和其他市场研究流程。
 
 核心规则：

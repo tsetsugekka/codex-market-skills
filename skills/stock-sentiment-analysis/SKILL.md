@@ -17,12 +17,12 @@ If both public and private versions of a market skill exist, prefer the private 
 
 When updating a paired private/public skill, write public-safe generalized lessons to both versions, but keep private paths, private labels, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use only the public version and read `references/release-and-privacy.md` first. Run a privacy check for `Stocks/`, private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
+When preparing a GitHub upload or public release, use only the public version and read the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md` first. Run a privacy check for `Stocks/`, private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
 
 ## Workflow
 
 1. Read `references/experience.md` before deep analysis, but only `Active Playbook` and `Compression Protocol` unless the user explicitly asks for history.
-2. Read `references/sentiment-framework.md` when the task needs emotion-cycle classification, main-line judgment, crowded-trade risk, forum psychology, or cross-market sentiment. Read `references/release-and-privacy.md` before publishing, syncing public/private versions, or preparing a GitHub upload.
+2. Read `references/sentiment-framework.md` when the task needs emotion-cycle classification, main-line judgment, crowded-trade risk, forum psychology, or cross-market sentiment. Read the repo-level `shared/references/release-and-privacy.md` before publishing, syncing public/private versions, or preparing a GitHub upload.
 3. Gather or receive evidence from the market-specific skill first:
    - A-shares: prefer `cn-stock-move-reason` for quote, announcements, 股吧, board ranks, breadth, and A-share emotion cycle.
    - Japanese stocks: prefer `jp-stock-move-reason` for quote, news, Yahoo 掲示板, metrics, and theme/peer context.

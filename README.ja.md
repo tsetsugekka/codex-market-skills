@@ -36,6 +36,16 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 主要指数、業種/テーマ板、騰落銘柄数から、市場全体の共振、セクター主導、個別材料主導を切り分ける。
 - 冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮の七段階で短期情緒を確認する。
 
+### [`stock-sentiment-analysis`](docs/skills/stock-sentiment-analysis.md)
+
+A 株、日本株、米国株、指数、セクターテーマに共通して使える、公開安全なセンチメント分析フレームワークです。情緒サイクル、主線/フォロワー、期待差、掲示板/フォーラムの温度感、混雑取引、クロスマーケットの risk-on/risk-off を整理し、ローカルの `Stocks` フォルダや private RAG の中身を公開リポジトリに持ち込みません。
+
+主な用途：
+
+- フォーラム/掲示板の熱量、ニュースの期待差、需給の広がり、チャート確認を統合し、センチメント結論を作る。
+- `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` に共通の情緒フレームを提供する。
+- ユーザーが private RAG ディレクトリを指定した場合、テーマ、ソース別名、ページ/slide 範囲、キーワード、公開安全な要約だけを持つローカル索引作成を案内する。private 原資料はこの公開リポジトリに書かない。
+
 ### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 moomoo OpenD から米国株・米国オプションデータを取得し、Codex が gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES の日中構造、0DTE オプションのシナリオ価格表を分析するための skill です。ローカルで moomoo OpenD が起動している必要があり、環境がない場合は先にインストールまたは起動を案内します。
@@ -68,6 +78,7 @@ mkdir -p ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
+ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
 ```
@@ -97,6 +108,10 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
+この株は主線の立ち上がり、高潮後の分岐、それとも退潮反発なのか見て。
+```
+
+```text
 この米国株の gamma を見て、抵抗帯と今週行きやすい水準を出して。
 ```
 
@@ -113,10 +128,12 @@ SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
 - `market-calendar-google` は、ユーザーが明示的に依頼した場合に Google Calendar コネクタで予定を作成・更新します。
 - `jp-stock-move-reason` は公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
 - `cn-stock-move-reason` は Eastmoney、Sohu 証券などの公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
+- `stock-sentiment-analysis` は公開安全な汎用センチメント規則だけを保存します。private RAG、ローカルの `Stocks` フォルダ、個人ラベル、原始ノート、スクリーンショット、取引ログはコミットしないでください。
 - `us-stock-gamma-moomoo` はローカルの moomoo OpenD の行情インターフェースを使い、取引ロック解除 API は呼び出しません。公開版はローカルの `Stocks` フォルダに依存せず、個人口座情報、OpenD ログ、スクリーンショット、私的な行情出力、独自戦略名、私的な人名/handle はコミットしないでください。
 - `stock-technical-analysis` は汎用テクニカル分析ルールだけを保存します。公開版はローカルの `Stocks` フォルダに依存せず、個人ポジション、売買計画、スクリーンショット原本、私的な研究パス、専有指標名、独自戦略名、私的な人名/handle はコミットしないでください。
 - 個人の学習資料を使う場合は、この公開リポジトリ外の private RAG/knowledge base に置き、抽象化した汎用ルールだけを skill に戻してください。
 - 個人のウォッチリスト、認証情報、`.env`、実行キャッシュ、私的な出力はこのリポジトリにコミットしないでください。
+- GitHub ユーザー向けの公開/プライバシー概要は [`docs/release-and-privacy.md`](docs/release-and-privacy.md) にあります。Codex runtime の規則は `shared/references/release-and-privacy.md` を基準にします。
 
 ## リポジトリ構成
 
@@ -127,6 +144,7 @@ skills/
     agents/openai.yaml
   jp-stock-move-reason/
     SKILL.md
+    agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
   cn-stock-move-reason/
@@ -134,8 +152,14 @@ skills/
     agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
+  stock-sentiment-analysis/
+    SKILL.md
+    agents/openai.yaml
+    references/experience.md
+    references/sentiment-framework.md
   us-stock-gamma-moomoo/
     SKILL.md
+    agents/openai.yaml
     references/
     scripts/gamma_report.py
     scripts/option_scenario_table.py
@@ -144,12 +168,16 @@ skills/
     agents/openai.yaml
     references/
 docs/
+  release-and-privacy.md
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md
     cn-stock-move-reason.md
+    stock-sentiment-analysis.md
     us-stock-gamma-moomoo.md
     stock-technical-analysis.md
+shared/
+  references/release-and-privacy.md
 ```
 
 ## 言語

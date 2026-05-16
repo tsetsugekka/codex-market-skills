@@ -48,6 +48,7 @@ python3 skills/cn-stock-move-reason/scripts/stock_move_sources.py 600519 --forma
 - 不读取本地 token、Cookie、`.env` 或其他凭据。
 - 不写入任何外部服务。
 - 不调用 Gemini、OpenAI API 或其他 LLM API；分析由当前 Codex 会话完成。
+- 如果脚本在 Codex 沙箱中出现 `nodename nor servname provided`、`urlopen error` 或东方财富/搜狐连续空结果，应视为沙箱/DNS 网络失败，按正常审批流程提升网络权限后重跑；不能把沙箱空结果直接当成“没有公告/没有股吧讨论/没有市场背景数据”。
 
 ## 经验模块
 
