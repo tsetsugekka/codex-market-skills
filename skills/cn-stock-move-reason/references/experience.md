@@ -39,6 +39,8 @@ Use this section when the user asks whether a stock is cheap/expensive, asks for
 
 - First classify the stock: 情绪票, 趋势票, 周期股, 成长股, 资产/资源股, 平台型公司, or mixed. Do not value all stocks with the same PE.
 - Build at least three anchors: `earnings anchor` such as forward EPS/PE, `quality anchor` such as margin/ROE/cash flow/order durability, and `market anchor` such as comparable A-share/HK/US/Japan multiples and current theme premium.
+- Treat equity valuation as `price = EPS x PE` when using earnings multiples. A Davis double play needs both EPS upgrades and PE expansion, usually because earnings visibility, growth duration, industry cycle, main-line status, or shareholder return improved. A Davis double kill means EPS cuts and PE compression arrive together; downside can be much larger than the profit downgrade alone.
+- In each scenario, state both the EPS assumption and the deserved PE assumption. Explain whether the market is paying for near-term EPS, future EPS upgrades, multiple expansion, emotion premium, or a combination.
 - For A-shares, explicitly separate fundamental value from emotion-cycle premium. In 高潮期/高位分歧, the stock can trade above reasonable value; in退潮, even good fundamentals may trade below it.
 - Adjust EPS and valuation for buybacks, placements, convertible bonds, equity incentives, large impairment, one-off gains, and major capital expenditure.
 - Separate operating quality from accounting noise. For hardware/materials leaders, revenue mix, gross margin, backlog/orders, capacity release, and customer validation can matter more than one-quarter net profit; for cyclical stocks, price/FX sensitivity should lower the multiple.

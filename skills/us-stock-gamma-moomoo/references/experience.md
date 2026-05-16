@@ -10,6 +10,7 @@
 - De-duplicate moomoo SPX expiry dates before fetching chains. On monthly-expiry Fridays, `get_option_expiration_date("US..SPX")` can return the same `strike_time` twice for `MONTH` and `WEEK`; fetching both rows by date double-counts the same chain and inflates GEX/VEX.
 - For intraday SPX spot anchoring, prefer SPXW 0DTE put-call parity from the same moomoo option chain when the OpenD SPX index snapshot is unavailable. Do not use delayed/static TradingView page text as an anchor; ignore it unless a live chart value is explicitly confirmed. SPY is a sanity check, not the normal anchor.
 - For SPX/SP500 reports, calculate vanna from SPXW spot/strike/IV/DTE and analyze top positive/negative VEX zones alongside gamma walls. Treat VEX as an IV-sensitive pressure map, not a standalone forecast.
+- When writing index ranges, support/resistance, walls, pits, triggers, or scenario levels, list prices from high to low so the map reads top-down.
 - Re-run after the regular session opens or after a large spot move; pre-market stock moves often use stale option IV/OI/Greeks.
 
 ## Compression Protocol
@@ -27,3 +28,4 @@
 
 - 2026-05-15: Added initial public-safe gamma experience protocol.
 - 2026-05-15: Added SPX expiry de-duplication rule after a monthly-expiry Friday produced duplicate `MONTH`/`WEEK` rows for the same date and inflated 0DTE GEX/VEX.
+- 2026-05-16: Added output-format rule to list price levels from high to low.

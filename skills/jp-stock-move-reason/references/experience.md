@@ -57,6 +57,8 @@ Use this section when the user asks whether a stock is cheap/expensive, asks for
 
 - First classify the valuation identity: cyclical resource, semiconductor material, equipment, distributor, power infrastructure, consumer/entertainment, financial, or mixed business. Do not apply one PER range to every company.
 - Build at least three anchors: `earnings anchor` such as forward EPS/PER, `quality anchor` such as margin/ROE/FCF/order durability, and `market anchor` such as peer multiples and current theme premium.
+- Treat equity valuation as `price = EPS x PER` when using earnings multiples. A Davis double play needs both EPS upgrades and PER expansion, usually because earnings visibility, growth duration, industry cycle, or shareholder return improved. A Davis double kill means EPS cuts and PER compression arrive together; downside can be much larger than the profit downgrade alone.
+- In each scenario, state both the EPS assumption and the deserved PER assumption. Explain whether the market is paying for near-term EPS, future EPS upgrades, multiple expansion, or a combination.
 - Adjust EPS for capital actions when material: buybacks, tender offers, treasury shares, CB dilution, secondary offerings, splits, parent-company stake reductions, and dividend policy changes.
 - Do not count a buyback as purely positive if it is funded by CB or other dilution. Estimate the net effect on share count, EPS, balance sheet, and future dilution risk.
 - Separate operating quality from accounting noise. For core-theme stocks, operating profit, recurring profit, orders/backlog, capacity contribution, and EBITDA may matter more than one-year net income; for cyclical stocks, commodity price and FX sensitivity may deserve a lower multiple.
