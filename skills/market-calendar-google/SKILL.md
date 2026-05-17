@@ -167,7 +167,11 @@ Description:
 - Raise the priority of events that match the current theme; lower or exclude events that are normally important but not relevant to the current trading narrative.
 - Exclude categories the user already says they are handling separately, such as earnings or Treasury auctions.
 - Include only events with enough confidence in date/time. Treat unconfirmed diplomacy or political headlines as an observation item unless there is recent official confirmation.
-- For current or future event calendars, browse current sources. Prefer official release calendars for US/Japan/China data when available; use reputable economic calendars and news sources for consensus.
+- For current or future event calendars, browse current sources. Build candidates from a mix of comprehensive economic calendars, Chinese market-weekly calendars, and official calendars:
+  - Use comprehensive calendars such as ActionForex, Investing.com, Trading Economics, Myfxbook, ForexFactory, and similar sources to collect cross-country data releases, forecast/consensus, and prior values.
+  - Use Chinese market-calendar and market-weekly sources such as Jin10 (`jin10.com` / `xnews.jin10.com`) and Wallstreetcn (`wallstreetcn.com`) to catch China/HK-market framing, geopolitics, oil/gold/inflation narratives, and events that may not surface clearly in official data calendars.
+  - Prefer official release calendars for final confirmation of high-importance US/Japan/China event dates and times: Fed, US Treasury, BLS/BEA/Census, BOJ, Japan MOF, Japan Statistics Bureau, Cabinet Office, China NBS, PBOC/LPR, customs, and finance ministry sources when available.
+  - Treat Jin10 and Wallstreetcn as candidate discovery and market-narrative inputs, not as the sole authority for critical times. Cross-check `★★★★` and `★★★★★` events against official or another high-quality calendar before writing to Google Calendar whenever possible.
 
 ### 2. Rank And Filter
 
