@@ -153,6 +153,7 @@ When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversio
 - If EWJ has already closed, do not pair its closing price with the current Nikkei CFD directly. Use the Nikkei futures/CFD value at EWJ's quote timestamp to form the EWJ-to-NKD ratio, then bridge from current NKD to current NIY/CFD.
 - If using Japan cash close as the anchor, pair it only with an EWJ overnight/24h quote from the same timestamp. If no real EWJ quote exists at Japan close, do not mix Japan cash close with the later US regular-session EWJ close.
 - Moomoo may recognize `US.NKDmain` and `US.NIYmain` but return permission errors. If that happens, ask the user for: `NKD at EWJ close/update time`, `current NKD`, and `current NIY or Nikkei CFD`.
+- User fallback formula when better anchors are unavailable: `Nikkei target = 62038 * EWJ target / 91.265`. Treat this as a rough stored fallback, not the preferred method. Each time, first decide whether current NKD/NIY/EWJ time-aligned anchors can improve it; if not, use this formula and label it as the fallback conversion.
 - Do not carry a prior EWJ/Nikkei ratio into a new session. Recompute after large FX, futures, or EWJ moves.
 - In the writeup, list both the converted Nikkei levels and the source EWJ strikes for auditability.
 - State the limitation: EWJ options capture US-listed Japan ETF positioning, USD/JPY and ETF-flow effects; they are not the full domestic Nikkei options dealer book.

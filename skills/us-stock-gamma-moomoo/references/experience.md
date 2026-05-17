@@ -15,6 +15,7 @@
 - Keep index-specific algorithms as first-class skill scripts, not project-local scratch scripts. SPX/SPXW should route to `scripts/spx_intraday_latest.py`; Nikkei index work should route through `scripts/proxy_index_gamma.py` using EWJ options converted through a time-aligned `EWJ -> NKDmain -> NIYmain/current CFD` bridge. Generic `gamma_report.py` is for ordinary US stocks/ETFs and can be an input check, not the final answer for those index workflows.
 - For Nikkei proxy conversion, never pair a stale EWJ close with the current Nikkei CFD directly. If EWJ is closed, anchor the EWJ/NKD ratio using NKDmain or Nikkei CFD at the EWJ quote timestamp, then bridge to current NIYmain/current CFD with a current NKD/NIY ratio. If moomoo returns permission errors for `US.NKDmain` or `US.NIYmain`, ask for those anchors explicitly.
 - If a Nikkei cash close anchor is used, it must pair with an EWJ overnight/24h quote at the same Japan-close timestamp. Do not pair Japan cash close with the later US regular-session EWJ close.
+- If no better time-aligned Nikkei anchors are available, use the user's stored fallback conversion: `Nikkei target = 62038 * EWJ target / 91.265`. Before using it, check whether current NKD/NIY/EWJ anchors can replace it; if not, label it as an approximate fallback and list source EWJ strikes.
 - For SPX/Nikkei special workflows, default to JSON and a concise human summary. Do not generate HTML unless the user explicitly requests it; unfinished HTML reports should not appear as incidental artifacts.
 - Re-run after the regular session opens or after a large spot move; pre-market stock moves often use stale option IV/OI/Greeks.
 
@@ -37,3 +38,4 @@
 - 2026-05-17: Added OpenD option-chain throttling/sync rule after a project-specific SPY script had a frequency-limit workaround that had not been propagated to the reusable gamma report script.
 - 2026-05-17: Promoted SPX/SPXW parity-anchor and Nikkei EWJ-to-CFD proxy workflows into explicit skill routing so index requests do not silently fall back to the generic ETF gamma report.
 - 2026-05-17: Refined Nikkei proxy conversion to use time alignment: EWJ quote-time price must pair with NKDmain/Nikkei futures at the same timestamp, then bridge to current NIYmain/current CFD. Direct current CFD divided by stale EWJ close is invalid unless the timestamps match.
+- 2026-05-17: Added user fallback ratio for Nikkei proxy work: `62038 / 91.265`, to use only when better EWJ/NKD/NIY time-aligned anchors are unavailable.
