@@ -41,9 +41,11 @@ Route the request before choosing a script:
 
 - **Ordinary US stocks/ETFs**: use `scripts/gamma_report.py`.
 - **SPX / SPXW / SP500 / 标普500 / S&P 500 index gamma**: do not use `gamma_report.py` as the final workflow. Use `scripts/spx_intraday_latest.py` and `references/spx-intraday.md`: query `US..SPX`, keep SPX/SPXW strikes directly, infer the spot anchor from SPXW 0DTE put-call parity when the SPX index snapshot is unavailable, and treat SPY only as a sanity check or fallback.
-- **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels. Use EWJ only as a proxy option book, then convert to the same-session Nikkei CFD/index anchor with `scripts/proxy_index_gamma.py`. The report must state the anchor, ratio, and that this is a proxy positioning map rather than a domestic Nikkei option dealer book.
+- **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels, and do not use a current Nikkei anchor against a stale EWJ close. Use EWJ only as a proxy option book, then convert with a time-aligned bridge: EWJ quote-time value -> `NKDmain`/Nikkei futures at that same time -> current `NIYmain`/Nikkei CFD or the user's current index anchor. Use `scripts/proxy_index_gamma.py`. The report must state every anchor, ratio, timestamp, and limitation.
 
-Prefer a local report or JSON artifact, not just chat text. For ordinary US stocks/ETFs use `scripts/gamma_report.py`:
+For index-specific workflows, default to JSON plus a concise chat summary. Do not generate HTML unless the user explicitly asks for an HTML report; the HTML renderer is optional and may still be under active development.
+
+For ordinary US stocks/ETFs use `scripts/gamma_report.py` when the user asks for the ticker itself:
 
 ```bash
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.BA
@@ -61,7 +63,9 @@ For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
 
 ```bash
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/proxy_index_gamma.py US.EWJ \
-  --index-name "日经225 CFD" --index-anchor 60000 --output /path/to/nikkei_proxy_gamma.json
+  --index-name "日经225 / NKD-NIY proxy" \
+  --bridge-anchor-at-proxy-time 59920 --bridge-current 60110 --final-anchor 60080 \
+  --output /path/to/nikkei_proxy_gamma.json
 ```
 
 The script:
@@ -143,8 +147,12 @@ When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversio
 ## Nikkei / EWJ Proxy Conversion
 
 - Treat `Nikkei`, `日经`, `日経`, `NKY`, `Nikkei 225`, and `日经225` gamma requests as index-proxy work, not a plain EWJ ETF gamma request.
-- Use `US.EWJ` options as the proxy book only because moomoo may not provide the domestic Nikkei option chain. Convert every EWJ strike or wall to index space with `Nikkei_CFD_equiv = EWJ_strike * (current_Nikkei_CFD_or_index_anchor / current_EWJ_spot)`.
-- Prefer a same-session live Nikkei CFD anchor from the user's chart/platform. If unavailable, ask for the anchor or clearly label any external/current quote as approximate.
+- Use `US.EWJ` options as the proxy book only because moomoo may not provide the domestic Nikkei option chain. The conversion must be time-aligned:
+  `Nikkei_equiv = EWJ_strike * (NKD_at_EWJ_quote_time / EWJ_quote_spot) * (current_NIY_or_CFD_anchor / current_NKD)`.
+- Prefer `NKDmain` as the bridge because it is the USD Nikkei futures line closer to the US/EWJ session. Use `NIYmain` or the user's Nikkei CFD/index quote as the final current anchor when available.
+- If EWJ has already closed, do not pair its closing price with the current Nikkei CFD directly. Use the Nikkei futures/CFD value at EWJ's quote timestamp to form the EWJ-to-NKD ratio, then bridge from current NKD to current NIY/CFD.
+- If using Japan cash close as the anchor, pair it only with an EWJ overnight/24h quote from the same timestamp. If no real EWJ quote exists at Japan close, do not mix Japan cash close with the later US regular-session EWJ close.
+- Moomoo may recognize `US.NKDmain` and `US.NIYmain` but return permission errors. If that happens, ask the user for: `NKD at EWJ close/update time`, `current NKD`, and `current NIY or Nikkei CFD`.
 - Do not carry a prior EWJ/Nikkei ratio into a new session. Recompute after large FX, futures, or EWJ moves.
 - In the writeup, list both the converted Nikkei levels and the source EWJ strikes for auditability.
 - State the limitation: EWJ options capture US-listed Japan ETF positioning, USD/JPY and ETF-flow effects; they are not the full domestic Nikkei options dealer book.
