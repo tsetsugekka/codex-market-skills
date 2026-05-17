@@ -5,7 +5,8 @@
 ## 能做什么
 
 - 分析普通美股或美股 ETF 的期权 gamma 结构。
-- 分析 `.SPX`/SPXW 指数期权结构；如果拿不到指数实时行情或期权链，则用 SPY 期权、ES/CFD 或用户提供的指数锚进行换算并明确说明。
+- 分析 `.SPX`/SPXW 指数期权结构；SPX/标普500请求优先使用专用 `spx_intraday_latest.py`，用 `US..SPX` 链和 SPXW 0DTE 平价锚，不把普通 SPY/ETF 报告当最终结果。
+- 分析日经225时，用 EWJ 期权作为代理 book，再按同一时段日经 CFD/指数锚转换到日经点位；不直接展示原始 EWJ strike 当作指数点位。
 - 识别正 gamma wall、负 gamma pit、gamma flip、pin/阻力/支撑区域。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用来评估回本、止盈、止损或是否值得继续拿。
 - 需要时生成本地 HTML 报告；盘中快问可以只输出文字结论。
@@ -29,6 +30,8 @@
 - 需要本机安装并运行 moomoo OpenD。
 - 需要 Python SDK `moomoo` 可导入。
 - OpenD 需要保持后台运行；行情权限不足时，部分指数或期权数据可能不可用。
+- 通用报告脚本会对 `get_option_chain` 主动限速，并在 OpenD 返回“每30秒最多10次”一类错误后等待重试；项目脚本里的同类修复应同步回这个 skill。
+- 指数专用算法必须保存在 skill 脚本中：SPX/SPXW 用 `scripts/spx_intraday_latest.py`，日经/EWJ 转 CFD 用 `scripts/proxy_index_gamma.py`。
 - 这个 skill 只需要行情和期权链数据，不需要交易解锁，也不应调用交易解锁 API。
 
 ## 可选私有知识库

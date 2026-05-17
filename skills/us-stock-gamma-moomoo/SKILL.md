@@ -37,15 +37,36 @@ This skill requires moomoo OpenD plus the Python SDK/skills environment.
 
 ## Default Output
 
-Prefer a local HTML report, not just chat text. Use `scripts/gamma_report.py`:
+Route the request before choosing a script:
+
+- **Ordinary US stocks/ETFs**: use `scripts/gamma_report.py`.
+- **SPX / SPXW / SP500 / 标普500 / S&P 500 index gamma**: do not use `gamma_report.py` as the final workflow. Use `scripts/spx_intraday_latest.py` and `references/spx-intraday.md`: query `US..SPX`, keep SPX/SPXW strikes directly, infer the spot anchor from SPXW 0DTE put-call parity when the SPX index snapshot is unavailable, and treat SPY only as a sanity check or fallback.
+- **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels. Use EWJ only as a proxy option book, then convert to the same-session Nikkei CFD/index anchor with `scripts/proxy_index_gamma.py`. The report must state the anchor, ratio, and that this is a proxy positioning map rather than a domestic Nikkei option dealer book.
+
+Prefer a local report or JSON artifact, not just chat text. For ordinary US stocks/ETFs use `scripts/gamma_report.py`:
 
 ```bash
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.BA
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.MP --output /path/to/report.html
 ```
 
+For SPX/SPXW intraday index gamma use:
+
+```bash
+python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py \
+  --output /path/to/spx_intraday_latest.json
+```
+
+For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
+
+```bash
+python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/proxy_index_gamma.py US.EWJ \
+  --index-name "日经225 CFD" --index-anchor 60000 --output /path/to/nikkei_proxy_gamma.json
+```
+
 The script:
 - reads stock snapshot, option expirations, option chain, option snapshots, and daily K lines from moomoo OpenD;
+- throttles `get_option_chain` calls and retries once after OpenD frequency-limit errors, because moomoo can reject more than about 10 option-chain requests in 30 seconds;
 - uses `pre_price` when available, otherwise bid/ask midpoint, otherwise regular-session last price;
 - gathers option `OI`, `IV`, `delta`, `gamma`, `theta`, `vega`, bid/ask, volume;
 - calculates Black-Scholes vanna from live/anchor spot, strike, IV, and DTE because moomoo snapshots may not provide `option_vanna`;
@@ -119,6 +140,15 @@ When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversio
 - If live SPX/ES is unavailable, an external SPX/SPY ratio such as prior close from Yahoo Finance, Investing.com, Barchart, or another current quote source can be used as an approximate fallback. Clearly state the source/time and that it is not a live simultaneous conversion.
 - Recompute the ratio every session and after large moves; do not carry yesterday's ratio into today's levels.
 
+## Nikkei / EWJ Proxy Conversion
+
+- Treat `Nikkei`, `日经`, `日経`, `NKY`, `Nikkei 225`, and `日经225` gamma requests as index-proxy work, not a plain EWJ ETF gamma request.
+- Use `US.EWJ` options as the proxy book only because moomoo may not provide the domestic Nikkei option chain. Convert every EWJ strike or wall to index space with `Nikkei_CFD_equiv = EWJ_strike * (current_Nikkei_CFD_or_index_anchor / current_EWJ_spot)`.
+- Prefer a same-session live Nikkei CFD anchor from the user's chart/platform. If unavailable, ask for the anchor or clearly label any external/current quote as approximate.
+- Do not carry a prior EWJ/Nikkei ratio into a new session. Recompute after large FX, futures, or EWJ moves.
+- In the writeup, list both the converted Nikkei levels and the source EWJ strikes for auditability.
+- State the limitation: EWJ options capture US-listed Japan ETF positioning, USD/JPY and ETF-flow effects; they are not the full domestic Nikkei options dealer book.
+
 ## Option Expiry Selection
 
 Use a broader but still relevant option window instead of blindly taking the first few expiries. Keep horizons clean instead of mixing daily, weekly, and monthly expiries:
@@ -132,6 +162,7 @@ Use a broader but still relevant option window instead of blindly taking the fir
 
 ## Moomoo Data Caveats
 
+- Do not remove option-chain throttling from scripts. OpenD can return `获取期权链频率太高，请求失败，每30秒最多10次`; reusable fixes for that limit belong in `scripts/gamma_report.py`, not only in one-off project scripts.
 - During US pre-market, stock fields such as `pre_price`, `pre_high_price`, `pre_low_price`, and `pre_volume` may update, but listed options usually do not trade continuously. Greeks/IV/OI may still reflect the prior option session.
 - Open interest is not real-time intraday dealer inventory. `option_net_open_interest` may be empty.
 - GEX sign is a market convention, not proof of actual market-maker net positions.

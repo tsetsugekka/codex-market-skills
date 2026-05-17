@@ -2,6 +2,8 @@
 
 Use this only for `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmaps, or intraday index judgment.
 
+Use `scripts/spx_intraday_latest.py` for this workflow. Do not substitute the generic `scripts/gamma_report.py` for SPX/SPXW unless the user explicitly asks for a rough fallback and the direct `US..SPX` chain is unavailable.
+
 ## Analysis Order
 
 1. **Anchor**: current SPX cash when available from a live source. If moomoo rejects the SPX index snapshot but `US..SPX` 0DTE chains are available, infer the intraday anchor from liquid SPXW put-call parity (`spot/forward ~= strike + call_mid - put_mid`) using same-expiry PM-settled pairs near the market. Do not use delayed/static TradingView page text as the intraday anchor unless a live chart value is explicitly confirmed. SPY is only a sanity check or last-resort proxy.

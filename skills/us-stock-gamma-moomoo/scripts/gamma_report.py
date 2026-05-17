@@ -14,6 +14,7 @@ import argparse
 import json
 import math
 import statistics
+import time
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -27,6 +28,8 @@ from common import AuType, KLType, RET_OK, Session, check_ret, create_quote_cont
 
 DEFAULT_UNDERLYING = "US.BA"
 REPORT_DIR = Path(__file__).resolve().parent
+OPTION_CHAIN_DELAY_SECONDS = 3.2
+OPTION_CHAIN_RETRY_DELAY_SECONDS = 31.0
 
 
 @dataclass
@@ -260,8 +263,13 @@ def fetch_report_data(underlying: str):
             expiries = all_expiries[:6]
 
         option_codes = []
-        for expiry in expiries:
+        for idx, expiry in enumerate(expiries):
+            if idx:
+                time.sleep(OPTION_CHAIN_DELAY_SECONDS)
             ret, chain_df = ctx.get_option_chain(underlying, start=expiry, end=expiry)
+            if ret != RET_OK and "频率" in str(chain_df):
+                time.sleep(OPTION_CHAIN_RETRY_DELAY_SECONDS)
+                ret, chain_df = ctx.get_option_chain(underlying, start=expiry, end=expiry)
             check_ret(ret, chain_df, ctx, f"option chain {expiry}")
             option_codes.extend(str(code) for code in chain_df["code"].tolist())
 
@@ -501,12 +509,28 @@ def render_html(data, a):
     generated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     next_wall = next((k for k, _ in a["walls"] if k > (wall_above or spot) + 0.01), None)
     next_wall_text = price_level(next_wall)
+    same_wall = support_wall is not None and wall_above is not None and abs(support_wall - wall_above) < 0.01
+    if same_wall:
+        pin_label = f"{wall_text}：第一钉扎/分歧位"
+    elif support_wall is not None and wall_above is not None:
+        pin_label = f"{support_text}-{wall_text}：先看区间/钉扎"
+    elif wall_above is not None:
+        pin_label = f"{wall_text}：第一阻力/钉扎"
+    else:
+        pin_label = "无上方 wall：以价格确认优先"
+    if wall_above is not None and next_wall is not None:
+        breakout_label = f"站稳 {wall_text}：再看 {next_wall_text}"
+    elif wall_above is not None:
+        breakout_label = f"站稳 {wall_text}：观察成交确认"
+    else:
+        breakout_label = "无明确上方 wall：等待新链重跑"
 
     if a["net_current"] > 0:
         simple_now = f"{ticker} 盘前在 {spot:.2f}，已经顶到第一道期权阻力 {wall_text} 附近。这里更像会磨一磨的位置，不像刚启动的顺风区。"
+        range_text = f"{wall_text} 附近的钉扎/分歧" if same_wall else f"{support_text}-{wall_text} 之间震荡"
         simple_action = (
             f"我不会在这里直接追。开盘后如果能放量站稳 {wall_text}，再看下一道 {next_wall_text}；"
-            f"如果冲不上去，先按 {support_text}-{wall_text} 之间震荡处理。"
+            f"如果冲不上去，先按 {range_text} 处理。"
         )
         simple_wrong = f"如果跌破 {support_text} 还收不回，短线多头热度降温；如果跌破 {flip_text}，就不是普通回调，而是下跌更容易被放大的区域。"
         core_take = simple_now
@@ -638,8 +662,8 @@ def render_html(data, a):
 
       <h3>技术确认怎么用</h3>
       <div class="pill-row">
-        <span class="pill">240-250：先看阻力/钉扎</span>
-        <span class="pill">站稳 250：再看 255/260</span>
+        <span class="pill">{html.escape(pin_label)}</span>
+        <span class="pill">{html.escape(breakout_label)}</span>
         <span class="pill">跌破 {flip_text}：负 gamma 风险</span>
         <span class="pill">J 高位转弱：追多降权</span>
       </div>
