@@ -33,6 +33,31 @@ Prefer sources in this order, adjusting for language and market:
 
 Use more than one source when the headline is important, surprising, or likely to change the market read. Prefer original official sources when a live headline points to a specific data release, central-bank statement, government notice, or company disclosure.
 
+For intraday macro judgments, do not rely on headlines alone. Confirm with live or near-live market prices before deciding whether the tape is improving or deteriorating:
+
+- `DayTrading.monster` (`https://daytrading.monster/`) is a useful dashboard wrapper around TradingView widgets. Its default macro symbols include US index CFDs/futures, VIX, USD/JPY, DXY, US 10Y/30Y yields, gold, oil, copper, Nikkei CFD, TOPIX, Hang Seng, HK Tech, Taiwan, and Europe. If a futures, index, macro indicator, CFD, FX, commodity, or bond-yield code is unknown, check DayTrading.monster first and reuse its TradingView symbol. Symbols without the `D` badge can be used; `D` marks delayed exchange-limited data and should be avoided when a non-`D` alternative exists. A `24h` badge means the symbol is valid for 24-hour macro monitoring. A `365d` badge means the symbol is valid year-round and can be used on weekends or regular-market closures. DayTrading.monster's tokenized-assets group can therefore be used on weekends as an out-of-hours proxy for SPY, QQQ, gold, and oil, but label it clearly as a proxy rather than the official underlying price. The page itself is mostly a frontend shell; inspect its JavaScript or use the TradingView scanner equivalents when data must be read programmatically.
+- TradingView scanner is the preferred programmatic fallback for live/near-live rates and cross-asset checks when accessible. Useful symbols include:
+  - US yields: `TVC:US02Y`, `TVC:US10Y`, `TVC:US30Y`
+  - Japan yields: `TVC:JP02Y`, `TVC:JP05Y`, `TVC:JP10Y`, `TVC:JP20Y`, `TVC:JP30Y`
+  - US index futures: `CME_MINI:ES1!`, `CME_MINI:NQ1!`, `CBOT_MINI:YM1!`, `CME_MINI:RTY1!`
+  - Vol, FX, commodities: `CBOE:VIX`, `TVC:DXY`, `OANDA:USDJPY`, `NYMEX:CL1!`, `ICEEUR:BRN1!`, `OANDA:XAUUSD`, `OANDA:XCUUSD`
+  - Not every DayTrading.monster TradingView widget symbol is available through scanner. If a preferred no-`D` dashboard symbol such as `CAPITALCOM:VIX` does not return through scanner, either read it visually from the dashboard or fall back to the official scanner symbol and state the delay, e.g. `CBOE:VIX` is often `delayed_streaming_900`, while `ICEEUR:BRN1!` and `NYMEX:CL1!` are often `delayed_streaming_600`.
+- Eastmoney public endpoints can often replace AkShare for China macro, China-US daily yield tables, global index tables, and commodity/futures confirmation. Prefer direct Eastmoney requests when the endpoint is known, because this avoids Python dependency drift and makes failures easier to debug. Eastmoney does not normally require an API key for these public endpoints, but URLs/tokens can change and requests can be blocked or disconnected.
+  - China-US Treasury daily yield table endpoint pattern used by AkShare:
+    `https://datacenter.eastmoney.com/api/data/get?type=RPTA_WEB_TREASURYYIELD&sty=ALL&st=SOLAR_DATE&sr=-1&token=894050c76af8597a853f5b408b759f5d&p=1&ps=500&pageNo=1&pageNum=1`
+  - Useful field mapping for that endpoint:
+    - `SOLAR_DATE`: date
+    - `EMM00588704`, `EMM00166462`, `EMM00166466`, `EMM00166469`: China 2Y, 5Y, 10Y, 30Y yields
+    - `EMM01276014`: China 10Y-2Y spread
+    - `EMG00001306`, `EMG00001308`, `EMG00001310`, `EMG00001312`: US 2Y, 5Y, 10Y, 30Y yields
+    - `EMG01339436`: US 10Y-2Y spread
+  - Treat Eastmoney daily yield tables as daily context, not intraday truth. Same-day US yield fields can lag or be blank before the source updates.
+- `AkShare` is optional and should not be the default. It is a useful no-API-key wrapper when direct endpoints are inconvenient, but it can introduce heavy Python dependencies and environment conflicts. If it is used, install it in an isolated temporary environment, never into the base Anaconda/Python environment:
+  `python3 -m pip install --target /private/tmp/akshare_test akshare "numpy<2"`
+  then run with:
+  `PYTHONPATH=/private/tmp/akshare_test PYTHONNOUSERSITE=1 python3 -c "import akshare as ak; ..."`
+  Tested but secondary interfaces: `ak.bond_zh_us_rate()`, `ak.futures_global_spot_em()`, `ak.index_global_spot_em()`.
+
 For A-share broad-market tape questions, use live headlines first, then use Sohu market data as an auxiliary confirmation layer:
 
 - `https://q.stock.sohu.com/cn/zs.shtml` and `https://q.stock.sohu.com/zs/zs-2.html`: index map and broad market level.
@@ -58,6 +83,9 @@ Do not treat Nikkei/TOPIX weakness as a single cause without checking JPX sector
    - Start with Jin10 for Chinese macro tape if accessible.
    - Use Wallstreetcn's live endpoint for Chinese/Asia backup and market breadth context.
    - Use FinancialJuice RSS for English global confirmation and US/EU tape.
+   - Before concluding that macro is better or worse intraday, check actual market prices: US index futures, VIX, US yields, JGB yields, USD/JPY, DXY, oil, gold, and any directly relevant local index/sector breadth. If headlines and prices conflict, lead with the price action and explain the conflict.
+   - For rates-sensitive US or Japan market reads, prioritize live/near-live yield quotes (`TVC:US10Y`, `TVC:US30Y`, `TVC:JP05Y`, `TVC:JP10Y`, `TVC:JP20Y`, `TVC:JP30Y`) over stale article text. A headline that says yields are surging can be outdated if live yields have already pulled back.
+   - Use AkShare only as an auxiliary source for daily yield history, China macro, China/overseas index tables, and commodity/futures confirmation. Do not use AkShare alone to decide whether US/Japan yields are improving or worsening intraday.
    - For A-share broad-market, sector rotation, "买什么方向", or "要不要入场" questions, also check Sohu indexes and industry/concept board涨跌幅 after the快讯 check.
    - For Japan broad-market, Nikkei/TOPIX weakness, sector drag, or Japanese single-stock move with strong market pressure, also check JPX real-time indexes and TOPIX sector/TOPIX-17 strength after the快讯 check.
 3. Filter aggressively:
