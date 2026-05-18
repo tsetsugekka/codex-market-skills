@@ -29,6 +29,7 @@ Read this section before using the JP stock skill. Keep it compact and current.
 - Do not pre-commit to the next theme winner. Keep candidates equal until one shows stronger price reaction, guidance surprise, peer confirmation, and 掲示板 expectation reset.
 - Old leader rebounds after a new leader weakens can be a warning: it may mean residual positioning and exit liquidity rather than a fresh leadership cycle.
 - When JPX sector/style data shows the relevant sector is holding better than the stock, do not over-attribute weakness to Nikkei/TOPIX or macro. Treat it as stock-specific event premium, crowding, or positioning until the stock reclaims its key level.
+- When a Japanese-stock answer uses macro/flash-news, technical, or sentiment reasoning, call the corresponding sibling skill instead of folding that layer into this skill ad hoc: `macro-news-check` for 宏观/快讯, `stock-technical-analysis` for 技术面, and `stock-sentiment-analysis` for 情绪面/期待差. State the fusion layers in the final answer when they materially affect the conclusion.
 
 ### Practical Checklist Before A Japanese Earnings Release
 
@@ -101,3 +102,4 @@ Use this protocol after multi-turn discussion about the same stock.
 - 2026-05-15 Added a generalized expectation-gap rule for numeric and qualitative catalysts, so move explanations compare prior expectation with actual news before assigning causality.
 - 2026-05-15 Added a JP earnings disclosure-material rule from an AI data-center case: beyond headline numbers and 掲示板, check explanation materials, business updates, project/product releases, pipeline certainty, funding, dilution, and cash-flow quality.
 - 2026-05-18 Added a JP long-duration theme catalyst lesson from a strategic-partnership case: strategic validity does not equal short-term support; if price rejects the catalyst and underperforms its sector, classify the issue as event-premium giveback until key levels are reclaimed.
+- 2026-05-19 Added mandatory fusion rule: macro/flash-news, technical, and sentiment layers must route to their sibling skills when used.

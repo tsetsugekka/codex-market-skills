@@ -28,6 +28,18 @@ Cross-skill calls are operational. When this workflow says to use another market
 
 Required coordination: for US option/gamma analysis, use this skill as the positioning and option-structure entry point, and add supporting skills based on the analysis workflow, not only on the user's wording. If the analysis is about SPX, SPXW, SPY, QQQ, Nasdaq, Dow, Russell, VIX, Nikkei proxy gamma, or any broad index/ETF gamma map, load `macro-news-check` because index gamma cannot be read well without current macro and broad-market tape. If the analysis discusses news acceptance, theme crowding, risk-on/risk-off tone, forum/social sentiment, or leader/follower context, load `stock-sentiment-analysis`. If the final view depends on support/resistance, intraday timing, trend confirmation, failed breakout, or price-action validation, load `stock-technical-analysis`. Gamma is the positioning map; macro, sentiment, and chart structure decide whether the map is being accepted or rejected.
 
+## Mandatory Execution Gate
+
+Before running scripts or writing the final answer, classify the request and load required sibling skills:
+
+- **Broad index / ETF gamma** (`SPX`, `SPXW`, `SPY`, `QQQ`, `Nasdaq`, `Dow`, `Russell`, `VIX`, `Nikkei`): load `macro-news-check` first or in parallel, then explicitly merge the macro tape with the gamma map. Do not answer index gamma from gamma data alone.
+- **宏观 / 快讯 / rates / FX / commodities / geopolitics / Fed / yields**: load `macro-news-check`. Do not substitute ad hoc web search for this layer.
+- **技术面 / intraday execution / "now" / support-resistance / "can it get through" / price action**: load `stock-technical-analysis` unless the user asks for a pure option-positioning dump. Use price action to decide whether a wall/pit is accepted, rejected, or only a battlefield.
+- **情绪面 / news acceptance / crowding / risk-on or risk-off psychology / expectation gap**: load `stock-sentiment-analysis` when sentiment or expectation gap changes the interpretation.
+- If a required sibling skill is unavailable, say so and provide a limited gamma-only read. If it is available but not needed, state the reason briefly.
+
+Final answers for index gamma should include a compact `融合口径` line naming the layers used, for example: `自算 SPXW gamma + macro-news-check tape + stock-technical-analysis price action + stock-sentiment-analysis emotion/expectation gap`. This makes skipped or missing skill fusion visible.
+
 ## Environment Check
 
 This skill requires moomoo OpenD plus the Python SDK/skills environment.

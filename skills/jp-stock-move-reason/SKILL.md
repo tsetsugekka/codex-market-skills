@@ -29,6 +29,12 @@ When preparing a GitHub upload or public release, use the public version only an
 
    Required coordination: for Japanese stock analysis, use this skill as the evidence-gathering entry point, and add supporting skills based on clues found during analysis, not only on the user's wording. Yahoo 掲示板 itself is an evidence source, not an automatic trigger for sentiment analysis. If 掲示板/news reveals a concrete clue about theme leadership, peer follow-through, crowding, leader/follower position, defensive alternative, old-leader rebound, or risk-on/risk-off acceptance, load `stock-sentiment-analysis` to test that clue. If 掲示板/news discusses Nikkei/TOPIX, JPX sectors, Nikkei futures, JGB yields, USD/JPY, BOJ/MOF policy, US/China spillover, commodities, or geopolitics, load `macro-news-check` to verify the tape instead of accepting forum claims. If 掲示板/news or the price move points to support/resistance, failed breakout, trend damage, or catalyst acceptance/rejection, load `stock-technical-analysis` to verify the chart. When the original question is directly about an index/broad tape such as Nikkei 225, TOPIX, JPX sectors, Nikkei futures, or 日经大盘, load `macro-news-check` by default.
 
+   Mandatory execution gate:
+   - If the answer uses **宏观** or **快讯** to explain the stock, sector, Nikkei/TOPIX, JGB yields, USD/JPY, BOJ/MOF policy, US/China spillover, commodities, or geopolitics, load `macro-news-check`. Do not replace this layer with ad hoc web search.
+   - If the answer uses **技术面** such as support/resistance, trend confirmation, failed breakout, volume-price behavior, intraday timing, or "能不能上/下", load `stock-technical-analysis`.
+   - If the answer uses **情绪面** such as theme leadership, crowding, leader/follower, defensive alternative, old-leader rebound, risk-on/risk-off, expectation gap, or 掲示板 psychology, load `stock-sentiment-analysis`.
+   - Final answers should include a compact `融合口径` line when any supporting skill is used, e.g. `Yahoo/Kabutan/Traders 证据 + macro-news-check tape + stock-technical-analysis 结构 + stock-sentiment-analysis 情绪/期待差`.
+
 2. Run the collector script from the repo root:
 
 ```bash

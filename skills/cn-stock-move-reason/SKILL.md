@@ -31,6 +31,12 @@ When preparing a GitHub upload or public release, use the public version only an
 
    Required coordination: for A-share analysis, use this skill as the evidence-gathering entry point, and add supporting skills based on clues found during analysis, not only on the user's wording. 股吧 itself is an evidence source, not an automatic trigger for sentiment analysis. If 股吧/资讯/news reveals a concrete clue about main-line status, crowding, attack/defense rotation, leader/follower position, or emotion-cycle phase, load `stock-sentiment-analysis` to test that clue. If 股吧/资讯/news discusses the broad market, index pressure, policy/liquidity, FX/rates, commodities, overseas markets, or geopolitical drivers, load `macro-news-check` to verify the tape instead of accepting forum claims. If 股吧/资讯/news or the price move points to support/resistance, failed breakout, trend damage, or catalyst acceptance/rejection, load `stock-technical-analysis` to verify the chart. When the original question is directly about an index/broad tape such as 上证、深成指、创业板、科创50、A50、恒生科技/港股 spillover, load `macro-news-check` by default.
 
+   Mandatory execution gate:
+   - If the answer uses **宏观** or **快讯** to explain the stock, sector, index, liquidity, policy, FX/rates, commodities, overseas spillover, or geopolitics, load `macro-news-check`. Do not replace this layer with ad hoc web search.
+   - If the answer uses **技术面** such as support/resistance, trend confirmation, failed breakout, volume-price behavior, intraday timing, or "能不能上/下", load `stock-technical-analysis`.
+   - If the answer uses **情绪面** such as main-line status, crowding, emotion cycle, leader/follower, risk-on/risk-off, expectation gap, or forum psychology, load `stock-sentiment-analysis`.
+   - Final answers should include a compact `融合口径` line when any supporting skill is used, e.g. `东财/公告/股吧证据 + macro-news-check tape + stock-technical-analysis 结构 + stock-sentiment-analysis 情绪周期`.
+
    Optional 东方财富妙想 enhancement: if the user has installed the `mx-*` A-share/financial skills in the current session or under the local skills directory, use them as a non-blocking data layer. Never ask the user to install them and never make them required. If an `mx-*` skill is missing, unauthorized, over quota, or returns empty data, quietly continue with the normal collector/web workflow and do not claim that 妙想 data was used.
 
    Use the 妙想 skills this way:
