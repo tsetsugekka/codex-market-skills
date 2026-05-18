@@ -16,7 +16,7 @@
 - For Nikkei proxy conversion, never pair a stale EWJ close with the current Nikkei CFD directly. If EWJ is closed, anchor the EWJ/NKD ratio using NKDmain or Nikkei CFD at the EWJ quote timestamp, then bridge to current NIYmain/current CFD with a current NKD/NIY ratio. If moomoo returns permission errors for `US.NKDmain` or `US.NIYmain`, ask for those anchors explicitly.
 - If a Nikkei cash close anchor is used, it must pair with an EWJ overnight/24h quote at the same Japan-close timestamp. Do not pair Japan cash close with the later US regular-session EWJ close.
 - If no better time-aligned Nikkei anchors are available, use the user's stored fallback conversion: `Nikkei target = 62038 * EWJ target / 91.265`. Before using it, check whether current NKD/NIY/EWJ anchors can replace it; if not, label it as an approximate fallback and list source EWJ strikes.
-- For SPX/Nikkei special workflows, default to JSON and a concise human summary. Do not generate HTML unless the user explicitly requests it; unfinished HTML reports should not appear as incidental artifacts.
+- For SPX/Nikkei special workflows, default to a concise human text summary. Do not generate JSON, HTML, or any other file unless the user explicitly requests a raw export or report artifact; unfinished files should not appear as incidental artifacts.
 - Re-run after the regular session opens or after a large spot move; pre-market stock moves often use stale option IV/OI/Greeks.
 
 ## Compression Protocol
@@ -39,3 +39,4 @@
 - 2026-05-17: Promoted SPX/SPXW parity-anchor and Nikkei EWJ-to-CFD proxy workflows into explicit skill routing so index requests do not silently fall back to the generic ETF gamma report.
 - 2026-05-17: Refined Nikkei proxy conversion to use time alignment: EWJ quote-time price must pair with NKDmain/Nikkei futures at the same timestamp, then bridge to current NIYmain/current CFD. Direct current CFD divided by stale EWJ close is invalid unless the timestamps match.
 - 2026-05-17: Added user fallback ratio for Nikkei proxy work: `62038 / 91.265`, to use only when better EWJ/NKD/NIY time-aligned anchors are unavailable.
+- 2026-05-18: Changed gamma workflows to default to text-only output. HTML and JSON are explicit opt-in artifacts, not default side effects.

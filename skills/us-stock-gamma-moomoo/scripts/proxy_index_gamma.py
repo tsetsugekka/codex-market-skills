@@ -221,6 +221,22 @@ def top(mapping: dict[float, float], reverse: bool = True, n: int = 12) -> list[
     return [[float(k), float(v)] for k, v in sorted(mapping.items(), key=lambda kv: kv[1], reverse=reverse)[:n]]
 
 
+def money(value: float) -> str:
+    sign = "-" if value < 0 else ""
+    value = abs(value)
+    if value >= 1_000_000_000:
+        return f"{sign}{value / 1_000_000_000:.2f}B"
+    if value >= 1_000_000:
+        return f"{sign}{value / 1_000_000:.1f}M"
+    return f"{sign}{value:,.0f}"
+
+
+def level_list(items: list[list[float]], limit: int = 6) -> str:
+    if not items:
+        return "无"
+    return ", ".join(f"{level:g}({money(value)})" for level, value in items[:limit])
+
+
 def aggregate(rows: list[dict], etf_spot: float, ratio: float, round_to: float) -> dict:
     by_index: dict[float, float] = {}
     by_vanna: dict[float, float] = {}
@@ -248,6 +264,42 @@ def aggregate(rows: list[dict], etf_spot: float, ratio: float, round_to: float) 
     }
 
 
+def render_text(result: dict) -> str:
+    all_bucket = result["buckets"].get("ALL", {})
+    conversion = result["conversion"]
+    ratio = conversion.get("ratio", 0)
+    regime = "正 gamma" if all_bucket.get("net_gex_proxy", 0) > 0 else "负 gamma"
+    walls = all_bucket.get("index_walls", [])
+    pits = all_bucket.get("index_pits", [])
+    top_wall = f"{walls[0][0]:g}" if walls else "无"
+    top_pit = f"{pits[0][0]:g}" if pits else "无"
+
+    return "\n".join(
+        [
+            f"{result['index_name']} proxy gamma memo",
+            "",
+            f"一句话：用 {result['proxy_symbol']} 期权链换算到指数锚点，当前全窗口为 {regime}；主 wall {top_wall}，主 pit {top_pit}。",
+            f"我会怎么做：把 {level_list(walls, 4)} 当作上方钉扎/阻力，把 {level_list(pits, 4)} 当作下方加速风险区；必须结合日经期货/CFD 实时价格确认。",
+            "什么情况说明我错了：若日经现货/期货流直接穿越这些换算位且不回头，说明 EWJ 代理期权流不足以主导当下指数盘。",
+            "",
+            "换算：",
+            f"- Method: {conversion.get('method', '')}",
+            f"- Ratio: {ratio:.6f}; proxy spot: {result.get('proxy_spot', 0):.3f}; round_to: {conversion.get('round_to', '')}",
+            f"- Proxy anchor time: {result['stock_snapshot'].get('proxy_anchor_time_used', '')}",
+            f"- Limitation: {conversion.get('limitation', '')}",
+            "",
+            "关键位：",
+            f"- Net GEX proxy: {money(all_bucket.get('net_gex_proxy', 0))}; Net VEX proxy: {money(all_bucket.get('net_vex_proxy', 0))}; 样本数: {all_bucket.get('count', 0)}",
+            f"- Index gamma walls: {level_list(walls)}",
+            f"- Index gamma pits: {level_list(pits)}",
+            f"- Index vanna positive zones: {level_list(all_bucket.get('index_vanna_walls', []))}",
+            f"- Index vanna negative zones: {level_list(all_bucket.get('index_vanna_pits', []))}",
+            "",
+            f"数据：生成 {result.get('generated', '')}; 到期日 {', '.join(result.get('selected_expiries', []))}。EWJ 是代理簿，不是日本本土日经期权全量 dealer book。",
+        ]
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Convert ETF option gamma levels to an index/CFD anchor")
     parser.add_argument("proxy_symbol", nargs="?", default="US.EWJ", help="ETF option proxy, e.g. US.EWJ")
@@ -263,7 +315,8 @@ def main() -> None:
     parser.add_argument("--round-to", type=float, default=50)
     parser.add_argument("--months", type=int, default=1)
     parser.add_argument("--time-tolerance-minutes", type=int, default=10)
-    parser.add_argument("--output", help="Output JSON path")
+    parser.add_argument("--json-output", help="Optional JSON path; use only when a raw data file is explicitly requested")
+    parser.add_argument("--output", dest="json_output", help=argparse.SUPPRESS)
     parser.add_argument("--chain-delay", type=float, default=OPTION_CHAIN_DELAY_SECONDS)
     parser.add_argument("--retry-delay", type=float, default=OPTION_CHAIN_RETRY_DELAY_SECONDS)
     args = parser.parse_args()
@@ -343,10 +396,11 @@ def main() -> None:
             "selected_expiries": expiries,
             "buckets": {"ALL": aggregate(rows, etf_spot, ratio, args.round_to), **expiry_buckets},
         }
-        path = Path(args.output) if args.output else SCRIPT_DIR / f"{args.proxy_symbol.split('.')[-1].lower()}_proxy_index_gamma_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(path)
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(render_text(result))
+        if args.json_output:
+            path = Path(args.json_output)
+            path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"\nJSON data: {path}")
     finally:
         safe_close(ctx)
 

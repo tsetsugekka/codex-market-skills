@@ -1,6 +1,6 @@
 ---
 name: us-stock-gamma-moomoo
-description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, or a web report. Produces plain-language conclusions plus a local HTML report using moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price.
+description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, or option positioning. Produces plain-language conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; file reports are optional only when explicitly requested.
 metadata:
   version: 0.1.3
 ---
@@ -45,20 +45,19 @@ Route the request before choosing a script:
 - **SPX / SPXW / SP500 / 标普500 / S&P 500 index gamma**: do not use `gamma_report.py` as the final workflow. Use `scripts/spx_intraday_latest.py` and `references/spx-intraday.md`: query `US..SPX`, keep SPX/SPXW strikes directly, infer the spot anchor from SPXW 0DTE put-call parity when the SPX index snapshot is unavailable, and treat SPY only as a sanity check or fallback.
 - **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels, and do not use a current Nikkei anchor against a stale EWJ close. Use EWJ only as a proxy option book, then convert with a time-aligned bridge: EWJ quote-time value -> `NKDmain`/Nikkei futures at that same time -> current `NIYmain`/Nikkei CFD or the user's current index anchor. Use `scripts/proxy_index_gamma.py`. The report must state every anchor, ratio, timestamp, and limitation.
 
-For index-specific workflows, default to JSON plus a concise chat summary. Do not generate HTML unless the user explicitly asks for an HTML report; the HTML renderer is optional and may still be under active development.
+Default to a concise chat/terminal text summary. Do not generate HTML, JSON, or other files unless the user explicitly asks for a report file, raw data export, or machine-readable artifact.
 
 For ordinary US stocks/ETFs use `scripts/gamma_report.py` when the user asks for the ticker itself:
 
 ```bash
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.BA
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.MP --output /path/to/report.html
+python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.MP
 ```
 
 For SPX/SPXW intraday index gamma use:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py \
-  --output /path/to/spx_intraday_latest.json
+python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py
 ```
 
 For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
@@ -66,8 +65,7 @@ For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
 ```bash
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/proxy_index_gamma.py US.EWJ \
   --index-name "日经225 / NKD-NIY proxy" \
-  --bridge-anchor-at-proxy-time 59920 --bridge-current 60110 --final-anchor 60080 \
-  --output /path/to/nikkei_proxy_gamma.json
+  --bridge-anchor-at-proxy-time 59920 --bridge-current 60110 --final-anchor 60080
 ```
 
 The script:
@@ -80,9 +78,9 @@ The script:
 - calculates signed GEX with the common assumption `Call = +`, `Put = -`;
 - calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
-- writes a local HTML report with conclusions first and charts second.
+- prints a readable text memo by default; `--html-output` or `--output` should be used only when the user explicitly asks for a file.
 
-For SPX 0DTE or quick trading questions, chat-only is acceptable when a report would slow the answer. Still compute or fetch the chain first when possible.
+For SPX 0DTE or quick trading questions, chat/terminal text is the default. Still compute or fetch the chain first when possible.
 
 For short-dated option value scenarios, use `scripts/option_scenario_table.py` after fetching live IV/spot from moomoo:
 
@@ -187,4 +185,4 @@ Use a broader but still relevant option window instead of blindly taking the fir
 
 ## When Chat-Only Is Enough
 
-If the user asks for a quick look, still prefer running the report script first, then summarize the HTML's “一句话 / 我会怎么做 / invalidation” sections in chat and link the report.
+If the user asks for a quick look, run the relevant script and answer from its text output. Do not link a report or attach a file unless the user explicitly requested one.

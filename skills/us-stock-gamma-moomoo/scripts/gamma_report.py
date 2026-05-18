@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Generate a local gamma/vanna exposure report from moomoo OpenD.
+Print a gamma/vanna exposure memo from moomoo OpenD.
 
-The report is intentionally opinionated: charts are evidence, while the
-summary turns gamma structure into trading scenarios that can be combined
-with the user's Strategy 2 indicators.
+The memo is intentionally opinionated: option structure is evidence, while
+the summary turns gamma structure into trading scenarios that can be combined
+with technical confirmation.
 """
 
 from __future__ import annotations
@@ -158,6 +158,18 @@ def price_level(value) -> str:
     if value is None:
         return "无"
     return f"{float(value):g}"
+
+
+def fmt_num(value, digits: int = 2) -> str:
+    if value is None:
+        return "无"
+    return f"{float(value):.{digits}f}"
+
+
+def level_list(items, limit: int = 6) -> str:
+    if not items:
+        return "无"
+    return ", ".join(f"{k:g}({money(v)})" for k, v in items[:limit])
 
 
 def add_months(d: date, months: int) -> date:
@@ -727,20 +739,79 @@ def render_html(data, a):
 """
 
 
+def render_text(data, a):
+    stock = data["stock"]
+    ticker = stock["code"].split(".")[-1]
+    spot = stock["spot"]
+    flip_text = fmt_num(a["flip"]) if a["flip"] else "未检出"
+    wall_above = a["nearest_wall_above"][0] if a["nearest_wall_above"] else None
+    support_wall = a["nearest_support_wall"][0] if a["nearest_support_wall"] else None
+    next_wall = next((k for k, _ in a["walls"] if k > (wall_above or spot) + 0.01), None)
+    wall_text = price_level(wall_above)
+    support_text = price_level(support_wall)
+    next_wall_text = price_level(next_wall)
+
+    if a["net_current"] > 0:
+        one_line = (
+            f"{ticker} 当前按 {stock['spot_basis']} {spot:.2f} 做锚，净 GEX 为正，"
+            f"上方第一 wall 在 {wall_text}，下方支撑 wall 在 {support_text}。"
+        )
+        action = (
+            f"不把 gamma wall 当追涨信号。若放量站稳 {wall_text}，再看 {next_wall_text}；"
+            f"若冲不上，先按 {support_text}-{wall_text} 的钉扎/震荡处理。"
+        )
+        wrong = f"跌破 {support_text} 且收不回，多头结构降权；跌破 flip {flip_text}，趋势放大风险上升。"
+    else:
+        one_line = (
+            f"{ticker} 当前按 {stock['spot_basis']} {spot:.2f} 做锚，净 GEX 为负，"
+            "价格更容易顺着突破或跌破方向放大。"
+        )
+        action = f"先看开盘前后方向确认，不急着逆势抄底或摸顶；重新站回 flip {flip_text} 上方，再按震荡盘处理。"
+        wrong = f"若价格站回 {flip_text} 且成交不放大，负 gamma 风险下降。"
+
+    return "\n".join(
+        [
+            f"{ticker} gamma/vanna memo",
+            "",
+            f"一句话：{one_line}",
+            f"我会怎么做：{action}",
+            f"什么情况说明我错了：{wrong}",
+            "",
+            "关键位：",
+            f"- Spot: {spot:.2f} ({stock['spot_basis']}; 更新时间 {stock['update_time']})",
+            f"- 净 GEX: {money(a['net_current'])}; 净 VEX: {money(a['net_vanna'])}; regime: {a['regime']}",
+            f"- Gamma walls: {level_list(a['walls'])}",
+            f"- Negative gamma pits: {level_list(a['pits'])}",
+            f"- Vanna positive zones: {level_list(a['vanna_walls'])}",
+            f"- Vanna negative zones: {level_list(a['vanna_pits'])}",
+            f"- Gamma flip: {flip_text}",
+            "",
+            "技术确认配合：",
+            f"- 20日涨跌幅 {pct(a['ret_20d'])}; MA20 {fmt_num(a['ma20'])}; MA50 {fmt_num(a['ma50'])}",
+            f"- KDJ J {a['j']:.1f}; 快速 MACD DIF/DEA {a['dif']:.2f}/{a['dea']:.2f}",
+            "- Gamma 只给地图；突破、失败或反转仍要用成交、KDJ/MACD、FVG/均线结构确认。",
+            "",
+            "数据注意：盘前股票价格可能更新，但期权 IV/OI/Greeks 多数仍是上一期权交易时段状态；开盘后若现货或期权量明显变化，需要重跑。",
+        ]
+    )
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Generate a moomoo OpenD gamma exposure HTML report")
+    parser = argparse.ArgumentParser(description="Print a moomoo OpenD gamma exposure text memo")
     parser.add_argument("code", nargs="?", default=DEFAULT_UNDERLYING, help="Stock code, e.g. US.BA or US.MP")
-    parser.add_argument("--output", default=None, help="Output HTML path")
+    parser.add_argument("--html-output", default=None, help="Optional HTML path; use only when a file report is explicitly requested")
+    parser.add_argument("--output", dest="html_output", help=argparse.SUPPRESS)
     args = parser.parse_args()
 
     code = args.code.upper()
-    ticker = code.split(".")[-1].lower()
-    report_path = Path(args.output) if args.output else REPORT_DIR / f"{ticker}_gamma_report.html"
 
     data = fetch_report_data(code)
     analysis = analyze(data)
-    report_path.write_text(render_html(data, analysis), encoding="utf-8")
-    print(report_path)
+    print(render_text(data, analysis))
+    if args.html_output:
+        report_path = Path(args.html_output)
+        report_path.write_text(render_html(data, analysis), encoding="utf-8")
+        print(f"\nHTML report: {report_path}")
 
 
 if __name__ == "__main__":

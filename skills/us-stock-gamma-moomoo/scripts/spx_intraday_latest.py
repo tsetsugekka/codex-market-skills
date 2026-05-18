@@ -192,6 +192,12 @@ def levels(items: list[list[float]], limit: int = 8) -> str:
     return ", ".join(f"{x[0]:g}" for x in items[:limit])
 
 
+def levels_with_value(items: list[list[float]], limit: int = 6) -> str:
+    if not items:
+        return "无"
+    return ", ".join(f"{level:g}({money(value)})" for level, value in items[:limit])
+
+
 def table_rows(items: list[list[float]], value_label: str) -> str:
     if not items:
         return '<tr><td colspan="2">无</td></tr>'
@@ -274,6 +280,45 @@ def render_html_report(result: dict) -> str:
 </html>"""
 
 
+def render_text_report(result: dict) -> str:
+    spot = result["spot_anchor"]
+    zero = result["buckets"].get("0DTE", {})
+    all_bucket = result["buckets"].get("All", {})
+    next2 = result["buckets"].get("Next2", {})
+    fri2w = result["buckets"].get("Fri2w", {})
+    zero_regime = "正 gamma" if zero.get("net_gex", 0) > 0 else "负 gamma"
+    all_regime = "正 gamma" if all_bucket.get("net_gex", 0) > 0 else "负 gamma"
+    top_wall = zero.get("walls", [[None, 0]])[0][0] if zero.get("walls") else None
+    top_pit = zero.get("pits", [[None, 0]])[0][0] if zero.get("pits") else None
+    wall_text = f"{top_wall:g}" if top_wall is not None else "无"
+    pit_text = f"{top_pit:g}" if top_pit is not None else "无"
+
+    return "\n".join(
+        [
+            "SPX/SPXW intraday gamma memo",
+            "",
+            f"一句话：SPX 锚点 {spot:.2f}（{result.get('spot_method', '')}），0DTE 为 {zero_regime}，全窗口为 {all_regime}；0DTE 主 wall {wall_text}，主 pit {pit_text}。",
+            f"我会怎么做：先把 {levels(zero.get('walls', []), 4)} 当作上方钉扎/阻力观察，把 {levels(zero.get('pits', []), 4)} 当作下方加速风险区；突破或跌破后再用期指、成交和宏观 tape 确认。",
+            f"什么情况说明我错了：若价格穿越 0DTE flip {levels(zero.get('flips', []), 4)} 后没有延续，说明当日期权地图被现货流或宏观消息覆盖。",
+            "",
+            "0DTE：",
+            f"- 净 GEX: {money(zero.get('net_gex', 0))}; 净 VEX: {money(zero.get('net_vex', 0))}; 样本数: {zero.get('count', 0)}",
+            f"- Gamma walls: {levels_with_value(zero.get('walls', []))}",
+            f"- Gamma pits: {levels_with_value(zero.get('pits', []))}",
+            f"- Vanna positive zones: {levels_with_value(zero.get('vanna_walls', []))}",
+            f"- Vanna negative zones: {levels_with_value(zero.get('vanna_pits', []))}",
+            "",
+            "近端窗口：",
+            f"- Next2 walls: {levels_with_value(next2.get('walls', []), 5)}",
+            f"- Next2 pits: {levels_with_value(next2.get('pits', []), 5)}",
+            f"- Fri2w walls: {levels_with_value(fri2w.get('walls', []), 5)}",
+            f"- Fri2w pits: {levels_with_value(fri2w.get('pits', []), 5)}",
+            "",
+            f"数据：生成 {result.get('generated', '')}; 到期日 {', '.join(result.get('expiries', []))}; SPY 只作 sanity check，不作为 SPX 点位换算主流程。",
+        ]
+    )
+
+
 def get_option_chain(ctx, expiry: str, strike_min: float, strike_max: float, retry_delay: float):
     ret, chain = ctx.get_option_chain(UNDERLYING, start=expiry, end=expiry)
     if ret != RET_OK and "频率" in str(chain):
@@ -285,8 +330,9 @@ def get_option_chain(ctx, expiry: str, strike_min: float, strike_max: float, ret
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate a SPX/SPXW intraday gamma JSON report")
-    parser.add_argument("--output", help="Output JSON path")
+    parser = argparse.ArgumentParser(description="Print a SPX/SPXW intraday gamma text memo")
+    parser.add_argument("--json-output", help="Optional JSON path; use only when a raw data file is explicitly requested")
+    parser.add_argument("--output", dest="json_output", help=argparse.SUPPRESS)
     parser.add_argument("--html-output", help="Optional readable HTML report path")
     parser.add_argument("--strike-min", type=float, default=6600)
     parser.add_argument("--strike-max", type=float, default=8200)
@@ -396,14 +442,14 @@ def main() -> None:
             "filters": {"0DTE": "SPXW + PM settled only", "strike_window": [args.strike_min, args.strike_max]},
             "buckets": buckets,
         }
-        path = Path(args.output) if args.output else SCRIPT_DIR / f"spx_intraday_latest_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(render_text_report(out))
+        if args.json_output:
+            path = Path(args.json_output)
+            path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"\nJSON data: {path}")
         if args.html_output:
             Path(args.html_output).write_text(render_html_report(out), encoding="utf-8")
-        print(path)
-        if args.html_output:
-            print(args.html_output)
-        print(json.dumps(out, ensure_ascii=False, indent=2))
+            print(f"HTML report: {args.html_output}")
     finally:
         safe_close(ctx)
 
