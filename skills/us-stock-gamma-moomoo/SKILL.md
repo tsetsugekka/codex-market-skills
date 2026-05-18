@@ -26,6 +26,8 @@ Before deep analysis, read `references/experience.md` if it exists, but only `Ac
 
 Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
+Required coordination: for US option/gamma analysis, use this skill as the positioning and option-structure entry point, and add supporting skills based on the analysis workflow, not only on the user's wording. If the analysis is about SPX, SPXW, SPY, QQQ, Nasdaq, Dow, Russell, VIX, Nikkei proxy gamma, or any broad index/ETF gamma map, load `macro-news-check` because index gamma cannot be read well without current macro and broad-market tape. If the analysis discusses news acceptance, theme crowding, risk-on/risk-off tone, forum/social sentiment, or leader/follower context, load `stock-sentiment-analysis`. If the final view depends on support/resistance, intraday timing, trend confirmation, failed breakout, or price-action validation, load `stock-technical-analysis`. Gamma is the positioning map; macro, sentiment, and chart structure decide whether the map is being accepted or rejected.
+
 ## Environment Check
 
 This skill requires moomoo OpenD plus the Python SDK/skills environment.

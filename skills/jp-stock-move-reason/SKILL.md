@@ -27,6 +27,8 @@ When preparing a GitHub upload or public release, use the public version only an
 
    Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
+   Required coordination: for Japanese stock analysis, use this skill as the evidence-gathering entry point, and add supporting skills based on clues found during analysis, not only on the user's wording. Yahoo 掲示板 itself is an evidence source, not an automatic trigger for sentiment analysis. If 掲示板/news reveals a concrete clue about theme leadership, peer follow-through, crowding, leader/follower position, defensive alternative, old-leader rebound, or risk-on/risk-off acceptance, load `stock-sentiment-analysis` to test that clue. If 掲示板/news discusses Nikkei/TOPIX, JPX sectors, Nikkei futures, JGB yields, USD/JPY, BOJ/MOF policy, US/China spillover, commodities, or geopolitics, load `macro-news-check` to verify the tape instead of accepting forum claims. If 掲示板/news or the price move points to support/resistance, failed breakout, trend damage, or catalyst acceptance/rejection, load `stock-technical-analysis` to verify the chart. When the original question is directly about an index/broad tape such as Nikkei 225, TOPIX, JPX sectors, Nikkei futures, or 日经大盘, load `macro-news-check` by default.
+
 2. Run the collector script from the repo root:
 
 ```bash
@@ -54,7 +56,7 @@ Useful options:
 
 5. For earnings-related questions, do a disclosure-material pass even when the user did not explicitly ask for it. The core question is not only `数字好不好`, but `为什么这些数字或指引可信`, `哪些说明资料证明业务进入兑现阶段`, `哪些项目仍只是 pipeline`, and `现金流/融资/稀释/客户集中是否会削弱估值`. If no explanation material exists, say so and rely on the filing, company releases, and news.
 
-6. Prefer this skill as the first pass for Japanese stocks. Call `stock-technical-analysis` only when the user asks for chart/levels/timing, when a 1h+ or swing judgment is needed, or after repeated research requires technical confirmation. When using moomoo, Yahoo charts, or another platform, first finish the news/掲示板/theme read, then use the chart to verify support, resistance, volume-price behavior, and whether the narrative is accepted or rejected.
+6. Prefer this skill as the first pass for Japanese stocks. When using `stock-sentiment-analysis`, `macro-news-check`, or `stock-technical-analysis`, first finish the news/掲示板/theme read, then use the supporting skill to verify sentiment structure, broad-market pressure/support, or price confirmation. Do not replace company disclosures or concrete news with macro, sentiment, or chart evidence.
 
 7. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
 

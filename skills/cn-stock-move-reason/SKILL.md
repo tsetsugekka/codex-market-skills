@@ -29,6 +29,8 @@ When preparing a GitHub upload or public release, use the public version only an
 
    Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
+   Required coordination: for A-share analysis, use this skill as the evidence-gathering entry point, and add supporting skills based on clues found during analysis, not only on the user's wording. 股吧 itself is an evidence source, not an automatic trigger for sentiment analysis. If 股吧/资讯/news reveals a concrete clue about main-line status, crowding, attack/defense rotation, leader/follower position, or emotion-cycle phase, load `stock-sentiment-analysis` to test that clue. If 股吧/资讯/news discusses the broad market, index pressure, policy/liquidity, FX/rates, commodities, overseas markets, or geopolitical drivers, load `macro-news-check` to verify the tape instead of accepting forum claims. If 股吧/资讯/news or the price move points to support/resistance, failed breakout, trend damage, or catalyst acceptance/rejection, load `stock-technical-analysis` to verify the chart. When the original question is directly about an index/broad tape such as 上证、深成指、创业板、科创50、A50、恒生科技/港股 spillover, load `macro-news-check` by default.
+
    Optional 东方财富妙想 enhancement: if the user has installed the `mx-*` A-share/financial skills in the current session or under the local skills directory, use them as a non-blocking data layer. Never ask the user to install them and never make them required. If an `mx-*` skill is missing, unauthorized, over quota, or returns empty data, quietly continue with the normal collector/web workflow and do not claim that 妙想 data was used.
 
    Use the 妙想 skills this way:
@@ -62,7 +64,7 @@ Useful options:
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
 - Macro tape: call `macro-news-check` only when the move may be affected by broad A-share risk appetite, policy/liquidity headlines, PBOC/CNY, commodities, US rates, Hong Kong/US China ADR moves, geopolitical risk, or sudden index/sector-wide news. Use it to judge market-wide pressure or support, not to replace announcements or stock-specific evidence.
 
-5. Prefer this skill as the first pass for A-shares. Call `stock-technical-analysis` only when the user asks for chart/levels/timing, when a 1h+ or swing judgment is needed, or after repeated research requires technical confirmation. When using chart software, first finish the news/emotion read, then use the chart to verify support, resistance, volume-price behavior, and whether the narrative is accepted or rejected.
+5. Prefer this skill as the first pass for A-shares. When using `stock-sentiment-analysis`, `macro-news-check`, or `stock-technical-analysis`, first finish the stock-specific evidence read, then use the supporting skill to verify sentiment structure, broad-market pressure/support, or price confirmation. Do not replace confirmed announcements or filings with macro, sentiment, or chart evidence.
 
 6. In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
 
