@@ -12,6 +12,7 @@
 - In global risk-off moves, first check rates, FX, volatility, and crowded theme positioning before attributing everything to one local stock headline.
 - For A-share broad-market tape questions, use live headlines/快讯 first to identify policy, macro, liquidity, overseas, or sudden risk events; then use Sohu index and industry/concept board涨跌幅 as auxiliary confirmation of fund direction, breadth, and theme concentration.
 - For Japan broad-market tape questions, use live headlines/快讯 first to identify JGB-yield, USD/JPY, BOJ/MOF, overseas tech, China/Korea/Taiwan spillover, commodity, or geopolitical drivers; then use JPX real-time indexes, TOPIX 33 sectors, TOPIX-17, size, style, and market-type indexes as auxiliary confirmation of which sectors or styles are dragging or supporting the tape.
+- In final answers, do not sound like a source log. Internalize快讯, Sohu, JPX, forum, and quote data into a market read, then answer in terms of drivers, drag/support, fund direction, breadth, expectation gap, and trading implication. Only cite source names or timestamps when traceability is necessary.
 
 ## Compression Protocol
 
