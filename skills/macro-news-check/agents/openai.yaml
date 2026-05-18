@@ -1,0 +1,4 @@
+interface:
+  display_name: "Macro News Check"
+  short_description: "Check live macro tape for market context."
+  default_prompt: "Check current macro and market-moving news from Jin10, Wallstreetcn, and FinancialJuice, then summarize what matters for the market context."

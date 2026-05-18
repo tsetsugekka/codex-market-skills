@@ -35,7 +35,7 @@ Never answer only by following the latest tick. Use the sequence:
 3. Check volume-price confirmation: breakout must show volume and stand above the level; volume without price progress is possible distribution; shrinking pullback can be healthy only if support holds.
 4. Check momentum: KDJ, MACD, RSI, and whether price makes a new high while momentum does not.
 5. Check structure: trend continuation, high-level divergence, 空中加油, 回踩确认, 破位反抽, or 冲高回落.
-6. Check market context: sector/peer confirmation, broad market tone, rates/FX/volatility when relevant, and for A-shares the emotion cycle. Use `stock-sentiment-analysis` for a deeper shared sentiment framework.
+6. Check market context: sector/peer confirmation, broad market tone, rates/FX/volatility when relevant, and for A-shares the emotion cycle. Call `macro-news-check` only when current macro or broad-market tape can plausibly change the read, such as index-wide selloffs/squeezes, rates/FX shocks, central-bank or data releases, commodities, geopolitics, or sudden futures moves. Use `stock-sentiment-analysis` for a deeper shared sentiment framework.
 7. Give conditional conclusions rather than one-point predictions.
 
 If a long multi-turn discussion about one stock produces a verified reusable lesson, update `references/experience.md` after answering. Generalize the lesson; do not store ticker-specific notes as the main content.
@@ -85,6 +85,7 @@ This skill handles chart and technical structure. For catalysts, valuation, news
 - Japanese stocks: `jp-stock-move-reason`
 - A-shares: `cn-stock-move-reason`
 - Shared emotion framework: `stock-sentiment-analysis`
+- Macro and broad-market tape when needed: `macro-news-check`
 - US option gamma: `us-stock-gamma-moomoo`
 
 For US stocks, choose based on the question: use `us-stock-gamma-moomoo` when option positioning, gamma walls, 0DTE, IV, or dealer hedging matter; use this skill when chart structure and timing matter; use both when an options map needs price-action confirmation.

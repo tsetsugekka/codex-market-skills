@@ -46,6 +46,16 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 给 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 提供统一情绪框架。
 - 在用户指定私有 RAG 目录时，可帮助用户建立本地索引，只记录主题、来源别名、页码/slide 范围、关键词和公开安全摘要；不把私有材料写入公开仓库。
 
+### [`macro-news-check`](docs/skills/macro-news-check.md)
+
+给其他市场 skill 调用的宏观快讯检查工具，只在个股、指数、技术分析或 gamma 分析确实需要当前宏观/大盘背景时使用。它优先查看金十，再用华尔街见闻和 FinancialJuice 补充交叉确认。
+
+适用场景：
+
+- 判断个股或指数异动是否受利率、汇率、央行、经济数据、商品、地缘或大盘 risk-on/risk-off 影响。
+- 给 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 提供宏观 tape。
+- 把 2-5 条关键快讯转化为对当前标的的主因/放大器/背景噪音判断。
+
 ### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
@@ -79,6 +89,7 @@ ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
+ln -s /path/to/codex-market-skills/skills/macro-news-check ~/.codex/skills/macro-news-check
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
 ```
@@ -112,6 +123,10 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
+看一下金十、华尔街见闻和 FinancialJuice，现在有没有影响这个票的大盘或宏观消息。
+```
+
+```text
 查一下这只美股的 gamma，阻力位和这周可能去的位置。
 ```
 
@@ -129,6 +144,7 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、`Stocks` 文件夹、个人标签、原始笔记、截图或交易日志。
+- `macro-news-check` 只读取公开宏观快讯页面/Feed/接口；不读取登录 cookie、token、账号数据或私有研究资料，不复制长篇新闻正文。
 - `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖本地 `Stocks` 文件夹，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
 - `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖本地 `Stocks` 文件夹，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
 - 不要把个人关注列表、凭据、API key、`.env`、`Stocks/`、私有 RAG、运行缓存或私有输出提交到本仓库。
@@ -156,6 +172,9 @@ skills/
     agents/openai.yaml
     references/experience.md
     references/sentiment-framework.md
+  macro-news-check/
+    SKILL.md
+    agents/openai.yaml
   us-stock-gamma-moomoo/
     SKILL.md
     agents/openai.yaml

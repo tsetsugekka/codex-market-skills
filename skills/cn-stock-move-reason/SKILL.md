@@ -50,6 +50,7 @@ Useful options:
 - Eastmoney 股吧资讯/high-read posts: secondary evidence; useful for discovering what the market is discussing.
 - Sohu index and sector/concept board context plus Eastmoney intraday advance-decline counts and Sohu historical advance-decline / limit-up / limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
+- Macro tape: call `macro-news-check` only when the move may be affected by broad A-share risk appetite, policy/liquidity headlines, PBOC/CNY, commodities, US rates, Hong Kong/US China ADR moves, geopolitical risk, or sudden index/sector-wide news. Use it to judge market-wide pressure or support, not to replace announcements or stock-specific evidence.
 
 5. Prefer this skill as the first pass for A-shares. Call `stock-technical-analysis` only when the user asks for chart/levels/timing, when a 1h+ or swing judgment is needed, or after repeated research requires technical confirmation. When using chart software, first finish the news/emotion read, then use the chart to verify support, resistance, volume-price behavior, and whether the narrative is accepted or rejected.
 

@@ -46,6 +46,16 @@ Use it to:
 - Provide a shared sentiment framework for `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
 - When the user provides a private RAG directory, guide them to build a local index with topics, source aliases, page/slide ranges, keywords, and public-safe summaries; never write private source material into this public repository.
 
+### [`macro-news-check`](docs/skills/macro-news-check.md)
+
+Checks current macro and broad-market tape for other market skills, but only when a stock, index, technical, or gamma analysis genuinely needs live macro context. It prioritizes Jin10, then uses Wallstreetcn and FinancialJuice for supplementary confirmation.
+
+Use it to:
+
+- Judge whether a stock or index move is affected by rates, FX, central banks, economic data, commodities, geopolitics, or broad risk-on/risk-off tape.
+- Provide macro tape to `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
+- Turn 2-5 relevant live headlines into a main-driver, secondary-amplifier, or background-noise judgment for the current instrument.
+
 ### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/GEX, gamma walls, gamma flip levels, SPX/SPY/ES intraday structure, and 0DTE option scenario value tables. This skill requires moomoo OpenD to be running locally; if the environment is missing, guide the user to install or launch OpenD first.
@@ -79,6 +89,7 @@ ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
+ln -s /path/to/codex-market-skills/skills/macro-news-check ~/.codex/skills/macro-news-check
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
 ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
 ```
@@ -112,6 +123,10 @@ Analyze whether this stock is in main-line launch, climax divergence, or retreat
 ```
 
 ```text
+Check Jin10, Wallstreetcn, and FinancialJuice for any broad-market or macro headlines affecting this stock.
+```
+
+```text
 Check this US stock's gamma and identify resistance plus the most likely levels this week.
 ```
 
@@ -129,6 +144,7 @@ Analyze this stock's technical setup, support, and resistance right now.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
 - `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, a local `Stocks` folder, personal labels, raw notes, screenshots, or trade logs.
+- `macro-news-check` reads only public macro/news pages, feeds, or endpoints; it does not read login cookies, tokens, account data, or private research material, and it should not copy long news text.
 - `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on a local `Stocks` folder and should not commit personal account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
 - `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on a local `Stocks` folder and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
 - If personal study materials are useful, keep them in a private RAG/knowledge base outside this public repository and copy back only distilled generic rules.
@@ -157,6 +173,9 @@ skills/
     agents/openai.yaml
     references/experience.md
     references/sentiment-framework.md
+  macro-news-check/
+    SKILL.md
+    agents/openai.yaml
   us-stock-gamma-moomoo/
     SKILL.md
     agents/openai.yaml
