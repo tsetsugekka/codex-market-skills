@@ -10,6 +10,7 @@
 - A healthy early-cycle disagreement can be a turnover test; a late-cycle disagreement after broad euphoria is usually a warning.
 - For 1h+ or swing analysis, sentiment must be checked against news and chart structure. A narrative is not accepted until price holds/reclaims the relevant level with volume.
 - In global risk-off moves, first check rates, FX, volatility, and crowded theme positioning before attributing everything to one local stock headline.
+- For A-share broad-market tape questions, use live headlines/快讯 first to identify policy, macro, liquidity, overseas, or sudden risk events; then use Sohu index and industry/concept board涨跌幅 as auxiliary confirmation of fund direction, breadth, and theme concentration.
 
 ## Compression Protocol
 

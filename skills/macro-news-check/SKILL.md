@@ -1,6 +1,6 @@
 ---
 name: macro-news-check
-description: Use when stock, index, gamma, or market analysis needs current macro or broad-market context from live news sources such as Jin10, Wallstreetcn, and FinancialJuice, especially for rates, FX, central banks, commodities, geopolitics, index moves, market-wide risk sentiment, or sudden cross-asset news.
+description: Use when stock, index, gamma, or market analysis needs current macro or broad-market context from live news sources such as Jin10, Wallstreetcn, FinancialJuice, and, for A-share market tape, Sohu sector/index breadth as an auxiliary confirmation layer. Especially useful for rates, FX, central banks, commodities, geopolitics, index moves, market-wide risk sentiment, sudden cross-asset news, or A-share broad-market/sector rotation questions.
 ---
 
 # Macro News Check
@@ -33,6 +33,14 @@ Prefer sources in this order, adjusting for language and market:
 
 Use more than one source when the headline is important, surprising, or likely to change the market read. Prefer original official sources when a live headline points to a specific data release, central-bank statement, government notice, or company disclosure.
 
+For A-share broad-market tape questions, use live headlines first, then use Sohu market data as an auxiliary confirmation layer:
+
+- `https://q.stock.sohu.com/cn/zs.shtml` and `https://q.stock.sohu.com/zs/zs-2.html`: index map and broad market level.
+- `https://q.stock.sohu.com/cn/bk.shtml`, plus board pages such as `https://q.stock.sohu.com/pl/pl-1631.html` for industries and `https://q.stock.sohu.com/pl/pl-1630.html` for concepts: sector/concept涨跌幅 and where funds are landing.
+- `https://q.stock.sohu.com/cn/zdt.shtml`: historical涨跌停/breadth reference when judging market emotion.
+
+Do not let Sohu board ranks replace the headline tape. Use快讯 to identify whether there is a policy, macro, liquidity, overseas, or sudden risk event; use搜狐板块涨跌幅 to validate whether the tape is actually being traded and whether the move is broad, narrow, or only a theme squeeze.
+
 ## Workflow
 
 1. Define the macro question before fetching:
@@ -42,6 +50,7 @@ Use more than one source when the headline is important, surprising, or likely t
    - Start with Jin10 for Chinese macro tape if accessible.
    - Use Wallstreetcn's live endpoint for Chinese/Asia backup and market breadth context.
    - Use FinancialJuice RSS for English global confirmation and US/EU tape.
+   - For A-share broad-market, sector rotation, "买什么方向", or "要不要入场" questions, also check Sohu indexes and industry/concept board涨跌幅 after the快讯 check.
 3. Filter aggressively:
    - Keep only headlines that can plausibly affect the instrument being analyzed.
    - Prioritize timestamps, source type, affected asset class, and whether the item is data, policy, rumor, geopolitical, or routine noise.
@@ -57,6 +66,7 @@ Use more than one source when the headline is important, surprising, or likely t
    - State whether macro is the main driver, a secondary amplifier, or only background noise.
    - Separate stock-specific catalysts from market-wide pressure.
    - Explain expectation gap: what the market likely expected, what the headline/data changed, and whether it was above, in line with, or below expectations.
+   - For A-share盘面, state whether搜狐板块涨跌幅 confirms the快讯 narrative, contradicts it, or shows only a narrow局部行情.
 
 ## Output Style
 
