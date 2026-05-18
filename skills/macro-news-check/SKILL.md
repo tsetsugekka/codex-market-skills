@@ -88,6 +88,6 @@ Keep the macro section concise unless the user asks for a full macro brief. Use 
 4. `权重`: main driver / secondary amplifier / background only.
 5. `需要确认`: what would require a fresh check, original source, or later market reaction.
 
-When answering, absorb the source material into analysis instead of mechanically narrating the data-gathering process. Avoid repetitive phrasing such as "`快讯显示`", "`搜狐确认`", or "`JPX 11:02 数据显示`" as sentence starters. Lead with the inferred market structure: what is driving, what is dragging, what funds are buying/selling, whether the move is broad or narrow, and what that means for the user's decision. Mention a source name, timestamp, or URL only when a key fact needs traceability or the user asks for sourcing.
+When answering macro or broad-market tape questions, absorb the source material into analysis instead of mechanically narrating the data-gathering process. Avoid repetitive phrasing such as "`快讯显示`", "`搜狐确认`", or "`JPX 11:02 数据显示`" as sentence starters. Lead with the inferred market structure: what is driving, what is dragging, what funds are buying/selling, whether the move is broad or narrow, and what that means for the user's decision. Mention a source name, timestamp, or URL when a key fact needs traceability or the user asks for sourcing.
 
 Do not paste long article text or bulk live-feed items. Paraphrase and cite only the short headline-level evidence needed for the analysis.
