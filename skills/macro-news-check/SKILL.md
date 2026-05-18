@@ -1,6 +1,6 @@
 ---
 name: macro-news-check
-description: Use when stock, index, gamma, or market analysis needs current macro or broad-market context from live news sources such as Jin10, Wallstreetcn, FinancialJuice, and, for A-share market tape, Sohu sector/index breadth as an auxiliary confirmation layer. Especially useful for rates, FX, central banks, commodities, geopolitics, index moves, market-wide risk sentiment, sudden cross-asset news, or A-share broad-market/sector rotation questions.
+description: Use when stock, index, gamma, or market analysis needs current macro or broad-market context from live news sources such as Jin10, Wallstreetcn, FinancialJuice, and market tape confirmation sources such as Sohu for A-share sector/index breadth and JPX for Japanese real-time index/sector strength. Especially useful for rates, FX, central banks, commodities, geopolitics, index moves, market-wide risk sentiment, sudden cross-asset news, A-share broad-market/sector rotation questions, or Japan market breadth/sector-drag questions.
 ---
 
 # Macro News Check
@@ -41,6 +41,14 @@ For A-share broad-market tape questions, use live headlines first, then use Sohu
 
 Do not let Sohu board ranks replace the headline tape. Use快讯 to identify whether there is a policy, macro, liquidity, overseas, or sudden risk event; use搜狐板块涨跌幅 to validate whether the tape is actually being traded and whether the move is broad, narrow, or only a theme squeeze.
 
+For Japan broad-market tape questions, use live headlines first, then use JPX real-time index data as an auxiliary confirmation layer:
+
+- `https://www.jpx.co.jp/markets/indices/realvalues/index.html`: official JPX real-time index page; it updates listed index data about every minute during regular trading hours.
+- `https://www.jpx.co.jp/market/indices/indices_stock_price3.txt`: JSON data used by the JPX page, including major indexes, TOPIX New Index Series, size indexes, TOPIX 33 sectors, TOPIX-17, style indexes, and market-type indexes.
+- `https://www.jpx.co.jp/market/indices/indices_stock_price3.time.txt`: data timestamp in `YYYYMMDDHHMM`.
+
+Do not treat Nikkei/TOPIX weakness as a single cause without checking JPX sector/index composition. Use快讯 to identify JGB yield, USD/JPY, BOJ/MOF, overseas tech, China/Korea/Taiwan spillover, commodity, or geopolitical drivers; use JPX sector/index strength to confirm whether pressure is concentrated in autos, banks, machinery, electronics, real estate/REIT, exporters, growth, small caps, or broad beta.
+
 ## Workflow
 
 1. Define the macro question before fetching:
@@ -51,6 +59,7 @@ Do not let Sohu board ranks replace the headline tape. Use快讯 to identify whe
    - Use Wallstreetcn's live endpoint for Chinese/Asia backup and market breadth context.
    - Use FinancialJuice RSS for English global confirmation and US/EU tape.
    - For A-share broad-market, sector rotation, "买什么方向", or "要不要入场" questions, also check Sohu indexes and industry/concept board涨跌幅 after the快讯 check.
+   - For Japan broad-market, Nikkei/TOPIX weakness, sector drag, or Japanese single-stock move with strong market pressure, also check JPX real-time indexes and TOPIX sector/TOPIX-17 strength after the快讯 check.
 3. Filter aggressively:
    - Keep only headlines that can plausibly affect the instrument being analyzed.
    - Prioritize timestamps, source type, affected asset class, and whether the item is data, policy, rumor, geopolitical, or routine noise.
@@ -67,6 +76,7 @@ Do not let Sohu board ranks replace the headline tape. Use快讯 to identify whe
    - Separate stock-specific catalysts from market-wide pressure.
    - Explain expectation gap: what the market likely expected, what the headline/data changed, and whether it was above, in line with, or below expectations.
    - For A-share盘面, state whether搜狐板块涨跌幅 confirms the快讯 narrative, contradicts it, or shows only a narrow局部行情.
+   - For Japan盘面, state whether JPX sector/index strength confirms the快讯 narrative, contradicts it, or shows that the weakness is concentrated in a few heavyweight sectors.
 
 ## Output Style
 

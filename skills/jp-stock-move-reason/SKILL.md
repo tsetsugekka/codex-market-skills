@@ -50,7 +50,7 @@ Useful options:
 - News: primary evidence for concrete catalysts.
 - Yahoo 掲示板: secondary evidence for market psychology, rumors, expectations, and retail attention. Never treat it as confirmed fact unless the same item appears in news.
 - Peer and theme reactions: use them to judge whether the move is theme-wide leadership, same-theme follow-through, or only stock-specific sentiment.
-- Macro tape: call `macro-news-check` only when the move may be affected by Nikkei/TOPIX futures, JGB yields, USD/JPY, BOJ/MOF policy, global rates, China/US macro, commodities, geopolitical risk, or broad risk-on/risk-off headlines. Use it as market context, not as a substitute for stock-specific evidence.
+- Macro tape and Japan market breadth: call `macro-news-check` only when the move may be affected by Nikkei/TOPIX futures, JGB yields, USD/JPY, BOJ/MOF policy, global rates, China/US macro, commodities, geopolitical risk, or broad risk-on/risk-off headlines. For Japanese broad-market weakness/strength or a single-stock move under strong market pressure, use the JPX real-time index page/data (`https://www.jpx.co.jp/markets/indices/realvalues/index.html`, `indices_stock_price3.txt`, and `indices_stock_price3.time.txt`) as an auxiliary confirmation layer for TOPIX 33 sectors, TOPIX-17, size indexes, and market-type indexes. Use it as market context, not as a substitute for stock-specific evidence.
 
 5. For earnings-related questions, do a disclosure-material pass even when the user did not explicitly ask for it. The core question is not only `数字好不好`, but `为什么这些数字或指引可信`, `哪些说明资料证明业务进入兑现阶段`, `哪些项目仍只是 pipeline`, and `现金流/融资/稀释/客户集中是否会削弱估值`. If no explanation material exists, say so and rely on the filing, company releases, and news.
 

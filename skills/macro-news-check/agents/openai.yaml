@@ -1,4 +1,4 @@
 interface:
   display_name: "Macro News Check"
-  short_description: "Check live macro tape and A-share board context."
-  default_prompt: "Check current macro and market-moving news from Jin10, Wallstreetcn, and FinancialJuice. For A-share broad-market questions, check live headlines first and use Sohu index and sector/concept board moves as auxiliary confirmation, then summarize what matters for the market context."
+  short_description: "Check live macro tape and market breadth."
+  default_prompt: "Check current macro and market-moving news from Jin10, Wallstreetcn, and FinancialJuice. For A-share broad-market questions, check live headlines first and use Sohu index and sector/concept board moves as auxiliary confirmation. For Japan broad-market questions, use JPX real-time index and sector data as auxiliary confirmation. Then summarize what matters for the market context."
