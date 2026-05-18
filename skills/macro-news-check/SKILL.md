@@ -33,7 +33,23 @@ Prefer sources in this order, adjusting for language and market:
 
 Use more than one source when the headline is important, surprising, or likely to change the market read. Prefer original official sources when a live headline points to a specific data release, central-bank statement, government notice, or company disclosure.
 
-For intraday macro judgments, do not rely on headlines alone. Confirm with live or near-live market prices before deciding whether the tape is improving or deteriorating:
+Macro analysis must combine two live streams rather than treating either one as automatically superior:
+
+- `News / event stream`: identify whether the market narrative or event state is changing. Focus on state changes, not isolated headlines: escalation vs de-escalation, tightening vs easing, supply shock vs supply relief, inflation impulse vs disinflation impulse, growth scare vs resilience, liquidity stress vs liquidity repair, and official confirmation vs rumor/trial balloon.
+- `Market data stream`: check whether assets confirm, fade, or contradict the news. Use live or near-live prices for yields, FX, commodities, volatility, index futures, and local breadth where relevant.
+
+Classify the relationship between the two streams before concluding:
+
+- News confirms the price trend.
+- Prices confirm a new headline shock.
+- News is bad but prices refuse to fall.
+- News is good but prices refuse to rise.
+- Prices moved first and headlines are explaining the move late.
+- Headlines changed but prices have not yet repriced.
+
+Potential inflection points often appear when bad news no longer pushes risk assets lower, good news no longer lifts risk assets, yields stop rising despite inflationary headlines, oil stops rising despite supply-risk headlines, VIX stops expanding despite negative news, USD/JPY or DXY diverges from rates, high beta/Nasdaq leads while macro headlines remain scary, or defensive assets rise together with equities. This is only a candidate signal unless chart structure, recent price sequence, or intraday levels confirm it. Without enough chart/sequence context, describe it as news-price agreement or disagreement rather than a confirmed divergence or trend turn.
+
+For intraday macro judgments, do not rely on headlines alone and do not rely on prices alone. Use headlines to detect narrative/state changes, use market prices to confirm or challenge them, and explicitly mention meaningful conflicts:
 
 - Data-source priority for intraday macro prices:
   1. Official non-delayed / streaming price.
@@ -87,19 +103,28 @@ Do not treat Nikkei/TOPIX weakness as a single cause without checking JPX sector
 1. Define the macro question before fetching:
    - Is the issue rates, FX, index futures, commodities, geopolitics, policy, or broad risk appetite?
    - Which market matters most: China/A-shares, Japan, US, Europe, global commodities, or cross-asset?
-2. Fetch the minimum needed recent items:
+2. Fetch the minimum needed recent items from both streams:
    - Start with Jin10 for Chinese macro tape if accessible.
    - Use Wallstreetcn's live endpoint for Chinese/Asia backup and market breadth context.
    - Use FinancialJuice RSS for English global confirmation and US/EU tape.
-   - Before concluding that macro is better or worse intraday, check actual market prices: US index futures, VIX, US yields, JGB yields, USD/JPY, DXY, oil, gold, and any directly relevant local index/sector breadth. If headlines and prices conflict, lead with the price action and explain the conflict.
+   - Check actual market prices before concluding that macro is better or worse intraday: US index futures, VIX, US yields, JGB yields, USD/JPY, DXY, oil, gold, and any directly relevant local index/sector breadth.
    - For rates-sensitive US or Japan market reads, prioritize live/near-live yield quotes (`TVC:US10Y`, `TVC:US30Y`, `TVC:JP05Y`, `TVC:JP10Y`, `TVC:JP20Y`, `TVC:JP30Y`) over stale article text. A headline that says yields are surging can be outdated if live yields have already pulled back.
    - Use AkShare only as an auxiliary source for daily yield history, China macro, China/overseas index tables, and commodity/futures confirmation. Do not use AkShare alone to decide whether US/Japan yields are improving or worsening intraday.
    - For A-share broad-market, sector rotation, "买什么方向", or "要不要入场" questions, also check Sohu indexes and industry/concept board涨跌幅 after the快讯 check.
    - For Japan broad-market, Nikkei/TOPIX weakness, sector drag, or Japanese single-stock move with strong market pressure, also check JPX real-time indexes and TOPIX sector/TOPIX-17 strength after the快讯 check.
-3. Filter aggressively:
+3. Identify whether the active narrative has changed:
+   - Separate routine headlines from true state changes.
+   - Ask what the market was previously pricing, what changed, and which asset chain should transmit the change.
+   - Common transmission chains include: event risk -> oil/commodities -> inflation expectations -> long yields -> equity duration; central-bank repricing -> front-end yields -> FX -> equity multiples; growth data -> cyclicals/commodities -> index breadth; fiscal/debt concern -> long yields -> currency/volatility.
+4. Compare news and prices:
+   - If headlines and prices agree, classify it as trend confirmation.
+   - If headlines are stale and prices already moved, avoid double-counting the same information.
+   - If headlines changed but prices have not repriced, say whether the market may be ignoring the risk or waiting for confirmation.
+   - If prices reject the headline direction, treat that rejection as evidence to investigate, not as a standalone reversal signal. Only discuss divergence, exhaustion, or a turn when recent chart structure, intraday sequence, or key levels support it.
+5. Filter aggressively:
    - Keep only headlines that can plausibly affect the instrument being analyzed.
    - Prioritize timestamps, source type, affected asset class, and whether the item is data, policy, rumor, geopolitical, or routine noise.
-4. Classify the macro effect:
+6. Classify the macro effect:
    - `risk-on`: supports equities/high beta/cyclical trades.
    - `risk-off`: pressures equities/high beta; supports bonds, USD, defensive assets, or safe havens depending on context.
    - `rates-up pressure`: bad for long-duration growth, high valuation, weak balance sheets, bond proxies.
@@ -107,7 +132,7 @@ Do not treat Nikkei/TOPIX weakness as a single cause without checking JPX sector
    - `FX-driven`: important for exporters, import-cost names, commodities, and ADR/local-market conversions.
    - `commodity shock`: sector-specific tailwind/headwind.
    - `policy/liquidity`: judge size, timing, credibility, and whether it is already expected.
-5. Connect the macro tape to the specific analysis:
+7. Connect the macro tape to the specific analysis:
    - State whether macro is the main driver, a secondary amplifier, or only background noise.
    - Separate stock-specific catalysts from market-wide pressure.
    - Explain expectation gap: what the market likely expected, what the headline/data changed, and whether it was above, in line with, or below expectations.
