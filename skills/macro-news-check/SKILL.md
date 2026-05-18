@@ -30,8 +30,13 @@ Prefer sources in this order, adjusting for language and market:
    `https://api-one-wscn.awtmt.com/apiv1/content/lives?channel=global-channel&client=pc&limit=10`
 3. `FinancialJuice` (`https://www.financialjuice.com/`): useful English global tape, especially US/EU macro, rates, FX, commodities, geopolitics, and market-moving headlines. Public RSS pattern:
    `https://www.financialjuice.com/feed.ashx?xy=rss`
+   Tested shell fetch:
+   `curl -L 'https://www.financialjuice.com/feed.ashx?xy=rss'`
+   Quote the URL in zsh or other shells where `?` can be treated as a glob pattern. The feed returns broad global headlines; fetch the full feed first, then filter by macro relevance.
 
 Use more than one source when the headline is important, surprising, or likely to change the market read. Prefer original official sources when a live headline points to a specific data release, central-bank statement, government notice, or company disclosure.
+
+Do not use ticker or ETF keywords such as `SPY`, `QQQ`, `ES`, or a single stock symbol as the first-pass macro-news filter. Important macro drivers often appear under geopolitics, oil, rates, FX, central banks, fiscal policy, sanctions, shipping, elections, or official comments without mentioning the target instrument. First ingest the general live tape from the preferred sources; only then map relevant headlines to the user's instrument and confirm with market prices.
 
 Macro analysis must combine two live streams rather than treating either one as automatically superior:
 
@@ -106,7 +111,7 @@ Do not treat Nikkei/TOPIX weakness as a single cause without checking JPX sector
 2. Fetch the minimum needed recent items from both streams:
    - Start with Jin10 for Chinese macro tape if accessible.
    - Use Wallstreetcn's live endpoint for Chinese/Asia backup and market breadth context.
-   - Use FinancialJuice RSS for English global confirmation and US/EU tape.
+   - Use FinancialJuice RSS for English global confirmation and US/EU tape. In shell, use `curl -L 'https://www.financialjuice.com/feed.ashx?xy=rss'`; do not omit the quotes around the `?xy=rss` URL in zsh.
    - Check actual market prices before concluding that macro is better or worse intraday: US index futures, VIX, US yields, JGB yields, USD/JPY, DXY, oil, gold, and any directly relevant local index/sector breadth.
    - For rates-sensitive US or Japan market reads, prioritize live/near-live yield quotes (`TVC:US10Y`, `TVC:US30Y`, `TVC:JP05Y`, `TVC:JP10Y`, `TVC:JP20Y`, `TVC:JP30Y`) over stale article text. A headline that says yields are surging can be outdated if live yields have already pulled back.
    - Use AkShare only as an auxiliary source for daily yield history, China macro, China/overseas index tables, and commodity/futures confirmation. Do not use AkShare alone to decide whether US/Japan yields are improving or worsening intraday.
@@ -149,6 +154,6 @@ Keep the macro section concise unless the user asks for a full macro brief. Use 
 4. `权重`: main driver / secondary amplifier / background only.
 5. `需要确认`: what would require a fresh check, original source, or later market reaction.
 
-When answering macro or broad-market tape questions, absorb the source material into analysis instead of mechanically narrating the data-gathering process. Avoid repetitive phrasing such as "`快讯显示`", "`搜狐确认`", or "`JPX 11:02 数据显示`" as sentence starters. Lead with the inferred market structure: what is driving, what is dragging, what funds are buying/selling, whether the move is broad or narrow, and what that means for the user's decision. Mention a source name, timestamp, or URL when a key fact needs traceability or the user asks for sourcing.
+When answering macro or broad-market tape questions, absorb the source material into analysis instead of mechanically narrating the data-gathering process. Do not mention aggregator or retransmission-site names such as Jin10, Wallstreetcn, FinancialJuice, Sohu, JPX, or TradingView in the final answer by default. If a live item cites an original outlet, official source, company disclosure, or named primary reporter/source, it is acceptable to mention that original attribution when it improves credibility or explains confidence, e.g. Bloomberg, Reuters, The Information, Nikkei, Axios, WSJ, CNBC, an official ministry/central bank/company statement, or a company filing. Mention aggregator names, timestamps, or URLs only when the user asks for sources, a fact is disputed, freshness needs auditing, or attribution materially changes confidence. Avoid repetitive phrasing such as "`快讯显示`", "`消息面显示`", "`搜狐确认`", or "`JPX 11:02 数据显示`" as sentence starters. Lead with the inferred market structure: what is driving, what is dragging, what funds are buying/selling, whether the move is broad or narrow, and what that means for the user's decision.
 
 Do not paste long article text or bulk live-feed items. Paraphrase and cite only the short headline-level evidence needed for the analysis.
