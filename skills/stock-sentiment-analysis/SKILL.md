@@ -27,8 +27,10 @@ When preparing a GitHub upload or public release, use only the public version an
    - A-shares: prefer `cn-stock-move-reason` for quote, announcements, 股吧, board ranks, breadth, and A-share emotion cycle.
    - Japanese stocks: prefer `jp-stock-move-reason` for quote, news, Yahoo 掲示板, metrics, and theme/peer context.
    - US stocks/indexes: choose `us-stock-gamma-moomoo` for option/gamma questions and `stock-technical-analysis` for chart/trend questions; use both when positioning and price action both matter.
-4. Classify the move through three lenses: `confirmed catalyst`, `emotion/positioning`, and `technical confirmation`. Do not let forum heat replace confirmed news.
-5. If a multi-turn correction reveals a reusable lesson, update `references/experience.md` after answering. Generalize the lesson; remove ticker-specific personal details and private labels.
+4. For A-share evidence, optional 东方财富妙想 skills can supplement the market-specific workflow if already installed. Use `mx-data` for quote/financial/fund-flow/sector data, `mx-search` for news/announcements/research/policy, and `mx-xuangu` for sector constituents or peer screens. Do not ask the user to install 妙想 skills and do not make them a dependency; if they are unavailable, continue with the existing data sources.
+5. Do not use account-touching 妙想 skills automatically. Use `mx-zixuan` only when the user explicitly asks to manage 东方财富 self-selected stocks, and use `mx-moni` only for explicit simulated-portfolio queries or simulated trades.
+6. Classify the move through three lenses: `confirmed catalyst`, `emotion/positioning`, and `technical confirmation`. Do not let forum heat replace confirmed news.
+7. If a multi-turn correction reveals a reusable lesson, update `references/experience.md` after answering. Generalize the lesson; remove ticker-specific personal details and private labels.
 
 ## Optional Private RAG
 

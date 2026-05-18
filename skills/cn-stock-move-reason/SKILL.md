@@ -29,6 +29,15 @@ When preparing a GitHub upload or public release, use the public version only an
 
    Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
+   Optional 东方财富妙想 enhancement: if the user has installed the `mx-*` A-share/financial skills in the current session or under the local skills directory, use them as a non-blocking data layer. Never ask the user to install them and never make them required. If an `mx-*` skill is missing, unauthorized, over quota, or returns empty data, quietly continue with the normal collector/web workflow and do not claim that 妙想 data was used.
+
+   Use the 妙想 skills this way:
+   - `mx-data`: current/historical quotes, market cap, PE/PB, EPS/ROE/margins, share count, main-fund flow, index/sector/board quote data, and A-share financial statement metrics for valuation.
+   - `mx-search`: latest news, announcements, research reports, policies, event explainers, and time-sensitive market/sector context.
+   - `mx-xuangu`: sector constituents, concept-board candidates, peer lists, condition screens, and "same theme but stronger/weaker" comparisons.
+   - `mx-zixuan`: only when the user explicitly asks to query/add/delete their 东方财富 self-selected stocks. Do not use it automatically for analysis because it touches user account data.
+   - `mx-moni`: only when the user explicitly asks about simulated portfolio holdings, funds, orders, simulated buy/sell, cancel orders, or posting a simulated-trading note. Do not use it for real trading or ordinary analysis.
+
 2. Run the collector script from the repository root:
 
 ```bash
@@ -47,6 +56,7 @@ Useful options:
 4. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
 
 - Announcements, earnings, regulatory filings, and confirmed company materials: primary evidence.
+- 妙想 `mx-data` / `mx-search` outputs, when available, can supplement or cross-check quote, financial, announcement, research, and event evidence. Use them as evidence with source attribution, but still distinguish official filings from media/research interpretation.
 - Eastmoney 股吧资讯/high-read posts: secondary evidence; useful for discovering what the market is discussing.
 - Sohu index and sector/concept board context plus Eastmoney intraday advance-decline counts and Sohu historical advance-decline / limit-up / limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
