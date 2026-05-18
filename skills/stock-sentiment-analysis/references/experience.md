@@ -6,6 +6,7 @@
 
 - Use `confirmed catalyst x expectation gap x sentiment cycle x price confirmation`; do not rely on a single headline or a single hot forum post.
 - Treat forums/掲示板/股吧 as expectation and crowding data, not as facts. They are most useful when they show what the market feared or expected before the catalyst.
+- A durable theme narrative must be accepted by price. If a stock makes lower highs, loses the catalyst-day support, or underperforms a stable sector after good news, treat forum confidence and long-term story strength as crowding data, not as proof the pullback is healthy.
 - Separate `情绪票`, `趋势票`, and `hybrid`. Emotion stocks top fast through failed boards, long upper shadows, and crowding; trend stocks usually deteriorate through guidance quality, sector breadth, and failed reclaim of higher-timeframe support.
 - A healthy early-cycle disagreement can be a turnover test; a late-cycle disagreement after broad euphoria is usually a warning.
 - For 1h+ or swing analysis, sentiment must be checked against news and chart structure. A narrative is not accepted until price holds/reclaims the relevant level with volume.

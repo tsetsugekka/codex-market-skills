@@ -24,9 +24,11 @@ Read this section before using the JP stock skill. Keep it compact and current.
 - Before a catalyst, classify the stock as core theme leader, same-theme follower, defensive/cyclical alternative, old leader rebound, or noise. A good result in a non-core bucket may react less than a merely solid result in the current core theme.
 - Theme strength is confirmed by repeated capital return, sector breadth, and peer follow-through, not by one strong stock alone. If only one famous name rises while peers do not follow, treat it as stock-specific or short-term sentiment until proven otherwise.
 - After a strong theme run, prepare for both continuation and profit-taking. The question is whether the result extends the next 6-18 month narrative enough to keep money in the theme.
+- For long-duration qualitative catalysts such as AI/robotics/physical-AI partnerships, separate `true strategic value` from `short-term investability`. A real collaboration can still become a sell-the-news event if the stock already priced it through a large spike, valuation is high, and price cannot hold the event-day close.
 - When the market is strong, broad liquidity can hide weak details; when liquidity cools, guidance quality, order/backlog durability, and valuation discipline matter more.
 - Do not pre-commit to the next theme winner. Keep candidates equal until one shows stronger price reaction, guidance surprise, peer confirmation, and 掲示板 expectation reset.
 - Old leader rebounds after a new leader weakens can be a warning: it may mean residual positioning and exit liquidity rather than a fresh leadership cycle.
+- When JPX sector/style data shows the relevant sector is holding better than the stock, do not over-attribute weakness to Nikkei/TOPIX or macro. Treat it as stock-specific event premium, crowding, or positioning until the stock reclaims its key level.
 
 ### Practical Checklist Before A Japanese Earnings Release
 
@@ -50,6 +52,7 @@ Read this section before using the JP stock skill. Keep it compact and current.
 - If sentiment is skeptical before release and the result clears the feared issue, the reaction can be stronger than the absolute numbers suggest.
 - If a stock is a core theme asset, investors may focus on operating profit, recurring profit, order/backlog, capacity contribution, or EBITDA instead of near-term net income.
 - If the result is already fully expected, even a good print can produce profit-taking. Look for whether the result changes the next 6-18 month narrative.
+- 掲示板 confidence after a theme catalyst is crowding/expectation evidence, not support. Claims such as inevitable round-number targets, future peer read-through, or "large buyers are in" need price confirmation through reclaiming the broken level.
 
 ### Reasonable Valuation Framework
 
@@ -97,3 +100,4 @@ Use this protocol after multi-turn discussion about the same stock.
 - 2026-05-11 Added cross-market emotion-structure rules from an A-share sector discussion transcript; A-share-specific examples and current calls were intentionally omitted.
 - 2026-05-15 Added a generalized expectation-gap rule for numeric and qualitative catalysts, so move explanations compare prior expectation with actual news before assigning causality.
 - 2026-05-15 Added a JP earnings disclosure-material rule from an AI data-center case: beyond headline numbers and 掲示板, check explanation materials, business updates, project/product releases, pipeline certainty, funding, dilution, and cash-flow quality.
+- 2026-05-18 Added a JP long-duration theme catalyst lesson from a robotics/physical-AI case: strategic validity does not equal short-term support; if price rejects the catalyst and underperforms its sector, classify the issue as event-premium giveback until key levels are reclaimed.
