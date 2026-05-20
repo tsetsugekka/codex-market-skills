@@ -28,6 +28,8 @@ Cross-skill calls are operational. When this workflow says to use another market
 
 When a live chart is visible in moomoo or another trading/chart app, use the chart directly if the user asks for `现在`, `再看看`, `moomoo`, `分时`, `图表`, `资金流`, `盘口`, or asks whether a level is being confirmed. Confirm the ticker and chart timeframe before reading signals.
 
+For U.S. stocks and ETFs, prefer direct moomoo OpenD 1-minute K-line data over screenshot-only reads when OpenD is available. Subscribe to `SubType.K_1M` first, then call `get_cur_kline`; if the subscription fails because of missing permissions, unsupported symbols, or index restrictions, fall back to the moomoo app chart or a user-provided screenshot. OpenD may not support U.S. index K-lines such as `.SPX`, and some local setups may not have Japanese-stock or A-share permissions, so use SPY or the relevant ETF as a proxy only when appropriate and state the proxy clearly. When using SPY to judge SPX intraday structure, convert SPY levels into SPX levels before answering, using the freshest SPX or ES/SPX anchor available; report SPX levels first and note the SPY proxy only as source context.
+
 Never answer only by following the latest tick. Use the sequence:
 
 1. Determine the timeframe: intraday trade, 1h+ swing, trend holding, or post-event reaction. For 1h+ and swing judgments, combine technicals with sentiment/news context instead of reading the chart alone.

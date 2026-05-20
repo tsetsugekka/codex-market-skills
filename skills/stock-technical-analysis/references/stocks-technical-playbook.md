@@ -266,6 +266,16 @@ Use exact levels from live data where possible. If the chart data is stale or vi
 
 Use this when reading moomoo, Yahoo Finance charts, broker apps, or screenshots.
 
+Data-first rule for U.S. stocks and ETFs:
+
+- If moomoo OpenD is available, use direct `1m` K-line data before relying on screenshots for intraday U.S. stock/ETF reads.
+- Subscribe before fetching: call `subscribe([code], [SubType.K_1M])`, then `get_cur_kline(code, count, SubType.K_1M, AuType.QFQ)`.
+- This is a quote-data subscription through OpenD, not a trade/order action. It can still fail if the account lacks the market data permission, the symbol is unsupported, or OpenD does not provide the instrument type.
+- `.SPX`/index K-lines may be unsupported in OpenD; for SPX intraday chart structure, use `US.SPY` 1-minute data as the default proxy when suitable.
+- When using `US.SPY` as the SPX chart proxy, convert the SPY chart levels into SPX points before answering. Use the freshest available SPX anchor from a live quote, gamma run, or ES-to-SPX basis, paired with the current SPY price. A practical conversion is `SPX_level = SPX_anchor + (SPY_level - SPY_anchor) * (SPX_anchor / SPY_anchor)`. If no reliable SPX anchor is available, state that conversion is unavailable and keep levels labeled as SPY.
+- In the final answer, put converted SPX levels first and mention the SPY proxy only as source context, for example `SPX 7400-7405 area, converted from SPY 737.8-738.3`.
+- Some local setups may not have Japanese-stock or A-share OpenD permissions. When direct K-line data is unavailable, use the moomoo program chart or the user's screenshot and label the source as visual/screenshot-based.
+
 Before acting:
 
 - Confirm the ticker/name on screen. If the app is showing a different stock than the user asked about, switch or say so before analysis.
