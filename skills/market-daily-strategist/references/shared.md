@@ -12,15 +12,16 @@
 - Attribute key numbers and important news to sources.
 - If using social media, label it as social-media sentiment, not verified fact.
 
-## Theme Catalyst Discipline
+## News Coverage Discipline
 
-For every pre-market and close-review report, run a targeted theme-catalyst scan before finalizing. Do not rely only on index futures, macro headlines, earnings calendars, closing index moves, or a few mega-cap tickers.
+For every pre-market and close-review report, read enough current market news before finalizing. Do not rely only on index futures, macro headlines, earnings calendars, closing index moves, or a few mega-cap tickers.
 
-- Scan the fixed focus themes below plus any obvious active tape themes for same-day or clearly current catalysts: policy/funding, product launch, approval/regulatory progress, major customer/order, cloud/model/chip partnership, earnings/guidance, rating action, supply-demand shock, contract, capital return, M&A/IPO, or credible flow/news explaining a move.
-- Include only themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance. Do not mechanically comment on every fixed theme.
+- Start from broad same-day market-news sources: live flash headlines/快讯, market live blogs, wire recaps, pre-market/after-hours mover summaries, and individual-stock news. Then infer active themes from the news flow.
+- After reading the broad news flow, map only the relevant items to the fixed focus themes below or to `新增/突发题材`.
+- Include only themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance. Do not mechanically search or comment on every fixed theme.
 - If a theme headline is confirmed but the related stock/sector move is not checked, say so instead of implying a verified move.
 - Mark active themes outside the fixed list as `新增/突发题材`.
-- Examples of current-style catalysts that should be captured when relevant: Tesla FSD/China approval or rollout; US quantum-computing funding and related pre-market/after-hours moves; Anthropic/Claude cloud, chip, Microsoft, NVIDIA, or other AI-infrastructure partnership headlines; SpaceX launch/IPO/contract news; AI system shipment updates such as NVIDIA Vera Rubin.
+- Use past misses only as calibration examples, not as a fixed checklist. For example, on 2026-05-21 the report initially missed Tesla FSD/China rollout news, US quantum-computing funding, and AI-infrastructure partnership/chip-roadmap headlines because the news scan was too narrow. The durable rule is to read broader current market news before deciding what the active themes are, not to search those exact themes every day.
 
 ## Optional Local / Private Data Discipline
 

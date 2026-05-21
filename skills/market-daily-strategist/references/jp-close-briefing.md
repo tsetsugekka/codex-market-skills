@@ -23,7 +23,7 @@ Prefer Japanese-language sources:
 - Active themes from the fixed focus list and shared theme list, mapped to Japanese stocks.
 - Unusual movers with codes or Japanese short names, direction, and catalyst/negative driver.
 - Earnings, guidance revisions, buybacks, capital policy, rating changes, policy news, geopolitical events, and after-close PTS moves.
-- Apply the shared `Theme Catalyst Discipline` and `Optional Local / Private Data Discipline`; close-review reports must scan after-close and next-session catalysts, not only index closes.
+- Apply the shared `News Coverage Discipline` and `Optional Local / Private Data Discipline`; close-review reports must scan after-close and next-session catalysts, not only index closes.
 
 ## Output Format
 

@@ -22,7 +22,7 @@ Prefer Japanese-language sources and keywords:
 - PTS sharp risers/fallers, prioritizing `https://daytrading.monster/pts/`.
 - Main pre-market theme heat, unusual stocks, speculative/institutional flow references.
 - Important after-close news, policy expectations, breaking news, earnings, and rating changes.
-- Apply the shared `Theme Catalyst Discipline` and `Optional Local / Private Data Discipline`; Japan pre-market reports must scan active global/Japan themes, not only Nikkei futures and PTS movers.
+- Apply the shared `News Coverage Discipline` and `Optional Local / Private Data Discipline`; Japan pre-market reports must scan active global/Japan themes, not only Nikkei futures and PTS movers.
 
 ## Output Format
 

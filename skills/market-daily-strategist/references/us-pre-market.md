@@ -21,7 +21,7 @@ Prefer Yahoo Finance, Bloomberg, CNBC, MarketWatch, Seeking Alpha, TradingView. 
 - Main pre-market sector performance: AI semiconductors, memory, tech, software, consumer, financials, new energy, energy, defense, and other active focus themes.
 - Pre-market movers with ticker/short name, move direction, and catalyst or negative driver.
 - Latest major news: earnings, policy, geopolitical events, Trump-related news, oil, Treasury yields, inflation expectations, economic data, speeches.
-- Apply the shared `Theme Catalyst Discipline` and `Optional Local / Private Data Discipline`; do not skip theme-news scanning just because futures, macro data, or mega-cap earnings are available.
+- Apply the shared `News Coverage Discipline` and `Optional Local / Private Data Discipline`; do not skip theme-news scanning just because futures, macro data, or mega-cap earnings are available.
 
 ## Output Format
 
