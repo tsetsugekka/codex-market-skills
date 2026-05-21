@@ -15,7 +15,7 @@ Prefer Yahoo Finance, Bloomberg, CNBC, MarketWatch, Seeking Alpha, TradingView, 
 - Volume/turnover, unusual volume, retail sentiment, institutional or options clues when available.
 - Important news/earnings/ratings/policy/geopolitical events from the past 8 hours.
 - After-hours futures: Nasdaq futures, S&P 500 futures, Dow futures latest levels and changes.
-- Apply the shared `Theme Catalyst Discipline` and `Local Market Data Discipline`; close-review reports must still scan active themes and after-hours catalysts, not only index closes.
+- Apply the shared `Theme Catalyst Discipline` and `Optional Local / Private Data Discipline`; close-review reports must still scan active themes and after-hours catalysts, not only index closes.
 
 If the US market was closed for a holiday, explain the reason and summarize only valid after-hours, futures, and global linkage information.
 

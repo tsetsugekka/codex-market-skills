@@ -14,7 +14,7 @@ Prefer 东方财富、同花顺、雪球、财联社、新浪财经 and other re
 - Main sector heat and unusual themes.
 - Key unusual stocks and Dragon-Tiger List references, including speculative/institutional movement.
 - After-close news from the prior day: policy expectations, breaking catalysts, earnings/announcements/regulatory information.
-- Apply the shared `Theme Catalyst Discipline` and `Local Market Data Discipline`; A-share pre-market reports must scan active domestic/offshore catalysts, not only index expectations and yesterday's hot sectors.
+- Apply the shared `Theme Catalyst Discipline` and `Optional Local / Private Data Discipline`; A-share pre-market reports must scan active domestic/offshore catalysts, not only index expectations and yesterday's hot sectors.
 
 ## Output Format
 

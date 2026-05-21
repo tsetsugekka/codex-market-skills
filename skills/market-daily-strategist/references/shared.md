@@ -22,13 +22,16 @@ For every pre-market and close-review report, run a targeted theme-catalyst scan
 - Mark active themes outside the fixed list as `新增/突发题材`.
 - Examples of current-style catalysts that should be captured when relevant: Tesla FSD/China approval or rollout; US quantum-computing funding and related pre-market/after-hours moves; Anthropic/Claude cloud, chip, Microsoft, NVIDIA, or other AI-infrastructure partnership headlines; SpaceX launch/IPO/contract news; AI system shipment updates such as NVIDIA Vera Rubin.
 
-## Local Market Data Discipline
+## Optional Local / Private Data Discipline
 
-Use local market-data skills and moomoo selectively. They confirm important prices or option structure; they are not a replacement for a news/theme scan.
+Local/private market-data tools are optional enhancers, not required dependencies. A user who installs this skill may not have moomoo OpenD, MX data/search credentials, private CSV/JSON files, PTS scrapers, or other local scripts configured.
 
-- Allowed: query index ETFs, core sector ETFs, futures/index proxies, gamma/options for relevant US indexes/ETFs, PTS/after-hours pages, and a small number of genuinely important tickers already identified by news, index relevance, or the user's focus.
+- Do not assume local/private tools are installed, running, permissioned, logged in, or populated. Check availability before relying on them.
+- If a local/private tool is unavailable, fails permissions, lacks credentials, or returns stale data, continue with public reliable sources and mark the missing layer as `暂无可靠数值`, `数据不可得`, or `本地工具不可用`.
+- Only suggest installing, launching, logging in, or configuring a local/private tool when that layer would materially improve the answer, such as live US gamma, Japan PTS, proprietary watchlists, or account-specific data. Do not make installation a prerequisite for a normal market report.
+- Allowed when available: query index ETFs, core sector ETFs, futures/index proxies, gamma/options for relevant US indexes/ETFs, PTS/after-hours pages, and a small number of genuinely important tickers already identified by news, index relevance, or the user's focus.
 - Do not bulk-scan all stocks or all theme constituents for a daily market report unless the user explicitly asks for a broad screener.
-- When a market has explicit extended-hours fields, use only those fields for extended-hours claims. For US pre/post-market moomoo data, use `pre_*`, `after_*`, or `overnight_*` fields as appropriate; do not treat `last_price`, regular-session OHLC, or regular-session volume as pre-market or after-hours data.
+- When a data source has explicit extended-hours fields, use only those fields for extended-hours claims. For US pre/post-market moomoo data, use `pre_*`, `after_*`, or `overnight_*` fields as appropriate; do not treat `last_price`, regular-session OHLC, or regular-session volume as pre-market or after-hours data.
 - If the correct extended-hours field is unavailable, write `盘前暂无可靠数值`, `盘后暂无可靠数值`, or `数据不可得` instead of substituting stale regular-session data.
 - State the field basis correctly when it matters, especially around US pre-market/after-hours, Japan PTS, and futures/index proxies.
 
@@ -36,7 +39,7 @@ Use local market-data skills and moomoo selectively. They confirm important pric
 
 - Use supporting skills only for points that can change the report conclusion, not for every stock in a mover list.
 - Prefer `macro-news-check` for macro/快讯 confirmation before making a rates, oil, FX, geopolitical, or broad-risk claim.
-- Prefer `us-stock-gamma-moomoo` for US index gamma/options-wall work when available; if live gamma data cannot be obtained, mark the value unavailable instead of substituting stale public screenshots.
+- Prefer `us-stock-gamma-moomoo` for US index gamma/options-wall work when available; if the skill, moomoo OpenD, SDK, quote permission, or live gamma data is unavailable, mark the value unavailable instead of substituting stale public screenshots, and optionally suggest setup only if the user needs that layer.
 - Use move-reason skills only for a few decisive movers, such as the day's theme leader, largest liquid abnormal mover, or a stock whose catalyst is unclear but important.
 - Use `stock-technical-analysis` for execution levels on selected indexes or key stocks, especially when recommending 追高、等回踩、低吸、减仓、止损.
 - Compress supporting-skill findings into the required report structure. Do not append unrelated deep-dive sections unless the user asks.
