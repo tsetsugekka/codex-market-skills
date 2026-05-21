@@ -10,9 +10,46 @@ Use `scripts/spx_intraday_latest.py` for this workflow. Do not substitute the ge
 2. **0DTE structure**: net GEX, call/put volume balance, largest positive walls above, largest negative pits below, and gamma flip if meaningful.
 3. **Vanna structure**: compute vanna from SPXW spot/strike/IV/DTE, aggregate VEX by strike, and name the top positive/negative vanna pressure zones. This is required when the user asks for SPX/SP500 gamma unless speed is explicitly more important than completeness.
 4. **Opening context**: distinguish prior close, current price, and same-day open. If the user says the market gapped down, do not treat prior close as the open.
-5. **Key level map**: name nearby support/resistance as zones, not single magic points. Example: "7350 is the battlefield; 7330/7300 are next downside magnets; 7385-7415 is repair/sell-pressure."
-6. **Flow interpretation**: in negative gamma, breaks can accelerate and rebounds can be violent short-covering. Do not call a bottom merely because price is near a put wall.
-7. **Invalidation**: state what would disprove the scenario, e.g. "reclaiming 7370 and holding above it makes 7385-7390 likely; losing 7350 and failing to reclaim opens 7330/7300."
+5. **Index day-structure levels**: for SPX/index intraday work only, calculate prior-day pivot/CPR/Camarilla levels when prior high, low, and close are available. Use them as support/resistance confluence with gamma walls, flip, and pits; do not apply this requirement to ordinary single-stock gamma reports.
+6. **Key level map**: name nearby support/resistance as zones, not single magic points. Example: "7350 is the battlefield; 7330/7300 are next downside magnets; 7385-7415 is repair/sell-pressure."
+7. **Flow interpretation**: in negative gamma, breaks can accelerate and rebounds can be violent short-covering. Do not call a bottom merely because price is near a put wall.
+8. **Invalidation**: state what would disprove the scenario, e.g. "reclaiming 7370 and holding above it makes 7385-7390 likely; losing 7350 and failing to reclaim opens 7330/7300."
+
+## Index Day-Structure Levels
+
+This section is for SPX/index intraday gamma only. Do not force these calculations into ordinary individual-stock gamma reports unless the user explicitly asks for technical pivots.
+
+When prior-session `High`, `Low`, and `Close` are available, calculate:
+
+- Classic pivot:
+  - `PP = (H + L + C) / 3`
+  - `R1 = 2 * PP - L`
+  - `S1 = 2 * PP - H`
+  - `R2 = PP + (H - L)`
+  - `S2 = PP - (H - L)`
+  - `R3 = PP + 2 * (H - L)`
+  - `S3 = PP - 2 * (H - L)`
+- CPR:
+  - `BC = (H + L) / 2`
+  - `TC = 2 * PP - BC`
+  - `CPR_range = abs(TC - BC)`
+- Camarilla levels using `Unit = 1.1 * (H - L) / 12`:
+  - `H3 = C + 3 * Unit`
+  - `H4 = C + 6 * Unit`
+  - `H5 = C + 12 * Unit`
+  - `L3 = C - 3 * Unit`
+  - `L4 = C - 6 * Unit`
+  - `L5 = C - 12 * Unit`
+- Optional range references:
+  - `H3L3 = H3 - L3`
+  - `ATR` if a reliable ATR series is available; if not, do not invent it.
+
+Interpretation rules:
+
+- Treat overlap between gamma levels and pivot/CPR/Camarilla levels as stronger zones. For example, if gamma flip aligns with `PP`, that zone is the intraday regime boundary; if a gamma pit aligns with `L5`, downside acceleration risk is higher after a break.
+- CPR location matters: above `TC` is stronger, below `BC` is weaker, and inside CPR is a battlefield. A narrow CPR can allow a trend day; a wide CPR more often marks chop unless gamma is negative and a boundary breaks.
+- Use these levels to refine scenario handling, not to override live option structure. Gamma walls/pits explain dealer hedging pressure; pivots/CPR/Camarilla provide widely watched technical decision zones.
+- In the final answer, only list the levels that are near current price or align with gamma/trigger levels. Avoid dumping every calculated level unless the user asks for the table.
 
 ## Vanna Calculation
 
