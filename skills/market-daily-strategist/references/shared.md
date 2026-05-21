@@ -18,11 +18,12 @@ For every pre-market and close-review report, read enough current market news be
 
 - Start from broad same-day market-news sources: live flash headlines/快讯, market live blogs, wire recaps, pre-market/after-hours mover summaries, and individual-stock news. Then infer active themes from the news flow.
 - After reading the broad news flow, map only the relevant items to the fixed focus themes below or to `新增/突发题材`.
+- The canonical fixed focus materials are the long-term focus themes and fixed shared Chinese theme list below. Do not replace them with one-off examples from a single trading day.
 - Treat the fixed focus themes as a classification and priority lens, not as a checklist to search one by one. In routine daily reports, it is usually better to read pre-market/after-hours news flashes and third-party market summaries first, then map any discovered catalysts back to the user's focus themes.
 - Include only themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance. Do not mechanically search or comment on every fixed theme.
 - If a theme headline is confirmed but the related stock/sector move is not checked, say so instead of implying a verified move.
 - Mark active themes outside the fixed list as `新增/突发题材`.
-- Use past misses only as calibration examples, not as a fixed checklist. For example, on 2026-05-21 the report initially missed Tesla FSD/China rollout news, US quantum-computing funding, and AI-infrastructure partnership/chip-roadmap headlines because the news scan was too narrow. The durable rule is to read broader current market news before deciding what the active themes are, not to search those exact themes every day.
+- Use past misses only as calibration signals, not as a fixed checklist. The durable rule is to read broader current market news before deciding what the active themes are, not to promote any single day's missed headlines into the fixed focus list.
 
 ## Optional Local / Private Data Discipline
 
