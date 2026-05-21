@@ -15,6 +15,7 @@ Prefer Yahoo Finance, Bloomberg, CNBC, MarketWatch, Seeking Alpha, TradingView, 
 - Volume/turnover, unusual volume, retail sentiment, institutional or options clues when available.
 - Important news/earnings/ratings/policy/geopolitical events from the past 8 hours.
 - After-hours futures: Nasdaq futures, S&P 500 futures, Dow futures latest levels and changes.
+- Apply the shared `Theme Catalyst Discipline` and `Local Market Data Discipline`; close-review reports must still scan active themes and after-hours catalysts, not only index closes.
 
 If the US market was closed for a holiday, explain the reason and summarize only valid after-hours, futures, and global linkage information.
 
@@ -32,7 +33,7 @@ Then exactly:
 - 核心涨跌原因，结合最新新闻解释。
 
 二、重点题材与异动个股
-- 按题材分类说明：固定关注板块 + `/themes` 题材中文清单 + 突发题材。
+- 按题材分类说明：固定关注板块 + 共享固定主题 + 突发题材。
 - 每个重要题材尽量具体到相关个股或代码。
 - 说明上涨/下跌原因：政策预期、财报、订单、供需、产业链、资金情绪、期权/散户情绪等。
 

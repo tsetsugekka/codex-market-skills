@@ -29,7 +29,7 @@ Always read `references/shared.md` first, then only the one task-specific refere
 2. Confirm current date/time in Japan time and whether the relevant next or current session is open. If the market is closed, follow the task-specific closed-market rule instead of forcing a normal report.
 3. Gather latest data from reliable live sources. Use market-specific primary sources listed in the task reference.
 4. Never invent prices, index levels, futures, percentage moves, gamma/options levels, flows, valuation, financials, or news. If unavailable, say `暂无具体数值` or `初步`.
-5. Apply the user's fixed focus themes from `shared.md`, but only analyze themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance.
+5. Apply `shared.md` theme-catalyst and local-data discipline: scan active themes before finalizing, avoid broad local-data sweeps, and only analyze themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance.
 6. Produce pure simplified Chinese output in the exact structure required by the task reference.
 
 ## Supporting Skills
@@ -55,7 +55,7 @@ Cross-skill calls are operational: actually load the supporting skill's `SKILL.m
 
 ## Guardrails
 
-- Do not re-open `https://daytrading.monster/themes/` unless the user explicitly asks to update the theme list.
+- Do not open or depend on the DTM `/themes` project or `https://daytrading.monster/themes/` unless the user explicitly asks to update or inspect that project.
 - Do not mechanically review every theme in the fixed list. Deduplicate, merge, and focus only on active themes.
 - If a new theme outside the fixed list is active, label it `新增/突发题材`.
 - For long-term recommendation reports, recommend exactly one target and avoid recently recommended names when that history is available in the conversation, logs, or user-provided context.

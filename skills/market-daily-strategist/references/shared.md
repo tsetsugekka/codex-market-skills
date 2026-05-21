@@ -12,6 +12,26 @@
 - Attribute key numbers and important news to sources.
 - If using social media, label it as social-media sentiment, not verified fact.
 
+## Theme Catalyst Discipline
+
+For every pre-market and close-review report, run a targeted theme-catalyst scan before finalizing. Do not rely only on index futures, macro headlines, earnings calendars, closing index moves, or a few mega-cap tickers.
+
+- Scan the fixed focus themes below plus any obvious active tape themes for same-day or clearly current catalysts: policy/funding, product launch, approval/regulatory progress, major customer/order, cloud/model/chip partnership, earnings/guidance, rating action, supply-demand shock, contract, capital return, M&A/IPO, or credible flow/news explaining a move.
+- Include only themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance. Do not mechanically comment on every fixed theme.
+- If a theme headline is confirmed but the related stock/sector move is not checked, say so instead of implying a verified move.
+- Mark active themes outside the fixed list as `新增/突发题材`.
+- Examples of current-style catalysts that should be captured when relevant: Tesla FSD/China approval or rollout; US quantum-computing funding and related pre-market/after-hours moves; Anthropic/Claude cloud, chip, Microsoft, NVIDIA, or other AI-infrastructure partnership headlines; SpaceX launch/IPO/contract news; AI system shipment updates such as NVIDIA Vera Rubin.
+
+## Local Market Data Discipline
+
+Use local market-data skills and moomoo selectively. They confirm important prices or option structure; they are not a replacement for a news/theme scan.
+
+- Allowed: query index ETFs, core sector ETFs, futures/index proxies, gamma/options for relevant US indexes/ETFs, PTS/after-hours pages, and a small number of genuinely important tickers already identified by news, index relevance, or the user's focus.
+- Do not bulk-scan all stocks or all theme constituents for a daily market report unless the user explicitly asks for a broad screener.
+- When a market has explicit extended-hours fields, use only those fields for extended-hours claims. For US pre/post-market moomoo data, use `pre_*`, `after_*`, or `overnight_*` fields as appropriate; do not treat `last_price`, regular-session OHLC, or regular-session volume as pre-market or after-hours data.
+- If the correct extended-hours field is unavailable, write `盘前暂无可靠数值`, `盘后暂无可靠数值`, or `数据不可得` instead of substituting stale regular-session data.
+- State the field basis correctly when it matters, especially around US pre-market/after-hours, Japan PTS, and futures/index proxies.
+
 ## Cross-Skill Use
 
 - Use supporting skills only for points that can change the report conclusion, not for every stock in a mover list.
@@ -27,13 +47,13 @@ Long-term user focus themes:
 
 半导体、电网/特高压、新能源、商业航天、AI应用、存储芯片、光伏、储能、光纤、军工、电池、造船、机器人、消费。
 
-Fixed `/themes` Chinese list:
+Fixed shared Chinese theme list:
 
 数据中心/NeoCloud、具身智能/机器人、商业航天/航天、稀土、无人机/低空经济、军工/防务、功率半导体、模拟半导体、存储芯片、半导体代工、MLCC、PCB、量子计算、钙钛矿太阳能电池、全固态电池、蓄电池、光器件/光模块、石油/天然气、半导体材料/零部件、地方银行、综合商社、大型银行/互联网银行、造船、核聚变发电、日元贬值受益、日元升值受益、网络安全、软件/SaaS、互联网服务、电力/燃气、建筑公司/建设工程、电气设备、加密货币、稳定币、光纤、CPU/GPU/TPU、娱乐/游戏、零售、餐饮、玻璃纤维布/铜箔、人造金刚石、减肥药/肥胖症治疗药、创新药/新药、汽车/汽车零部件、电动汽车、自动驾驶、铁路、航空/邮轮/旅游、农业、猪肉、黄金/白银、铜/铜冶炼、稀有金属、其他金属、海运、消费金融、保险、证券、房地产、可再生能源、化工、物流、煤炭、半导体制造/测试设备、水务基础设施、变压器/HVDC、数据中心冷却系统、工程机械。
 
 Usage:
 
-- Do not open `https://daytrading.monster/themes/` unless the user explicitly asks to update the theme list.
+- Do not open or depend on the DTM `/themes` project or `https://daytrading.monster/themes/` unless the user explicitly asks to update or inspect that project.
 - Deduplicate, merge, and map the fixed themes to the relevant market's tradable sectors, stocks, ETFs, or concepts.
 - Do not mechanically comment on every item. Only analyze active themes with real movement, news, flow, policy, earnings, ratings, or trading relevance.
 - Mark active themes outside the fixed list as `新增/突发题材`.

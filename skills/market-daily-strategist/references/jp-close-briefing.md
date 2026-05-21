@@ -20,9 +20,10 @@ Prefer Japanese-language sources:
 - Nikkei 225, TOPIX, Mothers/Growth or relevant small-cap index: close levels and percentage moves.
 - USD/JPY, JGB yield, US futures, China/Hong Kong linkage, and major commodity/rate context when relevant.
 - Main sector performance and breadth where available.
-- Active themes from the fixed focus list and `/themes` list, mapped to Japanese stocks.
+- Active themes from the fixed focus list and shared theme list, mapped to Japanese stocks.
 - Unusual movers with codes or Japanese short names, direction, and catalyst/negative driver.
 - Earnings, guidance revisions, buybacks, capital policy, rating changes, policy news, geopolitical events, and after-close PTS moves.
+- Apply the shared `Theme Catalyst Discipline` and `Local Market Data Discipline`; close-review reports must scan after-close and next-session catalysts, not only index closes.
 
 ## Output Format
 
@@ -36,7 +37,7 @@ Then exactly:
 - 核心涨跌原因，结合最新新闻解释。
 
 二、重点题材与异动个股
-- 按题材分类说明：固定关注板块 + `/themes` 题材中文清单 + 突发题材。
+- 按题材分类说明：固定关注板块 + 共享固定主题 + 突发题材。
 - 重要题材尽量具体到个股代码或日文简称。
 - 说明上涨/下跌原因：财报、订单、政策、产业链、资金情绪、PTS、信用/空卖或机构线索。
 
