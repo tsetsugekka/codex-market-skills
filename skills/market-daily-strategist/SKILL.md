@@ -1,0 +1,62 @@
+---
+name: market-daily-strategist
+description: Use when the user asks for Chinese market strategy reports or long-term stock recommendations covering US stocks, Japanese stocks, or A-shares, including pre-market strategy, close recap, and one-name long-term recommendation reports. Applies to ad-hoc requests that need live market/news data, strict no-fabrication data discipline, the user's fixed focus themes, and decision-oriented trading guidance.
+metadata:
+  short-description: Chinese daily market strategy and one-stock recommendation reports
+---
+
+# Market Daily Strategist
+
+Use this skill for the user's market reports. This is not a scheduler; ignore any clock-trigger wording from the original prompts. Route by user intent:
+
+- 美股盘前、开盘前、pre-market、盘前策略: read `references/us-pre-market.md`.
+- 美股收盘、昨晚美股、复盘、close recap: read `references/us-close-briefing.md`.
+- 日股盘前、日经盘前、日本开盘前: read `references/jp-pre-market.md`.
+- 日股收盘、今天日股复盘、日本市场复盘: read `references/jp-close-briefing.md`.
+- A股盘前、A股早盘、开盘前策略: read `references/cn-pre-market.md`.
+- A股收盘、A股复盘、今天A股市场回顾: read `references/cn-close-briefing.md`.
+- 美股长线推荐、推荐一只美股: read `references/us-long-term.md`.
+- 日股长线推荐、推荐一只日股: read `references/jp-long-term.md`.
+- A股长线推荐、推荐一只A股/ETF/LOF: read `references/cn-long-term.md`.
+
+If the user says only `盘前信息`, `收盘复盘`, or `推荐一只股票`, infer the market from the conversation. If unclear, ask one concise question for the market: 美股、日股、还是A股.
+
+Always read `references/shared.md` first, then only the one task-specific reference that matches the user request.
+
+## Core Workflow
+
+1. Identify the report type and market.
+2. Confirm current date/time in Japan time and whether the relevant next or current session is open. If the market is closed, follow the task-specific closed-market rule instead of forcing a normal report.
+3. Gather latest data from reliable live sources. Use market-specific primary sources listed in the task reference.
+4. Never invent prices, index levels, futures, percentage moves, gamma/options levels, flows, valuation, financials, or news. If unavailable, say `暂无具体数值` or `初步`.
+5. Apply the user's fixed focus themes from `shared.md`, but only analyze themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance.
+6. Produce pure simplified Chinese output in the exact structure required by the task reference.
+
+## Supporting Skills
+
+This skill is a report router and synthesis layer. Use other market skills when they materially improve the report, but keep calls selective.
+
+- Use `macro-news-check` when the report depends on current macro tape: rates, FX, oil, gold, commodities, central banks, economic data, geopolitics, broad risk sentiment, or live futures confirmation.
+- Use `us-stock-gamma-moomoo` for US index/ETF option structure when SPX/SPY/QQQ/NQ gamma, GEX, 0DTE, dealer positioning, option walls, or intraday conversion levels could change the strategy.
+- Use `stock-technical-analysis` for selected index/ETF/stock levels when the answer needs support/resistance, trend confirmation, intraday execution timing, breakout/pullback validation, or stop levels.
+- Use `jp-stock-move-reason` or `cn-stock-move-reason` for 1-3 genuinely important Japanese/A-share movers when the catalyst is unclear or the stock drives the day's theme. Do not run move-reason analysis on every mover.
+- Use `stock-sentiment-analysis` when crowding, leader/follower status, emotion cycle, old-leader rebound, or theme acceptance/rejection affects the trading conclusion.
+- Use market data/search skills such as `mx-data`, `mx-search`, or `mx-xuangu` for A-share quote, news, sector, fund-flow, and concept confirmation when available.
+
+Cross-skill calls are operational: actually load the supporting skill's `SKILL.md` and required references when using it. Keep supporting-skill output compressed into the final report instead of pasting separate mini-reports.
+
+## Style
+
+- Professional, concise, strategy-first.
+- The first line is always a 60-80 Chinese-character decisive title when the task reference requires it.
+- Prioritize actionable conclusions: 追高、等回踩、低吸、减仓、观察、避开财报风险、仓位与止损.
+- Attribute important live figures and news to sources.
+- For recommendation reports, clearly state that the output is not financial advice.
+
+## Guardrails
+
+- Do not re-open `https://daytrading.monster/themes/` unless the user explicitly asks to update the theme list.
+- Do not mechanically review every theme in the fixed list. Deduplicate, merge, and focus only on active themes.
+- If a new theme outside the fixed list is active, label it `新增/突发题材`.
+- For long-term recommendation reports, recommend exactly one target and avoid recently recommended names when that history is available in the conversation, logs, or user-provided context.
+- Buy prices must be near the latest available price and within the task-specific limit, generally no more than 2% above current/latest price.

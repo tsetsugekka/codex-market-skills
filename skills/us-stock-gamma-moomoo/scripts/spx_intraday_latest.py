@@ -186,10 +186,16 @@ def money(value: float) -> str:
     return f"{sign}{value:,.0f}"
 
 
-def levels(items: list[list[float]], limit: int = 8) -> str:
+def levels(items: list[list[float]] | list[float], limit: int = 8) -> str:
     if not items:
         return "无"
-    return ", ".join(f"{x[0]:g}" for x in items[:limit])
+    values = []
+    for item in items[:limit]:
+        if isinstance(item, (list, tuple)):
+            values.append(float(item[0]))
+        else:
+            values.append(float(item))
+    return ", ".join(f"{x:g}" for x in values)
 
 
 def levels_with_value(items: list[list[float]], limit: int = 6) -> str:
