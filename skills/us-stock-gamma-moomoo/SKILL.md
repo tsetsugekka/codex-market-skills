@@ -1,6 +1,6 @@
 ---
 name: us-stock-gamma-moomoo
-description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, or option positioning. Produces plain-language conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; file reports are optional only when explicitly requested.
+description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; file reports are optional only when explicitly requested.
 metadata:
   version: 0.1.3
 ---
@@ -28,6 +28,8 @@ Cross-skill calls are operational. When this workflow says to use another market
 
 Required coordination: for US option/gamma analysis, use this skill as the positioning and option-structure entry point, and add supporting skills based on the analysis workflow, not only on the user's wording. If the analysis is about SPX, SPXW, SPY, QQQ, Nasdaq, Dow, Russell, VIX, Nikkei proxy gamma, or any broad index/ETF gamma map, load `macro-news-check` because index gamma cannot be read well without current macro and broad-market tape. If the analysis discusses news acceptance, theme crowding, risk-on/risk-off tone, forum/social sentiment, or leader/follower context, load `stock-sentiment-analysis`. If the final view depends on support/resistance, intraday timing, trend confirmation, failed breakout, or price-action validation, load `stock-technical-analysis`. Gamma is the positioning map; macro, sentiment, and chart structure decide whether the map is being accepted or rejected.
 
+For ordinary U.S. stock move analysis, ChartExchange-style off-exchange/dark-pool data can be a secondary confirmation layer when price action or option positioning leaves an open question. Use it after confirmed news, macro/sector tape, price/volume, and option/gamma evidence. It is most useful for hidden-liquidity context around unusual volume, unexplained moves, failed news reactions, squeeze candidates, or repeated support/resistance at specific prices.
+
 ## Mandatory Execution Gate
 
 Before running scripts or writing the final answer, classify the request and load required sibling skills:
@@ -36,6 +38,7 @@ Before running scripts or writing the final answer, classify the request and loa
 - **宏观 / 快讯 / rates / FX / commodities / geopolitics / Fed / yields**: load `macro-news-check`. Do not substitute ad hoc web search for this layer.
 - **技术面 / intraday execution / "now" / support-resistance / "can it get through" / price action**: load `stock-technical-analysis` unless the user asks for a pure option-positioning dump. Use price action to decide whether a wall/pit is accepted, rejected, or only a battlefield.
 - **情绪面 / news acceptance / crowding / risk-on or risk-off psychology / expectation gap**: load `stock-sentiment-analysis` when sentiment or expectation gap changes the interpretation.
+- **Dark pool / off-exchange / borrow / FTD / short-volume checks for U.S. stocks**: use ChartExchange or the original FINRA/borrow-data source only as a secondary positioning layer. Do not use dark-pool prints or off-exchange share alone as a bullish/bearish signal.
 - If a required sibling skill is unavailable, say so and provide a limited gamma-only read. If it is available but not needed, state the reason briefly.
 
 Final answers for index gamma should include a compact `融合口径` line naming the layers used, for example: `自算 SPXW gamma + macro-news-check tape + stock-technical-analysis price action + stock-sentiment-analysis emotion/expectation gap`. This makes skipped or missing skill fusion visible.
@@ -107,6 +110,28 @@ Read extra references only when the request needs them:
 
 - For `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmap, or intraday index judgment, read `references/spx-intraday.md`.
 - For short-dated option value tables, account-recovery option targets, or “what is this call/put worth if price reaches X by time Y”, read `references/option-scenario-tables.md`.
+- For U.S. single-stock dark-pool/off-exchange, borrow-fee, short-volume, FTD, or ChartExchange confirmation, use the `Dark Pool / Short Data Layer` section below.
+
+## Dark Pool / Short Data Layer
+
+Use this layer only for U.S.-listed stocks and ETFs. Do not apply it to A-shares, Japanese stocks, or non-U.S. local listings.
+
+When using ChartExchange, build the URL from both listing venue and ticker. The path shape is:
+
+```text
+https://chartexchange.com/symbol/{exchange-lowercase}-{ticker-lowercase}/exchange-volume/dark-pool-levels/
+```
+
+Examples: `nyse-anet`, `nasdaq-nvda`, `nyse-spy`. SPY is a common exception where ChartExchange uses `nyse-spy`, so search the ticker on ChartExchange or a quote source first when the venue is uncertain, then use the matching venue in the URL. Do not reuse an ANET URL for other tickers without changing both ticker and venue.
+
+Interpretation rules:
+
+- `Off Exchange & Dark Pool %`: compare today's share with the ticker's own average. A high off-exchange share is common in U.S. equities and is not bullish or bearish by itself.
+- `Dark Pool Levels`: treat high-volume price levels as hidden-liquidity reference zones. They become support/resistance only if later price action confirms acceptance, rejection, or repeated defense.
+- `Dark Pool Prints`: large prints near VWAP, gaps, prior highs/lows, or post-news levels are notable, but the data does not reveal whether the initiating side was accumulation, distribution, internalization, or a cross.
+- `Short Volume`: daily short-sale volume is not short interest and often includes market-maker activity. Use it for flow pressure only, not for outstanding short exposure.
+- `Short Interest`, `Borrow Fee`, `Shares Available`, and `FTD`: use these for squeeze risk. Stronger squeeze evidence is rising borrow fee, shrinking availability, elevated short interest/FTD, and price refusing to break down after heavy short/dark flow.
+- Always combine this layer with news acceptance, live price/VWAP, volume, and option/gamma structure. If the conclusion depends on a dark-pool level becoming support/resistance, load `stock-technical-analysis` and require price confirmation.
 
 ## Optional User Knowledge Base
 

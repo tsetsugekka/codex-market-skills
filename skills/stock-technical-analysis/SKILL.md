@@ -1,6 +1,6 @@
 ---
 name: stock-technical-analysis
-description: Use when the user asks for technical analysis of an individual US, Japanese, or A-share stock, including intraday trend, pressure/support, whether it can reach a price, K-line structure, volume-price behavior, moving averages, KDJ/MACD/RSI, Vegas channels, moomoo/Yahoo chart reads, or whether a breakout/pullback is confirmed.
+description: Use when the user asks for technical analysis of an individual US, Japanese, or A-share stock, including intraday trend, pressure/support, whether it can reach a price, K-line structure, volume-price behavior, moving averages, KDJ/MACD/RSI, Vegas channels, moomoo/Yahoo chart reads, US-only dark-pool level confirmation, or whether a breakout/pullback is confirmed.
 metadata:
   short-description: Technical analysis playbook for US, JP, and A-share stocks
 ---
@@ -37,8 +37,9 @@ Never answer only by following the latest tick. Use the sequence:
 3. Check volume-price confirmation: breakout must show volume and stand above the level; volume without price progress is possible distribution; shrinking pullback can be healthy only if support holds.
 4. Check momentum: KDJ, MACD, RSI, and whether price makes a new high while momentum does not.
 5. Check structure: trend continuation, high-level divergence, 空中加油, 回踩确认, 破位反抽, or 冲高回落.
-6. Check market context: sector/peer confirmation, broad market tone, rates/FX/volatility when relevant, and for A-shares the emotion cycle. Call `macro-news-check` only when current macro or broad-market tape can plausibly change the read, such as index-wide selloffs/squeezes, rates/FX shocks, central-bank or data releases, commodities, geopolitics, or sudden futures moves. Use `stock-sentiment-analysis` for a deeper shared sentiment framework.
-7. Give conditional conclusions rather than one-point predictions.
+6. For U.S.-listed stocks/ETFs only, optionally use ChartExchange dark-pool/off-exchange levels as hidden-liquidity reference zones when the stock has unusual volume, unexplained movement, repeated support/resistance, or a news reaction that price is accepting/rejecting. Do not apply this to A-shares or Japanese stocks. Dark-pool data has no buy/sell side; a level matters technically only after price confirms it with acceptance, rejection, repeated defense, or failure to reclaim.
+7. Check market context: sector/peer confirmation, broad market tone, rates/FX/volatility when relevant, and for A-shares the emotion cycle. Call `macro-news-check` only when current macro or broad-market tape can plausibly change the read, such as index-wide selloffs/squeezes, rates/FX shocks, central-bank or data releases, commodities, geopolitics, or sudden futures moves. Use `stock-sentiment-analysis` for a deeper shared sentiment framework.
+8. Give conditional conclusions rather than one-point predictions.
 
 For A-share technical reads, optionally use 东方财富妙想 skills when they are already installed: `mx-data` can supplement current quote,涨跌幅,成交额/量,主力资金, historical prices, index/sector context, and valuation fields; `mx-search` can supplement current event/news context when a technical break may be news-driven; `mx-xuangu` can help build peer or board constituent comparisons. Do not ask the user to install these skills and do not block the analysis if they are unavailable or fail. Use `mx-zixuan` and `mx-moni` only when the user explicitly asks for self-selected-stock management or simulated portfolio/trade operations.
 
@@ -93,5 +94,7 @@ This skill handles chart and technical structure. For catalysts, valuation, news
 - US option gamma: `us-stock-gamma-moomoo`
 
 For US stocks, choose based on the question: use `us-stock-gamma-moomoo` when option positioning, gamma walls, 0DTE, IV, or dealer hedging matter; use this skill when chart structure and timing matter; use both when an options map needs price-action confirmation.
+
+For U.S. dark-pool technical confirmation, use ChartExchange or FINRA-derived pages only as a secondary layer. Construct ChartExchange URLs from the actual listing venue and ticker, such as `nyse-anet`, `nasdaq-nvda`, or `nyse-spy`; SPY commonly resolves to `nyse-spy` on ChartExchange. If the listing venue is unknown, search the ticker first instead of reusing a prior URL. Treat high-volume dark-pool levels like unconfirmed support/resistance until price/VWAP/volume confirms them.
 
 When both fundamentals/catalysts and technicals matter, gather source evidence first, then use this skill to judge whether the chart confirms, overextends, or contradicts the story.
