@@ -1,6 +1,6 @@
 ---
 name: market-daily-strategist
-description: Use when the user asks for Chinese market strategy reports or long-term stock recommendations covering US stocks, Japanese stocks, or A-shares, including pre-market strategy, close recap, and one-name long-term recommendation reports. Applies to ad-hoc requests that need live market/news data, strict no-fabrication data discipline, the user's fixed focus themes, and decision-oriented trading guidance.
+description: Use when the user asks for Chinese market strategy reports or long-term stock recommendations covering US stocks, Japanese stocks, or A-shares, including pre-market strategy, close recap, and one-name long-term recommendation reports. Applies to ad-hoc requests that need live market/news data, strict no-fabrication data discipline, price-confirmed catalysts, and decision-oriented trading guidance.
 metadata:
   short-description: Chinese daily market strategy and one-stock recommendation reports
 ---
@@ -29,7 +29,7 @@ Always read `references/shared.md` first, then only the one task-specific refere
 2. Confirm current date/time in Japan time and whether the relevant next or current session is open. If the market is closed, follow the task-specific closed-market rule instead of forcing a normal report.
 3. Gather latest data from reliable live sources. Use market-specific primary sources listed in the task reference.
 4. Never invent prices, index levels, futures, percentage moves, gamma/options levels, flows, valuation, financials, or news. If unavailable, say `暂无具体数值` or `初步`.
-5. Apply `shared.md` theme-catalyst and local-data discipline: scan active themes before finalizing, avoid broad local-data sweeps, and only analyze themes with actual news, price action, flows, earnings, ratings, policy catalysts, or actionable trading relevance.
+5. Apply `shared.md` market-news and local-data discipline: scan enough current news before finalizing, avoid broad local-data sweeps, and prioritize items confirmed by price action, volume, flows, earnings, ratings, policy catalysts, or direct trading relevance.
 6. Produce pure simplified Chinese output in the exact structure required by the task reference.
 
 ## Supporting Skills
@@ -56,7 +56,5 @@ Cross-skill calls are operational: actually load the supporting skill's `SKILL.m
 ## Guardrails
 
 - Do not open or depend on the DTM `/themes` project or `https://daytrading.monster/themes/` unless the user explicitly asks to update or inspect that project.
-- Do not mechanically review every theme in the fixed list. Deduplicate, merge, and focus only on active themes.
-- If a new theme outside the fixed list is active, label it `新增/突发题材`.
 - For long-term recommendation reports, recommend exactly one target and avoid recently recommended names when that history is available in the conversation, logs, or user-provided context.
 - Buy prices must be near the latest available price and within the task-specific limit, generally no more than 2% above current/latest price.

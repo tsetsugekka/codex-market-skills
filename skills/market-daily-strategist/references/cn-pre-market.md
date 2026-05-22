@@ -14,7 +14,7 @@ Prefer 东方财富、同花顺、雪球、财联社、新浪财经 and other re
 - Main sector heat and unusual themes.
 - Key unusual stocks and Dragon-Tiger List references, including speculative/institutional movement.
 - After-close news from the prior day: policy expectations, breaking catalysts, earnings/announcements/regulatory information.
-- Apply the shared `News Coverage Discipline` and `Optional Local / Private Data Discipline`; A-share pre-market reports must scan active domestic/offshore catalysts, not only index expectations and yesterday's hot sectors.
+- Apply the shared `Market News Discipline` and `Optional Local / Private Data Discipline`; A-share pre-market reports must scan active domestic/offshore catalysts, not only index expectations and yesterday's hot sectors.
 
 ## Output Format
 
@@ -29,7 +29,7 @@ Then exactly:
 
 2. 重点板块与异动题材
 - 具体板块热度、重点个股代码或简称、趋势/反转信号、催化剂。
-- 覆盖当天真正有异动或交易意义的固定关注板块与共享固定主题。
+- 优先覆盖当天真正有异动、成交确认或交易意义的板块与个股。
 - 结合政策预期、业绩线、产业链供需、游资情绪、龙虎榜或机构席位信息。
 
 3. 早盘操作策略

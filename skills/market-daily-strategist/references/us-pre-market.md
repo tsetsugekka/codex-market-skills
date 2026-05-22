@@ -18,10 +18,10 @@ Prefer Yahoo Finance, Bloomberg, CNBC, MarketWatch, Seeking Alpha, TradingView. 
 - SPX Gamma Exposure: gamma level, Gamma Flip, Gamma Wall.
 - JPMorgan options wall or key options-wall levels.
 - CTA flow latest dynamic.
-- Main pre-market sector performance: AI semiconductors, memory, tech, software, consumer, financials, new energy, energy, defense, and other active focus themes.
+- Main pre-market sector performance and active themes, ranked by actual futures/ETF/stock reaction and trading relevance.
 - Pre-market movers with ticker/short name, move direction, and catalyst or negative driver.
 - Latest major news: earnings, policy, geopolitical events, Trump-related news, oil, Treasury yields, inflation expectations, economic data, speeches.
-- Apply the shared `News Coverage Discipline` and `Optional Local / Private Data Discipline`; do not skip theme-news scanning just because futures, macro data, or mega-cap earnings are available.
+- Apply the shared `Market News Discipline` and `Optional Local / Private Data Discipline`; do not skip broad market-news scanning just because futures, macro data, or mega-cap earnings are available.
 
 ## Output Format
 
@@ -36,7 +36,7 @@ Then exactly:
 
 2. 主要板块与异动个股
 - 具体板块盘前表现、重点ticker、催化或利空。
-- 覆盖当天真正有异动或交易意义的固定关注板块与共享固定主题。
+- 优先覆盖当天真正有异动、成交确认或交易意义的板块与个股。
 - 结合财报、评级、政策、供需、资金情绪、期权/游资情绪解释。
 
 3. 今天开盘前瞻与操作策略
