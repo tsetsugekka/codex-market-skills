@@ -12,6 +12,7 @@ Prefer Yahoo Finance, Bloomberg, CNBC, MarketWatch, Seeking Alpha, TradingView, 
 - Dow, S&P 500, Nasdaq actual closing levels and percentage moves.
 - Major sector performance: tech, semiconductors, AI, software, financials, energy, industrials, consumer, healthcare.
 - Unusual movers with tickers/short names, direction, catalyst or negative driver.
+- After-hours mover summary pages and earnings/rating mover roundups before individual-stock deep searches.
 - Volume/turnover, unusual volume, retail sentiment, institutional or options clues when available.
 - Important news/earnings/ratings/policy/geopolitical events from the past 8 hours.
 - After-hours futures: Nasdaq futures, S&P 500 futures, Dow futures latest levels and changes.

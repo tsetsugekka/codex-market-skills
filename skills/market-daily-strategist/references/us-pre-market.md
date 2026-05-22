@@ -20,6 +20,7 @@ Prefer Yahoo Finance, Bloomberg, CNBC, MarketWatch, Seeking Alpha, TradingView. 
 - CTA flow latest dynamic.
 - Main pre-market sector performance and active themes, ranked by actual futures/ETF/stock reaction and trading relevance.
 - Pre-market movers with ticker/short name, move direction, and catalyst or negative driver.
+- Pre-market mover summary pages and earnings/rating mover roundups before individual-stock deep searches.
 - Latest major news: earnings, policy, geopolitical events, Trump-related news, oil, Treasury yields, inflation expectations, economic data, speeches.
 - Apply the shared `Market News Discipline` and `Optional Local / Private Data Discipline`; do not skip broad market-news scanning just because futures, macro data, or mega-cap earnings are available.
 
