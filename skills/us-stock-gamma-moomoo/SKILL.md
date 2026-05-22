@@ -57,7 +57,7 @@ Route the request before choosing a script:
 - **SPX / SPXW / SP500 / 标普500 / S&P 500 index gamma**: do not use `gamma_report.py` as the final workflow. Use `scripts/spx_intraday_latest.py` and `references/spx-intraday.md`: query `US..SPX`, keep SPX/SPXW strikes directly, infer the spot anchor from SPXW 0DTE put-call parity when the SPX index snapshot is unavailable, and treat SPY only as a sanity check or fallback.
 - **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels, and do not use a current Nikkei anchor against a stale EWJ close. Use EWJ only as a proxy option book, then convert with a time-aligned bridge: EWJ quote-time value -> `NKDmain`/Nikkei futures at that same time -> current `NIYmain`/Nikkei CFD or the user's current index anchor. Use `scripts/proxy_index_gamma.py`. The report must state every anchor, ratio, timestamp, and limitation.
 
-Default to a concise chat/terminal text summary. Do not generate HTML, JSON, or other files unless the user explicitly asks for a report file, raw data export, or machine-readable artifact.
+Default to a concise chat/terminal text summary. For SPX/SPXW, do not generate the simple text-only HTML report path; use JSON only when raw data is explicitly requested, and use the local chart dashboard workflow when a visual HTML dashboard is requested.
 
 For ordinary US stocks/ETFs use `scripts/gamma_report.py` when the user asks for the ticker itself:
 
@@ -90,7 +90,7 @@ The script:
 - calculates signed GEX with the common assumption `Call = +`, `Put = -`;
 - calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
-- prints a readable text memo by default; `--html-output` or `--output` should be used only when the user explicitly asks for a file.
+- prints a readable text memo by default; `--output` / `--json-output` should be used only when the user explicitly asks for raw data.
 
 For SPX 0DTE or quick trading questions, chat/terminal text is the default. Still compute or fetch the chain first when possible.
 

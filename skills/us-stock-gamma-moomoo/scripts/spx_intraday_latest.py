@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import html
 import json
 import math
 import statistics
@@ -204,88 +203,6 @@ def levels_with_value(items: list[list[float]], limit: int = 6) -> str:
     return ", ".join(f"{level:g}({money(value)})" for level, value in items[:limit])
 
 
-def table_rows(items: list[list[float]], value_label: str) -> str:
-    if not items:
-        return '<tr><td colspan="2">无</td></tr>'
-    return "\n".join(f"<tr><td>{level:g}</td><td>{html.escape(value_label(value))}</td></tr>" for level, value in items[:12])
-
-
-def render_html_report(result: dict) -> str:
-    spot = result["spot_anchor"]
-    zero = result["buckets"].get("0DTE", {})
-    all_bucket = result["buckets"].get("All", {})
-    next2 = result["buckets"].get("Next2", {})
-    fri2w = result["buckets"].get("Fri2w", {})
-    generated = html.escape(str(result.get("generated", "")))
-    expiries = ", ".join(result.get("expiries", []))
-    return f"""<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SPX/SPXW Intraday Gamma</title>
-  <style>
-    body {{ margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f6f7f3; color: #17211b; }}
-    header {{ padding: 28px 32px 18px; background: #fbfcf8; border-bottom: 1px solid #d9ded5; }}
-    main {{ max-width: 1280px; margin: 0 auto; padding: 22px 32px 36px; display: grid; gap: 18px; }}
-    section {{ background: #fff; border: 1px solid #d9ded5; border-radius: 8px; padding: 18px; }}
-    h1 {{ margin: 0; font-size: 28px; }} h2 {{ margin: 0 0 12px; font-size: 18px; }}
-    .sub, .small {{ color: #647069; font-size: 13px; line-height: 1.55; }}
-    .grid {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }}
-    .metric {{ border-top: 1px solid #d9ded5; padding-top: 10px; min-height: 68px; }}
-    .metric b {{ display: block; font-size: 24px; }} .metric span {{ color: #647069; font-size: 12px; }}
-    .two {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }}
-    table {{ width: 100%; border-collapse: collapse; font-size: 13px; }} th, td {{ padding: 8px; border-bottom: 1px solid #e3e6df; text-align: right; }} th:first-child, td:first-child {{ text-align: left; }}
-    .red {{ color: #dc2626; }} .blue {{ color: #2563eb; }}
-    @media (max-width: 900px) {{ main, header {{ padding-left: 16px; padding-right: 16px; }} .grid, .two {{ grid-template-columns: 1fr; }} }}
-  </style>
-</head>
-<body>
-  <header>
-    <h1>SPX/SPXW Intraday Gamma</h1>
-    <div class="sub">生成 {generated} · 锚点 {spot:.2f} · 方法：{html.escape(result.get("spot_method", ""))}</div>
-  </header>
-  <main>
-    <section>
-      <h2>核心读数</h2>
-      <div class="grid">
-        <div class="metric"><b>{spot:.2f}</b><span>SPX parity anchor</span></div>
-        <div class="metric"><b class="{'blue' if zero.get("net_gex", 0) > 0 else 'red'}">{money(zero.get("net_gex", 0))}</b><span>0DTE 净 GEX</span></div>
-        <div class="metric"><b class="{'blue' if all_bucket.get("net_gex", 0) > 0 else 'red'}">{money(all_bucket.get("net_gex", 0))}</b><span>全窗口净 GEX</span></div>
-        <div class="metric"><b>{levels(all_bucket.get("flips", []), 3)}</b><span>全窗口 gamma flip</span></div>
-      </div>
-      <p class="small">到期日：{html.escape(expiries)}。SPY 只作为 sanity check，不作为 SPX 点位换算主流程。</p>
-    </section>
-    <section class="two">
-      <div>
-        <h2>0DTE SPXW PM</h2>
-        <p>正墙：{html.escape(levels(zero.get("walls", [])))}</p>
-        <p>负坑：{html.escape(levels(zero.get("pits", [])))}</p>
-        <p>Flip：{html.escape(levels(zero.get("flips", []), 4))}</p>
-      </div>
-      <div>
-        <h2>近端 + 周度窗口</h2>
-        <p>Next2 正墙：{html.escape(levels(next2.get("walls", [])))}</p>
-        <p>Next2 负坑：{html.escape(levels(next2.get("pits", [])))}</p>
-        <p>Fri2w 正墙：{html.escape(levels(fri2w.get("walls", [])))}</p>
-        <p>Fri2w 负坑：{html.escape(levels(fri2w.get("pits", [])))}</p>
-      </div>
-    </section>
-    <section class="two">
-      <div>
-        <h2>全窗口正墙</h2>
-        <table><thead><tr><th>Level</th><th>GEX</th></tr></thead><tbody>{table_rows(all_bucket.get("walls", []), money)}</tbody></table>
-      </div>
-      <div>
-        <h2>全窗口负坑</h2>
-        <table><thead><tr><th>Level</th><th>GEX</th></tr></thead><tbody>{table_rows(all_bucket.get("pits", []), money)}</tbody></table>
-      </div>
-    </section>
-  </main>
-</body>
-</html>"""
-
-
 def render_text_report(result: dict) -> str:
     spot = result["spot_anchor"]
     zero = result["buckets"].get("0DTE", {})
@@ -339,7 +256,6 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Print a SPX/SPXW intraday gamma text memo")
     parser.add_argument("--json-output", help="Optional JSON path; use only when a raw data file is explicitly requested")
     parser.add_argument("--output", dest="json_output", help=argparse.SUPPRESS)
-    parser.add_argument("--html-output", help="Optional readable HTML report path")
     parser.add_argument("--strike-min", type=float, default=6600)
     parser.add_argument("--strike-max", type=float, default=8200)
     parser.add_argument("--future-count", type=int, default=4)
@@ -453,9 +369,6 @@ def main() -> None:
             path = Path(args.json_output)
             path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
             print(f"\nJSON data: {path}")
-        if args.html_output:
-            Path(args.html_output).write_text(render_html_report(out), encoding="utf-8")
-            print(f"HTML report: {args.html_output}")
     finally:
         safe_close(ctx)
 
