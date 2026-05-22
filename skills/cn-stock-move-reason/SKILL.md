@@ -1,6 +1,6 @@
 ---
 name: cn-stock-move-reason
-description: Use when analyzing why one A-share stock moved sharply using Codex, without Gemini, from Eastmoney quote data, announcements, Eastmoney 股吧/资讯 posts, Sohu index/sector context, and A-share breadth.
+description: Use when analyzing why one A-share stock moved sharply using Codex, without Gemini, from Eastmoney quote data, announcements, Eastmoney 股吧/资讯 posts, Eastmoney Guba topic heat, Sohu index/sector context, and A-share breadth.
 metadata:
   short-description: Analyze A-share move reasons from announcements, 股吧, index/sector context, and emotion cycle
 ---
@@ -46,6 +46,8 @@ When preparing a GitHub upload or public release, use the public version only an
    - `mx-zixuan`: only when the user explicitly asks to query/add/delete their 东方财富 self-selected stocks. Do not use it automatically for analysis because it touches user account data.
    - `mx-moni`: only when the user explicitly asks about simulated portfolio holdings, funds, orders, simulated buy/sell, cancel orders, or posting a simulated-trading note. Do not use it for real trading or ordinary analysis.
 
+   Eastmoney Guba topic enhancement: when the stock's sector/theme reason is unclear, or when a move may be part of a broader A-share topic rotation, check `https://gubatopic.eastmoney.com/` as an optional topic-discovery layer. Use it to identify current market hotspots, possible next-day continuations, and what topics, concepts, or boards the market is discussing, then verify with actual stock/sector moves, announcements, formal news, and the collector output. Treat Guba topic heat as sentiment/topic evidence, not confirmed fact.
+
 2. Run the collector script from the repository root:
 
 ```bash
@@ -66,6 +68,7 @@ Useful options:
 - Announcements, earnings, regulatory filings, and confirmed company materials: primary evidence.
 - 妙想 `mx-data` / `mx-search` outputs, when available, can supplement or cross-check quote, financial, announcement, research, and event evidence. Use them as evidence with source attribution, but still distinguish official filings from media/research interpretation.
 - Eastmoney 股吧资讯/high-read posts: secondary evidence; useful for discovering what the market is discussing.
+- Eastmoney Guba topics (`https://gubatopic.eastmoney.com/`): secondary topic-discovery evidence; useful for mining possible themes and board-level reasons behind A-share moves, but must be verified against stock/sector price action and formal news.
 - Sohu index and sector/concept board context plus Eastmoney intraday advance-decline counts and Sohu historical advance-decline / limit-up / limit-down data: market/sector backdrop only; use it to judge 共振 versus 独立催化.
 - Ordinary 股吧 posts: emotion and speculation only. Never treat them as confirmed fact unless the same item appears in announcements/news.
 - Macro tape: call `macro-news-check` only when the move may be affected by broad A-share risk appetite, policy/liquidity headlines, PBOC/CNY, commodities, US rates, Hong Kong/US China ADR moves, geopolitical risk, or sudden index/sector-wide news. Use it to judge market-wide pressure or support, not to replace announcements or stock-specific evidence.

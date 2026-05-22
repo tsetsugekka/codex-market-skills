@@ -23,6 +23,7 @@ Prefer Japanese-language sources:
 - Active sectors/themes mapped to Japanese stocks, ranked by price action, breadth, turnover, and catalyst strength.
 - Unusual movers with codes or Japanese short names, direction, and catalyst/negative driver.
 - Earnings, guidance revisions, buybacks, capital policy, rating changes, policy news, geopolitical events, and after-close PTS moves.
+- Use PTS as the main after-close stock-discovery layer; after identifying PTS risers/fallers, search company disclosures and news to explain the move instead of trying to discover every mover from general news first.
 - Apply the shared `Market News Discipline` and `Optional Local / Private Data Discipline`; close-review reports must scan after-close and next-session catalysts, not only index closes.
 
 ## Output Format

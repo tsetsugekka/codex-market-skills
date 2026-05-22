@@ -5,6 +5,7 @@ Use for `A股盘前策略`, `A股早盘`, or mainland China pre-market strategy 
 ## Live Sources
 
 Prefer 东方财富、同花顺、雪球、财联社、新浪财经 and other reliable Chinese market/news sources.
+For topic heat, Eastmoney Guba topics can be used: `https://gubatopic.eastmoney.com/`.
 
 ## Required Data
 
@@ -13,7 +14,8 @@ Prefer 东方财富、同花顺、雪球、财联社、新浪财经 and other re
 - Northbound, main-fund, ETF-fund clues. If no pre-market live data is available, explicitly say unavailable.
 - Main sector heat and unusual themes.
 - Key unusual stocks and Dragon-Tiger List references, including speculative/institutional movement.
-- After-close news from the prior day: policy expectations, breaking catalysts, earnings/announcements/regulatory information.
+- A-shares have no stock night session. Do not write a nonexistent after-hours mover list; instead use same-day/prior-after-close important stock-site news and Eastmoney Guba topic heat to identify current market hotspots and possible next-day continuations.
+- After-close news from the prior day: policy expectations, breaking catalysts, earnings/announcements/regulatory information, and Eastmoney Guba topic heat when relevant.
 - Apply the shared `Market News Discipline` and `Optional Local / Private Data Discipline`; A-share pre-market reports must scan active domestic/offshore catalysts, not only index expectations and yesterday's hot sectors.
 
 ## Output Format
