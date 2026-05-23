@@ -1,6 +1,6 @@
 ---
 name: cn-theme-strength-mx
-description: Use when the user asks which A-share themes are rising or falling the most, especially intraday, using bundled /themes stock-theme mapping assets and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
+description: Use when the user asks to check current A-share theme strength, which A-share themes are strongest/weakest, or which themes are rising or falling the most, especially intraday. Uses bundled /themes stock-theme mapping assets and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
 ---
 
 # CN Theme Strength MX

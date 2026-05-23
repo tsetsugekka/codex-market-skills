@@ -81,7 +81,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 ### [`macro-news-check`](docs/macro-news-check.md)
 
-给其他市场 skill 调用的宏观快讯检查工具，只在个股、指数、技术分析或 gamma 分析确实需要当前宏观/大盘背景时使用。它优先查看金十，再用华尔街见闻和 FinancialJuice 补充交叉确认。
+给其他市场 skill 调用的宏观快讯检查工具，只在个股、指数、技术分析或 gamma 分析确实需要当前宏观/大盘背景时使用。用户只需要问是否有大盘、宏观、跨资产或风险情绪影响；skill 会自动选择公开快讯和市场确认来源。
 
 【依赖】无。
 
@@ -180,7 +180,7 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
-用 /themes 的题材映射和 mx 抓一次 A 股题材强弱，显示 TOP10 和最差10。
+看看当前 A 股题材强弱，显示 TOP10 和 BOTTOM10。
 ```
 
 ```text
@@ -192,7 +192,7 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
-看一下金十、华尔街见闻和 FinancialJuice，现在有没有影响这个票的大盘或宏观消息。
+这个票今天有没有大盘或宏观原因影响？
 ```
 
 ```text
