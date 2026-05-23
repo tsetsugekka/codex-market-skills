@@ -1,4 +1,4 @@
 interface:
   display_name: "CN Theme Strength MX"
   short_description: "Rank A-share theme strength with MX quotes."
-  default_prompt: "Use the local /themes stock-theme mapping, query mx-zixuan first,补抓 missing A-share theme constituents with mx-xuangu, report fetch progress, and output TOP10 and worst 10 weighted theme returns without writing files."
+  default_prompt: "Use the local /themes stock-theme mapping, query mx-zixuan first,补抓 missing A-share theme constituents with mx-xuangu, report fetch progress, output TOP10 and BOTTOM10 weighted theme returns, then check the top 3 themes by using the strongest representative stock's 股吧 clues plus mx-search资讯 to infer theme drivers."

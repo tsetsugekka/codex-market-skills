@@ -13,9 +13,11 @@ This skill must use 东方财富妙想 (`mx`) as the data layer:
 
 - Required: `mx-zixuan` for the first self-selected-stock quote pass.
 - Required: `mx-xuangu` for补抓 any `/themes` A-share constituents not returned by `mx-zixuan`.
-- Optional: `mx-data` or `mx-search` only for follow-up investigation of a specific theme, stock, catalyst, financial metric, or news item.
+- Required for default TOP3 driver checks: `mx-search` for current stock/theme资讯.
+- Required for default TOP3 driver checks: `cn-stock-move-reason` as the A-share move-reason workflow, but only use its 股吧/讨论-discovery layer for this skill unless the user asks for a full single-stock report.
+- Optional: `mx-data` only for follow-up investigation of a specific theme, stock, catalyst, financial metric, or valuation item.
 
-If `mx-zixuan` or `mx-xuangu` is unavailable, unauthenticated, over quota, or missing `MX_APIKEY`, stop and tell the user what is missing. Do not replace this skill's quote layer with non-MX public endpoints.
+If `mx-zixuan` or `mx-xuangu` is unavailable, unauthenticated, over quota, or missing `MX_APIKEY`, stop and tell the user what is missing. Do not replace this skill's quote layer with non-MX public endpoints. If `mx-search` or `cn-stock-move-reason` is unavailable, still output the ranking, but mark `TOP3 题材驱动检查` as skipped and explain the missing dependency.
 
 ## Inputs
 
@@ -78,6 +80,34 @@ Rules:
 - For Bottom themes, choose `主要拖累` stocks by most negative `weight * CHG`.
 - Do not output component counts by default.
 
+## TOP3 Driver Check
+
+After ranking, inspect only the top 3 themes. The goal is not to analyze the selected stock itself; it is to infer why the theme moved by looking at the strongest representative stock's discussion and news.
+
+For each TOP3 theme:
+
+1. Select one representative stock:
+   - Choose the stock with the highest `CHG` inside that theme.
+   - If tied, choose the higher `weight * CHG` contributor.
+2. Use `cn-stock-move-reason` only as a 股吧/讨论 discovery workflow:
+   - Do not run a full single-stock report unless the user asks.
+   - Limit the evidence to recent 股吧/资讯 discussion snippets or topic clues that explain what traders think is driving the move.
+   - Do not use its full announcement, market-context, technical, or emotion-cycle output for this default theme-ranking workflow.
+3. Use `mx-search` for current资讯:
+   - Search with the representative stock name/code plus the theme name and likely Chinese aliases when known.
+   - Keep only titles/trunks that help explain the theme-level move.
+4. Convert stock-level evidence into theme-level inference:
+   - Use wording such as `该代表股线索指向...，更像是...题材驱动`.
+   - Separate confirmed news from 股吧 speculation.
+   - If the stock has an idiosyncratic reason that does not generalize to the theme, say so.
+
+Output this as a compact section after the TOP/BOTTOM tables:
+
+```text
+TOP3 题材驱动检查
+1. 题材：代表股（代码）...；股吧线索...；mx资讯...；题材推断...
+```
+
 ## Output Style
 
 Reply in Chinese unless the user asks otherwise. Do not write output files by default.
@@ -91,7 +121,7 @@ Start with a compact status line:
 Then output two tables:
 
 1. `TOP10`
-2. `最差10`
+2. `BOTTOM10`
 
 Default table columns:
 
@@ -107,6 +137,8 @@ For `主要贡献` / `主要拖累`, include up to 3 stocks:
 ```
 
 Do not include 成分数 unless the user explicitly asks.
+
+After the tables, output `TOP3 题材驱动检查` using the rules above. Keep it short; this section explains theme movement, not full stock movement.
 
 ## Safety
 
