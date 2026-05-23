@@ -11,11 +11,14 @@
 - 与 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 协同。
 - A 股板块/题材成分、相关股、概念股、龙头股问题可用 `mx-xuangu` 做可选增强，再结合行情和资讯判断纯度、热度和催化。
 
-## 依赖
+## 【依赖】
 
-- 可选：`cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`，作为证据来源或协同分析层。
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、资讯、题材成分和条件筛选增强。
 - 可选：`mx-zixuan`，仅在用户明确要求东方财富自选股查询、筛选、添加或删除时使用。
+
+## 【协同调用】
+
+- `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
 
 ## 私有 RAG
 

@@ -27,14 +27,18 @@
 算一下 SPXW 0DTE 7370C 在不同时间和 SPX 点位下的理论价值。
 ```
 
-## 环境要求
+## 【依赖】
 
-- 需要本机安装并运行 moomoo OpenD。
-- 需要 Python SDK `moomoo` 可导入。
+- 必需：本机安装并运行 moomoo OpenD。
+- 必需：Python SDK `moomoo` 可导入。
 - OpenD 需要保持后台运行；行情权限不足时，部分指数或期权数据可能不可用。
 - 通用报告脚本会对 `get_option_chain` 主动限速，并在 OpenD 返回“每30秒最多10次”一类错误后等待重试；项目脚本里的同类修复应同步回这个 skill。
 - 指数专用算法必须保存在 skill 脚本中：SPX/SPXW 用 `scripts/spx_intraday_latest.py`，日经/EWJ 转 NKDmain/NIYmain/CFD 用 `scripts/proxy_index_gamma.py`。
 - 这个 skill 只需要行情和期权链数据，不需要交易解锁，也不应调用交易解锁 API。
+
+## 【协同调用】
+
+- 无。
 
 ## 可选私有知识库
 

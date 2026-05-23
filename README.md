@@ -8,7 +8,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 整理美股财报、日股财报、中美日宏观数据、央行事件、拍卖和其他重要财经事件，并按用户规则写入 Google Calendar。
 
-依赖：必需 — `google-calendar:google-calendar`。
+【依赖】必需 — `google-calendar:google-calendar`。
+
+【协同调用】无。
 
 适用场景：
 
@@ -21,7 +23,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对用户输入的日本股票代码，抓取 Yahoo Finance 实时板、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻以及基础指标，让 Codex 分析个股异动理由。
 
-依赖：可选 — `stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`（按掲示板/新闻/价格线索协同分析）。
+【依赖】无。
+
+【协同调用】`stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`。
 
 适用场景：
 
@@ -33,7 +37,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对用户输入的单只 A 股代码，抓取东方财富公开行情、公告、股吧/资讯帖，并结合搜狐指数/板块页面与 A 股涨跌家数背景，让 Codex 分析个股异动理由、是否大盘/板块/个股共振，以及短线情绪周期位置。
 
-依赖：可选 — `mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan`（东方财富妙想增强）；`stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`（按问题协同分析）。
+【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan`（东方财富妙想增强）。
+
+【协同调用】`stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`。
 
 适用场景：
 
@@ -46,7 +52,11 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 读取随 skill 打包的 `/themes` 股票-题材映射和中文题材标签，用东方财富妙想自选股和选股接口抓取 A 股盘中或最新交易日行情，按 `/themes` 权重计算题材加权涨跌幅，用中文题材名输出 TOP10 和 BOTTOM10，并对 TOP3 题材各选 1 只涨幅最高的代表股，用股吧线索和妙想资讯辅助判断题材为什么异动。该 skill 的特点是盘中可用，并且会实时报告抓取进度：自选接口覆盖多少、还需补抓多少、补抓批次完成到第几批、是否遇到限频重试、最终是否补齐。
 
-依赖：必需 — 打包的 `/themes` 数据文件（`assets/themes/theme-data.json` 和 `assets/themes/theme-label-i18n.json`）、`mx-zixuan`、`mx-xuangu`；必需（TOP3 驱动检查）— `mx-search`、`cn-stock-move-reason`；可选 — `mx-data`（用于后续追查财务或估值）。
+【依赖】必需 — `mx-zixuan`、`mx-xuangu`、`mx-search`；可选 — `mx-data`（用于后续追查财务或估值）。
+
+打包资源：`assets/themes/theme-data.json` 和 `assets/themes/theme-label-i18n.json`。
+
+【协同调用】`cn-stock-move-reason`。
 
 适用场景：
 
@@ -59,7 +69,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 给其他股票 skill 复用的情绪面分析框架，用于判断 A 股情绪周期、主线/跟随、预期差、论坛/掲示板温度、拥挤交易和跨市场 risk-on/risk-off。公开版不包含私人 RAG、`Stocks` 文件夹、个人标签或原始资料。
 
-依赖：可选 — `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`（作为证据来源或协同分析）；`mx-data`、`mx-search`、`mx-xuangu`（A 股证据、题材成分和筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股证据、题材成分和筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+
+【协同调用】`cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
 
 适用场景：
 
@@ -71,7 +83,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 给其他市场 skill 调用的宏观快讯检查工具，只在个股、指数、技术分析或 gamma 分析确实需要当前宏观/大盘背景时使用。它优先查看金十，再用华尔街见闻和 FinancialJuice 补充交叉确认。
 
-依赖：无。
+【依赖】无。
+
+【协同调用】无。
 
 适用场景：
 
@@ -83,7 +97,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 面向美股、日股和 A 股的中文市场策略报告路由层，覆盖盘前策略、收盘复盘和单只长线推荐。它按用户意图读取对应市场和时段的 reference，并把宏观、异动原因、情绪周期、技术结构和可用的本地行情工具压缩进一份决策导向报告。
 
-依赖：可选 — `macro-news-check`、`stock-sentiment-analysis`、`stock-technical-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`（按市场和问题协同分析）；`mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+
+【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`stock-technical-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`。
 
 适用场景：
 
@@ -95,7 +111,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
 
-依赖：无。环境要求：本机 moomoo OpenD。
+【依赖】必需 — 本机 moomoo OpenD、Python SDK `moomoo`。
+
+【协同调用】无。
 
 适用场景：
 
@@ -108,7 +126,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对美股、日股和 A 股做技术分析，重点看趋势结构、支撑压力、量价、KDJ/MACD/RSI、Vegas 通道、分时确认，以及“能不能到某个价位”的盘中判断。
 
-依赖：可选 — `macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`（按标的和问题协同分析）；`mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分和技术筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分和技术筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+
+【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`。
 
 适用场景：
 

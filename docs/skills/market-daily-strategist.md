@@ -9,17 +9,20 @@
 - 推荐一只美股、日股或 A 股/ETF/LOF，并给出买点、风险和验证条件。
 - 在必要时调用其他市场 skill，而不是把每个数据层都做成固定前置步骤。
 
-## 依赖
+## 【依赖】
 
-- 可选：`macro-news-check`，用于利率、汇率、商品、央行、经济数据、地缘和 broad risk tape。
-- 可选：`stock-technical-analysis`，用于指数、ETF 或个股的支撑压力、趋势确认和盘中执行判断。
-- 可选：`stock-sentiment-analysis`，用于 A 股情绪周期、主线/跟随、拥挤度和预期差。
-- 可选：`cn-stock-move-reason`、`jp-stock-move-reason`，用于少数真正影响报告结论的 A 股或日股异动原因。
-- 可选：`us-stock-gamma-moomoo`，用于美股指数/ETF gamma、GEX、0DTE 和期权墙。
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、估值/资金流、资讯/公告/政策、板块或概念成分确认。
 - 可选：`mx-zixuan`，只在用户明确要求东方财富自选股任务时使用。
 
-这些依赖都是增强层。缺失时应继续用公开可靠来源完成报告，并明确写出不可得的数据，不应编造数值。
+这些外部依赖都是增强层。缺失时应继续用公开可靠来源完成报告，并明确写出不可得的数据，不应编造数值。
+
+## 【协同调用】
+
+- `macro-news-check`：用于利率、汇率、商品、央行、经济数据、地缘和 broad risk tape。
+- `stock-technical-analysis`：用于指数、ETF 或个股的支撑压力、趋势确认和盘中执行判断。
+- `stock-sentiment-analysis`：用于 A 股情绪周期、主线/跟随、拥挤度和预期差。
+- `cn-stock-move-reason`、`jp-stock-move-reason`：用于少数真正影响报告结论的 A 股或日股异动原因。
+- `us-stock-gamma-moomoo`：用于美股指数/ETF gamma、GEX、0DTE 和期权墙。
 
 ## 典型请求
 

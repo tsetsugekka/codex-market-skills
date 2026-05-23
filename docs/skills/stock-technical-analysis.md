@@ -10,11 +10,14 @@
 - 读取 moomoo、Yahoo Finance、券商图表或截图时，按多周期图表流程给出当前读数、结构、量价/动能、执行含义和下一验证点。
 - 与日股、A 股、美股 gamma 等市场 skill 配合：先找催化/基本面，再看技术结构是否确认。
 
-## 依赖
+## 【依赖】
 
-- 可选：`macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`，按标的和问题协同分析。
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、资讯、板块/概念成分、同行对比和自然语言技术筛选增强。
 - 可选：`mx-zixuan`，仅在用户明确要求东方财富自选股任务时使用。
+
+## 【协同调用】
+
+- `macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`。
 
 ## 典型请求
 
