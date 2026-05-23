@@ -44,13 +44,13 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 ### [`cn-theme-strength-mx`](docs/skills/cn-theme-strength-mx.md)
 
-读取 `/themes` 股票-题材映射和中文题材标签，用东方财富妙想自选股和选股接口抓取 A 股盘中或最新交易日行情，按 `/themes` 权重计算题材加权涨跌幅，用中文题材名输出 TOP10 和 BOTTOM10，并对 TOP3 题材各选 1 只涨幅最高的代表股，用股吧线索和妙想资讯辅助判断题材为什么异动。该 skill 的特点是盘中可用，并且会实时报告抓取进度：自选接口覆盖多少、还需补抓多少、补抓批次完成到第几批、是否遇到限频重试、最终是否补齐。
+读取随 skill 打包的 `/themes` 股票-题材映射和中文题材标签，用东方财富妙想自选股和选股接口抓取 A 股盘中或最新交易日行情，按 `/themes` 权重计算题材加权涨跌幅，用中文题材名输出 TOP10 和 BOTTOM10，并对 TOP3 题材各选 1 只涨幅最高的代表股，用股吧线索和妙想资讯辅助判断题材为什么异动。该 skill 的特点是盘中可用，并且会实时报告抓取进度：自选接口覆盖多少、还需补抓多少、补抓批次完成到第几批、是否遇到限频重试、最终是否补齐。
 
-依赖：必需 — `mx-zixuan`、`mx-xuangu`；必需（TOP3 驱动检查）— `mx-search`、`cn-stock-move-reason`；可选 — `mx-data`（用于后续追查财务或估值）。
+依赖：必需 — 打包的 `/themes` 数据文件（`assets/themes/theme-data.json` 和 `assets/themes/theme-label-i18n.json`）、`mx-zixuan`、`mx-xuangu`；必需（TOP3 驱动检查）— `mx-search`、`cn-stock-move-reason`；可选 — `mx-data`（用于后续追查财务或估值）。
 
 适用场景：
 
-- 盘中查看 `/themes` A 股题材里哪些涨得最好、哪些最差。
+- 盘中查看打包 `/themes` A 股题材里哪些涨得最好、哪些最差。
 - 先用东方财富自选股快速拿行情，再用妙想选股补齐自选接口没有返回的题材成分。
 - 按题材权重输出 A 股题材强弱榜，而不是简单按板块名称或单只股票排序。
 - 只在回答中显示完整 TOP10、BOTTOM10 和 TOP3 题材驱动检查，不默认写文件。
@@ -196,7 +196,7 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
-- `cn-theme-strength-mx` 必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`；只在用户要求题材强弱/自选相关工作流时读取自选股，不自动添加、删除或修改自选股，不提交 `MX_APIKEY`、完整自选股列表、私有 `/themes` 数据、原始 API 响应或运行缓存。
+- `cn-theme-strength-mx` 必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`，并打包公开发布用的 `/themes` 快照；只在用户要求题材强弱/自选相关工作流时读取自选股，不自动添加、删除或修改自选股，不提交 `MX_APIKEY`、完整自选股列表、未经确认可公开发布的其他 `/themes` 派生数据、原始 API 响应或运行缓存。发布或更新该 skill 前，应从 DTM 工作目录的 `themes/public/` 刷新 `theme-data.json` 和 `theme-label-i18n.json`。
 - `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、`Stocks` 文件夹、个人标签、原始笔记、截图或交易日志。
 - `macro-news-check` 只读取公开宏观快讯页面/Feed/接口；不读取登录 cookie、token、账号数据或私有研究资料，不复制长篇新闻正文。
 - `market-daily-strategist` 是报告路由和综合层；本地/私有行情工具只作为可选增强，不应把个人关注列表、私有输出或工具缓存提交到公开仓库。
@@ -225,6 +225,9 @@ skills/
   cn-theme-strength-mx/
     SKILL.md
     agents/openai.yaml
+    assets/themes/theme-data.json
+    assets/themes/theme-label-i18n.json
+    scripts/refresh_theme_assets.py
   stock-sentiment-analysis/
     SKILL.md
     agents/openai.yaml

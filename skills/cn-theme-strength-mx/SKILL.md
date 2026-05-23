@@ -1,11 +1,11 @@
 ---
 name: cn-theme-strength-mx
-description: Use when the user asks which A-share themes are rising or falling the most, especially intraday, using an existing /themes stock-theme mapping and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
+description: Use when the user asks which A-share themes are rising or falling the most, especially intraday, using bundled /themes stock-theme mapping assets and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
 ---
 
 # CN Theme Strength MX
 
-Use this skill to rank A-share theme strength from a local `/themes` stock-theme mapping and live or near-live 东方财富妙想 quote data. It is designed for盘中 checks where the user wants to know which themes are strong, which are weak, and how far the fetch has progressed.
+Use this skill to rank A-share theme strength from the bundled `/themes` stock-theme mapping snapshot and live or near-live 东方财富妙想 quote data. It is designed for盘中 checks where the user wants to know which themes are strong, which are weak, and how far the fetch has progressed.
 
 ## Required Dependencies
 
@@ -19,12 +19,26 @@ This skill must use 东方财富妙想 (`mx`) as the data layer:
 
 If `mx-zixuan` or `mx-xuangu` is unavailable, unauthenticated, over quota, or missing `MX_APIKEY`, stop and tell the user what is missing. Do not replace this skill's quote layer with non-MX public endpoints. If `mx-search` or `cn-stock-move-reason` is unavailable, still output the ranking, but mark `TOP3 题材驱动检查` as skipped and explain the missing dependency.
 
-## Inputs
+## Theme Assets
 
-Use the existing `/themes` mapping logic whenever available:
+This skill bundles the `/themes` snapshot needed for normal use:
 
-- Preferred source: a local `theme-data.json` from the `/themes` project.
-- Preferred Chinese label source: `/themes` `theme-label-i18n.json`, using each theme's `zh` value.
+- `assets/themes/theme-data.json`: stock-theme memberships.
+- `assets/themes/theme-label-i18n.json`: display labels; use each theme's `zh` value for Chinese output.
+
+Use these bundled files by default. If the user explicitly provides a newer local `/themes` path, use that path for the current run, but do not write the user's local data back to the repository unless the user is preparing a release/update.
+
+When publishing or updating this skill, refresh the bundled assets from the DTM `/themes/public/` working directory before committing:
+
+```bash
+python3 skills/cn-theme-strength-mx/scripts/refresh_theme_assets.py /path/to/DTM/themes/public
+```
+
+Use the existing `/themes` mapping logic:
+
+- Preferred source: bundled `assets/themes/theme-data.json`.
+- Preferred Chinese label source: bundled `assets/themes/theme-label-i18n.json`.
+- `theme-data.json` is expected to contain `rows[]`; if a user-provided file is a plain list, treat that list as rows.
 - Required row fields: `market`, `code`, `theme`, `weight`.
 - Only include `market == "CN"` rows.
 - Exclude `theme == "未分類"`.
@@ -32,7 +46,12 @@ Use the existing `/themes` mapping logic whenever available:
 - Keep the original `theme` key internally for joins and aggregation, but display the Chinese label in all user-facing tables and driver checks.
 - If a Chinese label is missing, fall back to the original theme name and mention the missing label only when it affects visible output.
 
-If no mapping is available in the workspace, ask the user for the theme mapping file or pasteable table. Do not invent the theme universe from MX sector names.
+If the bundled mapping files are missing or invalid, stop and ask the user for either:
+
+- a local path to `theme-data.json` plus `theme-label-i18n.json`; or
+- a pasteable table with at least `market`, `code`, `theme`, `weight`, and optionally Chinese labels.
+
+Do not invent the theme universe from MX sector names.
 
 ## Fetch Workflow
 
