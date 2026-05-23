@@ -21,7 +21,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对用户输入的日本股票代码，抓取 Yahoo Finance 实时板、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻以及基础指标，让 Codex 分析个股异动理由。
 
-依赖：无。
+依赖：可选 — `stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`（按掲示板/新闻/价格线索协同分析）。
 
 适用场景：
 
