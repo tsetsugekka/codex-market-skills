@@ -102,7 +102,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 分析普通美股或美股 ETF 的期权 gamma 结构。
 - 分析 `.SPX`/SPXW 指数期权结构；如果拿不到指数实时行情或期权链，则用 SPY 期权、ES/CFD 或用户提供的指数锚进行换算并明确说明。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用于评估回本、止盈或止损点。
-- 需要时生成本地 HTML gamma 报告；快速盘中问题可以只输出文字结论。
+- 输出以文字结论、列表和文本表格为主；盘中重复询问时，结合本交易日此前同一对话中的 gamma 结果判断点位迁移和强弱变化。
 
 ### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
 

@@ -9,9 +9,7 @@ with technical confirmation.
 
 from __future__ import annotations
 
-import html
 import argparse
-import json
 import math
 import statistics
 import time
@@ -27,7 +25,6 @@ from common import AuType, KLType, RET_OK, Session, check_ret, create_quote_cont
 
 
 DEFAULT_UNDERLYING = "US.BA"
-REPORT_DIR = Path(__file__).resolve().parent
 OPTION_CHAIN_DELAY_SECONDS = 3.2
 OPTION_CHAIN_RETRY_DELAY_SECONDS = 31.0
 
@@ -457,288 +454,6 @@ def analyze(data):
     }
 
 
-def sparkline_path(points, width=620, height=230, pad=22):
-    xs = [p["spot"] for p in points]
-    ys = [p["gex"] for p in points]
-    xmin, xmax = min(xs), max(xs)
-    ymin, ymax = min(ys), max(ys)
-    if ymin == ymax:
-        ymin -= 1
-        ymax += 1
-    out = []
-    for i, p in enumerate(points):
-        x = pad + (p["spot"] - xmin) / (xmax - xmin) * (width - pad * 2)
-        y = height - pad - (p["gex"] - ymin) / (ymax - ymin) * (height - pad * 2)
-        out.append(("M" if i == 0 else "L") + f"{x:.1f},{y:.1f}")
-    return " ".join(out)
-
-
-def bar_svg(walls, pits, spot):
-    items = sorted({k for k, _ in walls[:8] + pits[:8]})
-    values = {k: 0.0 for k in items}
-    for k, v in walls + pits:
-        if k in values:
-            values[k] = v
-    maxv = max(abs(v) for v in values.values()) or 1
-    bars = []
-    for i, strike in enumerate(items):
-        x = 50 + i * 44
-        h = abs(values[strike]) / maxv * 126
-        y = 150 - h if values[strike] >= 0 else 150
-        fill = "#2563eb" if values[strike] >= 0 else "#dc2626"
-        bars.append(f'<rect x="{x}" y="{y:.1f}" width="28" height="{h:.1f}" rx="3" fill="{fill}"></rect>')
-        bars.append(f'<text x="{x+14}" y="184" text-anchor="middle" class="axis">{strike:g}</text>')
-    spot_x = 50 + (min(range(len(items)), key=lambda i: abs(items[i] - spot))) * 44 + 14 if items else 50
-    return "\n".join(bars) + f'<line x1="{spot_x}" x2="{spot_x}" y1="20" y2="174" stroke="#111827" stroke-dasharray="4 4"></line>'
-
-
-def option_table(rows: list[OptionRow], spot: float):
-    near = sorted(rows, key=lambda r: (abs(r.strike - spot), r.expiry, r.option_type))[:28]
-    body = []
-    for r in near:
-        mid = (r.bid + r.ask) / 2 if r.bid and r.ask else r.last
-        body.append(
-            "<tr>"
-            f"<td>{html.escape(r.expiry)}</td><td>{html.escape(r.option_type)}</td><td>{r.strike:g}</td>"
-            f"<td>{r.oi:,}</td><td>{r.volume:,}</td><td>{r.iv*100:.1f}%</td>"
-            f"<td>{r.delta:.2f}</td><td>{r.gamma:.4f}</td><td>{black_scholes_vanna(spot, r.strike, r.iv, r.dte):.4f}</td><td>{mid:.2f}</td>"
-            "</tr>"
-        )
-    return "\n".join(body)
-
-
-def render_html(data, a):
-    stock = data["stock"]
-    ticker = stock["code"].split(".")[-1]
-    spot = stock["spot"]
-    path = sparkline_path(a["grid"])
-    flip = a["flip"]
-    flip_text = f"{flip:.2f}" if flip else "未检出"
-    wall_above = a["nearest_wall_above"][0] if a["nearest_wall_above"] else None
-    support_wall = a["nearest_support_wall"][0] if a["nearest_support_wall"] else None
-    wall_text = price_level(wall_above)
-    support_text = price_level(support_wall)
-    generated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    next_wall = next((k for k, _ in a["walls"] if k > (wall_above or spot) + 0.01), None)
-    next_wall_text = price_level(next_wall)
-    same_wall = support_wall is not None and wall_above is not None and abs(support_wall - wall_above) < 0.01
-    if same_wall:
-        pin_label = f"{wall_text}：第一钉扎/分歧位"
-    elif support_wall is not None and wall_above is not None:
-        pin_label = f"{support_text}-{wall_text}：先看区间/钉扎"
-    elif wall_above is not None:
-        pin_label = f"{wall_text}：第一阻力/钉扎"
-    else:
-        pin_label = "无上方 wall：以价格确认优先"
-    if wall_above is not None and next_wall is not None:
-        breakout_label = f"站稳 {wall_text}：再看 {next_wall_text}"
-    elif wall_above is not None:
-        breakout_label = f"站稳 {wall_text}：观察成交确认"
-    else:
-        breakout_label = "无明确上方 wall：等待新链重跑"
-
-    if a["net_current"] > 0:
-        simple_now = f"{ticker} 盘前在 {spot:.2f}，已经顶到第一道期权阻力 {wall_text} 附近。这里更像会磨一磨的位置，不像刚启动的顺风区。"
-        range_text = f"{wall_text} 附近的钉扎/分歧" if same_wall else f"{support_text}-{wall_text} 之间震荡"
-        simple_action = (
-            f"我不会在这里直接追。开盘后如果能放量站稳 {wall_text}，再看下一道 {next_wall_text}；"
-            f"如果冲不上去，先按 {range_text} 处理。"
-        )
-        simple_wrong = f"如果跌破 {support_text} 还收不回，短线多头热度降温；如果跌破 {flip_text}，就不是普通回调，而是下跌更容易被放大的区域。"
-        core_take = simple_now
-    else:
-        simple_now = f"{ticker} 盘前在 {spot:.2f}，但期权结构偏负 gamma，价格更容易顺着一个方向放大。"
-        simple_action = f"这种结构下我更看重开盘前 30 分钟方向，不急着逆势抄底或摸顶。重新站回 {flip_text} 上方，才把它当震荡盘看。"
-        simple_wrong = f"如果价格站回 {flip_text} 且成交不放大，负 gamma 的风险会下降。"
-        core_take = simple_now
-
-    strategy_take = (
-        "Gamma 只告诉我哪里容易卡住、哪里容易加速；真正进出场仍看技术确认和交易计划。"
-        f"在 {wall_text} 附近，如果 KDJ 高位拐头、MACD 走弱或 FVG 被打回，我会把它看成冲高失败；"
-        f"如果放量站稳 {wall_text}，再用 KDJ/MACD 确认是否能去 {next_wall_text}。"
-    )
-
-    risk_take = (
-        "注意：盘前只有股票在动，期权 Greeks/OI 多数还是上一个交易时段的状态。"
-        "所以这份报告适合做开盘前地图，不适合当自动交易信号。开盘后如果成交和期权量明显改变，需要重跑一次。"
-    )
-
-    grid_json = json.dumps(a["grid"])
-    walls_json = json.dumps([{"strike": k, "gex": v} for k, v in a["walls"][:8]])
-    pits_json = json.dumps([{"strike": k, "gex": v} for k, v in a["pits"][:8]])
-
-    return f"""<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{html.escape(ticker)} Gamma Exposure Report</title>
-  <style>
-    :root {{
-      --bg: #f7f8f3;
-      --ink: #16201b;
-      --muted: #5f6d66;
-      --line: #d9ded5;
-      --panel: #ffffff;
-      --blue: #2563eb;
-      --red: #dc2626;
-      --green: #0f766e;
-      --amber: #b45309;
-    }}
-    * {{ box-sizing: border-box; }}
-    body {{
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--ink);
-      background: var(--bg);
-      letter-spacing: 0;
-    }}
-    header {{
-      padding: 28px 34px 20px;
-      border-bottom: 1px solid var(--line);
-      background: #fbfcf8;
-    }}
-    h1 {{ margin: 0; font-size: 30px; line-height: 1.1; font-weight: 760; }}
-    .sub {{ margin-top: 8px; color: var(--muted); font-size: 14px; }}
-    main {{
-      display: grid;
-      grid-template-columns: minmax(330px, 0.88fr) minmax(560px, 1.5fr);
-      gap: 22px;
-      padding: 22px 34px 34px;
-      max-width: 1440px;
-      margin: 0 auto;
-    }}
-    section {{
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 18px;
-      min-width: 0;
-      overflow-x: auto;
-    }}
-    h2 {{ margin: 0 0 12px; font-size: 17px; }}
-    h3 {{ margin: 18px 0 8px; font-size: 14px; color: var(--muted); text-transform: uppercase; }}
-    p {{ margin: 0 0 12px; line-height: 1.64; font-size: 14px; }}
-    .metric-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }}
-    .metric {{ border-top: 1px solid var(--line); padding-top: 10px; min-height: 66px; }}
-    .metric b {{ display: block; font-size: 24px; line-height: 1.1; }}
-    .metric span {{ color: var(--muted); font-size: 12px; }}
-    .pill-row {{ display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 2px; }}
-    .pill {{ border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; font-size: 12px; background: #fafbf7; }}
-    .blue {{ color: var(--blue); }} .red {{ color: var(--red); }} .green {{ color: var(--green); }} .amber {{ color: var(--amber); }}
-    .chart {{ width: 100%; height: auto; display: block; }}
-    .axis {{ fill: #66756e; font-size: 11px; }}
-    .small {{ color: var(--muted); font-size: 12px; line-height: 1.5; }}
-    table {{ width: 100%; min-width: 680px; border-collapse: collapse; font-size: 12px; }}
-    th, td {{ border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: right; }}
-    th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) {{ text-align: left; }}
-    th {{ color: var(--muted); font-weight: 650; }}
-    .two {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
-    .callout {{ background: #f4f7fb; border-left: 4px solid var(--blue); padding: 12px; border-radius: 6px; }}
-    .danger {{ background: #fff7f5; border-left-color: var(--red); }}
-    @media (max-width: 980px) {{
-      main {{ grid-template-columns: 1fr; padding: 16px; }}
-      header {{ padding: 22px 16px; }}
-      .two {{ grid-template-columns: 1fr; }}
-    }}
-  </style>
-</head>
-<body>
-  <header>
-    <h1>{html.escape(ticker)} Gamma Exposure Report</h1>
-    <div class="sub">数据源：moomoo OpenD · 标的 {html.escape(stock["code"])} · 股票更新时间 {html.escape(stock["update_time"])} · 报告生成 {generated}</div>
-  </header>
-  <main>
-    <section>
-      <h2>一句话</h2>
-      <p class="callout">{html.escape(core_take)}</p>
-      <h3>我会怎么做</h3>
-      <p>{html.escape(simple_action)}</p>
-      <h3>什么情况说明我错了</h3>
-      <p class="callout danger">{html.escape(simple_wrong)}</p>
-      <h3>怎么和技术确认配合</h3>
-      <p>{html.escape(strategy_take)}</p>
-
-      <h3>关键读数</h3>
-      <div class="metric-grid">
-        <div class="metric"><b>{spot:.2f}</b><span>{html.escape(stock["spot_basis"])}基准价</span></div>
-        <div class="metric"><b>{stock["bid"]:.2f}/{stock["ask"]:.2f}</b><span>盘前 bid/ask</span></div>
-        <div class="metric"><b class="{'blue' if a["net_current"] > 0 else 'red'}">{money(a["net_current"])}</b><span>当前净 GEX</span></div>
-        <div class="metric"><b class="{'blue' if a["net_vanna"] > 0 else 'red'}">{money(a["net_vanna"])}</b><span>1 vol point 净 VEX</span></div>
-        <div class="metric"><b>{flip_text}</b><span>估算 gamma flip</span></div>
-        <div class="metric"><b>{wall_text}</b><span>上方最近 gamma wall</span></div>
-        <div class="metric"><b>{support_text}</b><span>下方正 gamma 支撑墙</span></div>
-        <div class="metric"><b>{pct(a["ret_20d"])}</b><span>约 20 日涨跌幅</span></div>
-        <div class="metric"><b>{a["j"]:.1f}</b><span>日线 KDJ J 值</span></div>
-      </div>
-
-      <h3>技术确认怎么用</h3>
-      <div class="pill-row">
-        <span class="pill">{html.escape(pin_label)}</span>
-        <span class="pill">{html.escape(breakout_label)}</span>
-        <span class="pill">跌破 {flip_text}：负 gamma 风险</span>
-        <span class="pill">J 高位转弱：追多降权</span>
-      </div>
-      <p class="small">术语翻译：gamma wall = 容易卡住的价格；gamma flip = 市场性格切换线；正 gamma = 更容易震荡和钉住，负 gamma = 更容易加速。</p>
-      <p class="small">Vanna 使用 Black-Scholes 从 spot、strike、IV、DTE 重算；VEX 表示 IV 每变化 1 个 vol point 时的 spot-equivalent delta-dollar 变化，按 Call 正、Put 负的同一方向假设汇总。</p>
-      <p class="small">日线 MA20：{a["ma20"]:.2f}，MA50：{a["ma50"]:.2f}；快速 MACD DIF/DEA：{a["dif"]:.2f}/{a["dea"]:.2f}。这些不是替代 gamma，而是用来确认 wall 处的突破、失败或反转。</p>
-      <p class="small">常规盘最后价：{stock["last_price"]:.2f}；盘前价：{stock["pre_price"]:.2f}，盘前涨幅：{stock["pre_change_rate"]:.2f}%，盘前区间：{stock["pre_low"]:.2f}-{stock["pre_high"]:.2f}，盘前成交量：{stock["pre_volume"]:,}。</p>
-      <p class="small">{html.escape(risk_take)}</p>
-    </section>
-
-    <section>
-      <h2>Gamma Surface</h2>
-      <svg class="chart" viewBox="0 0 680 280" role="img" aria-label="{html.escape(ticker)} gamma exposure curve">
-        <rect x="0" y="0" width="680" height="280" fill="#fff"></rect>
-        <line x1="38" x2="642" y1="140" y2="140" stroke="#d9ded5"></line>
-        <path d="{path}" fill="none" stroke="#2563eb" stroke-width="3"></path>
-        <line x1="38" x2="642" y1="34" y2="34" stroke="#eef1eb"></line>
-        <line x1="38" x2="642" y1="246" y2="246" stroke="#eef1eb"></line>
-        <text x="38" y="267" class="axis">{a["grid"][0]["spot"]:g}</text>
-        <text x="322" y="267" class="axis">spot price grid</text>
-        <text x="622" y="267" class="axis">{a["grid"][-1]["spot"]:g}</text>
-        <text x="42" y="26" class="axis">positive gamma: volatility dampening</text>
-        <text x="42" y="160" class="axis">zero / flip</text>
-      </svg>
-      <p class="small">曲线使用期权链的 IV、DTE、OI 在假设价格网格上重算 Black-Scholes gamma，再按 Call 正、Put 负汇总。曲线越高，越接近“做市商逆势对冲导致价格变慢”的区域。</p>
-
-      <div class="two">
-        <div>
-          <h3>Strike Gamma Wall</h3>
-          <svg class="chart" viewBox="0 0 440 205">
-            <line x1="34" x2="410" y1="150" y2="150" stroke="#d9ded5"></line>
-            {bar_svg(a["walls"], a["pits"], spot)}
-          </svg>
-        </div>
-        <div>
-          <h3>我会盯的价格</h3>
-          <p><b class="green">支撑/阻力墙：</b>{", ".join(f"{k:g}" for k, _ in a["walls"][:6])}</p>
-          <p><b class="red">负 gamma 洼地：</b>{", ".join(f"{k:g}" for k, _ in a["pits"][:6])}</p>
-          <p><b class="green">正 vanna 区：</b>{", ".join(f"{k:g}" for k, _ in a["vanna_walls"][:6])}</p>
-          <p><b class="red">负 vanna 区：</b>{", ".join(f"{k:g}" for k, _ in a["vanna_pits"][:6])}</p>
-          <p><b>Flip：</b>{flip_text}。在它上方，倾向用“震荡、钉扎、突破确认”；在它下方，倾向用“趋势放大、快进快出”。</p>
-        </div>
-      </div>
-
-      <h3>ATM 附近期权样本</h3>
-      <table>
-        <thead><tr><th>到期</th><th>类型</th><th>Strike</th><th>OI</th><th>Vol</th><th>IV</th><th>Delta</th><th>Gamma</th><th>Vanna</th><th>Mid</th></tr></thead>
-        <tbody>{option_table(data["options"], spot)}</tbody>
-      </table>
-    </section>
-  </main>
-  <script>
-    window.gammaReportData = {{
-      grid: {grid_json},
-      walls: {walls_json},
-      pits: {pits_json}
-    }};
-  </script>
-</body>
-</html>
-"""
-
-
 def render_text(data, a):
     stock = data["stock"]
     ticker = stock["code"].split(".")[-1]
@@ -799,8 +514,6 @@ def render_text(data, a):
 def main():
     parser = argparse.ArgumentParser(description="Print a moomoo OpenD gamma exposure text memo")
     parser.add_argument("code", nargs="?", default=DEFAULT_UNDERLYING, help="Stock code, e.g. US.BA or US.MP")
-    parser.add_argument("--html-output", default=None, help="Optional HTML path; use only when a file report is explicitly requested")
-    parser.add_argument("--output", dest="html_output", help=argparse.SUPPRESS)
     args = parser.parse_args()
 
     code = args.code.upper()
@@ -808,10 +521,6 @@ def main():
     data = fetch_report_data(code)
     analysis = analyze(data)
     print(render_text(data, analysis))
-    if args.html_output:
-        report_path = Path(args.html_output)
-        report_path.write_text(render_html(data, analysis), encoding="utf-8")
-        print(f"\nHTML report: {report_path}")
 
 
 if __name__ == "__main__":

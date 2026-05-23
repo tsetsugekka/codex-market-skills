@@ -65,7 +65,7 @@ Use it to:
 - Analyze option gamma structure for ordinary US stocks or US-listed ETFs.
 - Analyze `.SPX`/SPXW index-option structure; when direct index data or chains are unavailable, use SPY options, ES/CFD, or a user-provided index anchor for conversion and state the proxy clearly.
 - Build time-by-underlying theoretical value tables for 0DTE calls/puts to evaluate recovery, take-profit, or stop levels.
-- Generate a local HTML gamma report when useful, or answer quickly in chat for fast intraday questions.
+- Output text conclusions, lists, and plain-text tables; for repeated intraday questions in the same conversation, compare with earlier same-session gamma results to judge level migration and strengthening or weakening.
 
 ### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
 

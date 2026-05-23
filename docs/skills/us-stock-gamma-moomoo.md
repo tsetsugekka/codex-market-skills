@@ -8,10 +8,10 @@
 - 分析 `.SPX`/SPXW 指数期权结构；SPX/标普500请求优先使用专用 `spx_intraday_latest.py`，用 `US..SPX` 链和 SPXW 0DTE 平价锚，不把普通 SPY/ETF 报告当最终结果。
 - 分析日经225时，用 EWJ 期权作为代理 book，再走时间对齐换算：EWJ quote time 的 NKDmain/日经期货锚 -> 当前 NKDmain -> 当前 NIYmain/日经 CFD；不直接展示原始 EWJ strike，也不把已收盘 EWJ 和当前日经 CFD 直接相除。
 - 如果拿不到更好的时间对齐锚，使用用户留存兜底公式：`日经目标位 = 62038 × EWJ目标价 / 91.265`，并在结论里标注这是 fallback。
-- 指数专用流程默认输出 JSON 和文字总结；HTML 只有用户明确要求时才生成。
+- 指数专用流程默认输出文字总结；raw JSON 只在用户明确要求导出原始数据时使用。
 - 识别正 gamma wall、负 gamma pit、gamma flip、pin/阻力/支撑区域。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用来评估回本、止盈、止损或是否值得继续拿。
-- 需要时生成本地 HTML 报告；盘中快问可以只输出文字结论。
+- 输出以文字结论、列表和文本表格为主；盘中重复询问时，结合本交易日此前同一对话中的 gamma 结果判断点位迁移和强弱变化。
 
 ## 典型请求
 

@@ -1,6 +1,6 @@
 ---
 name: us-stock-gamma-moomoo
-description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; file reports are optional only when explicitly requested.
+description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
   version: 0.1.3
 ---
@@ -60,7 +60,7 @@ Route the request before choosing a script:
 - **SPX / SPXW / SP500 / 标普500 / S&P 500 index gamma**: do not use `gamma_report.py` as the final workflow. Use `scripts/spx_intraday_latest.py` and `references/spx-intraday.md`: query `US..SPX`, keep SPX/SPXW strikes directly, infer the spot anchor from SPXW 0DTE put-call parity when the SPX index snapshot is unavailable, and treat SPY only as a sanity check or fallback.
 - **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels, and do not use a current Nikkei anchor against a stale EWJ close. Use EWJ only as a proxy option book, then convert with a time-aligned bridge: EWJ quote-time value -> `NKDmain`/Nikkei futures at that same time -> current `NIYmain`/Nikkei CFD or the user's current index anchor. Use `scripts/proxy_index_gamma.py`. The report must state every anchor, ratio, timestamp, and limitation.
 
-Default to a concise chat/terminal text summary. For SPX/SPXW, do not generate the simple text-only HTML report path; use JSON only when raw data is explicitly requested, and use the local chart dashboard workflow when a visual HTML dashboard is requested.
+Default to a concise chat/terminal text summary. Do not create files as part of this skill unless the user explicitly requests raw JSON export.
 
 For ordinary US stocks/ETFs use `scripts/gamma_report.py` when the user asks for the ticker itself:
 
@@ -93,7 +93,7 @@ The script:
 - calculates signed GEX with the common assumption `Call = +`, `Put = -`;
 - calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
-- prints a readable text memo by default; `--output` / `--json-output` should be used only when the user explicitly asks for raw data.
+- prints a readable text memo by default; JSON export flags should be used only when the user explicitly asks for raw data.
 
 For SPX 0DTE or quick trading questions, chat/terminal text is the default. Still compute or fetch the chain first when possible.
 
@@ -111,6 +111,20 @@ Read extra references only when the request needs them:
 - For `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmap, or intraday index judgment, read `references/spx-intraday.md`.
 - For short-dated option value tables, account-recovery option targets, or “what is this call/put worth if price reaches X by time Y”, read `references/option-scenario-tables.md`.
 - For U.S. single-stock dark-pool/off-exchange, borrow-fee, short-volume, FTD, or ChartExchange confirmation, use the `Dark Pool / Short Data Layer` section below.
+
+## Text Level Map And Session Memory
+
+For SPX/SPXW and other index-style intraday gamma answers, expose the level work as text: short bullets, compact Markdown tables, and a direct bias line. Do not rely on visual-only interpretation.
+
+Key calculated levels:
+
+- Prior-session pivot map: use the prior regular-session high/low/close when available. `PP = (H + L + C) / 3`, `BC = (H + L) / 2`, `TC = 2 * PP - BC`, `R1 = 2 * PP - L`, `S1 = 2 * PP - H`, `R2 = PP + (H - L)`, `S2 = PP - (H - L)`. For Camarilla, use `unit = 1.1 * (H - L) / 12`, then `H3 = C + 3 * unit`, `H4 = C + 4 * unit`, `H5 = C * H / L` when stable, `L3 = C - 3 * unit`, `L4 = C - 4 * unit`, `L5 = C - (H5 - C)`.
+- CPR interpretation: narrow `TC-BC` means a larger directional expansion is easier; wide CPR means more chop/mean reversion. Spot above `TC` is constructive, between `TC/BC` is a balance zone, and below `BC` is weaker unless reclaimed.
+- Gamma map: wall above spot is pressure or pinning; wall below spot is support or a recapture zone; negative pit below spot is acceleration risk; flip is the regime divider. Say whether the current spot is above/below flip and whether GEX is strengthening or weakening.
+- Vanna map: combine top positive/negative VEX zones with IV direction, spot versus flip, and price action. Do not describe VEX alone as bullish or bearish.
+- Rough magnet/bias: if enough strike-level GEX/VEX data is available, estimate a self-calculated magnet from dominant nearby walls, pits, and VEX zones using distance decay around current spot. Label it as rough and non-proprietary. Report it as `magnet above/below current spot`, plus a plain bias such as `偏多修复`, `中性钉扎`, `上方压力`, or `下方加速风险`.
+
+When the user runs this skill multiple times during the same trading day in the same conversation, compare the new result with the earlier answer: spot, net GEX, net VEX, flip, nearest wall, nearest pit, CPR relationship, and rough magnet/bias if calculated. State what migrated and what strengthened/weakened. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
 
 ## Dark Pool / Short Data Layer
 
