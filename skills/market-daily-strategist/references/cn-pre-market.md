@@ -17,6 +17,7 @@ For topic heat, Eastmoney Guba topics can be used: `https://gubatopic.eastmoney.
 - A-shares have no stock night session. Do not write a nonexistent after-hours mover list; instead use same-day/prior-after-close important stock-site news and Eastmoney Guba topic heat to identify current market hotspots and possible next-day continuations.
 - After-close news from the prior day: policy expectations, breaking catalysts, earnings/announcements/regulatory information, and Eastmoney Guba topic heat when relevant.
 - Apply the shared `Market News Discipline` and `Optional Local / Private Data Discipline`; A-share pre-market reports must scan active domestic/offshore catalysts, not only index expectations and yesterday's hot sectors.
+- When 东方财富妙想 skills are available, use `mx-search` for prior-after-close policy/news/announcements and `mx-data` for A-share index/sector/fund-flow confirmation. Use `mx-xuangu` selectively to identify sector/concept constituents or related stocks for the few themes that can change the morning strategy; do not run a broad all-market screener unless the user asks.
 
 ## Output Format
 
