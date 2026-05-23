@@ -24,10 +24,13 @@ If `mx-zixuan` or `mx-xuangu` is unavailable, unauthenticated, over quota, or mi
 Use the existing `/themes` mapping logic whenever available:
 
 - Preferred source: a local `theme-data.json` from the `/themes` project.
+- Preferred Chinese label source: `/themes` `theme-label-i18n.json`, using each theme's `zh` value.
 - Required row fields: `market`, `code`, `theme`, `weight`.
 - Only include `market == "CN"` rows.
 - Exclude `theme == "未分類"`.
 - Treat repeated stock-theme rows as separate theme memberships.
+- Keep the original `theme` key internally for joins and aggregation, but display the Chinese label in all user-facing tables and driver checks.
+- If a Chinese label is missing, fall back to the original theme name and mention the missing label only when it affects visible output.
 
 If no mapping is available in the workspace, ask the user for the theme mapping file or pasteable table. Do not invent the theme universe from MX sector names.
 
@@ -76,6 +79,7 @@ Rules:
 
 - Use `CHG` as percentage points, e.g. `10.03` means `+10.03%`.
 - A stock that belongs to multiple themes contributes separately to each theme using that row's `weight`.
+- Rank by the original `/themes` theme key, but render labels through `theme-label-i18n.json[theme].zh`.
 - For Top themes, choose `主要贡献` stocks by largest positive `weight * CHG`.
 - For Bottom themes, choose `主要拖累` stocks by most negative `weight * CHG`.
 - Do not output component counts by default.
@@ -94,19 +98,31 @@ For each TOP3 theme:
    - Limit the evidence to recent 股吧/资讯 discussion snippets or topic clues that explain what traders think is driving the move.
    - Do not use its full announcement, market-context, technical, or emotion-cycle output for this default theme-ranking workflow.
 3. Use `mx-search` for current资讯:
-   - Search with the representative stock name/code plus the theme name and likely Chinese aliases when known.
+   - Search with the representative stock name/code plus the Chinese theme label and likely Chinese aliases when known.
    - Keep only titles/trunks that help explain the theme-level move.
 4. Convert stock-level evidence into theme-level inference:
    - Use wording such as `该代表股线索指向...，更像是...题材驱动`.
    - Separate confirmed news from 股吧 speculation.
    - If the stock has an idiosyncratic reason that does not generalize to the theme, say so.
+   - Assign a compact confidence label:
+     - `较高`: 股吧/资讯 and `mx-search` both point to the same sector-level driver, and several theme constituents also rose.
+     - `中等`: `mx-search` supports the sector driver, but 股吧 discussion is noisy or representative-stock specific.
+     - `较低`: evidence is mostly 股吧 speculation, stale news, overseas sympathy, or an idiosyncratic stock reason.
 
 Output this as a compact section after the TOP/BOTTOM tables:
 
 ```text
 TOP3 题材驱动检查
-1. 题材：代表股（代码）...；股吧线索...；mx资讯...；题材推断...
+1. 题材：代表股（代码，涨跌幅）。股吧线索：...；mx资讯：...；题材推断：...；确定度：较高/中等/较低。
 ```
+
+Example style:
+
+```text
+1. MLCC・ケミコン：三环集团（300408，+16.79%）。股吧线索集中在 MLCC、AI服务器、英伟达需求和国产替代；mx资讯指向英伟达 Rubin / AI数据中心带动高端 MLCC 用量上升、供给紧张和涨价潮。题材推断：更像是 AI服务器高端 MLCC 需求 + 涨价 + 国产替代共振。确定度：较高。
+```
+
+Keep each item to 2-4 sentences. This section should explain the theme driver, not repeat the whole representative stock report.
 
 ## Output Style
 
@@ -130,6 +146,8 @@ Default table columns:
 排名 | 题材 | 加权涨跌幅 | 主要拖累
 ```
 
+`题材` must use the `/themes` Chinese label. Do not show Japanese theme names in the final answer when a `zh` label exists.
+
 For `主要贡献` / `主要拖累`, include up to 3 stocks:
 
 ```text
@@ -138,7 +156,7 @@ For `主要贡献` / `主要拖累`, include up to 3 stocks:
 
 Do not include 成分数 unless the user explicitly asks.
 
-After the tables, output `TOP3 题材驱动检查` using the rules above. Keep it short; this section explains theme movement, not full stock movement.
+After the tables, output `TOP3 题材驱动检查` using the rules above. Keep it short; this section explains theme movement, not full stock movement. The expected fields are `代表股`, `股吧线索`, `mx资讯`, `题材推断`, and `确定度`.
 
 ## Safety
 
