@@ -4,7 +4,7 @@ Codex Market Skills is a collection of Codex skills for trading, investment rese
 
 ## Included Skills
 
-### [`market-calendar-google`](docs/skills/market-calendar-google.md)
+### [`market-calendar-google`](docs/market-calendar-google.md)
 
 Organizes US earnings, Japan earnings, China/US/Japan macro data, central-bank events, Treasury auctions, and other market-moving events, then writes them to Google Calendar according to the user's rules.
 
@@ -15,7 +15,7 @@ Use it to:
 - Build a high-importance China/US/Japan market-event calendar.
 - Add events in Japan time while avoiding duplicates.
 
-### [`jp-stock-move-reason`](docs/skills/jp-stock-move-reason.md)
+### [`jp-stock-move-reason`](docs/jp-stock-move-reason.md)
 
 Collects evidence for a user-provided Japanese stock code from Yahoo Finance's live quote page, Yahoo message board, Yahoo/Kabutan/Traders news, and basic stock metrics, then lets Codex analyze the likely reason for the move. This skill does not call Gemini or any other LLM API, and it does not read credentials.
 
@@ -25,7 +25,7 @@ Use it to:
 - Separate confirmed news catalysts from Yahoo message-board speculation.
 - Inspect current change, market cap, PER/PBR, margin ratio, and message-board heat.
 
-### [`cn-stock-move-reason`](docs/skills/cn-stock-move-reason.md)
+### [`cn-stock-move-reason`](docs/cn-stock-move-reason.md)
 
 Collects evidence for one user-provided A-share stock code from Eastmoney public quote data, announcements, and guba/news-like posts, then adds Sohu index/sector context and A-share advance/decline counts so Codex can analyze the likely move reason, market/sector/stock-level resonance, and short-term sentiment-cycle position. This skill does not call Gemini or any other LLM API, and it does not read credentials.
 
@@ -36,7 +36,7 @@ Use it to:
 - Separate market-wide resonance, sector/concept leadership, and stock-specific catalysts using indexes, sector/concept boards, and advance/decline counts.
 - Classify the short-term emotion cycle: ice point, repair, launch, acceleration, climax, or retreat.
 
-### [`stock-sentiment-analysis`](docs/skills/stock-sentiment-analysis.md)
+### [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md)
 
 Provides a reusable public-safe sentiment and market-emotion framework for A-shares, Japanese stocks, US stocks, indexes, and sector themes. It helps other stock skills classify emotion cycles, main-line versus follower status, expectation gaps, forum/message-board heat, crowded trades, and cross-market risk-on/risk-off context without committing private RAG material or a local `Stocks` folder.
 
@@ -46,7 +46,7 @@ Use it to:
 - Provide a shared sentiment framework for `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
 - When the user provides a private RAG directory, guide them to build a local index with topics, source aliases, page/slide ranges, keywords, and public-safe summaries; never write private source material into this public repository.
 
-### [`macro-news-check`](docs/skills/macro-news-check.md)
+### [`macro-news-check`](docs/macro-news-check.md)
 
 Checks current macro and broad-market tape for other market skills, but only when a stock, index, technical, or gamma analysis genuinely needs live macro context. It prioritizes Jin10, then uses Wallstreetcn and FinancialJuice for supplementary confirmation.
 
@@ -56,7 +56,7 @@ Use it to:
 - Provide macro tape to `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
 - Turn 2-5 relevant live headlines into a main-driver, secondary-amplifier, or background-noise judgment for the current instrument.
 
-### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
+### [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md)
 
 Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/GEX, gamma walls, gamma flip levels, SPX/SPY/ES intraday structure, and 0DTE option scenario value tables. This skill requires moomoo OpenD to be running locally; if the environment is missing, guide the user to install or launch OpenD first.
 
@@ -67,7 +67,7 @@ Use it to:
 - Build time-by-underlying theoretical value tables for 0DTE calls/puts to evaluate recovery, take-profit, or stop levels.
 - Output text conclusions, lists, and plain-text tables; for repeated intraday questions in the same conversation, compare with earlier same-session gamma results to judge level migration and strengthening or weakening.
 
-### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
+### [`stock-technical-analysis`](docs/stock-technical-analysis.md)
 
 Analyzes technical structure for US, Japanese, and A-share stocks, including intraday trend, support/resistance, volume-price behavior, KDJ/MACD/RSI, Vegas channels, chart reads, and whether a stock can reach a target level. This is a self-contained public-safe skill and does not depend on a local `Stocks` folder.
 
@@ -186,13 +186,15 @@ skills/
     agents/openai.yaml
     references/
 docs/
-  skills/
-    market-calendar-google.md
-    jp-stock-move-reason.md
-    cn-stock-move-reason.md
-    stock-sentiment-analysis.md
-    us-stock-gamma-moomoo.md
-    stock-technical-analysis.md
+  market-calendar-google.md
+  jp-stock-move-reason.md
+  cn-stock-move-reason.md
+  cn-theme-strength-mx.md
+  macro-news-check.md
+  market-daily-strategist.md
+  stock-sentiment-analysis.md
+  us-stock-gamma-moomoo.md
+  stock-technical-analysis.md
 shared/
   references/release-and-privacy.md
 ```

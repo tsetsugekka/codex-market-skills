@@ -4,7 +4,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 
 ## 含まれる skills
 
-### [`market-calendar-google`](docs/skills/market-calendar-google.md)
+### [`market-calendar-google`](docs/market-calendar-google.md)
 
 米国株決算、日本株決算、中国・米国・日本のマクロ指標、中央銀行イベント、国債入札、その他の重要市場イベントを整理し、ユーザーのルールに従って Google Calendar に追加します。
 
@@ -15,7 +15,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 中国・米国・日本の重要度が高い経済イベントを整理する。
 - 日本時間で Google Calendar に登録し、重複を避ける。
 
-### [`jp-stock-move-reason`](docs/skills/jp-stock-move-reason.md)
+### [`jp-stock-move-reason`](docs/jp-stock-move-reason.md)
 
 入力された日本株コードについて、Yahoo Finance のリアルタイム株価欄、Yahoo 掲示板、Yahoo/Kabutan/Traders のニュース、基本指標を収集し、Codex が株価変動理由を分析するための材料を作ります。この skill は Gemini などの LLM API を呼び出さず、認証情報も読みません。
 
@@ -25,7 +25,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - ニュースで確認できる材料と、掲示板上の思惑を分けて見る。
 - 現在の騰落率、時価総額、PER/PBR、信用倍率、掲示板の温度感を確認する。
 
-### [`cn-stock-move-reason`](docs/skills/cn-stock-move-reason.md)
+### [`cn-stock-move-reason`](docs/cn-stock-move-reason.md)
 
 入力された単一の A 株コードについて、Eastmoney の公開株価データ、公告、股吧/资讯投稿を収集し、Sohu の指数・セクター情報と A 株の騰落銘柄数も合わせて、Codex が株価変動理由、市場/セクター/個別株の共振、短期センチメントサイクルを分析するための材料を作ります。この skill は Gemini などの LLM API を呼び出さず、認証情報も読みません。
 
@@ -36,7 +36,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 主要指数、業種/テーマ板、騰落銘柄数から、市場全体の共振、セクター主導、個別材料主導を切り分ける。
 - 冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮の七段階で短期情緒を確認する。
 
-### [`stock-sentiment-analysis`](docs/skills/stock-sentiment-analysis.md)
+### [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md)
 
 A 株、日本株、米国株、指数、セクターテーマに共通して使える、公開安全なセンチメント分析フレームワークです。情緒サイクル、主線/フォロワー、期待差、掲示板/フォーラムの温度感、混雑取引、クロスマーケットの risk-on/risk-off を整理し、ローカルの `Stocks` フォルダや private RAG の中身を公開リポジトリに持ち込みません。
 
@@ -46,7 +46,7 @@ A 株、日本株、米国株、指数、セクターテーマに共通して使
 - `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` に共通の情緒フレームを提供する。
 - ユーザーが private RAG ディレクトリを指定した場合、テーマ、ソース別名、ページ/slide 範囲、キーワード、公開安全な要約だけを持つローカル索引作成を案内する。private 原資料はこの公開リポジトリに書かない。
 
-### [`macro-news-check`](docs/skills/macro-news-check.md)
+### [`macro-news-check`](docs/macro-news-check.md)
 
 他の市場 skill から呼び出すマクロ速報チェック用 skill です。個別株、指数、テクニカル、gamma 分析で現在のマクロ/大局背景が本当に必要な場合だけ使います。金十を優先し、華爾街見聞と FinancialJuice で補足確認します。
 
@@ -56,7 +56,7 @@ A 株、日本株、米国株、指数、セクターテーマに共通して使
 - `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` にマクロ tape を提供する。
 - 関連する 2-5 件の速報を、主因、二次的な増幅要因、または背景ノイズとして整理する。
 
-### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
+### [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md)
 
 moomoo OpenD から米国株・米国オプションデータを取得し、Codex が gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES の日中構造、0DTE オプションのシナリオ価格表を分析するための skill です。ローカルで moomoo OpenD が起動している必要があり、環境がない場合は先にインストールまたは起動を案内します。
 
@@ -67,7 +67,7 @@ moomoo OpenD から米国株・米国オプションデータを取得し、Code
 - 0DTE call/put について、時間 x 原資産価格の理論価値表を作り、回復、利確、損切り水準を検討する。
 - 文字の結論、箇条書き、テキスト表を中心に出力する。同じ会話内で日中に繰り返し質問された場合は、その日の過去の gamma 結果と比べて水準の移動や強弱を判断する。
 
-### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
+### [`stock-technical-analysis`](docs/stock-technical-analysis.md)
 
 米国株、日本株、A 株のテクニカル構造を分析する skill です。日中トレンド、支持・抵抗、出来高と価格、KDJ/MACD/RSI、Vegas チャネル、チャート読解、特定価格に到達できるかの判断に使います。公開用の自己完結版であり、ローカルの `Stocks` フォルダには依存しません。
 
@@ -186,13 +186,15 @@ skills/
     agents/openai.yaml
     references/
 docs/
-  skills/
-    market-calendar-google.md
-    jp-stock-move-reason.md
-    cn-stock-move-reason.md
-    stock-sentiment-analysis.md
-    us-stock-gamma-moomoo.md
-    stock-technical-analysis.md
+  market-calendar-google.md
+  jp-stock-move-reason.md
+  cn-stock-move-reason.md
+  cn-theme-strength-mx.md
+  macro-news-check.md
+  market-daily-strategist.md
+  stock-sentiment-analysis.md
+  us-stock-gamma-moomoo.md
+  stock-technical-analysis.md
 shared/
   references/release-and-privacy.md
 ```

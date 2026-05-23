@@ -4,7 +4,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 ## 当前包含的 skills
 
-### [`market-calendar-google`](docs/skills/market-calendar-google.md)
+### [`market-calendar-google`](docs/market-calendar-google.md)
 
 整理美股财报、日股财报、中美日宏观数据、央行事件、拍卖和其他重要财经事件，并按用户规则写入 Google Calendar。
 
@@ -19,7 +19,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 整理中美日四星以上财经事件。
 - 把事件按日本时间写入 Google Calendar，并避免重复。
 
-### [`jp-stock-move-reason`](docs/skills/jp-stock-move-reason.md)
+### [`jp-stock-move-reason`](docs/jp-stock-move-reason.md)
 
 针对用户输入的日本股票代码，抓取 Yahoo Finance 实时板、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻以及基础指标，让 Codex 分析个股异动理由。
 
@@ -33,7 +33,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 区分新闻确认的催化和 Yahoo 掲示板上的市场思惑。
 - 查看当前涨跌幅、市值、PER/PBR、信用倍率、掲示板温度等辅助信息。
 
-### [`cn-stock-move-reason`](docs/skills/cn-stock-move-reason.md)
+### [`cn-stock-move-reason`](docs/cn-stock-move-reason.md)
 
 针对用户输入的单只 A 股代码，抓取东方财富公开行情、公告、股吧/资讯帖，并结合搜狐指数/板块页面与 A 股涨跌家数背景，让 Codex 分析个股异动理由、是否大盘/板块/个股共振，以及短线情绪周期位置。
 
@@ -48,7 +48,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 结合大盘指数、行业/概念板块和涨跌家数，判断是市场共振、板块主线，还是个股独立催化。
 - 按冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮判断短线情绪阶段。
 
-### [`cn-theme-strength-mx`](docs/skills/cn-theme-strength-mx.md)
+### [`cn-theme-strength-mx`](docs/cn-theme-strength-mx.md)
 
 读取随 skill 打包的 `/themes` 股票-题材映射和中文题材标签，用东方财富妙想自选股和选股接口抓取 A 股盘中或最新交易日行情，按 `/themes` 权重计算题材加权涨跌幅，用中文题材名输出 TOP10 和 BOTTOM10，并对 TOP3 题材各选 1 只涨幅最高的代表股，用股吧线索和妙想资讯辅助判断题材为什么异动。该 skill 的特点是盘中可用，并且会实时报告抓取进度：自选接口覆盖多少、还需补抓多少、补抓批次完成到第几批、是否遇到限频重试、最终是否补齐。
 
@@ -65,7 +65,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 按题材权重输出 A 股题材强弱榜，而不是简单按板块名称或单只股票排序。
 - 只在回答中显示完整 TOP10、BOTTOM10 和 TOP3 题材驱动检查，不默认写文件。
 
-### [`stock-sentiment-analysis`](docs/skills/stock-sentiment-analysis.md)
+### [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md)
 
 给其他股票 skill 复用的情绪面分析框架，用于判断 A 股情绪周期、主线/跟随、预期差、论坛/掲示板温度、拥挤交易和跨市场 risk-on/risk-off。公开版不包含私人 RAG、`Stocks` 文件夹、个人标签或原始资料。
 
@@ -79,7 +79,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 给 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 提供统一情绪框架。
 - 在用户指定私有 RAG 目录时，可帮助用户建立本地索引，只记录主题、来源别名、页码/slide 范围、关键词和公开安全摘要；不把私有材料写入公开仓库。
 
-### [`macro-news-check`](docs/skills/macro-news-check.md)
+### [`macro-news-check`](docs/macro-news-check.md)
 
 给其他市场 skill 调用的宏观快讯检查工具，只在个股、指数、技术分析或 gamma 分析确实需要当前宏观/大盘背景时使用。它优先查看金十，再用华尔街见闻和 FinancialJuice 补充交叉确认。
 
@@ -93,7 +93,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 给 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 提供宏观 tape。
 - 把 2-5 条关键快讯转化为对当前标的的主因/放大器/背景噪音判断。
 
-### [`market-daily-strategist`](docs/skills/market-daily-strategist.md)
+### [`market-daily-strategist`](docs/market-daily-strategist.md)
 
 面向美股、日股和 A 股的中文市场策略报告路由层，覆盖盘前策略、收盘复盘和单只长线推荐。它按用户意图读取对应市场和时段的 reference，并把宏观、异动原因、情绪周期、技术结构和可用的本地行情工具压缩进一份决策导向报告。
 
@@ -107,7 +107,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 写美股、日股或 A 股收盘复盘。
 - 推荐一只美股、日股或 A 股/ETF/LOF，并给出买点、风险和验证条件。
 
-### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
+### [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md)
 
 通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
 
@@ -122,7 +122,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用于评估回本、止盈或止损点。
 - 输出以文字结论、列表和文本表格为主；盘中重复询问时，结合本交易日此前同一对话中的 gamma 结果判断点位迁移和强弱变化。
 
-### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
+### [`stock-technical-analysis`](docs/stock-technical-analysis.md)
 
 针对美股、日股和 A 股做技术分析，重点看趋势结构、支撑压力、量价、KDJ/MACD/RSI、Vegas 通道、分时确认，以及“能不能到某个价位”的盘中判断。
 
@@ -269,16 +269,15 @@ skills/
     agents/openai.yaml
     references/
 docs/
-  skills/
-    market-calendar-google.md
-    jp-stock-move-reason.md
-    cn-stock-move-reason.md
-    cn-theme-strength-mx.md
-    macro-news-check.md
-    market-daily-strategist.md
-    stock-sentiment-analysis.md
-    us-stock-gamma-moomoo.md
-    stock-technical-analysis.md
+  market-calendar-google.md
+  jp-stock-move-reason.md
+  cn-stock-move-reason.md
+  cn-theme-strength-mx.md
+  macro-news-check.md
+  market-daily-strategist.md
+  stock-sentiment-analysis.md
+  us-stock-gamma-moomoo.md
+  stock-technical-analysis.md
 shared/
   references/release-and-privacy.md
 ```
