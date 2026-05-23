@@ -149,7 +149,6 @@ Analyze this stock's technical setup, support, and resistance right now.
 - `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on a local `Stocks` folder and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
 - If personal study materials are useful, keep them in a private RAG/knowledge base outside this public repository and copy back only distilled generic rules.
 - Do not commit personal watchlists, credentials, `.env` files, runtime caches, or private outputs to this repository.
-- The public release/privacy summary is in [`docs/release-and-privacy.md`](docs/release-and-privacy.md); the Codex runtime rule lives in `shared/references/release-and-privacy.md`.
 
 ## Repository Layout
 
@@ -187,7 +186,6 @@ skills/
     agents/openai.yaml
     references/
 docs/
-  release-and-privacy.md
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md

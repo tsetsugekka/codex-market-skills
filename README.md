@@ -223,7 +223,6 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 - `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖本地 `Stocks` 文件夹，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
 - `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖本地 `Stocks` 文件夹，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
 - 不要把个人关注列表、凭据、API key、`.env`、`Stocks/`、私有 RAG、运行缓存或私有输出提交到本仓库。
-- 面向 GitHub 用户的发布/隐私摘要见 [`docs/release-and-privacy.md`](docs/release-and-privacy.md)；Codex runtime 规则以 `shared/references/release-and-privacy.md` 为准。
 
 ## 仓库结构
 
@@ -270,7 +269,6 @@ skills/
     agents/openai.yaml
     references/
 docs/
-  release-and-privacy.md
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md

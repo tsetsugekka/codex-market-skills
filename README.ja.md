@@ -149,7 +149,6 @@ SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
 - `stock-technical-analysis` は汎用テクニカル分析ルールだけを保存します。公開版はローカルの `Stocks` フォルダに依存せず、個人ポジション、売買計画、スクリーンショット原本、私的な研究パス、専有指標名、独自戦略名、私的な人名/handle はコミットしないでください。
 - 個人の学習資料を使う場合は、この公開リポジトリ外の private RAG/knowledge base に置き、抽象化した汎用ルールだけを skill に戻してください。
 - 個人のウォッチリスト、認証情報、`.env`、実行キャッシュ、私的な出力はこのリポジトリにコミットしないでください。
-- GitHub ユーザー向けの公開/プライバシー概要は [`docs/release-and-privacy.md`](docs/release-and-privacy.md) にあります。Codex runtime の規則は `shared/references/release-and-privacy.md` を基準にします。
 
 ## リポジトリ構成
 
@@ -187,7 +186,6 @@ skills/
     agents/openai.yaml
     references/
 docs/
-  release-and-privacy.md
   skills/
     market-calendar-google.md
     jp-stock-move-reason.md
