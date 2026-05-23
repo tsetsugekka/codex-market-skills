@@ -8,6 +8,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 整理美股财报、日股财报、中美日宏观数据、央行事件、拍卖和其他重要财经事件，并按用户规则写入 Google Calendar。
 
+依赖：必需 — `google-calendar:google-calendar`。
+
 适用场景：
 
 - 整理本周或下周 Earnings Whispers 美股财报图。
@@ -19,6 +21,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对用户输入的日本股票代码，抓取 Yahoo Finance 实时板、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻以及基础指标，让 Codex 分析个股异动理由。该 skill 不调用 Gemini 或其他 LLM API，也不读取任何凭据。
 
+依赖：无。
+
 适用场景：
 
 - 分析某只日股为什么急涨、急跌或突然放量。
@@ -29,6 +33,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对用户输入的单只 A 股代码，抓取东方财富公开行情、公告、股吧/资讯帖，并结合搜狐指数/板块页面与 A 股涨跌家数背景，让 Codex 分析个股异动理由、是否大盘/板块/个股共振，以及短线情绪周期位置。该 skill 不调用 Gemini 或其他 LLM API，也不读取任何凭据。
 
+依赖：可选 — `mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan`（东方财富妙想增强）；`stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`（按问题协同分析）。
+
 适用场景：
 
 - 分析某只 A 股为什么涨停、跌停、炸板或突然放量。
@@ -36,9 +42,24 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 结合大盘指数、行业/概念板块和涨跌家数，判断是市场共振、板块主线，还是个股独立催化。
 - 按冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮判断短线情绪阶段。
 
+### [`cn-theme-strength-mx`](docs/skills/cn-theme-strength-mx.md)
+
+读取 `/themes` 股票-题材映射，用东方财富妙想自选股和选股接口抓取 A 股盘中或最新交易日行情，按 `/themes` 权重计算题材加权涨跌幅，输出题材 TOP10 和最差 10。该 skill 的特点是盘中可用，并且会实时报告抓取进度：自选接口覆盖多少、还需补抓多少、补抓批次完成到第几批、是否遇到限频重试、最终是否补齐。
+
+依赖：必需 — `mx-zixuan`、`mx-xuangu`；可选 — `mx-data`、`mx-search`（用于后续追查题材催化、财务或新闻）。
+
+适用场景：
+
+- 盘中查看 `/themes` A 股题材里哪些涨得最好、哪些最差。
+- 先用东方财富自选股快速拿行情，再用妙想选股补齐自选接口没有返回的题材成分。
+- 按题材权重输出 A 股题材强弱榜，而不是简单按板块名称或单只股票排序。
+- 只在回答中显示完整 TOP10 和最差 10，不默认写文件。
+
 ### [`stock-sentiment-analysis`](docs/skills/stock-sentiment-analysis.md)
 
 给其他股票 skill 复用的情绪面分析框架，用于判断 A 股情绪周期、主线/跟随、预期差、论坛/掲示板温度、拥挤交易和跨市场 risk-on/risk-off。公开版不包含私人 RAG、`Stocks` 文件夹、个人标签或原始资料。
+
+依赖：可选 — `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`（作为证据来源或协同分析）。
 
 适用场景：
 
@@ -50,6 +71,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 给其他市场 skill 调用的宏观快讯检查工具，只在个股、指数、技术分析或 gamma 分析确实需要当前宏观/大盘背景时使用。它优先查看金十，再用华尔街见闻和 FinancialJuice 补充交叉确认。
 
+依赖：无。
+
 适用场景：
 
 - 判断个股或指数异动是否受利率、汇率、央行、经济数据、商品、地缘或大盘 risk-on/risk-off 影响。
@@ -59,6 +82,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 ### [`us-stock-gamma-moomoo`](docs/skills/us-stock-gamma-moomoo.md)
 
 通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
+
+依赖：无。环境要求：本机 moomoo OpenD。
 
 适用场景：
 
@@ -70,6 +95,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 ### [`stock-technical-analysis`](docs/skills/stock-technical-analysis.md)
 
 针对美股、日股和 A 股做技术分析，重点看趋势结构、支撑压力、量价、KDJ/MACD/RSI、Vegas 通道、分时确认，以及“能不能到某个价位”的盘中判断。
+
+依赖：可选 — `macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`（按标的和问题协同分析）。
 
 适用场景：
 
@@ -88,6 +115,7 @@ mkdir -p ~/.codex/skills
 ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
 ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
 ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
+ln -s /path/to/codex-market-skills/skills/cn-theme-strength-mx ~/.codex/skills/cn-theme-strength-mx
 ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
 ln -s /path/to/codex-market-skills/skills/macro-news-check ~/.codex/skills/macro-news-check
 ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
@@ -119,6 +147,14 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 ```
 
 ```text
+用 /themes 的题材映射和 mx 抓一次 A 股题材强弱，显示 TOP10 和最差10。
+```
+
+```text
+盘中看一下 A 股哪些题材涨得好，哪些题材最差。
+```
+
+```text
 分析一下这只股票现在是主线启动、高潮分歧，还是退潮反抽。
 ```
 
@@ -143,6 +179,7 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
+- `cn-theme-strength-mx` 必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`；只在用户要求题材强弱/自选相关工作流时读取自选股，不自动添加、删除或修改自选股，不提交 `MX_APIKEY`、完整自选股列表、私有 `/themes` 数据、原始 API 响应或运行缓存。
 - `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、`Stocks` 文件夹、个人标签、原始笔记、截图或交易日志。
 - `macro-news-check` 只读取公开宏观快讯页面/Feed/接口；不读取登录 cookie、token、账号数据或私有研究资料，不复制长篇新闻正文。
 - `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖本地 `Stocks` 文件夹，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
@@ -167,6 +204,9 @@ skills/
     agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
+  cn-theme-strength-mx/
+    SKILL.md
+    agents/openai.yaml
   stock-sentiment-analysis/
     SKILL.md
     agents/openai.yaml
@@ -191,6 +231,8 @@ docs/
     market-calendar-google.md
     jp-stock-move-reason.md
     cn-stock-move-reason.md
+    cn-theme-strength-mx.md
+    macro-news-check.md
     stock-sentiment-analysis.md
     us-stock-gamma-moomoo.md
     stock-technical-analysis.md
