@@ -1,4 +1,4 @@
-# Stocks Technical Playbook
+# Technical Playbook
 
 Compressed reusable technical-analysis lessons. This reference is self-contained; private source paths, proprietary indicator names, and personal strategy labels are intentionally omitted.
 

@@ -1,6 +1,6 @@
 # US Stock Gamma Moomoo
 
-`us-stock-gamma-moomoo` 是一个用于 Codex 的美股期权 gamma 分析 skill。它通过本机 moomoo OpenD 获取美股和期权数据，再由 Codex 输出 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构和 0DTE 期权情景表。公开版是自包含版本，不依赖本地 `Stocks` 文件夹或私有资料。
+`us-stock-gamma-moomoo` 是一个用于 Codex 的美股期权 gamma 分析 skill。它通过本机 moomoo OpenD 获取美股和期权数据，再由 Codex 输出 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构和 0DTE 期权情景表。公开版是自包含版本，不依赖私有 RAG 或私有资料。
 
 ## 能做什么
 
@@ -46,6 +46,6 @@
 
 ## 公开安全说明
 
-这个 skill 可以放在公开仓库中。请不要提交 moomoo 账号、OpenD 日志、个人截图、私有行情输出、`.env`、token、`Stocks` 原始资料或任何含有登录信息的文件。
+这个 skill 可以放在公开仓库中。请不要提交 moomoo 账号、OpenD 日志、个人截图、私有行情输出、`.env`、token、私有 RAG 原始资料或任何含有登录信息的文件。
 
 本 skill 输出仅用于个人研究，不构成投资建议。Gamma/GEX 是估算框架，不等于真实做市商持仓。

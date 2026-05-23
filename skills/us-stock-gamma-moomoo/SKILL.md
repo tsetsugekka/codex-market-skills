@@ -9,7 +9,7 @@ metadata:
 
 Use this skill to turn moomoo OpenD option data into an actionable gamma map and a plain-language trading note.
 
-This public-safe skill is self-contained. Do not commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub. It may use a user-specified private RAG folder during a session, but it must not store private source paths, personal positions, original strategy names, private person names/handles, proprietary labels, or private document titles. Generic market concepts such as gamma, GEX, dealer hedging, FVG, KDJ, MACD, RSI, VWAP, and Vegas may be retained.
+This public-safe skill is self-contained. Do not commit personal information, API keys, account data, private RAG files, or private research materials to GitHub. It may use a user-specified private RAG folder during a session, but it must not store private source paths, personal positions, original strategy names, private person names/handles, proprietary labels, or private document titles. Generic market concepts such as gamma, GEX, dealer hedging, FVG, KDJ, MACD, RSI, VWAP, and Vegas may be retained.
 
 
 ## Public And Private Versions
@@ -18,7 +18,7 @@ If both public and private versions of this skill exist, prefer the private vers
 
 When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Experience
 

@@ -38,7 +38,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 
 ### [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md)
 
-A 株、日本株、米国株、指数、セクターテーマに共通して使える、公開安全なセンチメント分析フレームワークです。情緒サイクル、主線/フォロワー、期待差、掲示板/フォーラムの温度感、混雑取引、クロスマーケットの risk-on/risk-off を整理し、ローカルの `Stocks` フォルダや private RAG の中身を公開リポジトリに持ち込みません。
+A 株、日本株、米国株、指数、セクターテーマに共通して使える、公開安全なセンチメント分析フレームワークです。情緒サイクル、主線/フォロワー、期待差、掲示板/フォーラムの温度感、混雑取引、クロスマーケットの risk-on/risk-off を整理し、private RAG の中身を公開リポジトリに持ち込みません。
 
 主な用途：
 
@@ -69,7 +69,7 @@ moomoo OpenD から米国株・米国オプションデータを取得し、Code
 
 ### [`stock-technical-analysis`](docs/stock-technical-analysis.md)
 
-米国株、日本株、A 株のテクニカル構造を分析する skill です。日中トレンド、支持・抵抗、出来高と価格、KDJ/MACD/RSI、Vegas チャネル、チャート読解、特定価格に到達できるかの判断に使います。公開用の自己完結版であり、ローカルの `Stocks` フォルダには依存しません。
+米国株、日本株、A 株のテクニカル構造を分析する skill です。日中トレンド、支持・抵抗、出来高と価格、KDJ/MACD/RSI、Vegas チャネル、チャート読解、特定価格に到達できるかの判断に使います。公開用の自己完結版であり、private RAG には依存しません。
 
 主な用途：
 
@@ -143,10 +143,10 @@ SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
 - `market-calendar-google` は、ユーザーが明示的に依頼した場合に Google Calendar コネクタで予定を作成・更新します。
 - `jp-stock-move-reason` は公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
 - `cn-stock-move-reason` は Eastmoney、Sohu 証券などの公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
-- `stock-sentiment-analysis` は公開安全な汎用センチメント規則だけを保存します。private RAG、ローカルの `Stocks` フォルダ、個人ラベル、原始ノート、スクリーンショット、取引ログはコミットしないでください。
+- `stock-sentiment-analysis` は公開安全な汎用センチメント規則だけを保存します。private RAG、個人ラベル、原始ノート、スクリーンショット、取引ログはコミットしないでください。
 - `macro-news-check` は公開マクロ速報ページ/Feed/エンドポイントだけを読み取り、login cookie、token、口座データ、private research material を読みません。長いニュース本文をコピーしないでください。
-- `us-stock-gamma-moomoo` はローカルの moomoo OpenD の行情インターフェースを使い、取引ロック解除 API は呼び出しません。公開版はローカルの `Stocks` フォルダに依存せず、個人口座情報、OpenD ログ、スクリーンショット、私的な行情出力、独自戦略名、私的な人名/handle はコミットしないでください。
-- `stock-technical-analysis` は汎用テクニカル分析ルールだけを保存します。公開版はローカルの `Stocks` フォルダに依存せず、個人ポジション、売買計画、スクリーンショット原本、私的な研究パス、専有指標名、独自戦略名、私的な人名/handle はコミットしないでください。
+- `us-stock-gamma-moomoo` はローカルの moomoo OpenD の行情インターフェースを使い、取引ロック解除 API は呼び出しません。公開版は private RAG に依存せず、個人口座情報、OpenD ログ、スクリーンショット、私的な行情出力、独自戦略名、私的な人名/handle はコミットしないでください。
+- `stock-technical-analysis` は汎用テクニカル分析ルールだけを保存します。公開版は private RAG に依存せず、個人ポジション、売買計画、スクリーンショット原本、私的な研究パス、専有指標名、独自戦略名、私的な人名/handle はコミットしないでください。
 - 個人の学習資料を使う場合は、この公開リポジトリ外の private RAG/knowledge base に置き、抽象化した汎用ルールだけを skill に戻してください。
 - 個人のウォッチリスト、認証情報、`.env`、実行キャッシュ、私的な出力はこのリポジトリにコミットしないでください。
 

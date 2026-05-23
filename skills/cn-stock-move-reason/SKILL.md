@@ -9,7 +9,7 @@ metadata:
 
 Use this skill when the user asks why one A-share stock is rising, falling, 涨停, 跌停, 炸板, 异动, or moving unusually, and wants Codex to analyze it instead of Gemini.
 
-The bundled script is safe for a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service. Never commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub.
+The bundled script is safe for a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service. Never commit personal information, API keys, account data, private RAG files, or private research materials to GitHub.
 
 The skill accepts one stock at a time. It may also collect broad market context (indexes, sector/concept boards, and advance/decline counts) to judge whether the move is market-wide, sector-led, or stock-specific.
 
@@ -22,7 +22,7 @@ If both public and private versions of this skill exist, prefer the private vers
 
 When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 
 1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.

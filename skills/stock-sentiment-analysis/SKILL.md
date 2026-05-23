@@ -17,7 +17,7 @@ If both public and private versions of a market skill exist, prefer the private 
 
 When updating a paired private/public skill, write public-safe generalized lessons to both versions, but keep private paths, private labels, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use only the public version and read the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md` first. Run a privacy check for `Stocks/`, private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
+When preparing a GitHub upload or public release, use only the public version and read the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md` first. Run a privacy check for private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
 
 ## Workflow
 

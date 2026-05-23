@@ -26,11 +26,11 @@ When preparing anything for GitHub, use only the public version of the skill as 
 
 - personal paths such as `/Users/...`;
 - API keys, tokens, `.env`, credentials, account numbers, cookies;
-- `Stocks/`, private RAG folders, `.ftindex`, screenshots, raw PDFs/PPTs, private notes;
+- private RAG folders, `.ftindex`, screenshots, raw PDFs/PPTs, private notes;
 - private strategy names, memorable private labels, private person names/handles;
 - copied raw source text from private materials.
 
-Also confirm `.gitignore` excludes private folders such as `Stocks/`, `private-rag/`, `RAG_INDEX/`, `.env*`, logs, caches, and index files.
+Also confirm `.gitignore` excludes private folders such as `private-rag/`, `RAG_INDEX/`, `.env*`, logs, caches, and index files.
 
 ### Branch Discipline
 

@@ -9,7 +9,7 @@ metadata:
 
 Use this skill when the user asks about price action, technical setup, intraday odds, support/resistance, trend continuation, pullback risk, or chart-based timing for US stocks, Japanese stocks, or A-shares.
 
-This public-safe skill is self-contained and contains only generalized technical-analysis methods. Do not commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub. It must not store personal positions, private research paths, proprietary indicator names, private person names/handles, or private strategy labels. It may use a user-specified private RAG folder during a session, but the skill must remain usable without it.
+This public-safe skill is self-contained and contains only generalized technical-analysis methods. Do not commit personal information, API keys, account data, private RAG files, or private research materials to GitHub. It must not store personal positions, private research paths, proprietary indicator names, private person names/handles, or private strategy labels. It may use a user-specified private RAG folder during a session, but the skill must remain usable without it.
 
 
 ## Public And Private Versions
@@ -18,7 +18,7 @@ If both public and private versions of this skill exist, prefer the private vers
 
 When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Core Rule
 
@@ -49,13 +49,13 @@ Do not read local research folders or indicator files by default. If the user ex
 
 ## Optional User Knowledge Base
 
-If a user wants to use their own study materials, ask them to specify a private RAG or index folder outside this public repository. Raw PDFs, screenshots, indicators, notes, and private labels should stay private. Offer to create or update a lightweight local index for repeated use, with only user-approved aliases, topics, page/slide ranges, keywords, and public-safe summaries. Only distilled, generic rules should be copied into `references/experience.md` or `references/stocks-technical-playbook.md`, and only when the user explicitly asks to update the skill. Do not write the private path, private labels, or raw source text into public files. The skill must remain usable without that private corpus.
+If a user wants to use their own study materials, ask them to specify a private RAG or index folder outside this public repository. Raw PDFs, screenshots, indicators, notes, and private labels should stay private. Offer to create or update a lightweight local index for repeated use, with only user-approved aliases, topics, page/slide ranges, keywords, and public-safe summaries. Only distilled, generic rules should be copied into `references/experience.md` or `references/technical-playbook.md`, and only when the user explicitly asks to update the skill. Do not write the private path, private labels, or raw source text into public files. The skill must remain usable without that private corpus.
 
 ## When To Load The Reference
 
 For quick answers, apply the core rule directly.
 
-For any of the following, read `references/stocks-technical-playbook.md` first:
+For any of the following, read `references/technical-playbook.md` first:
 
 - The user asks "能不能到某个价格", "现在怎么看", "日内", "分时", "压力位", "支撑位", "技术分析", "买点", "卖点", "突破", "回踩", "空中加油", "KDJ", "MACD", "RSI", or "Vegas".
 - The stock has already moved sharply today.
@@ -65,7 +65,7 @@ For any of the following, read `references/stocks-technical-playbook.md` first:
 
 If the user asks for a post-mortem, review, or lesson update after the stock moves as discussed, read and update `references/experience.md` first, then edit references only if a core checklist needs to change.
 
-For chart-app workflows, read the `Chart App Visual Workflow` section in `references/stocks-technical-playbook.md`.
+For chart-app workflows, read the `Chart App Visual Workflow` section in `references/technical-playbook.md`.
 
 For Japanese stocks and A-shares, prefer `jp-stock-move-reason` or `cn-stock-move-reason` as the first pass for news/emotion/catalyst context. Use this skill after that first pass when the user asks for chart timing, when the discussion becomes repeated/deeper, or when a 1h+ chart must confirm whether the narrative is accepted.
 

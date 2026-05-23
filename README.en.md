@@ -38,7 +38,7 @@ Use it to:
 
 ### [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md)
 
-Provides a reusable public-safe sentiment and market-emotion framework for A-shares, Japanese stocks, US stocks, indexes, and sector themes. It helps other stock skills classify emotion cycles, main-line versus follower status, expectation gaps, forum/message-board heat, crowded trades, and cross-market risk-on/risk-off context without committing private RAG material or a local `Stocks` folder.
+Provides a reusable public-safe sentiment and market-emotion framework for A-shares, Japanese stocks, US stocks, indexes, and sector themes. It helps other stock skills classify emotion cycles, main-line versus follower status, expectation gaps, forum/message-board heat, crowded trades, and cross-market risk-on/risk-off context without committing private RAG material.
 
 Use it to:
 
@@ -69,7 +69,7 @@ Use it to:
 
 ### [`stock-technical-analysis`](docs/stock-technical-analysis.md)
 
-Analyzes technical structure for US, Japanese, and A-share stocks, including intraday trend, support/resistance, volume-price behavior, KDJ/MACD/RSI, Vegas channels, chart reads, and whether a stock can reach a target level. This is a self-contained public-safe skill and does not depend on a local `Stocks` folder.
+Analyzes technical structure for US, Japanese, and A-share stocks, including intraday trend, support/resistance, volume-price behavior, KDJ/MACD/RSI, Vegas channels, chart reads, and whether a stock can reach a target level. This is a self-contained public-safe skill and does not depend on private RAG.
 
 Use it to:
 
@@ -143,10 +143,10 @@ Analyze this stock's technical setup, support, and resistance right now.
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
-- `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, a local `Stocks` folder, personal labels, raw notes, screenshots, or trade logs.
+- `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, personal labels, raw notes, screenshots, or trade logs.
 - `macro-news-check` reads only public macro/news pages, feeds, or endpoints; it does not read login cookies, tokens, account data, or private research material, and it should not copy long news text.
-- `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on a local `Stocks` folder and should not commit personal account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
-- `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on a local `Stocks` folder and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
+- `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on private RAG and should not commit personal account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
+- `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on private RAG and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
 - If personal study materials are useful, keep them in a private RAG/knowledge base outside this public repository and copy back only distilled generic rules.
 - Do not commit personal watchlists, credentials, `.env` files, runtime caches, or private outputs to this repository.
 

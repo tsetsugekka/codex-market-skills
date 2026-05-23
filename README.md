@@ -67,7 +67,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 ### [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md)
 
-给其他股票 skill 复用的情绪面分析框架，用于判断 A 股情绪周期、主线/跟随、预期差、论坛/掲示板温度、拥挤交易和跨市场 risk-on/risk-off。公开版不包含私人 RAG、`Stocks` 文件夹、个人标签或原始资料。
+给其他股票 skill 复用的情绪面分析框架，用于判断 A 股情绪周期、主线/跟随、预期差、论坛/掲示板温度、拥挤交易和跨市场 risk-on/risk-off。公开版不包含私人 RAG、个人标签或原始资料。
 
 【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股证据、题材成分和筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
 
@@ -217,12 +217,12 @@ ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skil
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-theme-strength-mx` 必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`，并打包公开发布用的 `/themes` 快照；只在用户要求题材强弱/自选相关工作流时读取自选股，不自动添加、删除或修改自选股，不提交 `MX_APIKEY`、完整自选股列表、未经确认可公开发布的其他 `/themes` 派生数据、原始 API 响应或运行缓存。发布或更新该 skill 前，应从 DTM 工作目录的 `themes/public/` 刷新 `theme-data.json` 和 `theme-label-i18n.json`。
-- `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、`Stocks` 文件夹、个人标签、原始笔记、截图或交易日志。
+- `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、个人标签、原始笔记、截图或交易日志。
 - `macro-news-check` 只读取公开宏观快讯页面/Feed/接口；不读取登录 cookie、token、账号数据或私有研究资料，不复制长篇新闻正文。
 - `market-daily-strategist` 是报告路由和综合层；本地/私有行情工具只作为可选增强，不应把个人关注列表、私有输出或工具缓存提交到公开仓库。
-- `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖本地 `Stocks` 文件夹，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
-- `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖本地 `Stocks` 文件夹，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
-- 不要把个人关注列表、凭据、API key、`.env`、`Stocks/`、私有 RAG、运行缓存或私有输出提交到本仓库。
+- `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖私有 RAG，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
+- `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖私有 RAG，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
+- 不要把个人关注列表、凭据、API key、`.env`、私有 RAG、运行缓存或私有输出提交到本仓库。
 
 ## 仓库结构
 
