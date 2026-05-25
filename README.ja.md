@@ -1,6 +1,6 @@
 # Codex Market Skills
 
-Codex Market Skills は、取引、投資リサーチ、市場カレンダー管理のための Codex skills 集です。もともとは `market-calendar-google` だけのプロジェクトでしたが、現在は複数の市場関連 skill を同じ GitHub リポジトリで管理する構成に変更しています。
+Codex Market Skills は、取引、投資リサーチ、市場カレンダー管理のための Codex skills 集です。複数の市場関連 skill を同じ GitHub リポジトリで管理しています。
 
 ## 含まれる skills
 
@@ -13,7 +13,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - Earnings Whispers の週間米国決算画像を整理する。
 - ウォッチリストに基づいて米国株・日本株決算を絞り込む。
 - 中国・米国・日本の重要度が高い経済イベントを整理する。
-- 日本時間で Google Calendar に登録し、重複を避ける。
+- ユーザーのローカル時間で Google Calendar に登録し、重複を避ける。
 
 ### [`jp-stock-move-reason`](docs/jp-stock-move-reason.md)
 
@@ -80,21 +80,13 @@ moomoo OpenD から米国株・米国オプションデータを取得し、Code
 
 ## インストール
 
-リポジトリを任意の場所に clone し、使いたい skill ディレクトリを `~/.codex/skills/` にコピーまたはシンボリックリンクします。
+Codex にリポジトリ URL を送り、必要な skill をインストールするよう依頼します。
 
-```bash
-git clone https://github.com/tsetsugekka/codex-market-skills.git
-mkdir -p ~/.codex/skills
-ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
-ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
-ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
-ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
-ln -s /path/to/codex-market-skills/skills/macro-news-check ~/.codex/skills/macro-news-check
-ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
-ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
+```text
+https://github.com/tsetsugekka/codex-market-skills から必要な Codex skills をインストールしてください。
 ```
 
-必要な skill だけをインストールしても構いません。
+1 つだけ必要な場合は、`stock-technical-analysis` や `cn-theme-strength-mx` のように skill 名も指定します。
 
 ## 使用例
 

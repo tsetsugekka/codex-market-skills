@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Refresh cn-theme-strength-mx bundled theme assets from DayTrading.monster.
+"""Refresh cn-theme-strength-mx local theme cache from DayTrading.monster.
 
-The script updates only the local skill assets. It keeps a stamp file and skips
+The script updates only the local skill cache. It keeps a stamp file and skips
 network access when the cached files are fresh enough, defaulting to 7 days.
 """
 
@@ -69,6 +69,10 @@ def validate_assets(target_dir: Path) -> None:
 
 
 def is_cache_fresh(target_dir: Path, max_age_days: int) -> bool:
+    asset_paths = [target_dir / filename for filename in ASSET_FILES]
+    if not all(path.exists() for path in asset_paths):
+        return False
+
     stamp_path = target_dir / STAMP_FILE
     if not stamp_path.exists():
         return False
@@ -81,6 +85,9 @@ def is_cache_fresh(target_dir: Path, max_age_days: int) -> bool:
         return False
     age_seconds = (utc_now() - fetched_at).total_seconds()
     if age_seconds > max_age_days * 86400:
+        return False
+    oldest_asset_mtime = min(datetime.fromtimestamp(path.stat().st_mtime, timezone.utc) for path in asset_paths)
+    if (utc_now() - oldest_asset_mtime).total_seconds() > max_age_days * 86400:
         return False
     try:
         validate_assets(target_dir)
@@ -117,9 +124,9 @@ def download_json(url: str, dest: Path) -> dict[str, str | None]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Refresh bundled A-share theme mapping assets from DayTrading.monster.")
+    parser = argparse.ArgumentParser(description="Refresh local A-share theme mapping cache from DayTrading.monster.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL that serves theme-data.json and theme-label-i18n.json")
-    parser.add_argument("--target-dir", type=Path, default=Path(__file__).resolve().parents[1] / "assets" / "themes", help="Directory to update; defaults to this skill's assets/themes directory")
+    parser.add_argument("--target-dir", type=Path, default=Path(__file__).resolve().parents[1] / "assets" / "themes", help="Directory to update; defaults to this skill's local assets/themes cache")
     parser.add_argument("--max-age-days", type=int, default=7, help="Skip refresh when local assets are fresher than this many days")
     parser.add_argument("--force", action="store_true", help="Refresh even when the local cache is still fresh")
     parser.add_argument("--dry-run", action="store_true", help="Validate whether refresh would run, without writing files")

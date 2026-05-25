@@ -1,35 +1,35 @@
 ---
 name: cn-theme-strength-mx
-description: Use by default when the user asks to check A-share theme strength, current A-share themes, theme rankings, which themes are strongest/weakest, or which themes are rising/falling most, especially intraday. Uses bundled A-share stock-theme mapping assets and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
+description: Use by default when the user asks to check A-share theme strength, current A-share themes, theme rankings, which themes are strongest/weakest, or which themes are rising/falling most, especially intraday. Uses a local A-share stock-theme mapping cache and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
 ---
 
 # CN Theme Strength MX
 
-Use this skill to rank A-share theme strength from the bundled A-share stock-theme mapping snapshot and live or near-live 东方财富妙想 quote data. It is designed for盘中 checks where the user wants to know which themes are strong, which are weak, and how far the fetch has progressed.
+Use this skill to rank A-share theme strength from the local A-share stock-theme mapping cache and live or near-live 东方财富妙想 quote data. It is designed for盘中 checks where the user wants to know which themes are strong, which are weak, and how far the fetch has progressed.
 
 ## Routing: Fast Board Tape vs Formal Theme Strength
 
-Default to this skill when the user asks in Chinese or English for `题材强弱`, `当前A股题材`, `题材排序`, `强题材`, `弱题材`, `theme strength`, or similar wording. In this context, `题材` means the bundled custom theme universe plus MX constituent quotes, not a generic broker board list.
+Default to this skill when the user asks in Chinese or English for `题材强弱`, `当前A股题材`, `题材排序`, `强题材`, `弱题材`, `theme strength`, or similar wording. In this context, `题材` means the local custom theme universe plus MX constituent quotes, not a generic broker board list.
 
 Use a fast market-board ranking source such as 东方财富 concept/industry board rankings only when the user explicitly asks for `快速看盘面`, `板块榜`, `行业/概念板块排行`, `现在市场炒什么`, or a quick broad tape read. That fast board-tape result may be useful as an auxiliary confirmation layer, but it is not this skill's formal theme-strength output.
 
-When both views are useful, run this skill first for the formal conclusion, then optionally compare it with fast board rankings and explain differences in口径. If the answer uses this skill, state that the result is based on the bundled custom theme mapping and MX constituent-weighted returns, not directly on 东方财富 concept/industry board涨跌幅.
+When both views are useful, run this skill first for the formal conclusion, then optionally compare it with fast board rankings and explain differences in口径. If the answer uses this skill, state that the result is based on the local custom theme mapping and MX constituent-weighted returns, not directly on 东方财富 concept/industry board涨跌幅.
 
 ## Required Dependencies
 
 This skill must use 东方财富妙想 (`mx`) as the data layer:
 
 - Required: `mx-zixuan` for the first self-selected-stock quote pass.
-- Required: `mx-xuangu` for补抓 any bundled-mapping A-share constituents not returned by `mx-zixuan`.
+- Required: `mx-xuangu` for补抓 any local-mapping A-share constituents not returned by `mx-zixuan`.
 - Required for default TOP3 driver checks: `mx-search` for current stock/theme资讯.
 - Required for default TOP3 driver checks: `cn-stock-move-reason` as the A-share move-reason workflow, but only use its 股吧/讨论-discovery layer for this skill unless the user asks for a full single-stock report.
 - Optional: `mx-data` only for follow-up investigation of a specific theme, stock, catalyst, financial metric, or valuation item.
 
 If `mx-zixuan` or `mx-xuangu` is unavailable, unauthenticated, over quota, or missing `MX_APIKEY`, stop and tell the user what is missing. Do not replace this skill's quote layer with non-MX public endpoints. If `mx-search` or `cn-stock-move-reason` is unavailable, still output the ranking, but mark `TOP3 题材驱动检查` as skipped and explain the missing dependency.
 
-## Bundled Theme Assets
+## Local Theme Cache
 
-This skill bundles the A-share theme-mapping snapshot needed for normal use:
+This skill uses two local cache files under `assets/themes/` when available:
 
 - `assets/themes/theme-data.json`: stock-theme memberships.
 - `assets/themes/theme-label-i18n.json`: display labels; use each theme's `zh` value for Chinese output.
@@ -41,24 +41,24 @@ The optional online refresh source is DayTrading.monster. The refresh script dow
 
 Do not fetch `theme-material-i18n.json` or `theme-quotes.json` for this skill. Theme material is not needed for the ranking workflow, and quote data must still come from MX during the current run.
 
-Use the bundled files by default. At the start of a normal theme-strength run, try this local refresh command once; it skips network access when the local cache is fresher than 7 days:
+At the start of a normal theme-strength run, try this local refresh command once. It creates the cache if either file is missing, and skips network access when both files are valid and fresher than 7 days:
 
 ```bash
 python3 <cn-theme-strength-mx>/scripts/refresh_theme_assets_from_daytrading_monster.py
 ```
 
-If network access fails but the bundled files are valid, continue with the existing local cache and state that the mapping refresh was skipped. If the user explicitly provides a newer local theme-mapping path, use that path for the current run, but do not write the user's local data back to the repository unless the user is preparing a release/update.
+If network access fails but the local cache files are valid, continue with the existing local cache and state that the mapping refresh was skipped. If the cache files are missing or invalid and refresh fails, ask the user for local mapping files instead of inventing the theme universe. If the user explicitly provides a newer local theme-mapping path, use that path for the current run, but do not write the user's local data back to the repository unless the user explicitly asks to update a local cache.
 
-When publishing or manually updating this skill from a local source directory, this legacy copy script is still available:
+When manually updating the local cache from a local source directory, this copy script is still available:
 
 ```bash
 python3 skills/cn-theme-strength-mx/scripts/refresh_theme_assets.py /path/to/public-theme-source
 ```
 
-Use the bundled mapping logic:
+Use the local mapping logic:
 
-- Preferred source: bundled `assets/themes/theme-data.json`.
-- Preferred Chinese label source: bundled `assets/themes/theme-label-i18n.json`.
+- Preferred source: local `assets/themes/theme-data.json`, refreshing it first when missing or stale.
+- Preferred Chinese label source: local `assets/themes/theme-label-i18n.json`, refreshing it first when missing or stale.
 - `theme-data.json` is expected to contain `rows[]`; if a user-provided file is a plain list, treat that list as rows.
 - Required row fields: `market`, `code`, `theme`, `weight`.
 - Only include `market == "CN"` rows.
@@ -67,7 +67,7 @@ Use the bundled mapping logic:
 - Keep the original `theme` key internally for joins and aggregation, but display the Chinese label in all user-facing tables and driver checks.
 - If a Chinese label is missing, fall back to the original theme name and mention the missing label only when it affects visible output.
 
-If the bundled mapping files are missing or invalid, stop and ask the user for either:
+If the local mapping files are missing or invalid and cannot be refreshed, stop and ask the user for either:
 
 - a local path to `theme-data.json` plus `theme-label-i18n.json`; or
 - a pasteable table with at least `market`, `code`, `theme`, `weight`, and optionally Chinese labels.
@@ -87,7 +87,7 @@ Do not invent the theme universe from MX sector names.
    - Note `total` / `totalRecordCount`, but only trust the returned `dataList`; the self-select API may report more stocks than it returns.
    - Report progress after this pass, for example: `mx-zixuan 返回 200 行，覆盖内置映射 A股 172/363，待补抓 191。`
 
-3.补抓 missing bundled-mapping codes with `mx-xuangu`.
+3.补抓 missing local-mapping codes with `mx-xuangu`.
    - Batch missing codes in groups of at most 50.
    - Use a query shaped like:
 
@@ -109,7 +109,7 @@ Do not invent the theme universe from MX sector names.
 
 ## Aggregation
 
-Use the same weighted return logic as the bundled mapping:
+Use the same weighted return logic as the local mapping:
 
 ```text
 theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
@@ -119,7 +119,7 @@ Rules:
 
 - Use `CHG` as percentage points, e.g. `10.03` means `+10.03%`.
 - A stock that belongs to multiple themes contributes separately to each theme using that row's `weight`.
-- Rank by the original bundled theme key, but render labels through `theme-label-i18n.json[theme].zh`.
+- Rank by the original local theme key, but render labels through `theme-label-i18n.json[theme].zh`.
 - For Top themes, choose `主要贡献` stocks by largest positive `weight * CHG`.
 - For Bottom themes, choose `主要拖累` stocks by most negative `weight * CHG`.
 - Do not output component counts by default.
@@ -186,7 +186,7 @@ Default table columns:
 排名 | 题材 | 加权涨跌幅 | 主要拖累
 ```
 
-`题材` must use the bundled Chinese theme label. Do not show Japanese theme names in the final answer when a `zh` label exists.
+`题材` must use the local Chinese theme label. Do not show Japanese theme names in the final answer when a `zh` label exists.
 
 For `主要贡献` / `主要拖累`, include up to 3 stocks:
 

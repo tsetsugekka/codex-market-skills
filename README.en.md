@@ -1,6 +1,6 @@
 # Codex Market Skills
 
-Codex Market Skills is a collection of Codex skills for trading, investment research, and market-calendar workflows. The project originally contained only `market-calendar-google`; it is now organized as a multi-skill repository with separate, clearly scoped market workflows.
+Codex Market Skills is a collection of Codex skills for trading, investment research, and market-calendar workflows. It is organized as a multi-skill repository with separate, clearly scoped market workflows.
 
 ## Included Skills
 
@@ -13,7 +13,7 @@ Use it to:
 - Process a weekly Earnings Whispers US earnings image.
 - Filter US or Japan earnings through a user watchlist.
 - Build a high-importance China/US/Japan market-event calendar.
-- Add events in Japan time while avoiding duplicates.
+- Add events in the user's local time while avoiding duplicates.
 
 ### [`jp-stock-move-reason`](docs/jp-stock-move-reason.md)
 
@@ -80,21 +80,13 @@ Use it to:
 
 ## Installation
 
-Clone the repository anywhere, then copy or symlink the skills you want into `~/.codex/skills/`.
+In Codex, send the repository URL and ask Codex to install all or selected skills:
 
-```bash
-git clone https://github.com/tsetsugekka/codex-market-skills.git
-mkdir -p ~/.codex/skills
-ln -s /path/to/codex-market-skills/skills/market-calendar-google ~/.codex/skills/market-calendar-google
-ln -s /path/to/codex-market-skills/skills/jp-stock-move-reason ~/.codex/skills/jp-stock-move-reason
-ln -s /path/to/codex-market-skills/skills/cn-stock-move-reason ~/.codex/skills/cn-stock-move-reason
-ln -s /path/to/codex-market-skills/skills/stock-sentiment-analysis ~/.codex/skills/stock-sentiment-analysis
-ln -s /path/to/codex-market-skills/skills/macro-news-check ~/.codex/skills/macro-news-check
-ln -s /path/to/codex-market-skills/skills/us-stock-gamma-moomoo ~/.codex/skills/us-stock-gamma-moomoo
-ln -s /path/to/codex-market-skills/skills/stock-technical-analysis ~/.codex/skills/stock-technical-analysis
+```text
+Install the Codex skills I need from https://github.com/tsetsugekka/codex-market-skills.
 ```
 
-You can install only one skill if that is all you need.
+If you only need one skill, include its name, such as `stock-technical-analysis` or `cn-theme-strength-mx`.
 
 ## Example Prompts
 

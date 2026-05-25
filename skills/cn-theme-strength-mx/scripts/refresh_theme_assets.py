@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh bundled A-share theme mapping assets for cn-theme-strength-mx."""
+"""Copy A-share theme mapping files into the cn-theme-strength-mx local cache."""
 
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ def validate_labels(path: Path) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Copy public theme mapping JSON files into bundled skill assets.")
+    parser = argparse.ArgumentParser(description="Copy theme mapping JSON files into the local skill cache.")
     parser.add_argument("source_dir", type=Path, help="Path to a public theme mapping source directory")
     args = parser.parse_args()
 

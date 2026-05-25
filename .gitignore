@@ -8,3 +8,6 @@ private-rag/
 private_rag/
 RAG_INDEX/
 *.ftindex
+skills/cn-theme-strength-mx/assets/themes/theme-data.json
+skills/cn-theme-strength-mx/assets/themes/theme-label-i18n.json
+skills/cn-theme-strength-mx/assets/themes/.last_refresh.json
