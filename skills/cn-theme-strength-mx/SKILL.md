@@ -1,11 +1,19 @@
 ---
 name: cn-theme-strength-mx
-description: Use when the user asks to check current A-share theme strength, which A-share themes are strongest/weakest, or which themes are rising or falling the most, especially intraday. Uses bundled A-share stock-theme mapping assets and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
+description: Use by default when the user asks to check A-share theme strength, current A-share themes, theme rankings, which themes are strongest/weakest, or which themes are rising/falling most, especially intraday. Uses bundled A-share stock-theme mapping assets and 东方财富妙想 MX skills. This skill requires mx-zixuan and mx-xuangu, fetches self-selected-stock quotes first,补抓 missing theme constituents with MX screens, reports live fetch progress, and outputs Top/Bottom theme rankings without writing files by default.
 ---
 
 # CN Theme Strength MX
 
 Use this skill to rank A-share theme strength from the bundled A-share stock-theme mapping snapshot and live or near-live 东方财富妙想 quote data. It is designed for盘中 checks where the user wants to know which themes are strong, which are weak, and how far the fetch has progressed.
+
+## Routing: Fast Board Tape vs Formal Theme Strength
+
+Default to this skill when the user asks in Chinese or English for `题材强弱`, `当前A股题材`, `题材排序`, `强题材`, `弱题材`, `theme strength`, or similar wording. In this context, `题材` means the bundled custom theme universe plus MX constituent quotes, not a generic broker board list.
+
+Use a fast market-board ranking source such as 东方财富 concept/industry board rankings only when the user explicitly asks for `快速看盘面`, `板块榜`, `行业/概念板块排行`, `现在市场炒什么`, or a quick broad tape read. That fast board-tape result may be useful as an auxiliary confirmation layer, but it is not this skill's formal theme-strength output.
+
+When both views are useful, run this skill first for the formal conclusion, then optionally compare it with fast board rankings and explain differences in口径. If the answer uses this skill, state that the result is based on the bundled custom theme mapping and MX constituent-weighted returns, not directly on 东方财富 concept/industry board涨跌幅.
 
 ## Required Dependencies
 
