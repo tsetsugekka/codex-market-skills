@@ -8,6 +8,7 @@ Before indicators, name the structure:
 
 - `强趋势延续`: price above key moving averages, pullbacks shallow, volume confirms advances.
 - `空中加油候选`: strong advance followed by high-level sideways/narrow consolidation; not valid until it avoids breakdown and breaks upward with volume.
+- `老鸭头候选`: short moving averages turn up through a longer average, then the pullback does not destroy the structure; valid only after the neck/pressure area breaks with volume.
 - `回踩确认`: price pulls back to support, volume contracts on the pullback, rebounds with volume, and momentum does not deteriorate materially.
 - `冲高回落`: intraday high fails, price returns below pressure, volume is heavy but price no longer advances.
 - `高位分歧`: attention and volatility are high, leaders hesitate, followers weaken, or momentum diverges.
@@ -66,7 +67,7 @@ Vegas-style channel framework:
 
 - `EMA144 / EMA169`: medium-term trend tunnel.
 - `EMA576 / EMA676`: long-term trend tunnel and major support/resistance.
-- `MA144 low`: low-price support reference.
+- `MA144 low` / `MA144L`: low-price support reference; treat it as a long-cycle support/resistance line, not a standalone signal.
 - `EMA5 / EMA21`: short-term momentum and pullback guide.
 
 Read:
@@ -97,7 +98,9 @@ Use:
 - Low-level K crossing above D: possible rebound signal, stronger with support and volume.
 - High-level K crossing below D: short-term risk, especially after a big rise.
 - J below 10: extreme weakness/panic zone; look for reversal only after confirmation.
+- On 4-hour charts, J around `-12` to `-13` is an extreme oversold reference. It can justify stronger bottom-watch attention only when price defends support, selling weakens, or K/D starts turning up.
 - K above 90 and J above 100: overheated risk.
+- On 4-hour charts, J around `+110` to `+113` is an extreme overheated reference. Treat it as top-risk only when RSI is also overheated, MACD/price diverges, or price fails at resistance.
 - Price makes lower low while K makes higher low and K crosses D: bottom divergence candidate.
 - Price makes higher high while K makes lower high and D crosses above K: top divergence candidate.
 
@@ -185,7 +188,28 @@ Invalid clues:
 - KDJ/MACD weaken while price holds only because of retail enthusiasm.
 - Key support breaks and cannot be reclaimed.
 
-## 9. 回踩, 破位, And 破五反五
+## 9. 老鸭头
+
+Definition:
+
+- A trend-reversal or continuation shape where short averages such as the 5-day and 10-day lines lift through a longer average such as the 60-day line, forming an early `鸭头雏形`.
+- The later pullback or 10-day-line turn should not break the larger base. The useful signal is the renewed break above the neck/pressure area with volume.
+- It is stronger when the prior decline has stabilized, KDJ/MACD improve from low levels, and volume expands on the breakout rather than during the pullback.
+
+Valid clues:
+
+- Short averages turn up and compress above or around the longer average.
+- Pullback does not lose the base or long-cycle support.
+- Breakout over the neck/pressure area comes with volume.
+- KDJ bottom divergence or low-level cross supports the reversal.
+
+Invalid clues:
+
+- Price cannot reclaim the neck/pressure area.
+- Pullback volume expands and long-cycle support breaks.
+- KDJ/MACD remain weak and the moving-average turn is only mechanical.
+
+## 10. 回踩, 破位, And 破五反五
 
 Healthy pullback:
 
@@ -207,7 +231,7 @@ Breakdown:
 - Reclaim should ideally be supported by volume.
 - If price breaks but cannot stand back above the 5-day line, beware further selling.
 
-## 10. Candlestick Context
+## 11. Candlestick Context
 
 Read candles in context, not as isolated names.
 
@@ -217,7 +241,7 @@ Read candles in context, not as isolated names.
 - Narrow high-level consolidation can be bullish only if support and volume behavior are healthy.
 - Repeated failed highs at the same level are pressure confirmation.
 
-## 11. A-Share Emotion Overlay
+## 12. A-Share Emotion Overlay
 
 For A-shares, combine technicals with the emotion cycle:
 
@@ -231,7 +255,7 @@ For A-shares, combine technicals with the emotion cycle:
 
 Technical signals near emotion climax need stricter confirmation. A breakout during early cycle can work with less perfection; a breakout after broad climax needs stronger volume and leadership confirmation.
 
-## 12. Intraday "Can It Reach X?" Framework
+## 13. Intraday "Can It Reach X?" Framework
 
 When the user asks whether a stock can reach a target price today:
 
@@ -262,7 +286,7 @@ Execution realism:
 
 Use exact levels from live data where possible. If the chart data is stale or visually uncertain, say so.
 
-## 13. Chart App Visual Workflow
+## 14. Chart App Visual Workflow
 
 Use this when reading moomoo, Yahoo Finance charts, broker apps, or screenshots.
 
@@ -312,7 +336,7 @@ Output from chart-app analysis should include:
 - `执行含义`: distinguish touch/break/tradable hold; separate intraday profit-taking from trend holding if both matter.
 - `下一验证点`: the exact level or candle behavior that would change the conclusion.
 
-## 14. Response Guardrails
+## 15. Response Guardrails
 
 - Do not issue direct buy/sell commands.
 - State the data source and whether it is live, delayed, screenshot-based, or inferred.
