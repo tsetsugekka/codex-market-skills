@@ -13,7 +13,7 @@ Use this skill to turn weekly market calendars into concise Google Calendar even
 2. China/US/Japan macro, central-bank, auction, and market-event calendar for a week.
 3. Japan stock earnings calendar for a week, usually from SBI Securities settlement announcement data.
 
-Default timezone is `Asia/Tokyo`. Use the current date and timezone from the environment to resolve "this week" and "next week".
+Default to the user's local timezone from the runtime environment. Use the current date and timezone from the environment to resolve "this week" and "next week". If the user's timezone is unavailable, ask for the target timezone before writing Calendar events.
 
 ## Shared Rules
 
@@ -34,11 +34,11 @@ Default timezone is `Asia/Tokyo`. Use the current date and timezone from the env
   - Japan: `🇯🇵`
 - If several events fall in the same 30-minute bucket, combine them into one event. Buckets are `:00-:29` and `:30-:59`.
 - If combined events are all from the same country, use the flag only once. If countries differ, include each relevant flag before its event name.
-- Use Japanese-time event times in Calendar. In descriptions, write in Chinese unless the user asks otherwise.
+- Use the user's local-time event times in Calendar. Convert source-market event times into the user's local timezone before writing events. In descriptions, write in Chinese unless the user asks otherwise.
 - For 5-star events, set Google Calendar event color to red (`color_id: "11"` after confirming colors if needed).
 - Prefer transparent events for informational market calendar items unless the existing event uses a different setting or the user asks to block the calendar.
 - Do not include process/source boilerplate such as "parsed from image", local file paths, or explanations of why something was included. Include actionable market notes instead.
-- Do not repeat information that is already obvious from the calendar title or time slot. For example, avoid writing "title focus", "Japan time", session labels, or the same event list twice unless that detail adds new useful context.
+- Do not repeat information that is already obvious from the calendar title or time slot. For example, avoid writing "title focus", redundant timezone labels, session labels, or the same event list twice unless that detail adds new useful context.
 - In Google Calendar descriptions, use `・` for bullet-like lines instead of leading hyphen bullets. The connector may persist leading `-` as escaped `\-`.
 
 ## Earnings Workflow
@@ -66,11 +66,10 @@ Default timezone is `Asia/Tokyo`. Use the current date and timezone from the env
   - US before open
   - US after close
 - Watch for OCR mistakes on small labels. Verify suspicious ticker labels against the user's watchlist CSV or a reliable ticker source. Example: Circle is `CRCL`, not `CRCI`.
-- Map US session timing from `America/New_York` to `Asia/Tokyo` and account for US daylight saving time:
-  - US before open -> `08:30 America/New_York`, duration 30 minutes, converted to Japan time.
-  - US after close -> `16:00 America/New_York`, duration 30 minutes, converted to Japan time.
-  - During US daylight time this is usually `20:30 JST` before open and `05:00 JST` next day after close.
-  - During US standard time this is usually `22:30 JST` before open and `06:00 JST` next day after close.
+- Map US session timing from `America/New_York` to the user's local timezone and account for US daylight saving time:
+  - US before open -> `08:30 America/New_York`, duration 30 minutes, converted to the user's local timezone.
+  - US after close -> `16:00 America/New_York`, duration 30 minutes, converted to the user's local timezone.
+  - Do not hard-code JST examples unless the user's local timezone is Japan; show the converted local time only when useful.
 - If Friday after-close is absent, do not invent it.
 
 ### 3. Prioritize Title Tickers
@@ -99,7 +98,7 @@ Description structure:
 其他留意：只写少量非标题但值得关注的名字和原因。
 ```
 
-Do not include redundant blocks such as "美股时段", "日本时间", or "标题重点" when the title and calendar slot already make them clear.
+Do not include redundant blocks such as "美股时段", repeated timezone labels, or "标题重点" when the title and calendar slot already make them clear.
 
 ## Japan Earnings Workflow
 
@@ -118,10 +117,10 @@ Do not include redundant blocks such as "美股时段", "日本时间", or "标�
 
 ### 3. Calendar Grouping
 
-- Use Japan local time directly.
+- Use the published Japan event time as the source time, then convert it to the user's local timezone before writing Calendar events.
 - Group events by 30-minute bucket: `:00-:29` and `:30-:59`.
 - Create one 0-minute event per bucket.
-- If a stock has no concrete time, place it at `08:00 Asia/Tokyo` on that day.
+- If a stock has no concrete time, place it at `08:00` in the user's local timezone on that day, unless the user specifies another default.
 - Disable reminders explicitly with `reminders: { use_default: false, overrides: [] }`.
 - Prefer transparent events.
 
