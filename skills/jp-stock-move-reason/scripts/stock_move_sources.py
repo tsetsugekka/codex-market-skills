@@ -538,6 +538,8 @@ def first_regex(pattern: str, text: str) -> str:
 def extract_yahoo_quote_from_page(page_html: str) -> dict[str, Any]:
     quote: dict[str, Any] = {"source": "Yahoo Finance JP page"}
     start = page_html.find("_BasePriceBoard__priceInformation")
+    if start < 0:
+        start = page_html.find("_BasePriceBoard__priceInfo")
     end = page_html.find('id="stk_info"', start)
     if start >= 0 and end > start:
         price_region = page_html[start:end]
@@ -584,9 +586,12 @@ def extract_yahoo_quote_from_page(page_html: str) -> dict[str, Any]:
     trading_value = extract_data_item("売買代金")
     if trading_value:
         quote["trading_value"] = trading_value
+    previous_close = extract_data_item("前日終値")
     open_price = extract_data_item("始値")
     high_price = extract_data_item("高値")
     low_price = extract_data_item("安値")
+    if previous_close:
+        quote["previous_close"] = parse_number(previous_close)
     if open_price:
         quote["open"] = parse_number(open_price)
     if high_price:
