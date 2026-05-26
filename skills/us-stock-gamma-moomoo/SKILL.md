@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.3
+  version: 0.1.4
 ---
 
 # US Stock Gamma With moomoo
@@ -51,6 +51,7 @@ This skill requires moomoo OpenD plus the Python SDK/skills environment.
 - Tell the user OpenD must stay running in the background while querying quotes/options. Login may be required for permissioned data.
 - Do not ask the user to unlock trading or input an encrypted private key unless they explicitly want trading functions. This skill only needs quote/option data.
 - If moomoo cannot provide a live index snapshot, use available option chains plus a user-provided/live SPX, ES, CFD, or SPY anchor and state the anchor clearly.
+- For live 1-minute K-line confirmation through OpenD, subscribe before reading: call `subscribe([code], [SubType.K_1M], subscribe_push=False)` before `get_cur_kline(code, n, KLType.K_1M, AuType.QFQ)`. If this step is skipped, OpenD can return a `请先订阅KL_1Min数据` error even when snapshots work.
 
 ## Default Output
 
@@ -186,6 +187,7 @@ When news or broad risk sentiment is driving the underlying or index, call `macr
 When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversion:
 
 - Prefer `.SPX` option chains from moomoo as `US..SPX` when available. Moomoo may reject the SPX index snapshot while still allowing SPX/SPXW option expiries and chains.
+- Do not assume OpenD can provide `US..SPX` real-time 1-minute K-lines. Some OpenD setups return `暂不支持美股指数` for `US..SPX` `SubType.K_1M` / `get_cur_kline`. For SPX intraday price-action confirmation, use `US.SPY` 1-minute K-lines as the chart proxy after subscribing to `SubType.K_1M`, then convert the relevant SPY prices to SPX-equivalent levels with the freshest SPX/SPXW parity anchor or live ES/SPX anchor. State that SPY is the K-line source.
 - Treat user requests for `SPX`, `SP500`, `S&P 500`, or `标普500` gamma as SPX-index-option requests by default. Query `US..SPX` expiries/chains first and use the returned SPX/SPXW strikes directly; do not default to SPY options just because the SPX index snapshot is unavailable.
 - When `US..SPX` chains are available, do not use SPY conversion for SPX/SP500 gamma. SPY/ES/CFD conversion is only a fallback when the SPX/SPXW chain is unavailable, permission-blocked, or user-provided data is explicitly proxy-based.
 - For same-day intraday/0DTE gamma, prefer PM-settled `SPXW` contracts from the `US..SPX` chain. On dates that also list AM-settled monthly `SPX` contracts, exclude the AM-settled series from the intraday pin/gamma map unless the user specifically asks about AM settlement.
