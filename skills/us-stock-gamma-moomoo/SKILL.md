@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.4
+  version: 0.1.5
 ---
 
 # US Stock Gamma With moomoo
@@ -51,7 +51,7 @@ This skill requires moomoo OpenD plus the Python SDK/skills environment.
 - Tell the user OpenD must stay running in the background while querying quotes/options. Login may be required for permissioned data.
 - Do not ask the user to unlock trading or input an encrypted private key unless they explicitly want trading functions. This skill only needs quote/option data.
 - If moomoo cannot provide a live index snapshot, use available option chains plus a user-provided/live SPX, ES, CFD, or SPY anchor and state the anchor clearly.
-- For live 1-minute K-line confirmation through OpenD, subscribe before reading: call `subscribe([code], [SubType.K_1M], subscribe_push=False)` before `get_cur_kline(code, n, KLType.K_1M, AuType.QFQ)`. If this step is skipped, OpenD can return a `请先订阅KL_1Min数据` error even when snapshots work.
+- For live 1-minute K-line confirmation through OpenD, treat subscriptions as reusable runtime state, not as permanent skill state. Prefer reusing an existing `US.SPY` `SubType.K_1M` subscription during a live OpenD session; if `get_cur_kline(code, n, KLType.K_1M, AuType.QFQ)` returns `请先订阅KL_1Min数据` or another stale-subscription/permission error, call `subscribe([code], [SubType.K_1M], subscribe_push=False)` and retry once. OpenD subscriptions may disappear after OpenD restart, reconnect, quota changes, permission changes, or context lifecycle changes, so do not write "currently subscribed" as a static fact into the skill or output.
 
 ## Default Output
 
@@ -125,7 +125,7 @@ Key calculated levels:
 - Vanna map: combine top positive/negative VEX zones with IV direction, spot versus flip, and price action. Do not describe VEX alone as bullish or bearish.
 - Rough magnet/bias: if enough strike-level GEX/VEX data is available, estimate a self-calculated magnet from dominant nearby walls, pits, and VEX zones using distance decay around current spot. Label it as rough and non-proprietary. Report it as `magnet above/below current spot`, plus a plain bias such as `偏多修复`, `中性钉扎`, `上方压力`, or `下方加速风险`.
 
-When the user runs this skill multiple times during the same trading day in the same conversation, compare the new result with the earlier answer: spot, net GEX, net VEX, flip, nearest wall, nearest pit, CPR relationship, and rough magnet/bias if calculated. State what migrated and what strengthened/weakened. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
+When the user runs this skill multiple times during the same trading day in the same conversation, use earlier same-day results as optional but important context. Compare the new result with the earlier answer when migration could change the judgment, when the user asks "now/again", or when spot is near a wall, pit, flip, or trigger: spot, net GEX, net VEX, flip, nearest wall, nearest pit, CPR relationship, and rough magnet/bias if calculated. State what migrated and what strengthened/weakened. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
 
 ## Dark Pool / Short Data Layer
 
@@ -187,7 +187,7 @@ When news or broad risk sentiment is driving the underlying or index, call `macr
 When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversion:
 
 - Prefer `.SPX` option chains from moomoo as `US..SPX` when available. Moomoo may reject the SPX index snapshot while still allowing SPX/SPXW option expiries and chains.
-- Do not assume OpenD can provide `US..SPX` real-time 1-minute K-lines. Some OpenD setups return `暂不支持美股指数` for `US..SPX` `SubType.K_1M` / `get_cur_kline`. For SPX intraday price-action confirmation, use `US.SPY` 1-minute K-lines as the chart proxy after subscribing to `SubType.K_1M`, then convert the relevant SPY prices to SPX-equivalent levels with the freshest SPX/SPXW parity anchor or live ES/SPX anchor. State that SPY is the K-line source.
+- Do not assume OpenD can provide `US..SPX` real-time 1-minute K-lines. Some OpenD setups return `暂不支持美股指数` for `US..SPX` `SubType.K_1M` / `get_cur_kline`. For SPX intraday price-action confirmation, use `US.SPY` 1-minute K-lines as the chart proxy: reuse the existing `US.SPY` `SubType.K_1M` subscription when it is still valid; if K-line retrieval says subscription is missing or stale, subscribe/re-subscribe and retry once. Then convert the relevant SPY prices to SPX-equivalent levels with the freshest SPX/SPXW parity anchor or live ES/SPX anchor. State that SPY is the K-line source.
 - Treat user requests for `SPX`, `SP500`, `S&P 500`, or `标普500` gamma as SPX-index-option requests by default. Query `US..SPX` expiries/chains first and use the returned SPX/SPXW strikes directly; do not default to SPY options just because the SPX index snapshot is unavailable.
 - When `US..SPX` chains are available, do not use SPY conversion for SPX/SP500 gamma. SPY/ES/CFD conversion is only a fallback when the SPX/SPXW chain is unavailable, permission-blocked, or user-provided data is explicitly proxy-based.
 - For same-day intraday/0DTE gamma, prefer PM-settled `SPXW` contracts from the `US..SPX` chain. On dates that also list AM-settled monthly `SPX` contracts, exclude the AM-settled series from the intraday pin/gamma map unless the user specifically asks about AM settlement.
