@@ -506,6 +506,75 @@ class TradersQuoteParser(HTMLParser):
             self.current_td += data
 
 
+def parse_loose_number(value: str) -> float | int | None:
+    clean = re.sub(r"[^\d.+-]", "", str(value or ""))
+    return parse_number(clean)
+
+
+def extract_kabutan_pts_from_page(page_html: str) -> dict[str, Any]:
+    pts: dict[str, Any] = {"source": "Kabutan PTS", "data_source": "JapanNext via Kabutan"}
+    start = page_html.find('<div class="stock_pts_div"')
+    if start < 0:
+        return {}
+    end = page_html.find("<!--PTS-->", start)
+    if end < 0:
+        end = page_html.find("</div><!--stock_pts_div-->", start)
+    if end < 0:
+        return {}
+
+    region = page_html[start:end]
+    row_pattern = re.compile(
+        r"<tr>\s*<th[^>]*>(.*?)</th>\s*<td[^>]*>(.*?)</td>(?:\s*<td[^>]*>(.*?)</td>)?",
+        re.DOTALL,
+    )
+    field_map = {
+        "始値": "open",
+        "高値": "high",
+        "安値": "low",
+        "現在値": "price",
+        "出来高": "volume",
+        "売買代金": "trading_value",
+        "VWAP": "vwap",
+    }
+
+    for match in row_pattern.finditer(region):
+        label = clean_text(match.group(1))
+        value_text = clean_text(match.group(2))
+        extra_html = match.group(3) or ""
+        key = ""
+        for jp_label, mapped in field_map.items():
+            if jp_label in label:
+                key = mapped
+                break
+        if not key:
+            continue
+        if key in {"trading_value"}:
+            pts[key] = value_text
+        else:
+            parsed_value = parse_loose_number(value_text)
+            pts[key] = parsed_value if parsed_value is not None else value_text
+        if key in {"open", "high", "low", "price"} and extra_html:
+            timestamp = first_regex(r"<time[^>]*>(.*?)</time>", extra_html) or clean_text(extra_html)
+            if timestamp:
+                pts[f"{key}_time"] = timestamp
+                if key == "price":
+                    pts["quote_time"] = timestamp
+
+    return {k: v for k, v in pts.items() if v not in [None, ""]}
+
+
+def fetch_kabutan_pts(code: str) -> dict[str, Any]:
+    url = f"https://kabutan.jp/stock/?code={urllib.parse.quote(code)}"
+    try:
+        page_html = fetch_url(url, referer="https://kabutan.jp/")
+        pts = extract_kabutan_pts_from_page(page_html)
+        if pts:
+            pts["url"] = url
+        return pts
+    except Exception as exc:
+        return {"error": str(exc), "source": "Kabutan PTS", "url": url}
+
+
 def extract_stock_name_from_quote_html(page_html: str, symbol: str) -> dict[str, str]:
     parser = TitleParser()
     parser.feed(page_html)
@@ -795,6 +864,15 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
     bbs = fetch_yahoo_bbs(symbol, args.hours, args.comments)
     bbs["heat"] = calculate_bbs_heat(bbs.get("comments", []))
 
+    pts: dict[str, Any] = {}
+    if "kabutan" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
+        pts = fetch_kabutan_pts(code)
+        if isinstance(pts.get("price"), (int, float)) and isinstance(quote.get("price"), (int, float)):
+            diff = pts["price"] - quote["price"]
+            pts["change_vs_regular"] = diff
+            if quote["price"]:
+                pts["change_vs_regular_pct"] = diff / quote["price"] * 100
+
     news_groups = []
     if "yahoo" in args.sources:
         news_groups.append(fetch_yahoo_news(symbol, args.news_limit))
@@ -826,6 +904,7 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
         "profile": profile,
         "quote": quote,
         "metrics": metrics,
+        "pts": pts,
         "bbs": bbs,
         "news_groups": news_groups,
         "news": all_news,
@@ -847,6 +926,7 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
     profile = data.get("profile", {})
     quote = data.get("quote", {})
     metrics = data.get("metrics", {})
+    pts = data.get("pts", {})
     bbs = data.get("bbs", {})
     heat = bbs.get("heat", {})
     name = profile.get("name") or "-"
@@ -871,7 +951,28 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
         lines.append(f"- PER / PBR: {metrics.get('per') or '-'} / {metrics.get('pbr') or '-'}")
         lines.append(f"- 配当利回り: {metrics.get('dividend_yield') or '-'}")
         lines.append(f"- 信用倍率: {metrics.get('credit_ratio') or '-'}")
+        if pts and not pts.get("error"):
+            pts_line = f"- PTS現在値: {fmt_num(pts.get('price'))}"
+            if pts.get("quote_time"):
+                pts_line += f" ({pts.get('quote_time')})"
+            if pts.get("change_vs_regular") not in [None, ""]:
+                pts_line += (
+                    f" / 東証現値・終値比: {fmt_num(pts.get('change_vs_regular'))}"
+                    f" ({fmt_num(pts.get('change_vs_regular_pct'))}%)"
+                )
+            lines.append(pts_line)
         lines.append("")
+        if pts and not pts.get("error"):
+            lines.append("## PTS (Kabutan / JapanNext)")
+            lines.append(f"- 現在値: {fmt_num(pts.get('price'))} ({pts.get('quote_time') or '-'})")
+            lines.append(
+                f"- 始値/高値/安値: {fmt_num(pts.get('open'))} / {fmt_num(pts.get('high'))} / {fmt_num(pts.get('low'))}"
+            )
+            lines.append(f"- 出来高: {fmt_num(pts.get('volume'), 0)}")
+            lines.append(f"- 売買代金: {pts.get('trading_value') or '-'}")
+            lines.append(f"- VWAP: {fmt_num(pts.get('vwap'))}")
+            lines.append(f"- URL: {pts.get('url') or ''}")
+            lines.append("")
         lines.append("## ニュース")
         news = data.get("news", [])
         if news:
@@ -909,6 +1010,8 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
             errors.append(f"Yahoo掲示板: {bbs.get('error')}")
         if metrics.get("error"):
             errors.append(f"Traders metrics: {metrics.get('error')}")
+        if pts.get("error"):
+            errors.append(f"Kabutan PTS: {pts.get('error')}")
         if errors:
             lines.append("")
             lines.append("## 取得エラー")
