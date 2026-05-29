@@ -30,6 +30,8 @@ When a live chart is visible in moomoo or another trading/chart app, use the cha
 
 For U.S. stocks and ETFs, prefer direct moomoo OpenD 1-minute K-line data over screenshot-only reads when OpenD is available. Subscribe to `SubType.K_1M` first, then call `get_cur_kline`; if the subscription fails because of missing permissions, unsupported symbols, or index restrictions, fall back to the moomoo app chart or a user-provided screenshot. OpenD may not support U.S. index K-lines such as `.SPX`, and some local setups may not have Japanese-stock or A-share permissions, so use SPY or the relevant ETF as a proxy only when appropriate and state the proxy clearly. When using SPY to judge SPX intraday structure, convert SPY levels into SPX levels before answering, using the freshest SPX or ES/SPX anchor available; report SPX levels first and note the SPY proxy only as source context.
 
+For U.S. single-stock technical anomaly checks, use `moomoo-technical-anomaly` as an optional first-pass scanner when it is installed and OpenD is available. Treat its K-line, MA, MACD, RSI, KDJ, BOLL, and other abnormal-event output as a prompt for where to look, not as a buy/sell conclusion. The final technical judgment must still follow this skill's own framework: trend location, VWAP / moving-average relationship, volume-price confirmation, momentum divergence, support/resistance, failed breakout, and whether price holds after the signal.
+
 Never answer only by following the latest tick. Use the sequence:
 
 1. Determine the timeframe: intraday trade, 1h+ swing, trend holding, or post-event reaction. For 1h+ and swing judgments, combine technicals with sentiment/news context instead of reading the chart alone.
@@ -94,6 +96,8 @@ This skill handles chart and technical structure. For catalysts, valuation, news
 - US option gamma: `us-stock-gamma-moomoo`
 
 For US stocks, choose based on the question: use `us-stock-gamma-moomoo` when option positioning, gamma walls, 0DTE, IV, or dealer hedging matter; use this skill when chart structure and timing matter; use both when an options map needs price-action confirmation.
+
+When `moomoo-technical-anomaly` is available for a U.S. stock, it can be used before or alongside this skill to surface recent official technical anomaly events. Do not paste the anomaly output mechanically; translate it into this skill's structure and explicitly say whether price, volume, and levels confirm or reject the signal.
 
 For U.S. dark-pool technical confirmation, use ChartExchange or FINRA-derived pages only as a secondary layer. Construct ChartExchange URLs from the actual listing venue and ticker, such as `nyse-anet`, `nasdaq-nvda`, or `nyse-spy`; SPY commonly resolves to `nyse-spy` on ChartExchange. If the listing venue is unknown, search the ticker first instead of reusing a prior URL. Treat high-volume dark-pool levels like unconfirmed support/resistance until price/VWAP/volume confirms them.
 

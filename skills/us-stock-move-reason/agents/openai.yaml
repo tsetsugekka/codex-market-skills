@@ -1,0 +1,4 @@
+interface:
+  display_name: "US Stock Move Reason"
+  short_description: "用 moomoo 新闻、评论、异动扫描、期权和技术证据分析美股为什么涨跌。"
+  default_prompt: "分析这只美股为什么异动；请结合 moomoo 新闻、社区情绪、资金/期权/技术异动、gamma 和宏观背景，给出最有力理由和注意点。"

@@ -43,7 +43,7 @@ A 株、日本株、米国株、指数、セクターテーマに共通して使
 主な用途：
 
 - フォーラム/掲示板の熱量、ニュースの期待差、需給の広がり、チャート確認を統合し、センチメント結論を作る。
-- `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` に共通の情緒フレームを提供する。
+- `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` に共通の情緒フレームを提供する。
 - ユーザーが private RAG ディレクトリを指定した場合、テーマ、ソース別名、ページ/slide 範囲、キーワード、公開安全な要約だけを持つローカル索引作成を案内する。private 原資料はこの公開リポジトリに書かない。
 
 ### [`macro-news-check`](docs/macro-news-check.md)
@@ -53,8 +53,19 @@ A 株、日本株、米国株、指数、セクターテーマに共通して使
 主な用途：
 
 - 金利、為替、中央銀行、経済指標、商品、地政学、広い risk-on/risk-off が個別株や指数に影響しているかを確認する。
-- `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` にマクロ tape を提供する。
+- `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` にマクロ tape を提供する。
 - 関連する 2-5 件の速報を、主因、二次的な増幅要因、または背景ノイズとして整理する。
+
+### [`us-stock-move-reason`](docs/us-stock-move-reason.md)
+
+公式 moomoo のニュース、銘柄ダイジェスト、コミュニティ感情、資金異常、オプション異常、テクニカル異常と、このリポジトリの gamma・テクニカル・マクロ skill を組み合わせ、米国株や ETF の変動理由を分析する skill です。公式 moomoo skill はデータ/スキャナー層として扱い、最終判断は証拠ベースで行います。
+
+主な用途：
+
+- DELL、NVDA、TSLA などの米国株が急騰、急落、寄り前ギャップ、引け後に動いた理由を調べる。
+- 決算、ガイダンス、格付け、受注、ニュースで確認できる材料とコミュニティ上の思惑を分ける。
+- 米国株に適用できるオプション大口、IV、オプション感情、資金フロー、空売り、テクニカル異常を確認する。
+- SPY/QQQ/SPX 関連の動きについて、マクロ、テクニカル、オプション/gamma 構造を統合する。
 
 ### [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md)
 
@@ -62,7 +73,7 @@ moomoo OpenD から米国株・米国オプションデータを取得し、Code
 
 主な用途：
 
-- 通常の米国株または米国 ETF のオプション gamma 構造を分析する。
+- 通常の米国株または米国 ETF のオプション gamma 構造を分析し、必要に応じて公式 moomoo のオプション異常、大口、IV、PCR、オプション感情も補助的に確認する。
 - `.SPX`/SPXW の指数オプション構造を分析する。指数データやチェーンが直接取れない場合は、SPY オプション、ES/CFD、またはユーザー提供の指数アンカーで換算し、プロキシを明示する。
 - 0DTE call/put について、時間 x 原資産価格の理論価値表を作り、回復、利確、損切り水準を検討する。
 - 文字の結論、箇条書き、テキスト表を中心に出力する。同じ会話内で日中に繰り返し質問された場合は、その日の過去の gamma 結果と比べて水準の移動や強弱を判断する。
@@ -76,7 +87,7 @@ moomoo OpenD から米国株・米国オプションデータを取得し、Code
 - 強トレンド継続、高値圏保ち合い、押し目確認、ブレイク失敗、ダイバージェンス、破位反発などを分類する。
 - touch、break、tradable hold を区別し、一本のヒゲを有効ブレイクと誤認しない。
 - moomoo/Yahoo/証券アプリのチャートやスクリーンショットから、現在値、構造、出来高・モメンタム、実行上の意味、次の確認点を読む。
-- 個別株材料分析や米国 gamma skill と組み合わせ、材料をチャートが確認しているかを判断する。
+- 個別株材料分析や米国 gamma skill と組み合わせ、材料をチャートが確認しているかを判断する。米国株では `moomoo-technical-anomaly` を一次スキャナーにできるが、最終判断はこの skill の価格行動フレームで行う。
 
 ## インストール
 
@@ -137,6 +148,7 @@ SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
 - `cn-stock-move-reason` は Eastmoney、Sohu 証券などの公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
 - `stock-sentiment-analysis` は公開安全な汎用センチメント規則だけを保存します。private RAG、個人ラベル、原始ノート、スクリーンショット、取引ログはコミットしないでください。
 - `macro-news-check` は公開マクロ速報ページ/Feed/エンドポイントだけを読み取り、login cookie、token、口座データ、private research material を読みません。長いニュース本文をコピーしないでください。
+- `us-stock-move-reason` は公開安全な米国株変動理由ワークフローだけを保存します。公式 moomoo skill と OpenD は実行時のデータ層であり、口座データ、OpenD ログ、コミュニティの生データ、私的出力、個人の取引記録はコミットしないでください。
 - `us-stock-gamma-moomoo` はローカルの moomoo OpenD の行情インターフェースを使い、取引ロック解除 API は呼び出しません。公開版は private RAG に依存せず、個人口座情報、OpenD ログ、スクリーンショット、私的な行情出力、独自戦略名、私的な人名/handle はコミットしないでください。
 - `stock-technical-analysis` は汎用テクニカル分析ルールだけを保存します。公開版は private RAG に依存せず、個人ポジション、売買計画、スクリーンショット原本、私的な研究パス、専有指標名、独自戦略名、私的な人名/handle はコミットしないでください。
 - 個人の学習資料を使う場合は、この公開リポジトリ外の private RAG/knowledge base に置き、抽象化した汎用ルールだけを skill に戻してください。
@@ -167,6 +179,9 @@ skills/
   macro-news-check/
     SKILL.md
     agents/openai.yaml
+  us-stock-move-reason/
+    SKILL.md
+    agents/openai.yaml
   us-stock-gamma-moomoo/
     SKILL.md
     agents/openai.yaml
@@ -185,6 +200,7 @@ docs/
   macro-news-check.md
   market-daily-strategist.md
   stock-sentiment-analysis.md
+  us-stock-move-reason.md
   us-stock-gamma-moomoo.md
   stock-technical-analysis.md
 shared/

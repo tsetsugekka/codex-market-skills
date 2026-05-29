@@ -8,6 +8,7 @@
 - 分析支撑位、压力位、突破/回踩是否确认，以及 touch、break、tradable hold 的区别。
 - 结合成交量、KDJ、MACD、RSI、VWAP、短期均线和 Vegas EMA 通道判断动能。
 - 读取 moomoo、Yahoo Finance、券商图表或截图时，按多周期图表流程给出当前读数、结构、量价/动能、执行含义和下一验证点。
+- 对美股个股，可先用 `moomoo-technical-anomaly` 做官方技术异动扫描；但该结果只是提示，最终仍按趋势位置、VWAP/均线、量价、动能背离、支撑压力和失败突破判断。
 - 与日股、A 股、美股 gamma 等市场 skill 配合：先找催化/基本面，再看技术结构是否确认。
 
 ## 【依赖】
@@ -17,7 +18,8 @@
 
 ## 【协同调用】
 
-- `macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`。
+- `macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`。
+- 美股可选：`moomoo-technical-anomaly`。
 
 ## 典型请求
 

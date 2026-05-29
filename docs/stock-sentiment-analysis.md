@@ -8,7 +8,8 @@
 - 区分情绪票、趋势票和 hybrid。
 - 分析主线、跟随、旧龙反抽、防御轮动和噪声。
 - 做预期差分析：原来预期、实际落地、超预期/符合/不及预期。
-- 与 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 协同。
+- 与 `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 协同。
+- 美股社区讨论可用 `moomoo-comment-sentiment` 辅助，但只代表 moomoo 社区样本，用于判断散户热度、分歧、追涨/恐慌，不替代新闻、财报、期权和价格行为。
 - A 股板块/题材成分、相关股、概念股、龙头股问题可用 `mx-xuangu` 做可选增强，再结合行情和资讯判断纯度、热度和催化。
 
 ## 【依赖】
@@ -18,7 +19,8 @@
 
 ## 【协同调用】
 
-- `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
+- `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
+- 美股可选：`moomoo-comment-sentiment`。
 
 ## 私有 RAG
 

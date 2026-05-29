@@ -43,7 +43,7 @@ Provides a reusable public-safe sentiment and market-emotion framework for A-sha
 Use it to:
 
 - Synthesize forum/message-board heat, news expectation gaps, breadth, and chart confirmation into a sentiment conclusion.
-- Provide a shared sentiment framework for `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
+- Provide a shared sentiment framework for `cn-stock-move-reason`, `jp-stock-move-reason`, `us-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
 - When the user provides a private RAG directory, guide them to build a local index with topics, source aliases, page/slide ranges, keywords, and public-safe summaries; never write private source material into this public repository.
 
 ### [`macro-news-check`](docs/macro-news-check.md)
@@ -53,8 +53,19 @@ Checks current macro and broad-market tape for other market skills, but only whe
 Use it to:
 
 - Judge whether a stock or index move is affected by rates, FX, central banks, economic data, commodities, geopolitics, or broad risk-on/risk-off tape.
-- Provide macro tape to `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
+- Provide macro tape to `cn-stock-move-reason`, `jp-stock-move-reason`, `us-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
 - Turn 2-5 relevant live headlines into a main-driver, secondary-amplifier, or background-noise judgment for the current instrument.
+
+### [`us-stock-move-reason`](docs/us-stock-move-reason.md)
+
+Combines official moomoo news, stock digest, community sentiment, capital anomalies, option anomalies, technical anomalies, and local gamma/technical/macro skills so Codex can explain why a U.S. stock or ETF moved. It treats official moomoo anomaly skills as data/scanner layers and keeps the final reasoning evidence-based.
+
+Use it to:
+
+- Analyze why U.S. stocks such as DELL, NVDA, or TSLA rose, fell, gapped premarket, or moved after hours.
+- Separate confirmed earnings/guidance/ratings/orders/news from community speculation.
+- Check U.S.-applicable option unusual activity, IV, option sentiment, capital flow, short-sale, and technical anomaly evidence.
+- Merge macro, technical, and option/gamma structure for SPY/QQQ/SPX-related move questions.
 
 ### [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md)
 
@@ -62,7 +73,7 @@ Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/G
 
 Use it to:
 
-- Analyze option gamma structure for ordinary US stocks or US-listed ETFs.
+- Analyze option gamma structure for ordinary US stocks or US-listed ETFs, with optional official moomoo option-anomaly scans for unusual trades, IV, PCR, and option sentiment.
 - Analyze `.SPX`/SPXW index-option structure; when direct index data or chains are unavailable, use SPY options, ES/CFD, or a user-provided index anchor for conversion and state the proxy clearly.
 - Build time-by-underlying theoretical value tables for 0DTE calls/puts to evaluate recovery, take-profit, or stop levels.
 - Output text conclusions, lists, and plain-text tables; for repeated intraday questions in the same conversation, compare with earlier same-session gamma results to judge level migration and strengthening or weakening.
@@ -76,7 +87,7 @@ Use it to:
 - Classify setups such as trend continuation, high-level consolidation, pullback confirmation, failed breakout, divergence, or breakdown rebound.
 - Distinguish touch, break, and tradable hold so one wick is not mistaken for a confirmed breakout.
 - Read moomoo/Yahoo/broker charts or screenshots and produce current read, structure, momentum, execution meaning, and next validation level.
-- Combine with move-reason or US gamma skills to judge whether the chart confirms or contradicts a catalyst.
+- Combine with move-reason or US gamma skills to judge whether the chart confirms or contradicts a catalyst; for U.S. stocks, `moomoo-technical-anomaly` can be used as a first-pass scanner, but final judgment stays with this skill's price-action framework.
 
 ## Installation
 
@@ -137,6 +148,7 @@ Analyze this stock's technical setup, support, and resistance right now.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
 - `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, personal labels, raw notes, screenshots, or trade logs.
 - `macro-news-check` reads only public macro/news pages, feeds, or endpoints; it does not read login cookies, tokens, account data, or private research material, and it should not copy long news text.
+- `us-stock-move-reason` stores only a public-safe U.S. move-reason workflow. Official moomoo skills and OpenD are runtime data layers; do not commit account data, OpenD logs, raw community dumps, private outputs, or personal trade records.
 - `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on private RAG and should not commit personal account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
 - `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on private RAG and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
 - If personal study materials are useful, keep them in a private RAG/knowledge base outside this public repository and copy back only distilled generic rules.
@@ -167,6 +179,9 @@ skills/
   macro-news-check/
     SKILL.md
     agents/openai.yaml
+  us-stock-move-reason/
+    SKILL.md
+    agents/openai.yaml
   us-stock-gamma-moomoo/
     SKILL.md
     agents/openai.yaml
@@ -185,6 +200,7 @@ docs/
   macro-news-check.md
   market-daily-strategist.md
   stock-sentiment-analysis.md
+  us-stock-move-reason.md
   us-stock-gamma-moomoo.md
   stock-technical-analysis.md
 shared/

@@ -17,6 +17,7 @@ Call this skill when one or more of these are true:
 - A stock/index/ETF is moving with no clear stock-specific catalyst, or the move may be driven by rates, FX, futures, sector-wide risk, policy, or global headlines.
 - Technical analysis needs a broad-market confirmation, especially for index breaks, high-beta stocks, export-sensitive Japanese names, A-share market emotion, US premarket moves, or same-day trading judgments.
 - Gamma analysis would be unreliable without checking macro headlines, event risk, vol shock, index futures, yields, USD, or geopolitical tape risk.
+- U.S. stock-move or gamma workflows such as `us-stock-move-reason` and `us-stock-gamma-moomoo` involve Fed expectations, rates, USD, oil/gold, index futures, market-wide risk appetite, or geopolitical shocks.
 - A prior single-stock read may be missing a market-wide reason for a selloff or squeeze.
 
 Do not call this skill when the request is clearly only about static fundamentals, historical valuation, company filings, or a chart level that does not depend on current market tone.

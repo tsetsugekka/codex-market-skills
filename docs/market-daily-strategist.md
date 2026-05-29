@@ -8,6 +8,7 @@
 - 写美股、日股和 A 股收盘复盘。
 - 推荐一只美股、日股或 A 股/ETF/LOF，并给出买点、风险和验证条件。
 - 在必要时调用其他市场 skill，而不是把每个数据层都做成固定前置步骤。
+- 美股报告可选择性使用官方 moomoo 新闻、摘要、社区、资金、期权和技术异动 skill，但策略判断仍由本 skill 综合完成。
 
 ## 【依赖】
 
@@ -22,7 +23,9 @@
 - `stock-technical-analysis`：用于指数、ETF 或个股的支撑压力、趋势确认和盘中执行判断。
 - `stock-sentiment-analysis`：用于 A 股情绪周期、主线/跟随、拥挤度和预期差。
 - `cn-stock-move-reason`、`jp-stock-move-reason`：用于少数真正影响报告结论的 A 股或日股异动原因。
+- `us-stock-move-reason`：用于少数真正影响报告结论的美股异动原因、财报/指引接受度和新闻解释。
 - `us-stock-gamma-moomoo`：用于美股指数/ETF gamma、GEX、0DTE 和期权墙。
+- 官方 moomoo skills：`moomoo-news-search`、`moomoo-stock-digest`、`moomoo-comment-sentiment`、`moomoo-capital-anomaly`、`moomoo-derivatives-anomaly`、`moomoo-technical-anomaly`，只作为美股数据/异动提示层。
 
 ## 典型请求
 

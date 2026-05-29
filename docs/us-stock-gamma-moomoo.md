@@ -10,6 +10,8 @@
 - 如果拿不到更好的时间对齐锚，使用用户留存兜底公式：`日经目标位 = 62038 × EWJ目标价 / 91.265`，并在结论里标注这是 fallback。
 - 指数专用流程默认输出文字总结；raw JSON 只在用户明确要求导出原始数据时使用。
 - 识别正 gamma wall、负 gamma pit、gamma flip、pin/阻力/支撑区域。
+- 当官方 moomoo skill 已安装时，协同 `moomoo-derivatives-anomaly` 扫描美股适用的期权大单、IV、量价、期权情绪和综合信号；不调用港股牛熊证维度。
+- 抓取或使用 1 分钟 K 线确认 gamma 墙、pit 或 flip 附近的价格行为时，协同 `stock-technical-analysis` 的技术框架判断接受/拒绝/假突破。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用来评估回本、止盈、止损或是否值得继续拿。
 - 输出以文字结论、列表和文本表格为主；盘中重复询问时，结合本交易日此前同一对话中的 gamma 结果判断点位迁移和强弱变化。
 
@@ -38,7 +40,11 @@
 
 ## 【协同调用】
 
-- 无。
+- `moomoo-derivatives-anomaly`：官方期权异动、大单、IV、PCR、期权情绪扫描；美股只用期权维度，不用港股牛熊证维度。
+- `stock-technical-analysis`：1 分钟 K 线、VWAP、趋势、支撑压力和失败突破确认。
+- `us-stock-move-reason`：新闻接受度、财报、指引和股价为何涨跌的上游证据入口。
+- `stock-sentiment-analysis`：拥挤交易、risk-on/risk-off 心理和期待差。
+- `macro-news-check`：Fed、利率、美元、油金、指数期货和地缘风险。
 
 ## 可选私有知识库
 

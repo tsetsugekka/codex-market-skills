@@ -69,12 +69,12 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股证据、题材成分和筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
 
-【协同调用】`cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
+【协同调用】`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`；美股社区样本可用 `moomoo-comment-sentiment` 辅助。
 
 适用场景：
 
 - 把股吧/掲示板热度、新闻预期差、板块广度和图形确认整合成情绪结论。
-- 给 `cn-stock-move-reason`、`jp-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 提供统一情绪框架。
+- 给 `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 提供统一情绪框架。
 - 在用户指定私有 RAG 目录时，可帮助用户建立本地索引，只记录主题、来源别名、页码/slide 范围、关键词和公开安全摘要；不把私有材料写入公开仓库。
 
 ### [`macro-news-check`](docs/macro-news-check.md)
@@ -97,7 +97,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
 
-【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`stock-technical-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`。
+【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`stock-technical-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`；美股报告可选择性使用官方 moomoo 新闻、摘要、评论、资金、期权和技术异动 skill。
 
 适用场景：
 
@@ -105,17 +105,32 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 写美股、日股或 A 股收盘复盘。
 - 推荐一只美股、日股或 A 股/ETF/LOF，并给出买点、风险和验证条件。
 
+### [`us-stock-move-reason`](docs/us-stock-move-reason.md)
+
+针对用户输入的美股或 ETF，结合官方 moomoo 新闻、摘要、社区评论、资金异动、期权异动和技术异动，以及本仓库的 gamma、技术、情绪和宏观 skill，分析股价为什么上涨、下跌、盘前跳空或盘后异动。
+
+【依赖】可选但推荐 — `moomoo-news-search`、`moomoo-stock-digest`、`moomoo-comment-sentiment`、`moomoo-capital-anomaly`、`moomoo-derivatives-anomaly`、`moomoo-technical-anomaly`；可选 — 本机 moomoo OpenD 和 Python SDK。
+
+【协同调用】`us-stock-gamma-moomoo`、`stock-technical-analysis`、`stock-sentiment-analysis`、`macro-news-check`。
+
+适用场景：
+
+- 分析 DELL、NVDA、TSLA 等美股为什么急涨、急跌或盘前/盘后异动。
+- 区分财报/指引/评级/订单等确认催化和社区思惑。
+- 检查美股适用的期权大单、IV、期权情绪、资金、短卖和技术异动。
+- 对 SPY/QQQ/SPX 相关问题，把宏观、技术和期权/gamma 结构合并判断。
+
 ### [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md)
 
 通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
 
 【依赖】必需 — 本机 moomoo OpenD、Python SDK `moomoo`。
 
-【协同调用】无。
+【协同调用】`macro-news-check`、`stock-technical-analysis`、`stock-sentiment-analysis`、`us-stock-move-reason`；当已安装官方 moomoo skill 时，可协同 `moomoo-derivatives-anomaly` 的美股期权维度。
 
 适用场景：
 
-- 分析普通美股或美股 ETF 的期权 gamma 结构。
+- 分析普通美股或美股 ETF 的期权 gamma 结构，并可用官方 moomoo 期权异动扫描辅助识别大单、IV、PCR 和期权情绪。
 - 分析 `.SPX`/SPXW 指数期权结构；如果拿不到指数实时行情或期权链，则用 SPY 期权、ES/CFD 或用户提供的指数锚进行换算并明确说明。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用于评估回本、止盈或止损点。
 - 输出以文字结论、列表和文本表格为主；盘中重复询问时，结合本交易日此前同一对话中的 gamma 结果判断点位迁移和强弱变化。
@@ -126,7 +141,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分和技术筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
 
-【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-gamma-moomoo`。
+【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`；美股个股可选择性用 `moomoo-technical-anomaly` 做官方技术异动扫描。
 
 适用场景：
 
@@ -134,6 +149,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 区分 touch、break、tradable hold，避免把一根影线误判为有效突破。
 - 读取 moomoo/Yahoo/券商图表或截图，给出当前读数、技术结构、量价动能和下一验证点。
 - 与日股/A股异动原因或美股 gamma skill 配合，判断催化是否被图形确认。
+- 对美股，把官方技术异动当作提示，再按趋势位置、VWAP/均线、量价、动能背离、支撑压力和失败突破判断是否有效。
 
 ## 安装
 
@@ -208,6 +224,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、个人标签、原始笔记、截图或交易日志。
 - `macro-news-check` 只读取公开宏观快讯页面/Feed/接口；不读取登录 cookie、token、账号数据或私有研究资料，不复制长篇新闻正文。
 - `market-daily-strategist` 是报告路由和综合层；本地/私有行情工具只作为可选增强，不应把个人关注列表、私有输出或工具缓存提交到公开仓库。
+- `us-stock-move-reason` 只保存公开安全的美股异动分析流程；官方 moomoo skill 和 OpenD 只作为运行时数据层，不应提交账号、OpenD 日志、原始社区抓取、私有输出或个人交易记录。
 - `us-stock-gamma-moomoo` 使用本机 moomoo OpenD 行情接口，不调用交易解锁接口；公开版不依赖私有 RAG，不应提交个人账号、OpenD 日志、截图、私有行情输出、原创策略名或私有人名/handle。
 - `stock-technical-analysis` 只保存通用技术分析规则；公开版不依赖私有 RAG，不应提交个人仓位、交易计划、截图原图、私有研究路径、专有指标名、原创策略名或私有人名/handle。
 - 不要把个人关注列表、凭据、API key、`.env`、私有 RAG、运行缓存或私有输出提交到本仓库。
@@ -244,6 +261,9 @@ skills/
   market-daily-strategist/
     SKILL.md
     references/
+  us-stock-move-reason/
+    SKILL.md
+    agents/openai.yaml
   us-stock-gamma-moomoo/
     SKILL.md
     agents/openai.yaml
@@ -262,6 +282,7 @@ docs/
   macro-news-check.md
   market-daily-strategist.md
   stock-sentiment-analysis.md
+  us-stock-move-reason.md
   us-stock-gamma-moomoo.md
   stock-technical-analysis.md
 shared/

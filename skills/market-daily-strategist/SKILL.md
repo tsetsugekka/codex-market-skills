@@ -37,6 +37,8 @@ Always read `references/shared.md` first, then only the one task-specific refere
 This skill is a report router and synthesis layer. Use other market skills when they materially improve the report, but keep calls selective.
 
 - Use `macro-news-check` when the report depends on current macro tape: rates, FX, oil, gold, commodities, central banks, economic data, geopolitics, broad risk sentiment, or live futures confirmation.
+- For U.S. reports, use official moomoo skills as selective evidence helpers when installed: `moomoo-news-search` and `moomoo-stock-digest` for timely company/news context, `moomoo-comment-sentiment` for community heat, `moomoo-capital-anomaly` for capital-flow anomalies, `moomoo-derivatives-anomaly` for U.S.-applicable option anomaly dimensions, and `moomoo-technical-anomaly` for a first-pass technical anomaly scan. These are data and anomaly layers; keep this skill responsible for strategy synthesis.
+- Use `us-stock-move-reason` for 1-3 important U.S. movers when the catalyst, earnings/guidance acceptance, news interpretation, option/flow anomaly, or community reaction needs a dedicated move-reason pass.
 - Use `us-stock-gamma-moomoo` for US index/ETF option structure when SPX/SPY/QQQ/NQ gamma, GEX, 0DTE, dealer positioning, option walls, or intraday conversion levels could change the strategy.
 - Use `stock-technical-analysis` for selected index/ETF/stock levels when the answer needs support/resistance, trend confirmation, intraday execution timing, breakout/pullback validation, or stop levels.
 - Use `jp-stock-move-reason` or `cn-stock-move-reason` for 1-3 genuinely important Japanese/A-share movers when the catalyst is unclear or the stock drives the day's theme. Do not run move-reason analysis on every mover.
