@@ -15,11 +15,11 @@
 
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、资讯、板块/概念成分、同行对比和自然语言技术筛选增强。
 - 可选：`mx-zixuan`，仅在用户明确要求东方财富自选股任务时使用。
+- 可选：`moomoo-technical-anomaly`，用于美股官方技术异动扫描。
 
 ## 【协同调用】
 
 - `macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`。
-- 美股可选：`moomoo-technical-anomaly`。
 
 ## 典型请求
 

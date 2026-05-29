@@ -16,11 +16,11 @@
 
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、资讯、题材成分和条件筛选增强。
 - 可选：`mx-zixuan`，仅在用户明确要求东方财富自选股查询、筛选、添加或删除时使用。
+- 可选：`moomoo-comment-sentiment`，用于美股 moomoo 社区样本。
 
 ## 【协同调用】
 
 - `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
-- 美股可选：`moomoo-comment-sentiment`。
 
 ## 私有 RAG
 

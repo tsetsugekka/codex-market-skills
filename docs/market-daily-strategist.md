@@ -14,6 +14,7 @@
 
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、估值/资金流、资讯/公告/政策、板块或概念成分确认。
 - 可选：`mx-zixuan`，只在用户明确要求东方财富自选股任务时使用。
+- 可选：官方 moomoo skills，用于美股新闻、摘要、社区、资金、期权和技术异动扫描。
 
 这些外部依赖都是增强层。缺失时应继续用公开可靠来源完成报告，并明确写出不可得的数据，不应编造数值。
 
@@ -25,7 +26,6 @@
 - `cn-stock-move-reason`、`jp-stock-move-reason`：用于少数真正影响报告结论的 A 股或日股异动原因。
 - `us-stock-move-reason`：用于少数真正影响报告结论的美股异动原因、财报/指引接受度和新闻解释。
 - `us-stock-gamma-moomoo`：用于美股指数/ETF gamma、GEX、0DTE 和期权墙。
-- 官方 moomoo skills：`moomoo-news-search`、`moomoo-stock-digest`、`moomoo-comment-sentiment`、`moomoo-capital-anomaly`、`moomoo-derivatives-anomaly`、`moomoo-technical-anomaly`，只作为美股数据/异动提示层。
 
 ## 典型请求
 

@@ -39,7 +39,6 @@ SPY 今天是宏观原因还是技术突破？
 - `stock-technical-analysis`：技术结构、支撑压力、VWAP、分时确认。
 - `stock-sentiment-analysis`：情绪周期、拥挤交易、期待差和社区热度。
 - `macro-news-check`：Fed、利率、美元、商品、指数期货和地缘风险。
-- 官方 moomoo skills：新闻、社区、资金、期权和技术异动扫描。
 
 ## 输出结构
 

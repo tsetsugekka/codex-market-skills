@@ -10,7 +10,7 @@
 - 如果拿不到更好的时间对齐锚，使用用户留存兜底公式：`日经目标位 = 62038 × EWJ目标价 / 91.265`，并在结论里标注这是 fallback。
 - 指数专用流程默认输出文字总结；raw JSON 只在用户明确要求导出原始数据时使用。
 - 识别正 gamma wall、负 gamma pit、gamma flip、pin/阻力/支撑区域。
-- 当官方 moomoo skill 已安装时，协同 `moomoo-derivatives-anomaly` 扫描美股适用的期权大单、IV、量价、期权情绪和综合信号；不调用港股牛熊证维度。
+- 当官方 moomoo skill 已安装时，可用 `moomoo-derivatives-anomaly` 扫描美股适用的期权大单、IV、量价、期权情绪和综合信号；不调用港股牛熊证维度。
 - 抓取或使用 1 分钟 K 线确认 gamma 墙、pit 或 flip 附近的价格行为时，协同 `stock-technical-analysis` 的技术框架判断接受/拒绝/假突破。
 - 对 0DTE call/put 生成“时间 x 标的价位”的理论价值表，用来评估回本、止盈、止损或是否值得继续拿。
 - 输出以文字结论、列表和文本表格为主；盘中重复询问时，结合本交易日此前同一对话中的 gamma 结果判断点位迁移和强弱变化。
@@ -33,6 +33,7 @@
 
 - 必需：本机安装并运行 moomoo OpenD。
 - 必需：Python SDK `moomoo` 可导入。
+- 可选：`moomoo-derivatives-anomaly`，用于官方期权异动、大单、IV、PCR、期权情绪扫描；美股只用期权维度，不用港股牛熊证维度。
 - OpenD 需要保持后台运行；行情权限不足时，部分指数或期权数据可能不可用。
 - 通用报告脚本会对 `get_option_chain` 主动限速，并在 OpenD 返回“每30秒最多10次”一类错误后等待重试；项目脚本里的同类修复应同步回这个 skill。
 - 指数专用算法必须保存在 skill 脚本中：SPX/SPXW 用 `scripts/spx_intraday_latest.py`，日经/EWJ 转 NKDmain/NIYmain/CFD 用 `scripts/proxy_index_gamma.py`。
@@ -40,7 +41,6 @@
 
 ## 【协同调用】
 
-- `moomoo-derivatives-anomaly`：官方期权异动、大单、IV、PCR、期权情绪扫描；美股只用期权维度，不用港股牛熊证维度。
 - `stock-technical-analysis`：1 分钟 K 线、VWAP、趋势、支撑压力和失败突破确认。
 - `us-stock-move-reason`：新闻接受度、财报、指引和股价为何涨跌的上游证据入口。
 - `stock-sentiment-analysis`：拥挤交易、risk-on/risk-off 心理和期待差。

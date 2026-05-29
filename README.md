@@ -67,9 +67,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 给其他股票 skill 复用的情绪面分析框架，用于判断 A 股情绪周期、主线/跟随、预期差、论坛/掲示板温度、拥挤交易和跨市场 risk-on/risk-off。公开版不包含私人 RAG、个人标签或原始资料。
 
-【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股证据、题材成分和筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股证据、题材成分和筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）；`moomoo-comment-sentiment`（美股社区样本增强）。
 
-【协同调用】`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`；美股社区样本可用 `moomoo-comment-sentiment` 辅助。
+【协同调用】`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
 
 适用场景：
 
@@ -95,9 +95,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 面向美股、日股和 A 股的中文市场策略报告路由层，覆盖盘前策略、收盘复盘和单只长线推荐。它按用户意图读取对应市场和时段的 reference，并把宏观、异动原因、情绪周期、技术结构和可用的本地行情工具压缩进一份决策导向报告。
 
-【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分增强）；`mx-zixuan`（仅用户明确要求自选股任务时）；官方 moomoo 新闻、摘要、评论、资金、期权和技术异动 skill（美股报告增强）。
 
-【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`stock-technical-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`；美股报告可选择性使用官方 moomoo 新闻、摘要、评论、资金、期权和技术异动 skill。
+【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`stock-technical-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`。
 
 适用场景：
 
@@ -124,9 +124,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 通过 moomoo OpenD 获取美股/美股期权数据，让 Codex 分析 gamma/GEX、gamma wall、gamma flip、SPX/SPY/ES 盘中结构，以及 0DTE 期权情景表。该 skill 需要本机运行 moomoo OpenD；如果环境不存在，应先引导安装或启动 OpenD。
 
-【依赖】必需 — 本机 moomoo OpenD、Python SDK `moomoo`。
+【依赖】必需 — 本机 moomoo OpenD、Python SDK `moomoo`；可选 — `moomoo-derivatives-anomaly`（美股期权异动、大单、IV、PCR 和期权情绪扫描）。
 
-【协同调用】`macro-news-check`、`stock-technical-analysis`、`stock-sentiment-analysis`、`us-stock-move-reason`；当已安装官方 moomoo skill 时，可协同 `moomoo-derivatives-anomaly` 的美股期权维度。
+【协同调用】`macro-news-check`、`stock-technical-analysis`、`stock-sentiment-analysis`、`us-stock-move-reason`。
 
 适用场景：
 
@@ -139,9 +139,9 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对美股、日股和 A 股做技术分析，重点看趋势结构、支撑压力、量价、KDJ/MACD/RSI、Vegas 通道、分时确认，以及“能不能到某个价位”的盘中判断。
 
-【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分和技术筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）。
+【依赖】可选 — `mx-data`、`mx-search`、`mx-xuangu`（A 股行情、资讯、板块/概念成分和技术筛选增强）；`mx-zixuan`（仅用户明确要求自选股任务时）；`moomoo-technical-anomaly`（美股官方技术异动扫描）。
 
-【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`；美股个股可选择性用 `moomoo-technical-anomaly` 做官方技术异动扫描。
+【协同调用】`macro-news-check`、`stock-sentiment-analysis`、`cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`us-stock-gamma-moomoo`。
 
 适用场景：
 
