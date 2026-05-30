@@ -77,7 +77,9 @@ Default to the user's local timezone from the runtime environment. Use the curre
 - If the user provides a watchlist CSV, use it as an ordered priority list. Detect common ticker columns such as `代码`, `Ticker`, `Symbol`, or similar. The earlier a ticker appears, the more important it is.
 - If no watchlist CSV is provided, prioritize by market relevance: liquidity, market cap, options/retail attention, sector read-through, and user-stated preferences in the conversation.
 - Put only the tickers the user likely needs to see in the title, primarily watchlist matches.
-- If a slot has no watchlist matches, use a short fallback title with the most liquid/market-relevant names only when the user wants a title for every slot.
+- If a slot has no watchlist matches, do not create a Calendar event for that slot unless the user explicitly asks for every slot to be represented.
+- When skipping a no-match slot, mention it in the final report with the session and the main tickers that were skipped, so the user can audit what was intentionally left out.
+- Use a short fallback title with the most liquid/market-relevant names only when the user has no usable watchlist or explicitly wants a title for every slot.
 - Keep all extracted tickers in the description.
 
 ### 4. Calendar Format
