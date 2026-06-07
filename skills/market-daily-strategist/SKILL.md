@@ -23,6 +23,10 @@ If the user says only `盘前信息`, `收盘复盘`, or `推荐一只股票`, i
 
 Always read `references/shared.md` first, then only the one task-specific reference that matches the user request.
 
+Reference reading rule: when this skill selects a reference file, read the complete file before applying it. Do not rely on a partial excerpt, heading-only scan, or stale memory of the reference.
+
+When the user asks about medium/long-term market direction, cross-market strategy, market regime, bull/bear structure, or the durability of a theme-driven rally, also read `references/global-mainline-funds-game-cycle.md`.
+
 ## Core Workflow
 
 1. Identify the report type and market.

@@ -19,10 +19,14 @@ When updating a paired private/public skill, write public-safe generalized lesso
 
 When preparing a GitHub upload or public release, use only the public version and read the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md` first. Run a privacy check for private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
 
+## Reference Reading Rule
+
+When this skill selects a reference file, read the complete file before applying it. Do not rely on a partial excerpt, heading-only scan, or stale memory of the reference. This includes `references/experience.md`, `references/sentiment-framework.md`, and the repo-level `shared/references/release-and-privacy.md` when publishing.
+
 ## Workflow
 
-1. Read `references/experience.md` before deep analysis, but only `Active Playbook` and `Compression Protocol` unless the user explicitly asks for history.
-2. Read `references/sentiment-framework.md` when the task needs emotion-cycle classification, main-line judgment, crowded-trade risk, forum psychology, or cross-market sentiment. Read the repo-level `shared/references/release-and-privacy.md` before publishing, syncing public/private versions, or preparing a GitHub upload.
+1. Read the full `references/experience.md` before deep analysis.
+2. Read the full `references/sentiment-framework.md` when the task needs emotion-cycle classification, main-line judgment, crowded-trade risk, forum psychology, cross-market sentiment, or mainline/funds/game/cycle interpretation. Read the full repo-level `shared/references/release-and-privacy.md` before publishing, syncing public/private versions, or preparing a GitHub upload.
 3. Gather or receive evidence from the market-specific skill first:
    - A-shares: prefer `cn-stock-move-reason` for quote, announcements, 股吧, board ranks, breadth, and A-share emotion cycle.
    - Japanese stocks: prefer `jp-stock-move-reason` for quote, news, Yahoo 掲示板, metrics, and theme/peer context.

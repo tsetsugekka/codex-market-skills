@@ -48,6 +48,14 @@ Local/private market-data tools are optional enhancers, not required dependencie
 - Use `stock-technical-analysis` for execution levels on selected indexes or key stocks, especially when recommending 追高、等回踩、低吸、减仓、止损.
 - Compress supporting-skill findings into the required report structure. Do not append unrelated deep-dive sections unless the user asks.
 
+## Medium/Long-Term Strategy Lens
+
+When the report needs market-regime, mainline, or bull/bear structure judgment, combine current data with the `mainline x funds x game x cycle` framework from `references/global-mainline-funds-game-cycle.md`.
+
+- Treat `mainline` as the durable narrative or industry transition, not one-day theme heat.
+- Treat `funds` as the liquidity and positioning condition that determines whether the narrative can keep being priced.
+- Treat `game` and `cycle` as the market-structure and timing lenses that decide whether to attack, hold, rotate, defend, or wait.
+
 ## Silent Methodology For Long-Term Recommendations
 
 Apply the user's strategy framework silently. Do not expose private source-framework labels or mnemonic names; use plain terms such as 长期均线、趋势支撑、均线密集区、反转结构、突破回踩.

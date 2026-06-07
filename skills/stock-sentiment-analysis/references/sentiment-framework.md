@@ -95,3 +95,39 @@ Sentiment analysis should call technical analysis when price location matters:
 - A breakout needs a hold/retest with volume, not a one-wick touch.
 - A support defense matters only if price reclaims short-term structure.
 - A theme can remain alive after first rejection if higher lows form and reclaimed support holds.
+
+## 9. Mainline, Funds, Game, Cycle Lens
+
+Source lens: 招商证券策略研究《主线·资金·博弈·周期：A股投资的底层逻辑与系统奥义——A股投资启示录》, republished by 新浪财经, 2026-06-03.
+URL: https://finance.sina.com.cn/wm/2026-06-03/doc-iniaecsk0758056.shtml
+
+The source report is A-share focused, but the sentiment logic is useful globally when adapted to local market structure. Use it to prevent over-attributing a move to headlines or forum heat.
+
+Classify the narrative through four dimensions:
+
+- `Mainline`: Is this a durable industry, technology, macro, or policy transition, or only a short-lived story?
+- `Funds`: Is fresh capital still entering, or is the move running on crowded positioning and forced chase?
+- `Game`: Which market mechanism is amplifying the move: retail heat, institutional rebalance, options/gamma, ETF/index flows, policy feedback, short squeeze, or forced de-risking?
+- `Cycle`: Is the theme in emergence, expansion, divergence, climax, or retreat?
+
+Use this interpretation:
+
+- Strong mainline + supportive funds + broad peer confirmation = emotion is more likely a healthy expansion phase.
+- Strong mainline + weak funds = good story can trade as a liquidity squeeze or temporary rebound.
+- Weak mainline + abundant funds = speculative rotation; demand faster invalidation and avoid upgrading it to leadership.
+- Strong story + one-sided confidence + weakening breadth = late-cycle crowding risk.
+- Good news that no longer lifts price means expectations may be saturated.
+
+For A-shares, map this to policy/theme breadth, limit-up structure, 股吧 heat, sector-board confirmation, and fund-flow concentration.
+
+For U.S. stocks, map this to earnings revisions, rates, mega-cap/index concentration, ETF flows, options/gamma, buybacks, and short interest.
+
+For Japanese stocks, map this to yen, foreign flows, shareholder-return reform, exporters, banks, semiconductors, and global cycle exposure.
+
+When answering, translate the four lenses into compact conclusions:
+
+1. `主线`: real leader, follower, old-leader rebound, defensive substitute, or noise.
+2. `资金`: fresh inflow, crowded chase, liquidity squeeze, forced covering, or de-risking.
+3. `博弈`: what mechanism explains the speed and volatility of the move.
+4. `周期`: early, acceleration, climax/divergence, or retreat.
+5. `验证/失效`: what price, breadth, news, or flow evidence changes the classification.

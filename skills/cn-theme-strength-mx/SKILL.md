@@ -11,6 +11,10 @@ Use this skill to rank A-share theme strength from the local A-share stock-theme
 
 Default to this skill when the user asks in Chinese or English for `题材强弱`, `当前A股题材`, `题材排序`, `强题材`, `弱题材`, `theme strength`, or similar wording. In this context, `题材` means the local custom theme universe plus MX constituent quotes, not a generic broker board list.
 
+## Reference Reading Rule
+
+When this skill selects a reference file, read the complete file before applying it. Do not rely on a partial excerpt, heading-only scan, or stale memory of the reference.
+
 Use a fast market-board ranking source such as 东方财富 concept/industry board rankings only when the user explicitly asks for `快速看盘面`, `板块榜`, `行业/概念板块排行`, `现在市场炒什么`, or a quick broad tape read. That fast board-tape result may be useful as an auxiliary confirmation layer, but it is not this skill's formal theme-strength output.
 
 When both views are useful, run this skill first for the formal conclusion, then optionally compare it with fast board rankings and explain differences in口径. If the answer uses this skill, state that the result is based on the local custom theme mapping and MX constituent-weighted returns, not directly on 东方财富 concept/industry board涨跌幅.
@@ -123,6 +127,12 @@ Rules:
 - For Top themes, choose `主要贡献` stocks by largest positive `weight * CHG`.
 - For Bottom themes, choose `主要拖累` stocks by most negative `weight * CHG`.
 - Do not output component counts by default.
+
+## Theme Lifecycle Lens
+
+When the user asks which themes are true mainlines, whether a strong theme can continue, or whether today's strength is only rotation/noise, read `references/theme-mainline-lifecycle.md` and apply it after the ranking. Do not replace the weighted-return ranking with this lens; use it only to interpret durability, crowding, and follow-through quality.
+
+For default TOP3 driver checks, use the lifecycle lens lightly: identify whether each top theme looks like early emergence, acceleration, climax/divergence, old-leader rebound, defensive substitute, or one-day noise when the available evidence supports that classification. If evidence is insufficient, say `周期位置暂不确认`.
 
 ## TOP3 Driver Check
 
