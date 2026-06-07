@@ -103,31 +103,81 @@ URL: https://finance.sina.com.cn/wm/2026-06-03/doc-iniaecsk0758056.shtml
 
 The source report is A-share focused, but the sentiment logic is useful globally when adapted to local market structure. Use it to prevent over-attributing a move to headlines or forum heat.
 
+Do not wait for the user to ask for this lens explicitly. During decomposition, if a stock, index, or theme move may be driven by durable narrative, liquidity, crowding, market mechanism, or cycle phase, apply the relevant parts of this section.
+
+### Reading Scope
+
+For narrow questions, read the relevant subsection and nearby guardrails. For broad market, theme, or cycle questions, read this full section. Do not rely only on memory or headings.
+
+### Four Dimensions
+
 Classify the narrative through four dimensions:
 
-- `Mainline`: Is this a durable industry, technology, macro, or policy transition, or only a short-lived story?
-- `Funds`: Is fresh capital still entering, or is the move running on crowded positioning and forced chase?
-- `Game`: Which market mechanism is amplifying the move: retail heat, institutional rebalance, options/gamma, ETF/index flows, policy feedback, short squeeze, or forced de-risking?
-- `Cycle`: Is the theme in emergence, expansion, divergence, climax, or retreat?
+- `Mainline`: Is this a durable industry, technology, macro, policy, or profit-pool transition, or only a short-lived story?
+- `Funds`: Is fresh capital still entering, or is the move running on crowded positioning, forced chase, or temporary liquidity?
+- `Game`: Which mechanism is amplifying the move: retail heat, institutional rebalance, options/gamma, ETF/index flows, policy feedback, short squeeze, margin pressure, or forced de-risking?
+- `Cycle`: Is the theme in recognition, emergence, expansion, divergence, climax, retreat, or reset?
 
-Use this interpretation:
+### Cognitive Repricing
 
-- Strong mainline + supportive funds + broad peer confirmation = emotion is more likely a healthy expansion phase.
-- Strong mainline + weak funds = good story can trade as a liquidity squeeze or temporary rebound.
-- Weak mainline + abundant funds = speculative rotation; demand faster invalidation and avoid upgrading it to leadership.
+Markets often move when collective recognition changes, not only when a fact appears. Treat sentiment as a repricing process:
+
+- old narrative loses pricing power;
+- new narrative gets evidence;
+- leaders prove the story through price and volume;
+- followers and peers either confirm or reject the move;
+- capital either returns after pullbacks or leaves after the first excitement.
+
+This helps explain why a good headline can fail if it was priced in, and why a modest headline can work when expectations were fearful.
+
+### Mainline Versus Emotion
+
+Use this matrix:
+
+- Strong mainline + supportive funds + broad peer confirmation = healthy expansion is possible.
+- Strong mainline + weak funds = story may be right but the trade can remain choppy or fail temporarily.
+- Weak mainline + abundant funds = speculative rotation; demand faster invalidation.
 - Strong story + one-sided confidence + weakening breadth = late-cycle crowding risk.
-- Good news that no longer lifts price means expectations may be saturated.
+- Good news that no longer lifts price = expectations may be saturated.
+- Leader holds while followers fail = possible distribution or narrow defensive hiding.
 
-For A-shares, map this to policy/theme breadth, limit-up structure, 股吧 heat, sector-board confirmation, and fund-flow concentration.
+### Funds And Positioning
 
-For U.S. stocks, map this to earnings revisions, rates, mega-cap/index concentration, ETF flows, options/gamma, buybacks, and short interest.
+For sentiment work, funds are not only macro liquidity. Check:
+
+- who is buying now;
+- whether the move depends on short covering, options gamma, margin, ETF/index flow, or retail chase;
+- whether volume expands with progress or only with churn;
+- whether pullbacks attract new buyers or merely produce weak rebounds;
+- whether a competing theme is draining attention.
+
+### Cycle Mapping
+
+Map the sentiment phase before judging continuation:
+
+1. `Recognition`: discussion starts, evidence is early, skepticism remains.
+2. `Emergence`: leaders resist weakness and the theme starts to outperform.
+3. `Expansion`: followers broaden, pullbacks are bought, and news/price reinforce each other.
+4. `Divergence`: leaders still look strong, but breadth, volume-price quality, or expectation gap worsens.
+5. `Climax`: attention becomes one-sided, late followers spike, and price becomes fragile.
+6. `Retreat/Reset`: leaders break, loss effect spreads, and the old story becomes research material.
+
+Early disagreement can be healthy turnover. Late disagreement after euphoria is usually risk.
+
+### Market Adaptation
+
+For A-shares, map this to policy/theme breadth, limit-up structure, 股吧 heat, sector-board confirmation, turnover, and fund-flow concentration.
+
+For U.S. stocks, map this to earnings revisions, rates, mega-cap/index concentration, ETF flows, options/gamma, buybacks, short interest, and whether guidance is accepted.
 
 For Japanese stocks, map this to yen, foreign flows, shareholder-return reform, exporters, banks, semiconductors, and global cycle exposure.
 
-When answering, translate the four lenses into compact conclusions:
+### Output Translation
+
+When answering, translate the lens into compact conclusions:
 
 1. `主线`: real leader, follower, old-leader rebound, defensive substitute, or noise.
 2. `资金`: fresh inflow, crowded chase, liquidity squeeze, forced covering, or de-risking.
 3. `博弈`: what mechanism explains the speed and volatility of the move.
-4. `周期`: early, acceleration, climax/divergence, or retreat.
+4. `周期`: recognition, emergence, expansion, divergence, climax, or retreat.
 5. `验证/失效`: what price, breadth, news, or flow evidence changes the classification.

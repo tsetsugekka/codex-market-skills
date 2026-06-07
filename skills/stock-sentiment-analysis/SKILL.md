@@ -21,12 +21,12 @@ When preparing a GitHub upload or public release, use only the public version an
 
 ## Reference Reading Rule
 
-When this skill selects a reference file, read the complete file before applying it. Do not rely on a partial excerpt, heading-only scan, or stale memory of the reference. This includes `references/experience.md`, `references/sentiment-framework.md`, and the repo-level `shared/references/release-and-privacy.md` when publishing.
+When this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans. For publishing, still read the repo-level `shared/references/release-and-privacy.md` carefully enough to complete the checklist.
 
 ## Workflow
 
-1. Read the full `references/experience.md` before deep analysis.
-2. Read the full `references/sentiment-framework.md` when the task needs emotion-cycle classification, main-line judgment, crowded-trade risk, forum psychology, cross-market sentiment, or mainline/funds/game/cycle interpretation. Read the full repo-level `shared/references/release-and-privacy.md` before publishing, syncing public/private versions, or preparing a GitHub upload.
+1. Read the relevant areas of `references/experience.md` before deep analysis; read the full file when the task is broad or the active playbook may affect the answer.
+2. During decomposition, actively expand stock, index, and theme questions into emotion-cycle, main-line/follower, expectation-gap, crowding, cross-market sentiment, or mainline/funds/game/cycle checks when these lenses can change the conclusion, even if the user did not explicitly request them. Read the relevant areas of `references/sentiment-framework.md`. Read the repo-level `shared/references/release-and-privacy.md` before publishing, syncing public/private versions, or preparing a GitHub upload.
 3. Gather or receive evidence from the market-specific skill first:
    - A-shares: prefer `cn-stock-move-reason` for quote, announcements, 股吧, board ranks, breadth, and A-share emotion cycle.
    - Japanese stocks: prefer `jp-stock-move-reason` for quote, news, Yahoo 掲示板, metrics, and theme/peer context.

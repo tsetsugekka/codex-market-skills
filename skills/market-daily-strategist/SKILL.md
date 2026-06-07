@@ -23,9 +23,9 @@ If the user says only `盘前信息`, `收盘复盘`, or `推荐一只股票`, i
 
 Always read `references/shared.md` first, then only the one task-specific reference that matches the user request.
 
-Reference reading rule: when this skill selects a reference file, read the complete file before applying it. Do not rely on a partial excerpt, heading-only scan, or stale memory of the reference.
+Reference reading rule: when this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans.
 
-When the user asks about medium/long-term market direction, cross-market strategy, market regime, bull/bear structure, or the durability of a theme-driven rally, also read `references/global-mainline-funds-game-cycle.md`.
+During question decomposition, actively expand broad market, sector, theme, and long-term stock questions into `mainline x funds x game x cycle` when that lens can change the conclusion, even if the user did not explicitly ask for it. In those cases, read the relevant sections of `references/global-mainline-funds-game-cycle.md`.
 
 ## Core Workflow
 

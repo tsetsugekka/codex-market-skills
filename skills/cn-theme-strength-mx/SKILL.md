@@ -13,7 +13,7 @@ Default to this skill when the user asks in Chinese or English for `题材强弱
 
 ## Reference Reading Rule
 
-When this skill selects a reference file, read the complete file before applying it. Do not rely on a partial excerpt, heading-only scan, or stale memory of the reference.
+When this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans.
 
 Use a fast market-board ranking source such as 东方财富 concept/industry board rankings only when the user explicitly asks for `快速看盘面`, `板块榜`, `行业/概念板块排行`, `现在市场炒什么`, or a quick broad tape read. That fast board-tape result may be useful as an auxiliary confirmation layer, but it is not this skill's formal theme-strength output.
 
@@ -130,7 +130,7 @@ Rules:
 
 ## Theme Lifecycle Lens
 
-When the user asks which themes are true mainlines, whether a strong theme can continue, or whether today's strength is only rotation/noise, read `references/theme-mainline-lifecycle.md` and apply it after the ranking. Do not replace the weighted-return ranking with this lens; use it only to interpret durability, crowding, and follow-through quality.
+During question decomposition, actively decide whether the theme ranking needs a lifecycle or mainline interpretation, even if the user only asks `现在什么题材强`. Read the relevant sections of `references/theme-mainline-lifecycle.md` when durability, leadership, crowding, continuation, old-leader rebound, defensive substitution, or one-day noise can change the conclusion. Do not replace the weighted-return ranking with this lens; use it only to interpret durability, crowding, and follow-through quality.
 
 For default TOP3 driver checks, use the lifecycle lens lightly: identify whether each top theme looks like early emergence, acceleration, climax/divergence, old-leader rebound, defensive substitute, or one-day noise when the available evidence supports that classification. If evidence is insufficient, say `周期位置暂不确认`.
 
