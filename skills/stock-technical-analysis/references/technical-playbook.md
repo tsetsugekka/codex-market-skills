@@ -13,6 +13,9 @@ Before indicators, name the structure:
 - `冲高回落`: intraday high fails, price returns below pressure, volume is heavy but price no longer advances.
 - `高位分歧`: attention and volatility are high, leaders hesitate, followers weaken, or momentum diverges.
 - `破位反抽`: support is lost, rebound cannot reclaim the broken level with volume.
+- `突破回踩`: price breaks a channel, platform, or prior pressure zone, then pulls back without losing the breakout area; valid only after price holds or reclaims the breakout area with volume.
+- `均线支撑修复`: price tests a key average or neckline, avoids downside follow-through, then reclaims a short-term average.
+- `顶部回撤`: lower high, top fractal, repeated rejection, or momentum deterioration after a large rise.
 
 Do not call a move bullish just because it is green. A high green candle after an early spike may still be distribution if it cannot reclaim pressure with volume.
 
@@ -58,8 +61,10 @@ Use multiple timeframes. Do not let a 1-minute chart overrule a damaged 5-minute
 
 Core moving average ideas:
 
-- 5-day line: short-term momentum. A quick reclaim after a break can be a washout; failure to reclaim is risk.
+- 5-day line: short-term momentum. A quick reclaim after a break can be a washout; failure to reclaim is risk. Strong stocks often ride or quickly reclaim the 5-day line after shallow pullbacks.
+- 10-day line: healthy trend-pullback reference. A pullback to the 10-day line is usually higher quality than chasing an extended candle if volume does not expand on the decline.
 - 20-day line: institutional life line. Effective break plus failed reclaim implies trend damage.
+- 60-day line: medium-term structure. When it overlaps with a neckline, gap edge, or prior base, it becomes a major decision zone; a reclaim of the 5-day line after defending the 60-day line improves the repair signal.
 - Slope matters: the steeper the line after a large rise, the higher the reaction risk.
 - Support can become resistance after it is broken.
 
@@ -165,7 +170,57 @@ Support rule:
 - A support is valid only if price reacts there and can reclaim short-term averages.
 - If support breaks with volume and cannot recover quickly, treat the trend as damaged.
 
-## 8. 空中加油
+
+## 8. Price-Structure Scenario Library
+
+New-high healthy pullback:
+
+- Price has just broken to a new high.
+- The next candle is a small down candle or shallow pullback, but it does not lose the prior day open or the short moving-average cluster.
+- Volume does not show heavy selling.
+- Treat it as consolidation, not trend damage, until price loses the key average or quickly forms a lower high.
+
+Breakout-pullback:
+
+- Price first breaks a descending channel, platform upper edge, prior high, or daily channel boundary.
+- The first breakout is not the best proof; the pullback is the test.
+- A valid pullback holds the breakout area, 5-day/10-day line, prior neckline, or platform edge, then rebounds with volume.
+- If price falls back into the old platform or breaks the pullback low with volume, classify it as a failed breakout.
+
+60-day-line plus neckline support:
+
+- A test of the 60-day line is important when it overlaps with a prior neckline, gap edge, or base boundary.
+- This is a watch zone, not an automatic buy signal.
+- Confidence improves only if price avoids downside follow-through for several sessions and reclaims the 5-day line or VWAP/short averages intraday.
+- If the 60-day line breaks and a lower gap opens underneath, downside space can expand quickly.
+
+Top-pullback risk:
+
+- Lower highs after a large move show weakening rebound quality.
+- A top fractal, repeated upper shadows, MACD/KDJ deterioration, or a return into the prior box increases pullback risk.
+- Do not treat the first sharp drop as a bargain by default. Wait for support defense, bottom structure, shrinking selling volume, or a reclaim of short averages.
+
+Gap and neckline handling:
+
+- A gap is not automatically support or resistance. The useful question is whether price accepts or rejects the area after the first reaction.
+- A rising stock that refuses to fill an upside gap for several sessions may still be strong.
+- A broken neckline with an open gap below can turn a normal pullback into a deeper damage pattern.
+- A filled gap that immediately reclaims the gap edge is stronger than a fill that continues lower.
+
+Platform breakout target logic:
+
+- When price breaks a well-defined platform and then retests successfully, the first target can be prior pressure or a measured move using the platform height.
+- If price reaches the target or major pressure quickly, do not chase the last segment. Wait for a new pullback, retest, or higher-low structure.
+- A breakout that repeatedly moves up-down-up-down above the platform is usually healthier than a single spike that immediately falls back into the box.
+
+Execution realism:
+
+- Good trades have a clear structure, nearby invalidation, and enough room to the next pressure zone.
+- Let strong trend trades work longer, but keep invalidation shallow and explicit.
+- Size should follow clarity: unclear structures deserve small size or no trade; clear structures with nearby invalidation can justify more committed exposure.
+- Avoid using options or leveraged instruments to compensate emotionally for being under-positioned in the underlying. If options are illiquid, spreads are wide, IV is already inflated, or the chart is still unconfirmed, the underlying is usually cleaner than the option.
+
+## 9. 空中加油
 
 Definition:
 
@@ -188,7 +243,7 @@ Invalid clues:
 - KDJ/MACD weaken while price holds only because of retail enthusiasm.
 - Key support breaks and cannot be reclaimed.
 
-## 9. 老鸭头
+## 10. 老鸭头
 
 Definition:
 
@@ -209,7 +264,7 @@ Invalid clues:
 - Pullback volume expands and long-cycle support breaks.
 - KDJ/MACD remain weak and the moving-average turn is only mechanical.
 
-## 10. 回踩, 破位, And 破五反五
+## 11. 回踩, 破位, And 破五反五
 
 Healthy pullback:
 
@@ -231,7 +286,7 @@ Breakdown:
 - Reclaim should ideally be supported by volume.
 - If price breaks but cannot stand back above the 5-day line, beware further selling.
 
-## 11. Candlestick Context
+## 12. Candlestick Context
 
 Read candles in context, not as isolated names.
 
@@ -241,7 +296,7 @@ Read candles in context, not as isolated names.
 - Narrow high-level consolidation can be bullish only if support and volume behavior are healthy.
 - Repeated failed highs at the same level are pressure confirmation.
 
-## 12. A-Share Emotion Overlay
+## 13. A-Share Emotion Overlay
 
 For A-shares, combine technicals with the emotion cycle:
 
@@ -255,7 +310,7 @@ For A-shares, combine technicals with the emotion cycle:
 
 Technical signals near emotion climax need stricter confirmation. A breakout during early cycle can work with less perfection; a breakout after broad climax needs stronger volume and leadership confirmation.
 
-## 13. Intraday "Can It Reach X?" Framework
+## 14. Intraday "Can It Reach X?" Framework
 
 When the user asks whether a stock can reach a target price today:
 
@@ -286,7 +341,7 @@ Execution realism:
 
 Use exact levels from live data where possible. If the chart data is stale or visually uncertain, say so.
 
-## 14. Chart App Visual Workflow
+## 15. Chart App Visual Workflow
 
 Use this when reading moomoo, Yahoo Finance charts, broker apps, or screenshots.
 
@@ -336,7 +391,7 @@ Output from chart-app analysis should include:
 - `执行含义`: distinguish touch/break/tradable hold; separate intraday profit-taking from trend holding if both matter.
 - `下一验证点`: the exact level or candle behavior that would change the conclusion.
 
-## 15. Response Guardrails
+## 16. Response Guardrails
 
 - Do not issue direct buy/sell commands.
 - State the data source and whether it is live, delayed, screenshot-based, or inferred.
