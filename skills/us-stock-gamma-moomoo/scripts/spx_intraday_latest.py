@@ -124,6 +124,8 @@ def aggregate(rows: list[dict], spot: float, label: str) -> dict:
             "count": 0,
             "net_gex": 0.0,
             "net_vex": 0.0,
+            "gex_by_strike": [],
+            "vex_by_strike": [],
             "walls": [],
             "pits": [],
             "vanna_walls": [],
@@ -164,6 +166,8 @@ def aggregate(rows: list[dict], spot: float, label: str) -> dict:
         "count": len(rows),
         "net_gex": float(sum(signed_gex(r, spot) for r in rows)),
         "net_vex": float(sum(signed_vex(r, spot) for r in rows)),
+        "gex_by_strike": [[float(k), float(v)] for k, v in sorted(by_strike.items())],
+        "vex_by_strike": [[float(k), float(v)] for k, v in sorted(by_vanna.items())],
         "walls": top_items(by_strike, reverse=True),
         "pits": top_items(by_strike, reverse=False),
         "vanna_walls": top_items(by_vanna, reverse=True),
@@ -203,6 +207,142 @@ def levels_with_value(items: list[list[float]], limit: int = 6) -> str:
     return ", ".join(f"{level:g}({money(value)})" for level, value in items[:limit])
 
 
+def parse_strikes(raw: str | None) -> list[float]:
+    if not raw:
+        return []
+    strikes = []
+    for item in raw.split(","):
+        item = item.strip()
+        if not item:
+            continue
+        strikes.append(float(item))
+    return strikes
+
+
+def strike_map(bucket: dict, key: str = "gex_by_strike") -> dict[float, float]:
+    out = {}
+    for level, value in bucket.get(key, []):
+        out[float(level)] = float(value)
+    if out:
+        return out
+    for level, value in bucket.get("walls", []) + bucket.get("pits", []):
+        out[float(level)] = float(value)
+    return out
+
+
+def sign_label(value: float) -> str:
+    if value > 0:
+        return "正"
+    if value < 0:
+        return "负"
+    return "零"
+
+
+def strike_change_label(prev: float, current: float) -> str:
+    if prev > 0 and current < 0:
+        return "正转负：支撑跑路/降级为加速风险"
+    if prev < 0 and current > 0:
+        return "负转正：支撑恢复/加速风险缓和"
+    if current < 0 and current < prev:
+        return "负 gamma 增强：下方加速风险上升"
+    if current > 0 and current < prev:
+        return "正 gamma 减弱：支撑/钉扎变弱"
+    if current > 0 and current > prev:
+        return "正 gamma 增强：支撑/钉扎增强"
+    if current < 0 and current > prev:
+        return "负 gamma 减弱：加速风险缓和"
+    return "变化不大"
+
+
+def default_watch_strikes(prev: dict, current: dict) -> list[float]:
+    strikes: set[float] = set()
+    spot = float(current.get("spot_anchor", 0) or 0)
+    if spot:
+        strikes.add(round(spot / 25) * 25)
+        strikes.add(round(spot / 50) * 50)
+    for result in [prev, current]:
+        zero = result.get("buckets", {}).get("0DTE", {})
+        for key in ["walls", "pits"]:
+            for level, _ in zero.get(key, [])[:4]:
+                strikes.add(float(level))
+    return sorted(strikes)
+
+
+def compare_snapshots(prev: dict, current: dict, watch_strikes: list[float]) -> dict:
+    if not watch_strikes:
+        watch_strikes = default_watch_strikes(prev, current)
+    comparison = {
+        "previous_generated": prev.get("generated", ""),
+        "current_generated": current.get("generated", ""),
+        "watched_strikes": watch_strikes,
+        "strike_changes": {},
+    }
+    for bucket_name in ["0DTE", "Next2", "Fri2w", "All"]:
+        prev_bucket = prev.get("buckets", {}).get(bucket_name, {})
+        current_bucket = current.get("buckets", {}).get(bucket_name, {})
+        prev_map = strike_map(prev_bucket)
+        current_map = strike_map(current_bucket)
+        rows = []
+        for strike in watch_strikes:
+            if strike not in prev_map or strike not in current_map:
+                continue
+            prev_value = prev_map[strike]
+            current_value = current_map[strike]
+            delta = current_value - prev_value
+            sign_changed = (prev_value > 0 > current_value) or (prev_value < 0 < current_value)
+            material = sign_changed or abs(delta) >= 250_000_000 or abs(current_value) >= 500_000_000
+            if not material:
+                continue
+            rows.append(
+                {
+                    "strike": strike,
+                    "previous_gex": prev_value,
+                    "current_gex": current_value,
+                    "delta": delta,
+                    "previous_sign": sign_label(prev_value),
+                    "current_sign": sign_label(current_value),
+                    "label": strike_change_label(prev_value, current_value),
+                }
+            )
+        if rows:
+            comparison["strike_changes"][bucket_name] = rows
+    return comparison
+
+
+def render_comparison(comparison: dict) -> list[str]:
+    changes = comparison.get("strike_changes", {})
+    if not changes:
+        return []
+    zero = changes.get("0DTE", [])
+    all_rows = changes.get("All", [])
+    near_rows = changes.get("Next2", []) + changes.get("Fri2w", [])
+
+    def levels_for(rows: list[dict], predicate, limit: int = 4) -> str:
+        selected = [row for row in rows if predicate(row)]
+        selected = sorted(selected, key=lambda row: abs(row["current_gex"]), reverse=True)[:limit]
+        return ", ".join(f"{row['strike']:g}" for row in selected) if selected else ""
+
+    support_lost = levels_for(zero, lambda row: row["previous_gex"] > 0 > row["current_gex"])
+    downside_risk = levels_for(zero, lambda row: row["current_gex"] < 0 and row["delta"] < 0)
+    broad_downside = levels_for(all_rows or near_rows, lambda row: row["current_gex"] < 0 and row["delta"] < 0)
+    positive_weaker = levels_for(zero, lambda row: row["current_gex"] > 0 and row["delta"] < 0)
+
+    lines = ["", "结构变化解读："]
+    if support_lost:
+        lines.append(f"- 支撑质量恶化：{support_lost} 一带出现正转负，原先的钉扎/缓冲消失，回踩更容易变成顺势下探。")
+    elif downside_risk:
+        lines.append(f"- 下方风险增强：{downside_risk} 一带负 gamma 继续加深，说明这里不是稳固支撑，更像破位后的加速/磁吸区。")
+    else:
+        lines.append("- 支撑没有明显恢复：未看到关键下方执行价从负转正，短线反弹仍需要价格重新站回 flip 才能确认。")
+
+    if broad_downside:
+        lines.append(f"- 风险重心下移：近端/全窗口负 gamma 压力集中在 {broad_downside} 一带，预示跌破第一道防线后容易向下一组流动性区扩散。")
+    if positive_weaker:
+        lines.append(f"- 上方钉扎变弱：{positive_weaker} 一带正 gamma 减弱，反弹阻尼下降但也代表承接变薄，盘中更容易急涨急跌。")
+    lines.append("- 交易含义：这类变化本身通常不是第一卖因，但会在价格跌破 flip 或关键位后放大现货卖压；要用价格是否快速收回关键位来确认支撑是否真的还在。")
+    return lines
+
+
 def render_text_report(result: dict) -> str:
     spot = result["spot_anchor"]
     zero = result["buckets"].get("0DTE", {})
@@ -216,8 +356,7 @@ def render_text_report(result: dict) -> str:
     wall_text = f"{top_wall:g}" if top_wall is not None else "无"
     pit_text = f"{top_pit:g}" if top_pit is not None else "无"
 
-    return "\n".join(
-        [
+    lines = [
             "SPX/SPXW intraday gamma memo",
             "",
             f"一句话：SPX 锚点 {spot:.2f}（{result.get('spot_method', '')}），0DTE 为 {zero_regime}，全窗口为 {all_regime}；0DTE 主 wall {wall_text}，主 pit {pit_text}。",
@@ -238,8 +377,9 @@ def render_text_report(result: dict) -> str:
             f"- Fri2w pits: {levels_with_value(fri2w.get('pits', []), 5)}",
             "",
             f"数据：生成 {result.get('generated', '')}; 到期日 {', '.join(result.get('expiries', []))}; SPY 只作 sanity check，不作为 SPX 点位换算主流程。",
-        ]
-    )
+    ]
+    lines.extend(render_comparison(result.get("comparison", {})))
+    return "\n".join(lines)
 
 
 def get_option_chain(ctx, expiry: str, strike_min: float, strike_max: float, retry_delay: float):
@@ -256,6 +396,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Print a SPX/SPXW intraday gamma text memo")
     parser.add_argument("--json-output", help="Optional JSON path; use only when a raw data file is explicitly requested")
     parser.add_argument("--output", dest="json_output", help=argparse.SUPPRESS)
+    parser.add_argument("--compare-json", help="Previous JSON snapshot to compare against")
+    parser.add_argument("--watch-strikes", help="Comma-separated strikes to compare, e.g. 7400,7425,7450")
     parser.add_argument("--strike-min", type=float, default=6600)
     parser.add_argument("--strike-max", type=float, default=8200)
     parser.add_argument("--future-count", type=int, default=4)
@@ -364,6 +506,9 @@ def main() -> None:
             "filters": {"0DTE": "SPXW + PM settled only", "strike_window": [args.strike_min, args.strike_max]},
             "buckets": buckets,
         }
+        if args.compare_json:
+            previous = json.loads(Path(args.compare_json).read_text(encoding="utf-8"))
+            out["comparison"] = compare_snapshots(previous, out, parse_strikes(args.watch_strikes))
         print(render_text_report(out))
         if args.json_output:
             path = Path(args.json_output)

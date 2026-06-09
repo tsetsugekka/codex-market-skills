@@ -82,6 +82,14 @@ For SPX/SPXW intraday index gamma use:
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py
 ```
 
+When comparing against an earlier same-day SPX/SPXW snapshot, pass the previous JSON and any specific battlefield strikes the user cares about:
+
+```bash
+python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py \
+  --compare-json /path/to/previous_spx_gamma.json \
+  --watch-strikes 7400,7425,7450
+```
+
 For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
 
 ```bash
@@ -100,6 +108,8 @@ The script:
 - calculates signed GEX with the common assumption `Call = +`, `Put = -`;
 - calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
+- when JSON output is requested, includes per-strike `gex_by_strike` and `vex_by_strike` for each bucket so later runs can detect same-strike support/risk migration instead of only comparing top walls and pits;
+- with `--compare-json`, compares the new snapshot with a prior JSON snapshot and highlights material strike-level changes, including positive-to-negative GEX flips where a prior support/wall has disappeared and become a pit or acceleration risk;
 - prints a readable text memo by default; JSON export flags should be used only when the user explicitly asks for raw data.
 
 For SPX 0DTE or quick trading questions, chat/terminal text is the default. Still compute or fetch the chain first when possible.
@@ -131,7 +141,7 @@ Key calculated levels:
 - Vanna map: combine top positive/negative VEX zones with IV direction, spot versus flip, and price action. Do not describe VEX alone as bullish or bearish.
 - Rough magnet/bias: if enough strike-level GEX/VEX data is available, estimate a self-calculated magnet from dominant nearby walls, pits, and VEX zones using distance decay around current spot. Label it as rough and non-proprietary. Report it as `magnet above/below current spot`, plus a plain bias such as `偏多修复`, `中性钉扎`, `上方压力`, or `下方加速风险`.
 
-When the user runs this skill multiple times during the same trading day in the same conversation, use earlier same-day results as optional but important context. Compare the new result with the earlier answer when migration could change the judgment, when the user asks "now/again", or when spot is near a wall, pit, flip, or trigger: spot, net GEX, net VEX, flip, nearest wall, nearest pit, CPR relationship, and rough magnet/bias if calculated. State what migrated and what strengthened/weakened. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
+When the user runs this skill multiple times during the same trading day in the same conversation, use earlier same-day results as optional but important context. Compare the new result with the earlier answer when migration could change the judgment, when the user asks "now/again", or when spot is near a wall, pit, flip, or trigger: spot, net GEX, net VEX, flip, nearest wall, nearest pit, CPR relationship, and rough magnet/bias if calculated. State what migrated and what strengthened/weakened. If a prior JSON snapshot exists or the user provides one, run `spx_intraday_latest.py --compare-json ...`; if the user asks about a specific level such as `7400支撑还在吗`, include it in `--watch-strikes`. Always check whether the same strike's GEX sign or magnitude changed materially across 0DTE, Next2, Fri2w, and All buckets, but do not mechanically dump same-strike change rows in the final answer. Translate the comparison into what it means and what it may foreshadow: support quality deteriorating or recovering, risk center migrating lower/higher, upper pinning weakening, reflexive selling/buying risk rising, or chop/pinning returning. Treat positive-to-negative GEX migration at an active battlefield strike as `支撑跑路/降级为加速风险`, not merely as a lower wall ranking. Treat negative-to-positive migration as `支撑恢复/加速风险缓和`, but still require price action to confirm. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
 
 ## Dark Pool / Short Data Layer
 
