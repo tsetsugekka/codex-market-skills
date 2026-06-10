@@ -82,6 +82,12 @@ For SPX/SPXW intraday index gamma use:
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py
 ```
 
+When the user asks about `未来几天 gamma`, `未来几日 gamma`, `后面几天 gamma`, `按日期看 gamma`, `哪天强哪天弱`, or shares a multi-expiry gamma chart and wants the forward read, use the per-expiry report mode:
+
+```bash
+python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py --by-expiry-report
+```
+
 When comparing against an earlier same-day SPX/SPXW snapshot, pass the previous JSON and any specific battlefield strikes the user cares about:
 
 ```bash
@@ -109,6 +115,8 @@ The script:
 - calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
 - when JSON output is requested, includes per-strike `gex_by_strike` and `vex_by_strike` for each bucket so later runs can detect same-strike support/risk migration instead of only comparing top walls and pits;
+- includes a `per_expiry` section in JSON for each selected expiration date, so future-days gamma reads can say which exact date is weaker or stronger instead of only using `Next2` / `Fri2w` aggregate buckets;
+- with `--by-expiry-report`, prints a per-date forward gamma memo that names each selected expiry date, net GEX, flip, main downside risk zone, upper pressure/pinning zone, and a baseline/bearish/repair scenario;
 - with `--compare-json`, compares the new snapshot with a prior JSON snapshot and highlights material strike-level changes, including positive-to-negative GEX flips where a prior support/wall has disappeared and become a pit or acceleration risk;
 - prints a readable text memo by default; JSON export flags should be used only when the user explicitly asks for raw data.
 
@@ -132,6 +140,15 @@ Read extra references only when the request needs them:
 ## Text Level Map And Session Memory
 
 For SPX/SPXW and other index-style intraday gamma answers, expose the level work as text: short bullets, compact Markdown tables, and a direct bias line. Do not rely on visual-only interpretation.
+
+For forward-looking requests such as `未来几天 gamma`, `未来几日 gamma`, `后面几天 gamma`, `哪天强哪天弱`, or a screenshot showing several expiry dates, do not answer only with `0DTE / Next2 / Fri2w` tables. Use `spx_intraday_latest.py --by-expiry-report` or otherwise compute `per_expiry`, then answer in this structure:
+
+1. Start with one sentence: `从“未来几天 gamma”角度看：...` and say whether the next 1-3 days are repaired, weak, high-volatility, or pressure-first. Name the key repair zone.
+2. Add `按具体到期日看：` and one short paragraph per expiry date, e.g. `2026-06-09 周二，当天到期`, `2026-06-10 周三`, `2026-06-11 周四`, `2026-06-12 周五`. For each date, state: weak/strong label, net GEX direction and rough size, flip, main downside put-gamma risk zones, upper call-gamma pressure/pinning zones, and what price must reclaim to improve.
+3. Add `我的推演：` with exactly three scenario bullets: `基准情形`, `偏空情形`, and `修复情形`. These scenarios should use dates and levels, not generic statements.
+4. End with a plain conclusion such as: `所以按日期结论是：周二最弱，周三/周四仍偏压制，周五有修复窗口但门槛在 7450。`
+
+For this mode, avoid dumping every strike or table row. The user wants the trading meaning: which date is structurally weak, where risk migrates, where repair starts, and what would invalidate the weak/strong read.
 
 Key calculated levels:
 

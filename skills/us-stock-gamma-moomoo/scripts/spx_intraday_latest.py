@@ -207,6 +207,29 @@ def levels_with_value(items: list[list[float]], limit: int = 6) -> str:
     return ", ".join(f"{level:g}({money(value)})" for level, value in items[:limit])
 
 
+def level_numbers(items: list[list[float]], limit: int = 5) -> str:
+    if not items:
+        return "无"
+    return " / ".join(f"{float(level):.0f}" for level, _ in items[:limit])
+
+
+def first_level(items: list[list[float]] | list[float]) -> float | None:
+    if not items:
+        return None
+    first = items[0]
+    if isinstance(first, (list, tuple)):
+        return float(first[0])
+    return float(first)
+
+
+def weekday_label(expiry: str) -> str:
+    names = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+    try:
+        return names[datetime.strptime(expiry, "%Y-%m-%d").weekday()]
+    except Exception:
+        return ""
+
+
 def parse_strikes(raw: str | None) -> list[float]:
     if not raw:
         return []
@@ -382,6 +405,109 @@ def render_text_report(result: dict) -> str:
     return "\n".join(lines)
 
 
+def expiry_bias(bucket: dict, spot: float) -> str:
+    net = float(bucket.get("net_gex", 0) or 0)
+    flip = first_level(bucket.get("flips", []))
+    if net < -7_000_000_000:
+        return "最弱/偏弱"
+    if net < -2_500_000_000:
+        return "偏弱"
+    if net < 0:
+        return "弱势缓和"
+    if flip and spot >= flip:
+        return "偏修复"
+    return "中性偏修复"
+
+
+def render_by_expiry_report(result: dict) -> str:
+    spot = float(result["spot_anchor"])
+    per_expiry = result.get("per_expiry", {})
+    expiries = [expiry for expiry in result.get("expiries", []) if expiry in per_expiry]
+    if not expiries:
+        return render_text_report(result)
+
+    future_flips = [
+        first_level(per_expiry[e].get("flips", []))
+        for e in expiries[1:4]
+        if first_level(per_expiry[e].get("flips", []))
+    ]
+    flips = future_flips or [first_level(per_expiry[e].get("flips", [])) for e in expiries if first_level(per_expiry[e].get("flips", []))]
+    repair_low = min(flips) if flips else None
+    repair_high = max(flips[:4]) if flips else None
+    today = expiries[0]
+    today_bucket = per_expiry[today]
+    first_resistance = first_level(today_bucket.get("walls", []))
+    first_risk = first_level(today_bucket.get("pits", []))
+
+    if repair_low and repair_high and repair_high - repair_low >= 15:
+        repair_text = f"{repair_low:.0f}-{repair_high:.0f}"
+    elif repair_low:
+        repair_text = f"{repair_low:.0f}"
+    else:
+        repair_text = "主要 flip 区"
+    resistance_text = f"{first_resistance:.0f}" if first_resistance else "第一压力"
+    risk_text = f"{first_risk:.0f}" if first_risk else "第一风险位"
+
+    net_values = [(expiry, float(per_expiry[expiry].get("net_gex", 0) or 0)) for expiry in expiries]
+    weakest = min(net_values, key=lambda item: item[1])[0]
+    easing = [expiry for expiry, net in net_values if expiry != weakest and net < 0 and abs(net) < abs(net_values[0][1]) * 0.45]
+    easing_text = "、".join(easing[:2]) if easing else ""
+
+    lines = [
+        "SPX/SPXW future-days gamma memo",
+        "",
+        f"从“未来几天 gamma”角度看：现价约 {spot:.0f}，短线还没修复，未来几天更像高波动、反弹先看卖压；除非先收回 {resistance_text}，进一步站上 {repair_text}。",
+        "",
+        "按具体到期日看：",
+    ]
+
+    for idx, expiry in enumerate(expiries):
+        bucket = per_expiry[expiry]
+        net = float(bucket.get("net_gex", 0) or 0)
+        flip = first_level(bucket.get("flips", []))
+        walls = level_numbers(bucket.get("walls", []), 5)
+        pits = level_numbers(bucket.get("pits", []), 5)
+        flip_text = f"{flip:.0f}" if flip else "NA"
+        bias = expiry_bias(bucket, spot)
+        day = weekday_label(expiry)
+        if idx == 0:
+            lead = "当天到期"
+        elif idx <= 2:
+            lead = "近端到期"
+        else:
+            lead = "后续到期"
+        if net < 0 and flip and spot < flip:
+            meaning = f"现价在 flip {flip_text} 下方，仍是负 gamma 压制；反弹到上方压力位更容易先遇到卖压。"
+        elif net < 0:
+            meaning = "净 GEX 仍为负，说明结构还没有切回稳定钉扎。"
+        else:
+            meaning = "净 GEX 转正，结构开始偏向钉扎/均值回归，但仍要看价格是否守住关键位。"
+        lines.extend(
+            [
+                "",
+                f"**{expiry} {day}，{lead}：{bias}**",
+                f"净 GEX {money(net)}，flip {flip_text}。下方风险主要在 {pits}；上方压力/钉扎在 {walls}。{meaning}",
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            "我的推演：",
+            "",
+            f"**基准情形**：围绕 {risk_text} 到 {resistance_text} 高波动震荡，反弹先看能否站稳第一压力；站不上，仍是弱势结构。",
+            f"**偏空情形**：跌破 {risk_text} 后反抽弱，容易继续向下一组 put gamma 风险位扩散。",
+            f"**修复情形**：先重新站回 {resistance_text}，再看 {repair_text}；只有站上主要 future flip 区，未来几天才可能从“下跌放大”切回“震荡修复”。",
+            "",
+            f"所以按日期结论是：{weakest} 最弱；" + (f"{easing_text} 的弱势开始缓和但还没转强；" if easing_text else "") + f"真正修复要看价格能否重新站上 {repair_text}。",
+            "",
+            f"数据：生成 {result.get('generated', '')}; 到期日 {', '.join(expiries)}; SPY 只作 sanity check，不作为 SPX 点位换算主流程。",
+        ]
+    )
+    lines.extend(render_comparison(result.get("comparison", {})))
+    return "\n".join(lines)
+
+
 def get_option_chain(ctx, expiry: str, strike_min: float, strike_max: float, retry_delay: float):
     ret, chain = ctx.get_option_chain(UNDERLYING, start=expiry, end=expiry)
     if ret != RET_OK and "频率" in str(chain):
@@ -398,6 +524,7 @@ def main() -> None:
     parser.add_argument("--output", dest="json_output", help=argparse.SUPPRESS)
     parser.add_argument("--compare-json", help="Previous JSON snapshot to compare against")
     parser.add_argument("--watch-strikes", help="Comma-separated strikes to compare, e.g. 7400,7425,7450")
+    parser.add_argument("--by-expiry-report", action="store_true", help="Render each selected expiry date separately for future-days gamma reads")
     parser.add_argument("--strike-min", type=float, default=6600)
     parser.add_argument("--strike-max", type=float, default=8200)
     parser.add_argument("--future-count", type=int, default=4)
@@ -494,6 +621,10 @@ def main() -> None:
             "Fri2w": aggregate([r for r in rows if r["expiry"] in friday2], spot, "Next two Friday expiries"),
             "All": aggregate(rows, spot, "All selected near expiries"),
         }
+        per_expiry = {
+            expiry: aggregate([r for r in rows if r["expiry"] == expiry], spot, f"Expiry {expiry}")
+            for expiry in selected_expiries
+        }
 
         out = {
             "generated": datetime.now().isoformat(timespec="seconds"),
@@ -505,11 +636,12 @@ def main() -> None:
             "expiries": selected_expiries,
             "filters": {"0DTE": "SPXW + PM settled only", "strike_window": [args.strike_min, args.strike_max]},
             "buckets": buckets,
+            "per_expiry": per_expiry,
         }
         if args.compare_json:
             previous = json.loads(Path(args.compare_json).read_text(encoding="utf-8"))
             out["comparison"] = compare_snapshots(previous, out, parse_strikes(args.watch_strikes))
-        print(render_text_report(out))
+        print(render_by_expiry_report(out) if args.by_expiry_report else render_text_report(out))
         if args.json_output:
             path = Path(args.json_output)
             path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
