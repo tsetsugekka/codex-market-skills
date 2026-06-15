@@ -34,6 +34,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
   - Japan: `🇯🇵`
 - If several events fall in the same 30-minute bucket, combine them into one event. Buckets are `:00-:29` and `:30-:59`.
 - If combined events are all from the same country, use the flag only once. If countries differ, include each relevant flag before its event name.
+- Do not combine earnings events (`ER` or `決算`) with macro, auction, holiday, political, central-bank, conference, index-change, or other market-event items. Even if they fall in the same 30-minute bucket, create separate Calendar events. The 30-minute combining rule applies only within the same workflow/category.
 - Use the user's local-time event times in Calendar. Convert source-market event times into the user's local timezone before writing events. In descriptions, write in Chinese unless the user asks otherwise.
 - For 5-star events, set Google Calendar event color to red (`color_id: "11"` after confirming colors if needed).
 - Prefer transparent events for informational market calendar items unless the existing event uses a different setting or the user asks to block the calendar.
@@ -81,6 +82,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
 - When skipping a no-match slot, mention it in the final report with the session and the main tickers that were skipped, so the user can audit what was intentionally left out.
 - Use a short fallback title with the most liquid/market-relevant names only when the user has no usable watchlist or explicitly wants a title for every slot.
 - Keep all extracted tickers in the description.
+- If an earnings slot overlaps with a macro or market-event calendar item, keep the earnings event separate instead of merging titles or descriptions.
 
 ### 4. Calendar Format
 
@@ -236,6 +238,8 @@ For combined events, repeat the same block per event separated by:
 ```
 
 Do not repeat the event name, country, type, or calendar time in the description when the title and calendar slot already show them. Keep the description focused on importance, forecasts, and directional market impact.
+
+If a macro or market-event item overlaps with an earnings event, keep the macro/event item separate instead of merging titles or descriptions.
 
 ## Updating Existing Events
 
