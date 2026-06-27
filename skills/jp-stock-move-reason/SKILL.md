@@ -35,7 +35,16 @@ When preparing a GitHub upload or public release, use the public version only an
    - If the answer uses **情绪面** such as theme leadership, crowding, leader/follower, defensive alternative, old-leader rebound, risk-on/risk-off, expectation gap, or 掲示板 psychology, load `stock-sentiment-analysis`.
    - Final answers should include a compact `融合口径` line when any supporting skill is used, e.g. `Yahoo/Kabutan/Traders 证据 + macro-news-check tape + stock-technical-analysis 结构 + stock-sentiment-analysis 情绪/期待差`.
 
-2. Run the collector script from the repo root:
+2. Run the collector script from the repo root. In this local Codex desktop
+   environment, network DNS frequently fails inside the default sandbox. For
+   this skill, skip the first sandboxed collector attempt and run the collector
+   directly with `sandbox_permissions: "require_escalated"` when the current
+   task needs live Yahoo/Kabutan/Traders/Yahoo 掲示板 data. Use the same command
+   and include a concise approval question such as `需要联网抓取 CODE 的最新行情、
+   新闻和 Yahoo 掲示板；是否允许本次联网采集？`. Do not tell the user "sandbox
+   DNS failed" before making this escalated collector call. If escalation is
+   rejected, then state that live collection was blocked and fall back to cached
+   or non-live evidence.
 
 ```bash
 python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 7203 --format markdown
@@ -49,7 +58,14 @@ Useful options:
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
 
-3. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy. In this local environment, the collector often fails inside the sandbox with DNS-style errors such as `nodename nor servname provided, or not known`, `urlopen error`, or repeated empty Yahoo/Kabutan/Traders results. Treat those as sandbox/network failures, not as evidence that there is no news or no Yahoo 掲示板 activity. Escalate and rerun before concluding that sources are empty.
+3. If a sandboxed collector call was already attempted by mistake and network
+   access fails in Codex, rerun the same command with sandbox escalation
+   according to the normal approval policy. In this local environment, the
+   collector often fails inside the sandbox with DNS-style errors such as
+   `nodename nor servname provided, or not known`, `urlopen error`, or repeated
+   empty Yahoo/Kabutan/Traders results. Treat those as sandbox/network failures,
+   not as evidence that there is no news or no Yahoo 掲示板 activity. Escalate and
+   rerun before concluding that sources are empty.
 
 4. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
 
