@@ -169,6 +169,20 @@ def level_list(items, limit: int = 6) -> str:
     return ", ".join(f"{k:g}({money(v)})" for k, v in items[:limit])
 
 
+def signed_call_gex(row: OptionRow, spot: float, use_model_gamma: bool = False) -> float:
+    if row.option_type != "CALL":
+        return 0.0
+    gamma = black_scholes_gamma(spot, row.strike, row.iv, row.dte) if use_model_gamma else row.gamma
+    return gamma * row.oi * 100 * spot * spot * 0.01
+
+
+def signed_put_abs_gex(row: OptionRow, spot: float, use_model_gamma: bool = False) -> float:
+    if row.option_type != "PUT":
+        return 0.0
+    gamma = black_scholes_gamma(spot, row.strike, row.iv, row.dte) if use_model_gamma else row.gamma
+    return gamma * row.oi * 100 * spot * spot * 0.01
+
+
 def add_months(d: date, months: int) -> date:
     month = d.month - 1 + months
     year = d.year + month // 12
@@ -306,7 +320,7 @@ def fetch_report_data(underlying: str):
                     vega=norm_float(r.get("option_vega")),
                     dte=norm_float(r.get("option_expiry_date_distance")),
                 )
-                if row.oi > 0 and row.strike > 0 and row.iv > 0 and row.gamma > 0:
+                if row.oi > 0 and row.strike > 0 and row.iv > 0 and row.gamma > 0 and row.dte >= 0:
                     rows.append(row)
 
         ret, k_df, _ = ctx.request_history_kline(
@@ -454,6 +468,152 @@ def analyze(data):
     }
 
 
+def find_gamma_flip(rows: list[OptionRow], spot: float) -> float | None:
+    if not rows or spot <= 0:
+        return None
+    min_grid = math.floor((spot * 0.82) / 2.5) * 2.5
+    max_grid = math.ceil((spot * 1.18) / 2.5) * 2.5
+    prev_spot = None
+    prev_gex = None
+    s = min_grid
+    while s <= max_grid + 1e-9:
+        net = sum(signed_gex(row, s, use_model_gamma=True) for row in rows)
+        if prev_gex is not None and (net == 0 or prev_gex * net < 0):
+            span = s - prev_spot
+            denom = abs(prev_gex) + abs(net)
+            return prev_spot + span * (abs(prev_gex) / denom) if denom else prev_spot
+        prev_spot = s
+        prev_gex = net
+        s += 2.5
+    return None
+
+
+def top_level(levels: dict[float, float], positive_only: bool = False, abs_rank: bool = False):
+    items = [(k, v) for k, v in levels.items() if (v > 0 or not positive_only)]
+    if not items:
+        return None, 0.0
+    key = (lambda kv: abs(kv[1])) if abs_rank else (lambda kv: kv[1])
+    strike, value = max(items, key=key)
+    return strike, value
+
+
+def analyze_by_expiry(data):
+    spot = data["stock"]["spot"]
+    rows: list[OptionRow] = data["options"]
+    grouped: dict[str, list[OptionRow]] = {}
+    for row in rows:
+        grouped.setdefault(row.expiry, []).append(row)
+
+    out = []
+    for expiry in sorted(grouped):
+        expiry_rows = grouped[expiry]
+        net_gex = sum(signed_gex(row, spot) for row in expiry_rows)
+        net_vex = sum(signed_vex(row, spot) for row in expiry_rows)
+        by_strike: dict[float, float] = {}
+        call_by_strike: dict[float, float] = {}
+        put_by_strike: dict[float, float] = {}
+        for row in expiry_rows:
+            by_strike[row.strike] = by_strike.get(row.strike, 0.0) + signed_gex(row, spot)
+            call_by_strike[row.strike] = call_by_strike.get(row.strike, 0.0) + signed_call_gex(row, spot)
+            put_by_strike[row.strike] = put_by_strike.get(row.strike, 0.0) + signed_put_abs_gex(row, spot)
+
+        gamma_wall, gamma_wall_value = top_level(by_strike, positive_only=True)
+        if gamma_wall is None:
+            gamma_wall, gamma_wall_value = top_level(by_strike, abs_rank=True)
+        call_wall, call_wall_value = top_level(call_by_strike)
+        put_wall, put_wall_value = top_level(put_by_strike)
+        pits = sorted(by_strike.items(), key=lambda kv: kv[1])[:3]
+        walls = sorted(by_strike.items(), key=lambda kv: kv[1], reverse=True)[:3]
+        flip = find_gamma_flip(expiry_rows, spot)
+
+        out.append(
+            {
+                "expiry": expiry,
+                "dte": min((row.dte for row in expiry_rows), default=0),
+                "net_gex": net_gex,
+                "net_vex": net_vex,
+                "vol_trigger": flip,
+                "gamma_wall": gamma_wall,
+                "gamma_wall_value": gamma_wall_value,
+                "call_wall": call_wall,
+                "call_wall_value": call_wall_value,
+                "put_wall": put_wall,
+                "put_wall_value": put_wall_value,
+                "walls": walls,
+                "pits": pits,
+            }
+        )
+    return out
+
+
+def directional_label(spot: float, item: dict) -> str:
+    trigger = item["vol_trigger"]
+    put_wall = item["put_wall"]
+    call_wall = item["call_wall"]
+    net_gex = item["net_gex"]
+    if trigger and spot < trigger and net_gex < 0:
+        return "偏空/高波动"
+    if put_wall and call_wall and put_wall <= spot <= call_wall:
+        if trigger and spot >= trigger:
+            return "中性偏多修复"
+        return "中性战场"
+    if trigger and spot >= trigger and net_gex >= 0:
+        return "偏多钉扎"
+    if net_gex < 0:
+        return "高波动战场"
+    return "中性"
+
+
+def render_by_expiry_text(data, analysis, per_expiry):
+    stock = data["stock"]
+    spot = stock["spot"]
+    ticker = stock["code"].split(".")[-1]
+    lines = [
+        f"{ticker} by-expiry gamma directional memo",
+        "",
+        f"Spot: {spot:.2f} ({stock['spot_basis']}; 更新时间 {stock['update_time']})",
+        f"All selected expiries: net GEX {money(analysis['net_current'])}; gamma flip {fmt_num(analysis['flip']) if analysis['flip'] else '未检出'}; regime {analysis['regime']}",
+        "",
+        "| Expiration | DTE | Bias | Vol Trigger* | Gamma Wall | Call Wall | Put Wall | Net GEX |",
+        "|---|---:|---|---:|---:|---:|---:|---:|",
+    ]
+    for item in per_expiry:
+        lines.append(
+            "| {expiry} | {dte:.0f} | {bias} | {trigger} | {gamma_wall} | {call_wall} | {put_wall} | {net_gex} |".format(
+                expiry=item["expiry"],
+                dte=item["dte"],
+                bias=directional_label(spot, item),
+                trigger=price_level(item["vol_trigger"]),
+                gamma_wall=price_level(item["gamma_wall"]),
+                call_wall=price_level(item["call_wall"]),
+                put_wall=price_level(item["put_wall"]),
+                net_gex=money(item["net_gex"]),
+            )
+        )
+
+    nearest_trigger_items = [x for x in per_expiry if x["vol_trigger"] is not None]
+    nearest_trigger = min(nearest_trigger_items, key=lambda x: abs(x["vol_trigger"] - spot)) if nearest_trigger_items else None
+    nearest_call = min((x for x in per_expiry if x["call_wall"] and x["call_wall"] >= spot), key=lambda x: x["call_wall"] - spot, default=None)
+    nearest_put = min((x for x in per_expiry if x["put_wall"] and x["put_wall"] <= spot), key=lambda x: spot - x["put_wall"], default=None)
+
+    upper = nearest_call["call_wall"] if nearest_call else analysis["nearest_wall_above"][0] if analysis["nearest_wall_above"] else None
+    lower = nearest_put["put_wall"] if nearest_put else analysis["nearest_support_wall"][0] if analysis["nearest_support_wall"] else None
+    trigger = nearest_trigger["vol_trigger"] if nearest_trigger else analysis["flip"]
+
+    lines.extend(
+        [
+            "",
+            "*Vol Trigger 是本脚本用同一期权链重算的 gamma flip/volatility-regime 近似，不是 gex.bot 的专有公式。",
+            "",
+            "结论：",
+            f"- 当前最接近的 regime 分水岭在 {price_level(trigger)}；现价 {spot:.2f} {'在其上方，偏修复' if trigger and spot >= trigger else '在其下方，偏高波动/防守' if trigger else '缺少明确 trigger'}。",
+            f"- 上方先看 {price_level(upper)}；站稳才看更高 call/gamma wall。下方先看 {price_level(lower)}；跌破会让负 gamma/pit 风险变重要。",
+            "- 多空判断以现价是否站稳 trigger、是否突破 call wall、是否跌破 put wall 为准；不要只看单个远端 call 或 put 仓位。",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def render_text(data, a):
     stock = data["stock"]
     ticker = stock["code"].split(".")[-1]
@@ -514,13 +674,21 @@ def render_text(data, a):
 def main():
     parser = argparse.ArgumentParser(description="Print a moomoo OpenD gamma exposure text memo")
     parser.add_argument("code", nargs="?", default=DEFAULT_UNDERLYING, help="Stock code, e.g. US.BA or US.MP")
+    parser.add_argument(
+        "--by-expiry-report",
+        action="store_true",
+        help="Print a gex.bot-style per-expiry trigger/wall table with directional labels",
+    )
     args = parser.parse_args()
 
     code = args.code.upper()
 
     data = fetch_report_data(code)
     analysis = analyze(data)
-    print(render_text(data, analysis))
+    if args.by_expiry_report:
+        print(render_by_expiry_text(data, analysis, analyze_by_expiry(data)))
+    else:
+        print(render_text(data, analysis))
 
 
 if __name__ == "__main__":
