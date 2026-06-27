@@ -41,6 +41,9 @@ Default to the user's local timezone from the runtime environment. Use the curre
 - Do not include process/source boilerplate such as "parsed from image", local file paths, or explanations of why something was included. Include actionable market notes instead.
 - Do not repeat information that is already obvious from the calendar title or time slot. For example, avoid writing "title focus", redundant timezone labels, session labels, or the same event list twice unless that detail adds new useful context.
 - In Google Calendar descriptions, use `・` for bullet-like lines instead of leading hyphen bullets. The connector may persist leading `-` as escaped `\-`.
+- For US earnings, the default personal watchlist source is the user's moomoo watchlist via the `us-stock-gamma-moomoo` skill/OpenD workflow. If it is unavailable or incomplete, `https://daytrading.monster/themes/theme-data.json` may be used as the backup candidate theme list.
+- For Japan earnings, the default candidate list source is `https://daytrading.monster/themes/theme-data.json`, because local moomoo OpenD may not expose individual Japan stock watchlist codes. If the user provides a Japan CSV or another usable personal list, that personal list takes priority.
+- Treat `daytrading.monster` as a market-relevance candidate pool, not as a personal watchlist. Its useful fields are `market`, `code`, `name`, `theme`, `weight`, and `reason`; prefer higher `weight`, currently relevant `theme`, and names that match the earnings calendar.
 
 ## Earnings Workflow
 
@@ -75,8 +78,10 @@ Default to the user's local timezone from the runtime environment. Use the curre
 
 ### 3. Prioritize Title Tickers
 
+- For US stocks, default to the user's moomoo `美股` watchlist through the `us-stock-gamma-moomoo` skill/OpenD workflow, unless the user provides a more specific list for this task.
 - If the user provides a watchlist CSV, use it as an ordered priority list. Detect common ticker columns such as `代码`, `Ticker`, `Symbol`, or similar. The earlier a ticker appears, the more important it is.
-- If no watchlist CSV is provided, prioritize by market relevance: liquidity, market cap, options/retail attention, sector read-through, and user-stated preferences in the conversation.
+- If moomoo or CSV is unavailable, prioritize by market relevance: liquidity, market cap, options/retail attention, sector read-through, and user-stated preferences in the conversation.
+- For US stocks, when no personal watchlist is available or the user asks for a broader candidate pool, use `daytrading.monster` theme data as the backup relevance source. Do not create events solely because a ticker appears there; require overlap with the earnings calendar and meaningful market relevance.
 - Put only the tickers the user likely needs to see in the title, primarily watchlist matches.
 - If a slot has no watchlist matches, do not create a Calendar event for that slot unless the user explicitly asks for every slot to be represented.
 - When skipping a no-match slot, mention it in the final report with the session and the main tickers that were skipped, so the user can audit what was intentionally left out.
@@ -115,9 +120,11 @@ Do not include redundant blocks such as "美股时段", repeated timezone labels
 
 ### 2. Watchlist And Filtering
 
+- For Japan stocks, default to `daytrading.monster` theme data with `market: "JP"` as the candidate list, unless the user provides a Japan CSV or another usable personal list.
 - If the user provides a Japan stock CSV, add only matching stock codes from that CSV. Detect columns such as `代码`, `コード`, `Ticker`, or `Symbol`.
 - Use the CSV order as priority. Earlier rows are more important and should appear first in titles and details.
-- If the user does not provide a Japan stock CSV or similar watchlist, have the AI select a small set of important names by market cap, liquidity, index relevance, sector read-through, and user preferences. Never add every Japan earnings item by default.
+- If the user says to use moomoo watchlists, read the relevant moomoo group(s) when available. If moomoo only returns Japan index futures or otherwise cannot provide individual Japan stock codes, say so and continue with `daytrading.monster` as the default candidate source.
+- Never add every Japan earnings item by default. Select a small set using candidate-list overlap, market cap, liquidity, index relevance, sector read-through, user preferences, and the `theme`/`weight`/`reason` fields from `daytrading.monster`.
 
 ### 3. Calendar Grouping
 
