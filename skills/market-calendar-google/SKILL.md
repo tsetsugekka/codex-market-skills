@@ -124,7 +124,8 @@ Do not include redundant blocks such as "美股时段", repeated timezone labels
 - If the user provides a Japan stock CSV, add only matching stock codes from that CSV. Detect columns such as `代码`, `コード`, `Ticker`, or `Symbol`.
 - Use the CSV order as priority. Earlier rows are more important and should appear first in titles and details.
 - If the user says to use moomoo watchlists, read the relevant moomoo group(s) when available. If moomoo only returns Japan index futures or otherwise cannot provide individual Japan stock codes, say so and continue with `daytrading.monster` as the default candidate source.
-- Never add every Japan earnings item by default. Select a small set using candidate-list overlap, market cap, liquidity, index relevance, sector read-through, user preferences, and the `theme`/`weight`/`reason` fields from `daytrading.monster`.
+- Never add every Japan earnings item by default. When a Japan CSV, moomoo-derived list, or `daytrading.monster` candidate list is being used, create Calendar events only for earnings names that overlap that list, unless the user explicitly asks to broaden beyond the list.
+- After finding list overlaps, prioritize within those overlaps by CSV/list order, market cap, liquidity, index relevance, sector read-through, user preferences, and the `theme`/`weight`/`reason` fields from `daytrading.monster`.
 
 ### 3. Calendar Grouping
 
