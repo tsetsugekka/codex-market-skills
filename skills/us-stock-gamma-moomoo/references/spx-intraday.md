@@ -9,11 +9,24 @@ Use `scripts/spx_intraday_latest.py` for this workflow. Do not substitute the ge
 1. **Anchor**: current SPX cash when available from a live source. If moomoo rejects the SPX index snapshot but `US..SPX` 0DTE chains are available, infer the intraday anchor from liquid SPXW put-call parity (`spot/forward ~= strike + call_mid - put_mid`) using same-expiry PM-settled pairs near the market. Do not use delayed/static TradingView page text as the intraday anchor unless a live chart value is explicitly confirmed. SPY is only a sanity check or last-resort proxy.
 2. **0DTE structure**: net GEX, call/put volume balance, largest positive walls above, largest negative pits below, and gamma flip if meaningful.
 3. **Vanna structure**: compute vanna from SPXW spot/strike/IV/DTE, aggregate VEX by strike, and name the top positive/negative vanna pressure zones. This is required when the user asks for SPX/SP500 gamma unless speed is explicitly more important than completeness.
-4. **Opening context**: distinguish prior close, current price, and same-day open. If the user says the market gapped down, do not treat prior close as the open.
-5. **Index day-structure levels**: for SPX/index intraday work only, calculate prior-day pivot/CPR/Camarilla levels when prior high, low, and close are available. Use them as support/resistance confluence with gamma walls, flip, and pits; do not apply this requirement to ordinary single-stock gamma reports.
-6. **Key level map**: name nearby support/resistance as zones, not single magic points. Example: "7350 is the battlefield; 7330/7300 are next downside magnets; 7385-7415 is repair/sell-pressure."
-7. **Flow interpretation**: in negative gamma, breaks can accelerate and rebounds can be violent short-covering. Do not call a bottom merely because price is near a put wall.
-8. **Invalidation**: state what would disprove the scenario, e.g. "reclaiming 7370 and holding above it makes 7385-7390 likely; losing 7350 and failing to reclaim opens 7330/7300."
+4. **Window regime table**: always compare `0DTE`, `Next2`, `Fri2w`, and `All`: net GEX, net VEX, flip, top walls, top pits, and a one-line read. This prevents confusing same-day gamma with future-window gamma.
+5. **Key-strike cross-section**: for nearby decision levels and any user-mentioned levels, show 0DTE / Next2 / Fri2w / All GEX and All VEX. Use this to explain transitions such as "7400 still neutral/negative, 7450 locally positive, 7500 stronger positive gamma."
+6. **Opening context**: distinguish prior close, current price, and same-day open. If the user says the market gapped down, do not treat prior close as the open.
+7. **Index day-structure levels**: for SPX/index intraday work only, calculate prior-day pivot/CPR/Camarilla levels when prior high, low, and close are available. Use them as support/resistance confluence with gamma walls, flip, and pits; do not apply this requirement to ordinary single-stock gamma reports.
+8. **Key level map**: name nearby support/resistance as zones, not single magic points. Example: "7350 is the battlefield; 7330/7300 are next downside magnets; 7385-7415 is repair/sell-pressure."
+9. **Flow interpretation**: in negative gamma, breaks can accelerate and rebounds can be violent short-covering. Do not call a bottom merely because price is near a put wall.
+10. **Invalidation**: state what would disprove the scenario, e.g. "reclaiming 7370 and holding above it makes 7385-7390 likely; losing 7350 and failing to reclaim opens 7330/7300."
+
+## Required SPX Answer Depth
+
+For SPX, answer at the same granularity as an index-gamma desk note:
+
+- Start with a direct regime sentence: current anchor, whether 0DTE is positive/negative gamma, whether the all-window aggregate is positive/negative gamma, and the nearest flip.
+- Include a compact bucket table for `0DTE`, `Next2`, `Fri2w`, and `All` with net GEX, net VEX, flip, top walls, top pits, and read.
+- Include a key-strike cross-section table: `Strike | 0DTE GEX | Next2 GEX | Fri2w GEX | All GEX | All VEX | Read`.
+- If the user asks whether a vendor's or analyst's level logic can be reproduced, explicitly show the data at the named strikes. Example: if the claim says `7450` neutralizes and `7500` becomes stronger positive gamma, show 7400/7425/7450/7500/7600 across all buckets.
+- Separate aggregate and local conclusions: `All-window net GEX remains negative` is compatible with `7450/7500 are locally positive gamma walls`. Say this plainly instead of flattening it into a single bullish/bearish label.
+- End with scenario handling: downside acceleration zone, repair/neutralization threshold, stronger positive-gamma pinning wall, and invalidation.
 
 ## Index Day-Structure Levels
 

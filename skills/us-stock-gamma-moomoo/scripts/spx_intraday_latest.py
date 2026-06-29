@@ -222,6 +222,153 @@ def first_level(items: list[list[float]] | list[float]) -> float | None:
     return float(first)
 
 
+def gex_value(bucket: dict, strike: float) -> float | None:
+    mapping = strike_map(bucket, "gex_by_strike")
+    if strike in mapping:
+        return mapping[strike]
+    nearby = [level for level in mapping if abs(level - strike) <= 0.01]
+    if nearby:
+        return mapping[nearby[0]]
+    return None
+
+
+def vex_value(bucket: dict, strike: float) -> float | None:
+    mapping = strike_map(bucket, "vex_by_strike")
+    if strike in mapping:
+        return mapping[strike]
+    nearby = [level for level in mapping if abs(level - strike) <= 0.01]
+    if nearby:
+        return mapping[nearby[0]]
+    return None
+
+
+def signed_money_or_blank(value: float | None) -> str:
+    if value is None:
+        return ""
+    return money(value)
+
+
+def regime_label(net_gex: float, flip: float | None, spot: float) -> str:
+    if net_gex < 0 and flip and spot < flip:
+        return "负gamma且在flip下方"
+    if net_gex < 0:
+        return "总量负gamma"
+    if net_gex > 0 and flip and spot >= flip:
+        return "正gamma/钉扎"
+    if net_gex > 0:
+        return "局部正gamma"
+    return "中性"
+
+
+def transition_strikes(result: dict, limit: int = 11) -> list[float]:
+    spot = float(result.get("spot_anchor", 0) or 0)
+    buckets = result.get("buckets", {})
+    candidates: set[float] = set()
+    if spot:
+        base25 = round(spot / 25) * 25
+        base50 = round(spot / 50) * 50
+        candidates.update({base25 - 75, base25 - 50, base25 - 25, base25, base25 + 25, base25 + 50, base25 + 75, base25 + 100})
+        candidates.update({base50 - 100, base50 - 50, base50, base50 + 50, base50 + 100, base50 + 150, base50 + 200})
+    for name in ["0DTE", "Next2", "Fri2w", "All"]:
+        bucket = buckets.get(name, {})
+        for key in ["walls", "pits", "vanna_walls", "vanna_pits"]:
+            for level, _ in bucket.get(key, [])[:4]:
+                level = float(level)
+                if not spot or spot - 120 <= level <= spot + 260:
+                    candidates.add(level)
+    if not candidates:
+        return []
+
+    def importance(level: float) -> tuple[float, float]:
+        total = 0.0
+        for bucket in buckets.values():
+            total += abs(gex_value(bucket, level) or 0.0)
+        distance_penalty = abs(level - spot) * 12_000_000 if spot else 0.0
+        return total - distance_penalty, -abs(level - spot)
+
+    ranked = sorted(candidates, key=importance, reverse=True)[:limit]
+    return sorted(ranked)
+
+
+def strike_read(result: dict, strike: float) -> str:
+    spot = float(result.get("spot_anchor", 0) or 0)
+    buckets = result.get("buckets", {})
+    all_gex = gex_value(buckets.get("All", {}), strike)
+    zero_gex = gex_value(buckets.get("0DTE", {}), strike)
+    next_gex = gex_value(buckets.get("Next2", {}), strike)
+    fri_gex = gex_value(buckets.get("Fri2w", {}), strike)
+    values = [v for v in [zero_gex, next_gex, fri_gex, all_gex] if v is not None]
+    if not values:
+        return ""
+    positives = sum(1 for v in values if v > 0)
+    negatives = sum(1 for v in values if v < 0)
+    if all_gex is not None and all_gex < 0 and strike <= spot:
+        return "下方加速/磁吸风险"
+    if all_gex is not None and all_gex > 0 and strike >= spot:
+        if positives >= 3:
+            return "上方正gamma钉扎墙"
+        return "局部转正压力位"
+    if positives and negatives:
+        return "多周期分歧/战场"
+    if all_gex is not None and abs(all_gex) < 500_000_000:
+        return "接近中性带"
+    return "观察位"
+
+
+def render_bucket_regime_table(result: dict) -> list[str]:
+    spot = float(result.get("spot_anchor", 0) or 0)
+    lines = [
+        "",
+        "Gamma regime by window:",
+        "",
+        "| Window | Net GEX | Net VEX | Flip | Main walls | Main pits | Read |",
+        "|---|---:|---:|---:|---|---|---|",
+    ]
+    for name in ["0DTE", "Next2", "Fri2w", "All"]:
+        bucket = result.get("buckets", {}).get(name, {})
+        flip = first_level(bucket.get("flips", []))
+        lines.append(
+            "| {name} | {gex} | {vex} | {flip} | {walls} | {pits} | {read} |".format(
+                name=name,
+                gex=money(float(bucket.get("net_gex", 0) or 0)),
+                vex=money(float(bucket.get("net_vex", 0) or 0)),
+                flip="" if flip is None else f"{flip:.0f}",
+                walls=levels(bucket.get("walls", []), 4),
+                pits=levels(bucket.get("pits", []), 4),
+                read=regime_label(float(bucket.get("net_gex", 0) or 0), flip, spot),
+            )
+        )
+    return lines
+
+
+def render_strike_cross_section(result: dict) -> list[str]:
+    strikes = transition_strikes(result)
+    if not strikes:
+        return []
+    buckets = result.get("buckets", {})
+    lines = [
+        "",
+        "Key strike cross-section:",
+        "",
+        "| Strike | 0DTE GEX | Next2 GEX | Fri2w GEX | All GEX | All VEX | Read |",
+        "|---:|---:|---:|---:|---:|---:|---|",
+    ]
+    for strike in strikes:
+        all_bucket = buckets.get("All", {})
+        lines.append(
+            "| {strike:.0f} | {zero} | {next2} | {fri2w} | {all_gex} | {all_vex} | {read} |".format(
+                strike=strike,
+                zero=signed_money_or_blank(gex_value(buckets.get("0DTE", {}), strike)),
+                next2=signed_money_or_blank(gex_value(buckets.get("Next2", {}), strike)),
+                fri2w=signed_money_or_blank(gex_value(buckets.get("Fri2w", {}), strike)),
+                all_gex=signed_money_or_blank(gex_value(all_bucket, strike)),
+                all_vex=signed_money_or_blank(vex_value(all_bucket, strike)),
+                read=strike_read(result, strike),
+            )
+        )
+    return lines
+
+
 def weekday_label(expiry: str) -> str:
     names = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
     try:
@@ -398,9 +545,17 @@ def render_text_report(result: dict) -> str:
             f"- Next2 pits: {levels_with_value(next2.get('pits', []), 5)}",
             f"- Fri2w walls: {levels_with_value(fri2w.get('walls', []), 5)}",
             f"- Fri2w pits: {levels_with_value(fri2w.get('pits', []), 5)}",
+    ]
+    lines.extend(render_bucket_regime_table(result))
+    lines.extend(render_strike_cross_section(result))
+    lines.extend(
+        [
+            "",
+            "解释口径：如果总窗口仍是负 gamma，但 7450/7500 这类上方 strikes 已转为明显正 GEX，应表述为“局部转正/修复门槛/钉扎墙”，不要说整个市场已经完全转正 gamma。",
             "",
             f"数据：生成 {result.get('generated', '')}; 到期日 {', '.join(result.get('expiries', []))}; SPY 只作 sanity check，不作为 SPX 点位换算主流程。",
-    ]
+        ]
+    )
     lines.extend(render_comparison(result.get("comparison", {})))
     return "\n".join(lines)
 
@@ -500,6 +655,14 @@ def render_by_expiry_report(result: dict) -> str:
             f"**修复情形**：先重新站回 {resistance_text}，再看 {repair_text}；只有站上主要 future flip 区，未来几天才可能从“下跌放大”切回“震荡修复”。",
             "",
             f"所以按日期结论是：{weakest} 最弱；" + (f"{easing_text} 的弱势开始缓和但还没转强；" if easing_text else "") + f"真正修复要看价格能否重新站上 {repair_text}。",
+        ]
+    )
+    lines.extend(render_bucket_regime_table(result))
+    lines.extend(render_strike_cross_section(result))
+    lines.extend(
+        [
+            "",
+            "解释口径：如果总窗口仍是负 gamma，但某些上方 strikes 在 Next2/Fri2w/All 中明显转正，要拆开说成“当前仍高波动，某水平开始局部中性化，下一水平才是更强正 gamma”。",
             "",
             f"数据：生成 {result.get('generated', '')}; 到期日 {', '.join(expiries)}; SPY 只作 sanity check，不作为 SPX 点位换算主流程。",
         ]

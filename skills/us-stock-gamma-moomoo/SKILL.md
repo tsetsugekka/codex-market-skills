@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.6
+  version: 0.1.8
 ---
 
 # US Stock Gamma With moomoo
@@ -82,6 +82,14 @@ For SPX/SPXW intraday index gamma use:
 python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py
 ```
 
+For SPX answers, default to the detailed index-gamma format. The answer should be detailed enough to explain claims such as “still negative gamma, 7450 starts neutralizing, 7500 becomes stronger positive gamma” from data. Include:
+
+- SPX anchor and anchor method.
+- 0DTE, Next2, Fri2w, and All-window net GEX, net VEX, flip, top walls, and top pits.
+- A key-strike cross-section showing 0DTE / Next2 / Fri2w / All GEX and All VEX at nearby decision levels, especially current rounded strikes, major walls, major pits, and user-mentioned levels.
+- A distinction between aggregate regime and local strike regime: `All still negative` can coexist with `7450/7500 locally positive`.
+- A conclusion that says whether each level is downside acceleration, neutralization/repair threshold, or stronger positive-gamma pinning wall.
+
 When the user asks about `未来几天 gamma`, `未来几日 gamma`, `后面几天 gamma`, `按日期看 gamma`, `哪天强哪天弱`, or shares a multi-expiry gamma chart and wants the forward read, use the per-expiry report mode:
 
 ```bash
@@ -107,12 +115,14 @@ python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/proxy_index_gamma.py US.EW
 The script:
 - reads stock snapshot, option expirations, option chain, option snapshots, and daily K lines from moomoo OpenD;
 - throttles `get_option_chain` calls and retries once after OpenD frequency-limit errors, because moomoo can reject more than about 10 option-chain requests in 30 seconds;
-- uses `pre_price` when available, otherwise bid/ask midpoint, otherwise regular-session last price;
+- chooses the pricing anchor by U.S. session: regular `last_price`, after-hours `after_price`, overnight `overnight_price`, pre-market `pre_price`, then bid/ask midpoint or regular last as fallback; label it as a pricing anchor, not guaranteed live tradable price;
 - gathers option `OI`, `IV`, `delta`, `gamma`, `theta`, `vega`, bid/ask, volume;
 - calculates Black-Scholes vanna from live/anchor spot, strike, IV, and DTE because moomoo snapshots may not provide `option_vanna`;
 - selects option expiries by default as: all weeklies within the next 2 calendar weeks when available, plus monthly expiries for the current month and next 2 months; for high-frequency option names also include the next 2 trading-day/daily expiries when listed;
 - calculates signed GEX with the common assumption `Call = +`, `Put = -`;
 - calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
+- calculates option delta exposure (`DEX`) and approximate charm exposure by strike, plus call/put OI shelves and front-expiry IV smile/skew;
+- prints a complete OpenD gamma data group by default: pricing anchor, VT/flip, gamma wall, call wall, put wall, distance to VT/CW/PW, net GEX, net VEX, net DEX, charm/day, gamma pits, vanna zones, DEX zones, charm zones, OI shelves, IV smile/skew, and a conclusion that explicitly combines these dimensions;
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
 - when JSON output is requested, includes per-strike `gex_by_strike` and `vex_by_strike` for each bucket so later runs can detect same-strike support/risk migration instead of only comparing top walls and pits;
 - includes a `per_expiry` section in JSON for each selected expiration date, so future-days gamma reads can say which exact date is weaker or stronger instead of only using `Next2` / `Fri2w` aggregate buckets;
@@ -139,7 +149,7 @@ Read extra references only when the request needs them:
 
 ## Single-Stock Directional Framework
 
-For ordinary U.S. stocks and ETFs, the default job is not only to calculate gamma; it is to convert option structure into a directional trading read. Use this framework whenever the user asks `看多还是看空`, `bullish or bearish`, `能不能追`, `支撑压力`, `未来几天 gamma`, or shares gex.bot-style screenshots/tables.
+For ordinary U.S. stocks and ETFs, the default job is not only to calculate gamma; it is to convert option structure into a directional trading read. Use this framework whenever the user asks `看多还是看空`, `bullish or bearish`, `能不能追`, `支撑压力`, `未来几天 gamma`, or shares third-party gamma screenshots/tables.
 
 Start with the shortest useful answer:
 
@@ -167,7 +177,7 @@ Use the following directional rules:
 - **False bullish signal**: do not call it bullish only because call wall is far above spot. A far call wall is potential upside/magnet only after spot reclaims trigger and nearby resistance.
 - **False bearish signal**: do not call it bearish only because put OI is large. Put wall below spot can be support until it breaks; after it breaks, it becomes acceleration risk.
 
-For gex.bot-style table interpretation, map fields this way:
+For third-party trigger/wall table interpretation, map fields this way:
 
 | Field | Read |
 |---|---|
@@ -179,6 +189,24 @@ For gex.bot-style table interpretation, map fields this way:
 | `ABS OPEN INTEREST` | where open option interest is actually concentrated |
 | `IV SMILE` | whether the market is pricing elevated tail/volatility risk |
 | unusual flow table | directional only if single-leg and bid/ask context is clear |
+
+For a complete OpenD-generated gamma memo, include these dimensions when the data is available:
+
+| Dimension | What to report | How to use in conclusion |
+|---|---|---|
+| `VT / Vol Trigger` | self-calculated gamma flip / volatility-regime divider | Above = repair or pinning possible; below = high-volatility or defensive unless reclaimed |
+| `GW / Gamma Wall` | strongest positive GEX / magnet or pressure level | Wall above = first pressure/target; wall below = recapture/support zone |
+| `CW / Call Wall` | largest call-side GEX/OI concentration | Upside pressure, pinning, or breakout target |
+| `PW / Put Wall` | largest put-side GEX/OI concentration | Downside support while held; acceleration risk after break |
+| `距VT / 距CW / 距PW` | percent distance from pricing anchor | Shows whether the next decision point is close enough to matter |
+| `Net GEX` | aggregate signed gamma exposure | Positive favors chop/pinning; negative favors trend amplification |
+| `Gamma pits` | strongest negative GEX strikes | Potential fast-move / failed-support zones |
+| `Net DEX` | option delta exposure map using option delta sign | Secondary hedge-pressure map; dealer hedge may be opposite under customer-long assumptions |
+| `VEX / Vanna zones` | vanna exposure by strike | Interprets IV crush/expansion pressure; never standalone bullish/bearish |
+| `Charm zones` | approximate delta decay exposure by strike | Useful near expiry, especially 0DTE/weekly windows |
+| `OI shelves` | largest call/put open-interest strikes | Confirms where interest clusters; not direction by itself |
+| `IV smile/skew` | ATM IV, downside-wing IV, upside-wing IV, skew | Defensive skew or elevated wings warns of tail/volatility positioning |
+| `Per-expiry rows` | each expiry's VT/GW/CW/PW, GEX, VEX, DEX, Charm | The dominant near-dated expiry can override the all-expiry aggregate |
 
 When the user asks only "看多还是空", answer in this compact structure:
 

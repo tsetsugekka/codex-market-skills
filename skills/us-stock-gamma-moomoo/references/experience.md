@@ -3,6 +3,13 @@
 ## Active Playbook
 
 - Read gamma as a positioning map, not a standalone forecast. Confirm the map with live spot, price action, volatility, and news acceptance.
+- Treat third-party gamma/trigger-wall tables as a context filter, not a treasure map or standalone buy/sell signal. GEX describes where dealer hedging and liquidity pressure may matter; it does not prove price must travel to a wall, and it should not be used as a deterministic endpoint.
+- Do not infer direction from customer inventory or OI alone. Traditional client-position conventions can be wrong during institution-to-institution trades, crosses, spreads, or dealerless prints; the useful question is dealer net hedging pressure and whether price action confirms it.
+- Be especially skeptical of overnight or stale OI/GEX snapshots in 0DTE-heavy markets. Same-day opening and expiry flows can rebuild the battlefield, so yesterday's wall can become stale by afternoon after spot/IV move.
+- Gamma walls move with spot and volatility. A call wall or gamma wall that shifts intraday is not necessarily a failed dataset; it may reflect price moving the gamma peak, IV surface changes, or dealer re-hedging. Do not describe walls as fixed rails.
+- GEX omits or underweights vanna/charm effects when used alone. Near expiry, IV-driven delta changes and time-decay/charm flows can overwhelm a static gamma read, so combine gamma with IV direction, vanna/charm context when available, and price-action confirmation.
+- Avoid the common OI trap: high OI or a large put/call shelf is not automatically support/resistance. It becomes useful only as a level to watch for acceptance, rejection, pinning, or acceleration after a break.
+- When third-party GEX providers disagree on sign or level, do not average them mechanically. Different vendors may use opposite sign conventions or different dealer/customer assumptions; separate the source convention and focus on confirmed dealer hedging implications.
 - Before leaning on GEX after a headline, run an expectation-gap check: what was priced, what landed, and whether price accepted or rejected it.
 - Use `stock-technical-analysis` when entry/exit timing, 1h+ structure, support/resistance, or failed-breakout confirmation matters.
 - Use `stock-sentiment-analysis` when rates, FX, volatility, crowded AI/semiconductor positioning, or broad risk-on/risk-off behavior is driving the underlying.
@@ -16,6 +23,7 @@
 - Do not treat the first touch or brief break of a gamma pit as an automatic short signal. If a put wall and pit overlap, call it a battlefield; require failure to reclaim, loss of the next nearby pit/trigger, or price-action confirmation before describing downside continuation.
 - When an option/gamma answer uses macro/flash-news, technical, or sentiment reasoning, call the corresponding sibling skill instead of folding that layer into this skill ad hoc: `macro-news-check` for 宏观/快讯, `stock-technical-analysis` for 技术面, and `stock-sentiment-analysis` for 情绪面/期待差. State the fusion layers in the final answer when they materially affect the conclusion.
 - For SPX/SP500 reports, calculate vanna from SPXW spot/strike/IV/DTE and analyze top positive/negative VEX zones alongside gamma walls. Treat VEX as an IV-sensitive pressure map, not a standalone forecast. To judge whether vanna favors upside or downside, combine: IV direction, spot versus gamma flip, current gamma regime, and trigger/price-action confirmation. Positive VEX above spot is only potential upside support if price reclaims the relevant flip/trigger and IV is stable or falling; if spot remains below flip in negative gamma with IV rising, downside pits and failed reclaims matter more than distant positive VEX zones.
+- For SPX answers, default to desk-note granularity: show 0DTE/Next2/Fri2w/All net GEX, net VEX, flips, walls, pits, and a key-strike cross-section across those buckets. This is required to evaluate claims such as "still negative gamma, 7450 neutralizes, 7500 becomes stronger positive gamma." Separate aggregate regime from local strike regime; do not flatten a negative all-window aggregate and positive upper strike walls into one simplistic label.
 - Keep SPX report render helpers compatible with both per-level pairs and scalar level lists. `flips` are scalar floats, while walls/pits are `[level, value]` pairs; text rendering must not assume every level list is two-dimensional.
 - When writing index ranges, support/resistance, walls, pits, triggers, or scenario levels, list prices from high to low so the map reads top-down.
 - Throttle sequential `get_option_chain` calls in reusable scripts and retry once after OpenD frequency-limit errors. If a project-specific script adds this workaround, port the same behavior back to `us-stock-gamma-moomoo/scripts/gamma_report.py` and the installed skill; otherwise the next ticker or ETF report can hit the same 10-requests-per-30-seconds limit again.
@@ -26,6 +34,9 @@
 - For SPX/Nikkei special workflows, default to a concise human text summary. Use JSON only when the user explicitly requests raw export. Unfinished files should not appear as incidental artifacts.
 - For same-day repeated SPX gamma requests in one conversation, compare current spot, net GEX, net VEX, flip, nearest wall, nearest pit, CPR position, and rough magnet/bias against earlier same-session results. Say plainly whether the structure is strengthening, weakening, migrating up/down, or staying pinned. Do not imply an internal time series when the prior result is not in the conversation or user-provided notes.
 - Re-run after the regular session opens or after a large spot move; pre-market stock moves often use stale option IV/OI/Greeks.
+- In script output, treat `spot` as the pricing anchor for Gamma/Vanna recalculation, not automatically as a live tradable current price. During pre-market, overnight, weekends, or stale quote windows, label it as a reference anchor and compare it against the last regular close or live session price before making trading conclusions.
+- For U.S. stocks, do not blindly prefer `pre_price`: moomoo can leave stale pre-market fields populated after the session ends. Choose the pricing anchor by U.S. session: regular `last_price`, after-hours `after_price`, overnight `overnight_price`, and pre-market `pre_price`, with bid/ask midpoint or regular last only as fallback.
+- For single-stock gamma reports, default to a complete OpenD data group before giving the conclusion: VT/flip, gamma wall, call wall, put wall, distance to VT/CW/PW, net GEX, gamma pits, DEX, VEX/vanna zones, charm/day zones, call/put OI shelves, and front-expiry IV smile/skew. The final bias must cite the specific dimensions that drive it; do not conclude from one wall or one GEX aggregate alone.
 
 ## Compression Protocol
 
@@ -40,6 +51,11 @@
 
 ## Archive
 
+- 2026-06-29: Fixed single-stock gamma anchor selection so stale `pre_price` is not used during overnight/after-hours; choose regular/after/overnight/pre anchors by U.S. session.
+- 2026-06-29: Expanded single-stock OpenD gamma reports to include VT/GW/CW/PW distances, DEX, charm, OI shelves, and front IV smile/skew, and to base the final bias on the full data group instead of only GEX.
+- 2026-06-29: Expanded SPX/SPXW answer depth to require bucket-level regime tables and key-strike cross-sections, so local transitions such as 7450/7500 can be reproduced from OpenD data.
+- 2026-06-29: Clarified that gamma script `spot` is a pricing anchor, not necessarily live current price; pre-market/overnight anchors must be labeled and rechecked against regular-session prices.
+- 2026-06-28: Added GEX pitfall rules from user-provided study notes: use GEX as a context filter, avoid OI/inventory direction traps, account for 0DTE stale snapshots, wall migration, vanna/charm, and provider sign-convention differences.
 - 2026-05-15: Added initial public-safe gamma experience protocol.
 - 2026-05-15: Added SPX expiry de-duplication rule after a monthly-expiry Friday produced duplicate `MONTH`/`WEEK` rows for the same date and inflated 0DTE GEX/VEX.
 - 2026-05-16: Added output-format rule to list price levels from high to low.
