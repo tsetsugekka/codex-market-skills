@@ -8,7 +8,7 @@ Before indicators, name the structure:
 
 - `强趋势延续`: price above key moving averages, pullbacks shallow, volume confirms advances.
 - `空中加油候选`: strong advance followed by high-level sideways/narrow consolidation; not valid until it avoids breakdown and breaks upward with volume.
-- `老鸭头候选`: short moving averages turn up through a longer average, then the pullback does not destroy the structure; valid only after the neck/pressure area breaks with volume.
+- `老鸭头候选`: short moving averages turn up through a longer average, then the pullback does not destroy the structure. When using this label, also name the stage: `鸭颈部`, `鸭头顶`, `鸭鼻孔`, or `鸭嘴`, and mark the current bias as `偏多`, `中性`, or `偏空`.
 - `回踩确认`: price pulls back to support, volume contracts on the pullback, rebounds with volume, and momentum does not deteriorate materially.
 - `冲高回落`: intraday high fails, price returns below pressure, volume is heavy but price no longer advances.
 - `高位分歧`: attention and volatility are high, leaders hesitate, followers weaken, or momentum diverges.
@@ -247,22 +247,36 @@ Invalid clues:
 
 Definition:
 
-- A trend-reversal or continuation shape where short averages such as the 5-day and 10-day lines lift through a longer average such as the 60-day line, forming an early `鸭头雏形`.
-- The later pullback or 10-day-line turn should not break the larger base. The useful signal is the renewed break above the neck/pressure area with volume.
-- It is stronger when the prior decline has stabilized, KDJ/MACD improve from low levels, and volume expands on the breakout rather than during the pullback.
+- A trend-reversal or continuation shape that describes an uptrend, washout, and restart. The essence is: funds first lift price and build a bullish moving-average structure, then wash the trend without destroying the base, then start a second advance.
+- Use 5-day, 10-day, and 60-day moving averages as the default daily-chart frame. For intraday or weekly charts, map the same logic to comparable short/medium/long averages and state the timeframe.
+- Do not call the pattern complete from moving-average shape alone. It is only a candidate before the second advance confirms with price, volume, and support conversion.
+
+Stage map and bias:
+
+- `鸭颈部 / 主力建仓期`: 5-day and 10-day averages rise through the 60-day average with expanding or improving volume, and the averages begin a bullish order. Bias is `偏多观察`, but still unconfirmed if price has not broken a real pressure area.
+- `鸭头顶 / 震仓洗盘期`: after a fast advance, price pulls back from a local high and the 5-day average turns down through the 10-day average, forming a short-term dead cross. Bias is `中性偏弱` during the washout unless volume clearly contracts and price holds the 60-day/base area; if the pullback is heavy-volume and loses long-cycle support, downgrade to `偏空`.
+- `鸭鼻孔 / 洗盘结束信号`: after the 5-day/10-day dead cross, the 5-day average turns back up and crosses above the 10-day average again, forming a golden cross while price holds the base. Bias shifts to `中性偏多`; it is a setup signal, not a full breakout, unless price also reclaims the neckline/pressure area with volume.
+- `鸭嘴 / 主升浪开启期`: price restarts upward after the washout, the short averages lift away from the 60-day average, and price breaks or stands above the neckline/pressure area with volume. Bias is `偏多/多头确认`. If price spikes above pressure but cannot hold, keep it as `候选` rather than confirmed.
 
 Valid clues:
 
-- Short averages turn up and compress above or around the longer average.
-- Pullback does not lose the base or long-cycle support.
-- Breakout over the neck/pressure area comes with volume.
-- KDJ bottom divergence or low-level cross supports the reversal.
+- In `鸭颈部`, 5-day and 10-day averages cross above the 60-day average and all three begin to slope upward or at least flatten constructively.
+- In `鸭头顶`, pullback volume contracts, price does not lose the prior base, 60-day average, or key neckline area, and the decline looks like washout rather than trend destruction.
+- In `鸭鼻孔`, the 5-day average re-crosses above the 10-day average after the washout, and price starts to reclaim short-term resistance.
+- In `鸭嘴`, breakout over the neckline/pressure area comes with volume and then holds through a close, retest, or higher low.
+- KDJ bottom divergence, low-level KDJ cross, MACD green bars shrinking/flipping, or MACD golden cross can support the stage read, but price and moving-average structure still lead.
 
 Invalid clues:
 
-- Price cannot reclaim the neck/pressure area.
-- Pullback volume expands and long-cycle support breaks.
-- KDJ/MACD remain weak and the moving-average turn is only mechanical.
+- The `鸭颈部` cross happens below a falling 60-day average and price cannot leave the old base; classify as `中性`, not a real old-duck-head setup.
+- During `鸭头顶`, pullback volume expands, price loses the 60-day/base/neckline support, or the rebound cannot reclaim the 10-day average; classify as `偏空/形态失败`.
+- The `鸭鼻孔` golden cross is only mechanical: price does not follow, volume is absent, or KDJ/MACD remain weak.
+- The `鸭嘴` breakout fails quickly, returns below the neckline, or leaves a long upper shadow with heavy volume and no follow-through.
+
+Reporting rule:
+
+- When this pattern is relevant, explicitly answer: `是否老鸭头`, `当前阶段`, `多空中性`, `确认条件`, and `失效条件`.
+- Prefer conservative language: `鸭颈部` and `鸭鼻孔` are candidates, `鸭头顶` is a washout/risk-control stage, and only a valid `鸭嘴` confirms the second-wave bullish structure.
 
 ## 11. 回踩, 破位, And 破五反五
 
