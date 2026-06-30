@@ -43,15 +43,19 @@ python3 skills/cn-institutional-survey-heat/scripts/institutional_survey_heat.py
 ## Data And Rate Discipline
 
 - Source table: Eastmoney institutional survey detail records, `RPT_ORG_SURVEYNEW`.
+- Industry/sector labels come mechanically from the Eastmoney quote industry field `f100`; do not hand-classify sectors unless the user explicitly asks for a custom theme mapping.
 - Count only institution rows: `RECEIVE_OBJECT_TYPE == 001`.
 - For stock rankings, count unique institution names per stock within the window.
-- For weekly sector heat, count unique institution names per stock-week, then aggregate stock-week counts to the Eastmoney industry field.
+- For sector rankings, aggregate stock-level institution counts to the Eastmoney `f100` industry field, then sort industries by total count.
+- `主要贡献股票` is generated mechanically: within each industry, sort stocks by institution count descending and display the top contributors.
+- For weekly sector heat, count unique institution names per stock-week, then aggregate stock-week counts to the Eastmoney `f100` industry field.
 - Default cache directory is under the system temp directory. Repeated same-window requests reuse cached raw rows and industry lookups unless `--no-cache` is set.
 - Keep requests low frequency. The script paginates survey records with a short delay and batches industry lookups; do not loop it repeatedly.
 
 ## Interpretation
 
 - `机构数` means unique institutional research participants under the script's de-duplication rule, not the number of separate meetings.
+- `行业` and `主要贡献股票` are data-driven outputs from the script, not model-written summaries. The model may interpret the result afterward, but should not silently relabel industries or contribution stocks.
 - Sector heat is an activity measure. The same institution can count once for each stock it researched in the same sector, because the goal is sector-level research intensity.
 - Date windows use `RECEIVE_START_DATE`, not announcement date.
 - Partial weeks can appear at the start/end of a custom window. Call this out when interpreting weekly trends.
