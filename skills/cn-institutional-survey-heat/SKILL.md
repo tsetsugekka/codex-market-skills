@@ -1,6 +1,6 @@
 ---
 name: cn-institutional-survey-heat
-description: Use when the user asks which A-share stocks, sectors, industries, or themes have the most institutional research visits / 机构调研 heat over the last 14 days, recent weeks, May-June, two months, or a custom date range. Produces stock Top 10, sector/industry Top 10, and weekly sector heat trends from Eastmoney institutional survey detail records.
+description: Use when the user asks which A-share stocks, sectors, industries, or themes have the most institutional research visits / 机构调研 heat over the last 7 days, recent weeks, May-June, two months, or a custom date range. Produces stock Top 10, sector/industry Top 10, and weekly sector heat trends from Eastmoney institutional survey detail records.
 metadata:
   short-description: A-share institutional survey heat and weekly sector trends
 ---
@@ -9,8 +9,8 @@ metadata:
 
 Use this skill for A-share institutional research / 机构调研 heat questions such as:
 
-- `最近14天调研最多的股票`
-- `最近14天机构调研最多的板块`
+- `最近7天调研最多的股票`
+- `最近7天机构调研最多的板块`
 - `5-6月每周板块调研热度`
 - `哪些行业机构调研在升温`
 - `机构调研热度 Top 10`
@@ -27,15 +27,15 @@ python3 skills/cn-institutional-survey-heat/scripts/institutional_survey_heat.py
 
 Default output:
 
-1. `调研最多股票 Top 10`: last 14 natural days.
-2. `板块/行业调研热度 Top 10`: last 14 natural days.
+1. `调研最多股票 Top 10`: last 7 natural days.
+2. `板块/行业调研热度 Top 10`: last 7 natural days.
 3. `Top 板块周度调研热度`: last 2 calendar months including the end date's month.
 
 Useful options:
 
 ```bash
 python3 skills/cn-institutional-survey-heat/scripts/institutional_survey_heat.py --end-date 2026-06-30
-python3 skills/cn-institutional-survey-heat/scripts/institutional_survey_heat.py --days 14 --months 2 --top 10
+python3 skills/cn-institutional-survey-heat/scripts/institutional_survey_heat.py --days 7 --months 2 --top 10
 python3 skills/cn-institutional-survey-heat/scripts/institutional_survey_heat.py --format json
 python3 skills/cn-institutional-survey-heat/scripts/institutional_survey_heat.py --save-csv --output-dir /private/tmp/survey_heat
 ```

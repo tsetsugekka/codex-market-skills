@@ -1,4 +1,4 @@
 interface:
   display_name: "CN Survey Heat"
   short_description: "统计A股机构调研最密集股票、行业板块和周度热度变化。"
-  default_prompt: "统计最近14天A股机构调研最多的股票和板块，并给出近2个月板块周度调研热度。"
+  default_prompt: "统计最近7天A股机构调研最多的股票和板块，并给出近2个月板块周度调研热度。"

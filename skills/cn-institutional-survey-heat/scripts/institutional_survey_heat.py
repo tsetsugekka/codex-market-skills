@@ -353,7 +353,7 @@ def render_markdown(summary: dict[str, Any]) -> str:
     lines = [
         "# A股机构调研热度",
         "",
-        f"- 14天窗口: {summary['stockWindow']['start']} 至 {summary['stockWindow']['end']}",
+        f"- {summary['stockWindow']['days']}天窗口: {summary['stockWindow']['start']} 至 {summary['stockWindow']['end']}",
         f"- 周度窗口: {summary['weeklyWindow']['start']} 至 {summary['weeklyWindow']['end']}",
         f"- 请求: 调研明细 {summary['requestCountApprox']['surveyPages']} 页 + 行业补齐 {summary['requestCountApprox']['quoteBatches']} 批，合计约 {summary['requestCountApprox']['total']} 次",
         f"- 原始明细: {summary['rawRowsFetched']} 行；机构调研股票: {summary['stocksWithInstitutionSurvey']} 只",
@@ -399,7 +399,7 @@ def render_markdown(summary: dict[str, Any]) -> str:
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--end-date", default=str(date.today()), help="YYYY-MM-DD, default today")
-    parser.add_argument("--days", type=int, default=14, help="Window for stock and sector Top lists")
+    parser.add_argument("--days", type=int, default=7, help="Window for stock and sector Top lists")
     parser.add_argument("--months", type=int, default=2, help="Calendar months for weekly sector trend")
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--format", choices=["markdown", "json"], default="markdown")
