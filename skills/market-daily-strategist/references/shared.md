@@ -11,12 +11,14 @@
 - Never fabricate missing data. If unavailable or delayed, write `暂无具体数值`, `初步`, or `数据延迟`.
 - Attribute key numbers and important news to sources.
 - If using social media, label it as social-media sentiment, not verified fact.
+- If using the optional narrative-status helper, treat it as a social-media-derived theme pre-screen. Account/source quality can be assumed acceptable for screening, but timeliness must still be checked: feed `generatedAt`/`reviewedAt` and entry `sourceCreatedAt`/`updatedAt` must fit the report window. Fresh entries can suggest which themes to verify; stale entries are background only and must not drive current-session strategy.
 
 ## Market News Discipline
 
 For every pre-market and close-review report, read enough current market news before finalizing. Do not rely only on index futures, macro headlines, earnings calendars, closing index moves, or a few mega-cap tickers.
 
 - Start from broad same-day market-news sources: live flash headlines/快讯, market live blogs, wire recaps, pre-market/after-hours mover summaries, and individual-stock news.
+- For broad theme discovery, the optional narrative-status helper can be used before or alongside live news scanning to surface current narratives across AI, geopolitics, commodities, rates/bonds, index/gamma, Japan, China, non-AI sectors, and crypto. It does not replace the same-day news scan or price/sector confirmation.
 - For US pre-market and after-hours sessions, do not try to discover every news-driven mover from scratch. Start with reliable pre-market/after-hours mover summaries, earnings-mover roundups, analyst/rating-mover lists, and market-live summaries, then open individual-stock news only for names that actually move or can change the report conclusion.
 - Do not transfer the US extended-hours workflow mechanically to other markets. For Japan, use PTS movers first and then explain them with news. For A-shares, there is no stock night session; use important news and topic pages to understand current market hotspots and possible next-day continuations, not to manufacture a nonexistent after-hours mover list.
 - Prioritize news by market impact: index/sector weight, actual price move, volume, breadth, after-hours/pre-market reaction, flows, earnings surprise, ratings, policy credibility, and whether the item changes today's trading decision.

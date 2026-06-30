@@ -39,6 +39,8 @@ Use more than one source when the headline is important, surprising, or likely t
 
 Do not use ticker or ETF keywords such as `SPY`, `QQQ`, `ES`, or a single stock symbol as the first-pass macro-news filter. Important macro drivers often appear under geopolitics, oil, rates, FX, central banks, fiscal policy, sanctions, shipping, elections, or official comments without mentioning the target instrument. First ingest the general live tape from the preferred sources; only then map relevant headlines to the user's instrument and confirm with market prices.
 
+If a market report passes in pre-screened narrative-status entries, use them only as social-media-derived macro or theme candidates. Account/source quality can be treated as acceptable for screening, but timeliness is mandatory: the feed generation/review time and each entry's source/update time must fit the active market window. Fresh entries may guide what to verify in live macro tape and market prices; stale entries are background and must not be treated as current macro evidence.
+
 Macro analysis must combine two live streams rather than treating either one as automatically superior:
 
 - `News / event stream`: identify whether the market narrative or event state is changing. Focus on state changes, not isolated headlines: escalation vs de-escalation, tightening vs easing, supply shock vs supply relief, inflation impulse vs disinflation impulse, growth scare vs resilience, liquidity stress vs liquidity repair, and official confirmation vs rumor/trial balloon.

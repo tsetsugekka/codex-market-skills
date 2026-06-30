@@ -32,9 +32,15 @@ During question decomposition, actively expand broad market, sector, theme, and 
 1. Identify the report type and market.
 2. Confirm current date/time in Japan time and whether the relevant next or current session is open. If the market is closed, follow the task-specific closed-market rule instead of forcing a normal report.
 3. Gather latest data from reliable live sources. Use market-specific primary sources listed in the task reference.
-4. Never invent prices, index levels, futures, percentage moves, gamma/options levels, flows, valuation, financials, or news. If unavailable, say `暂无具体数值` or `初步`.
-5. Apply `shared.md` market-news and local-data discipline: scan enough current news before finalizing, avoid broad local-data sweeps, and prioritize items confirmed by price action, volume, flows, earnings, ratings, policy catalysts, or direct trading relevance.
-6. Produce pure simplified Chinese output in the exact structure required by the task reference.
+4. Optionally run the narrative-status helper as a pre-screen for the active market when a broad report needs current theme discovery:
+   - US: `python3 skills/market-daily-strategist/scripts/narrative_status.py --market us`
+   - Japan: `python3 skills/market-daily-strategist/scripts/narrative_status.py --market jp`
+   - A-shares/China: `python3 skills/market-daily-strategist/scripts/narrative_status.py --market cn`
+   - Global/cross-asset: `python3 skills/market-daily-strategist/scripts/narrative_status.py --market global`
+   Treat the output as social-media-derived narrative candidates only. Account quality is assumed acceptable; the required check is timeliness: feed `generatedAt`/`reviewedAt` should be fresh, and each entry's `sourceCreatedAt`/`updatedAt` must fit the report window. If the helper returns `stale_feed`, errors, or stale entries, skip or downgrade that layer rather than forcing it into the report.
+5. Never invent prices, index levels, futures, percentage moves, gamma/options levels, flows, valuation, financials, or news. If unavailable, say `暂无具体数值` or `初步`.
+6. Apply `shared.md` market-news and local-data discipline: scan enough current news before finalizing, avoid broad local-data sweeps, and prioritize items confirmed by price action, volume, flows, earnings, ratings, policy catalysts, or direct trading relevance.
+7. Produce pure simplified Chinese output in the exact structure required by the task reference.
 
 ## Supporting Skills
 
@@ -47,6 +53,7 @@ This skill is a report router and synthesis layer. Use other market skills when 
 - Use `stock-technical-analysis` for selected index/ETF/stock levels when the answer needs support/resistance, trend confirmation, intraday execution timing, breakout/pullback validation, or stop levels.
 - Use `jp-stock-move-reason` or `cn-stock-move-reason` for 1-3 genuinely important Japanese/A-share movers when the catalyst is unclear or the stock drives the day's theme. Do not run move-reason analysis on every mover.
 - Use `stock-sentiment-analysis` when crowding, leader/follower status, emotion cycle, old-leader rebound, or theme acceptance/rejection affects the trading conclusion.
+- Use the narrative-status helper only as a theme-discovery and sentiment pre-screen. It can suggest which narratives to test, but it must not replace macro-news confirmation, market prices, filings/news, PTS/pre-market movers, sector breadth, gamma/options checks, or technical confirmation.
 - Use 东方财富妙想 skills for A-share reports and sector questions when available, as supplemental data/search/screening only. They do not replace the report's existing market-news discipline, price-confirmed catalyst checks, emotion-cycle and leader/follower judgment, macro/technical confirmation, or source hierarchy. Use `mx-data` for quote, valuation, fund-flow, financials, index/sector data; `mx-search` for timely news, announcements, research, policy, and event explanations; `mx-xuangu` for sector/concept constituents, related-stock lists, condition screens, and peer comparisons. For questions like `A股某板块有哪些股票`, `相关股`, `概念股`, `龙头股`, or `板块成分`, try `mx-xuangu` first when available. Use `mx-zixuan` only when the user explicitly asks about 东方财富 self-selected stocks, and `mx-moni` only for explicit simulated-trading tasks.
 
 Cross-skill calls are operational: actually load the supporting skill's `SKILL.md` and required references when using it. Keep supporting-skill output compressed into the final report instead of pasting separate mini-reports.
