@@ -36,7 +36,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
 - If combined events are all from the same country, use the flag only once. If countries differ, include each relevant flag before its event name.
 - Do not combine earnings events (`ER` or `決算`) with macro, auction, holiday, political, central-bank, conference, index-change, or other market-event items. Even if they fall in the same 30-minute bucket, create separate Calendar events. The 30-minute combining rule applies only within the same workflow/category.
 - Use the user's local-time event times in Calendar. Convert source-market event times into the user's local timezone before writing events. In descriptions, write in Chinese unless the user asks otherwise.
-- For 5-star events, set Google Calendar event color to red (`color_id: "11"` after confirming colors if needed).
+- For 5-star events, set Google Calendar event color to `ワイン色` instead of red when the Google Calendar connector exposes that event color. Before writing or updating 5-star items, call the Calendar color tool when available and use the `ワイン色` event `color_id`. If the connector only exposes the legacy event color palette and has no `ワイン色`, use the closest available high-importance fallback color and mention the connector limitation in the final report instead of describing the preference as red.
 - Prefer transparent events for informational market calendar items unless the existing event uses a different setting or the user asks to block the calendar.
 - Do not include process/source boilerplate such as "parsed from image", local file paths, or explanations of why something was included. Include actionable market notes instead.
 - Do not repeat information that is already obvious from the calendar title or time slot. For example, avoid writing "title focus", redundant timezone labels, session labels, or the same event list twice unless that detail adds new useful context.
@@ -253,7 +253,7 @@ If a macro or market-event item overlaps with an earnings event, keep the macro/
 
 - For existing US Treasury auction events in the target week, title-prefix with `🇺🇸`.
 - For existing `ER |` events, title-prefix with `🇺🇸` unless already present.
-- For 5-star events, update `color_id` to `11` red.
+- For 5-star events, update the color to `ワイン色` when supported by the Google Calendar event color palette. If only the legacy event palette is available and `ワイン色` is absent, update to the closest available high-importance fallback color and report the fallback.
 - Do not add duplicate flags. If a title already begins with the correct flag, leave it.
 
 ## Verification
