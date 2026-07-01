@@ -159,12 +159,13 @@ Start with the shortest useful answer:
 
 Directional labels are incomplete without levels. Whenever using labels such as `中性偏多修复`, `偏多钉扎`, `中性钉扎`, `偏空/高波动`, or `高波动战场`, immediately attach the price zone that makes the label actionable:
 
+- **Current spot / pricing anchor**: state the current spot or pricing anchor before the directional label or in the same table row. A level is only actionable relative to spot; say whether spot is below, inside, or above the key zone. Example: `现价 198.18，偏多钉扎，钉扎区 200 附近`.
 - **Pinning / magnet zone**: name the exact strike or tight range being pinned, usually the nearest dominant `GW`, `CW`, `PW`, or confirmed OI shelf near spot. Example: `偏多钉扎，钉扎区 200 附近`.
 - **Repair / confirmation level**: for repair labels, name the level that must be reclaimed or held, usually `VT/flip` first, then the nearest `GW/CW`. Example: `中性偏多修复，站稳 295，突破 297.5 才打开上沿`.
 - **Invalidation / downside risk**: name the put wall, flip, or gamma pit whose loss invalidates the bullish/neutral read. Example: `跌破 290/284.6 则修复失败`.
 - **Battlefield range**: for mixed or high-volatility labels, give the actual range between the nearest support and pressure levels. Example: `高波动战场，260-350 是主战场，跌破 205 扩大下行`.
 
-Do not output a direction-only label when `VT`, `GW`, `CW`, `PW`, gamma pits, or OI shelves are available. If precise levels are unavailable, say `关键点位不足` and lower confidence instead of presenting a clean directional label.
+Do not output a direction-only label when current spot, `VT`, `GW`, `CW`, `PW`, gamma pits, or OI shelves are available. If current spot or precise levels are unavailable, say `现价/关键点位不足` and lower confidence instead of presenting a clean directional label.
 
 Always build the read from these layers, in this order:
 
@@ -294,6 +295,7 @@ Avoid only dumping tables. The user wants judgment, assumptions, and a clear act
 
 When answering a batch request with multiple stocks, ETFs, or mixed tickers, every row must include both:
 
+- **Current spot / pricing anchor**: the latest usable spot or anchor price used for option calculations, with the source/session caveat when relevant. Do not make the reader infer where price is relative to the levels.
 - **Gamma sign / regime**: positive, negative, or mixed, with `Net GEX` when available. This is the dealer-hedging/volatility map.
 - **Directional state / bias**: `偏多修复`, `中性钉扎`, `中性偏空防守`, `高波动战场`, or another explicit long/short/neutral state derived from spot vs flip/walls/pits. This is the trading interpretation.
 - **Actionable key levels / zone**: the exact pinning area, battlefield range, repair trigger, upside pressure, and/or downside invalidation that justifies the directional state. At minimum, include the nearest `VT/flip`, `GW/CW` pressure or magnet, and `PW`/pit support or risk when those fields are available.
@@ -302,7 +304,7 @@ Do not let one replace the other. A stock can be `净 GEX 为正` but still `中
 
 `Ticker | Spot anchor | Gamma sign / Net GEX | Directional state | Key zone / pinning area | Flip/VT | Upside wall | Downside risk | What changes the view`
 
-For batch summaries, group names after the table by directional state, but keep the per-row gamma sign and key levels visible. If space is limited, abbreviate commentary first; do not omit the gamma regime, direction, or actionable price zone.
+For batch summaries, group names after the table by directional state, but keep the per-row spot, gamma sign, and key levels visible. If space is limited, abbreviate commentary first; do not omit the spot/anchor, gamma regime, direction, or actionable price zone.
 
 For multi-expiry batch reports, each expiry row must show the date-specific levels, not only the all-expiry levels. Use the expiry's own `VT`, `GW`, `CW`, `PW`, net GEX, and pits when available. If describing `本周` and `下周`, give both periods' gamma sign, directional state, and actionable zone separately because the same ticker can pin this week and become high-volatility next week.
 
