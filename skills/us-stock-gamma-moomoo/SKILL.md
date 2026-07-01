@@ -157,6 +157,15 @@ Start with the shortest useful answer:
 2. Name the current spot and the one or two levels that decide the bias.
 3. Say what changes the conclusion: reclaim/hold above an upper trigger, or lose a lower support/put wall.
 
+Directional labels are incomplete without levels. Whenever using labels such as `中性偏多修复`, `偏多钉扎`, `中性钉扎`, `偏空/高波动`, or `高波动战场`, immediately attach the price zone that makes the label actionable:
+
+- **Pinning / magnet zone**: name the exact strike or tight range being pinned, usually the nearest dominant `GW`, `CW`, `PW`, or confirmed OI shelf near spot. Example: `偏多钉扎，钉扎区 200 附近`.
+- **Repair / confirmation level**: for repair labels, name the level that must be reclaimed or held, usually `VT/flip` first, then the nearest `GW/CW`. Example: `中性偏多修复，站稳 295，突破 297.5 才打开上沿`.
+- **Invalidation / downside risk**: name the put wall, flip, or gamma pit whose loss invalidates the bullish/neutral read. Example: `跌破 290/284.6 则修复失败`.
+- **Battlefield range**: for mixed or high-volatility labels, give the actual range between the nearest support and pressure levels. Example: `高波动战场，260-350 是主战场，跌破 205 扩大下行`.
+
+Do not output a direction-only label when `VT`, `GW`, `CW`, `PW`, gamma pits, or OI shelves are available. If precise levels are unavailable, say `关键点位不足` and lower confidence instead of presenting a clean directional label.
+
 Always build the read from these layers, in this order:
 
 1. **Spot vs vol trigger**: treat the nearest major `vol trigger` or gamma flip as the regime divider. Spot below the trigger means higher-volatility/negative-gamma risk unless price reclaims it. Spot above the trigger allows repair but still needs confirmation above the nearest wall.
@@ -287,12 +296,15 @@ When answering a batch request with multiple stocks, ETFs, or mixed tickers, eve
 
 - **Gamma sign / regime**: positive, negative, or mixed, with `Net GEX` when available. This is the dealer-hedging/volatility map.
 - **Directional state / bias**: `偏多修复`, `中性钉扎`, `中性偏空防守`, `高波动战场`, or another explicit long/short/neutral state derived from spot vs flip/walls/pits. This is the trading interpretation.
+- **Actionable key levels / zone**: the exact pinning area, battlefield range, repair trigger, upside pressure, and/or downside invalidation that justifies the directional state. At minimum, include the nearest `VT/flip`, `GW/CW` pressure or magnet, and `PW`/pit support or risk when those fields are available.
 
 Do not let one replace the other. A stock can be `净 GEX 为正` but still `中性偏空/高波动` if spot is below the volatility trigger or trapped under a nearby wall; a stock can be locally positive gamma but still a poor long setup if it has not reclaimed the trigger. In tables, prefer columns like:
 
-`Ticker | Spot anchor | Gamma sign / Net GEX | Directional state | Flip/VT | Gamma wall | Downside risk | What changes the view`
+`Ticker | Spot anchor | Gamma sign / Net GEX | Directional state | Key zone / pinning area | Flip/VT | Upside wall | Downside risk | What changes the view`
 
-For batch summaries, group names after the table by directional state, but keep the per-row gamma sign visible. If space is limited, abbreviate values, not the two required classifications.
+For batch summaries, group names after the table by directional state, but keep the per-row gamma sign and key levels visible. If space is limited, abbreviate commentary first; do not omit the gamma regime, direction, or actionable price zone.
+
+For multi-expiry batch reports, each expiry row must show the date-specific levels, not only the all-expiry levels. Use the expiry's own `VT`, `GW`, `CW`, `PW`, net GEX, and pits when available. If describing `本周` and `下周`, give both periods' gamma sign, directional state, and actionable zone separately because the same ticker can pin this week and become high-volatility next week.
 
 When news or broad risk sentiment is driving the underlying or index, call `macro-news-check` only when current macro tape can plausibly change the gamma read, such as CPI/PCE/FOMC/central-bank events, Treasury yield shocks, USD moves, oil/gold/geopolitical headlines, index futures breaks, or sudden risk-on/risk-off tape. Use `stock-sentiment-analysis` if deeper emotion-cycle framing is needed, and add an expectation-gap check before relying on the gamma map: `prior market expectation` -> `actual news` -> `above expectation / in line or merely landed / below expectation`. Apply this to numeric headlines such as orders, CPI/FOMC data, earnings, guidance, and ETF flows, and to qualitative headlines such as regulatory wording, geopolitical tone, management confidence, timing, certainty, and whether the news solves the market's real concern. Gamma explains likely hedging pressure after price moves; it does not by itself explain whether the headline was accepted or rejected.
 
