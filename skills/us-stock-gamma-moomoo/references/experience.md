@@ -3,6 +3,7 @@
 ## Active Playbook
 
 - Read gamma as a positioning map, not a standalone forecast. Confirm the map with live spot, price action, volatility, and news acceptance.
+- Positive gamma is not a bullish directional forecast. In same-day SPX/0DTE reads, if spot keeps moving away from an upper wall while 0DTE/All GEX rapidly decays, treat the upper wall as failed repair / overhead pressure and describe the session as weakening within positive gamma, not as a prediction that price should rise back to the wall. The actionable warning is the sequence: lower spot, weaker GEX, lower active pinning zone, and failure to reclaim nearby strikes.
 - Treat third-party gamma/trigger-wall tables as a context filter, not a treasure map or standalone buy/sell signal. GEX describes where dealer hedging and liquidity pressure may matter; it does not prove price must travel to a wall, and it should not be used as a deterministic endpoint.
 - Do not infer direction from customer inventory or OI alone. Traditional client-position conventions can be wrong during institution-to-institution trades, crosses, spreads, or dealerless prints; the useful question is dealer net hedging pressure and whether price action confirms it.
 - Be especially skeptical of overnight or stale OI/GEX snapshots in 0DTE-heavy markets. Same-day opening and expiry flows can rebuild the battlefield, so yesterday's wall can become stale by afternoon after spot/IV move.
