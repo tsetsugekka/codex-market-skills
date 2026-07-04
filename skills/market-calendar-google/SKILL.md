@@ -113,10 +113,17 @@ Do not include redundant blocks such as "美股时段", repeated timezone labels
 
 ### 1. Source And Scope
 
-- Prefer SBI Securities settlement announcement data when available. The public page loads JSONP from `vc.iris.sbisec.co.jp/calendar/settlement/stock/announcement_info_date.do`.
+- Prefer SBI Securities settlement announcement data when available. The public ETGate page embeds the real Iris JSONP endpoints and volatile request parameters in inline JavaScript:
+  - `ANNOUNCE_INFO_DATE`
+  - `ANNOUNCE_INFO_PARAM`
+  - `ANNOUNCE_CALENDAR_URL`
+  - `ANNOUNCE_CALENDAR_PARAM`
+- Do not call `vc.iris.sbisec.co.jp/calendar/settlement/stock/announcement_info_date.do` with only `selectedDate`; SBI returns `<!-- ERROR Calendar -->`. First fetch the current ETGate entry page, extract `ANNOUNCE_INFO_DATE` and `ANNOUNCE_INFO_PARAM`, then call `ANNOUNCE_INFO_DATE + ANNOUNCE_INFO_PARAM + "&selectedDate=YYYYMMDD"`.
 - Query one selected date at a time; the JSONP response contains the full day's body and the website pagination is only front-end display. Do not scrape page-by-page if the JSONP endpoint is available.
 - Use `selectedDate=YYYYMMDD` for each trading day in the requested week.
-- If SBI is unavailable, use Traders Web `https://www.traders.co.jp/market_jp/earnings_calendar` as fallback. It is easy to parse but may require pagination.
+- A helper script is available at `scripts/fetch_sbi_jp_earnings.py`. Prefer it for direct SBI retrieval; it dynamically discovers the current API URL and hash/type parameter from the ETGate page.
+- If the ETGate URL changes or the helper cannot extract the JavaScript variables, recover the current entry page by searching the web for `sbi 決算発表スケジュール` or `site:sbisec.co.jp 決算発表スケジュール 国内株式`, then use the discovered URL as the helper's `--entry-url`.
+- If SBI is unavailable after dynamic discovery, use Traders Web `https://www.traders.co.jp/market_jp/earnings_calendar` as fallback. It is easy to parse but may require pagination.
 
 ### 2. Watchlist And Filtering
 
