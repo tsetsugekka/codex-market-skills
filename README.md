@@ -1,5 +1,21 @@
 # Codex Market Skills
 
+<p align="center">
+  <strong>面向交易、投资研究、市场异动解释和财经日历管理的 Codex Skill Suite。</strong>
+</p>
+
+<p align="center">
+  <a href="README.md">中文</a> |
+  <a href="README.en.md">English</a> |
+  <a href="README.ja.md">日本語</a>
+</p>
+
+<p align="center">
+  <code>Codex Skill</code> · <code>CN / JP / US Markets</code> · <code>Public-safe</code> · <code>No secrets</code>
+</p>
+
+---
+
 > 面向交易、投资研究、市场异动解释和财经日历管理的 Codex Skill Suite。
 
 ![Codex](https://img.shields.io/badge/Codex-Skill%20Suite-4f46e5)

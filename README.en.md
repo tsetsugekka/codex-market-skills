@@ -1,23 +1,116 @@
 # Codex Market Skills
 
+<p align="center">
+  <strong>A Codex Skill Suite for trading, investment research, market-move analysis, and market-calendar workflows.</strong>
+</p>
+
+<p align="center">
+  <a href="README.md">中文</a> |
+  <a href="README.en.md">English</a> |
+  <a href="README.ja.md">日本語</a>
+</p>
+
+<p align="center">
+  <code>Codex Skill</code> · <code>CN / JP / US Markets</code> · <code>Public-safe</code> · <code>No secrets</code>
+</p>
+
+---
+
+> A Codex Skill Suite for trading, investment research, market-move analysis, and market-calendar workflows.
+
+![Codex](https://img.shields.io/badge/Codex-Skill%20Suite-4f46e5)
+![Markets](https://img.shields.io/badge/Markets-CN%20%7C%20JP%20%7C%20US-22c55e)
+![Language](https://img.shields.io/badge/Language-English-blue)
+![Secrets](https://img.shields.io/badge/Secrets-not%20included-critical)
+
+## What This Is
+
 Codex Market Skills is a collection of Codex skills for trading, investment research, and market-calendar workflows. It is organized as a multi-skill repository with separate, clearly scoped market workflows.
 
-## Included Skills
+It covers four major task areas:
 
-### [`market-calendar-google`](docs/market-calendar-google.md)
+| Area | Coverage |
+| --- | --- |
+| Stock moves | A-share, Japanese stock, US stock, and ETF moves including rallies, selloffs, volume spikes, limit moves, premarket, and after-hours moves |
+| Themes and sentiment | A-share theme strength, short-term sentiment cycles, forum/message-board/community heat, main-line status, and expectation gaps |
+| Macro and structure | Macro headlines, broad-market tape, technical structure, support/resistance, gamma/GEX, and 0DTE scenario tables |
+| Calendar and reports | US/Japan earnings, macro events, central-bank events, market strategy reports, and closing reviews |
+
+## Skill Overview
+
+| Skill | Purpose | Key Dependencies |
+| --- | --- | --- |
+| [`market-calendar-google`](docs/market-calendar-google.md) | Organizes earnings, macro data, central-bank events, auctions, and other market events, then writes them to Google Calendar | Required: `google-calendar:google-calendar` |
+| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | Analyzes Japanese stock rallies, selloffs, volume spikes, and news/message-board drivers | None |
+| [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | Analyzes A-share limit-ups, limit-downs, board breaks, volume spikes, and market/sector/stock-level resonance | Optional: `mx-data`, `mx-search`, `mx-xuangu`, `mx-zixuan` |
+| [`cn-theme-strength-mx`](docs/cn-theme-strength-mx.md) | Computes intraday TOP10/BOTTOM10 strength rankings for local A-share theme mappings | Required: `mx-zixuan`, `mx-xuangu`, `mx-search` |
+| [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | Provides a public-safe sentiment framework reused by other stock skills | Optional: Eastmoney Miaoxiang tools and moomoo community samples |
+| [`macro-news-check`](docs/macro-news-check.md) | Checks macro and broad-market context when a stock, index, technical, or gamma analysis needs it | None |
+| [`market-daily-strategist`](docs/market-daily-strategist.md) | Produces premarket strategies, closing reviews, and long-term single-name recommendations for US, Japan, and A-share markets | Optional: market data, move-reason, technical, sentiment, and gamma skills |
+| [`us-stock-move-reason`](docs/us-stock-move-reason.md) | Uses moomoo news, digest, community, capital, options, and technical anomalies to explain US stock/ETF moves | Optional but recommended: moomoo skills |
+| [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md) | Uses moomoo OpenD to analyze US options gamma/GEX, gamma walls, and 0DTE scenario tables | Required: local moomoo OpenD and Python SDK `moomoo` |
+| [`stock-technical-analysis`](docs/stock-technical-analysis.md) | Analyzes technical structure, support/resistance, volume-price behavior, and indicators for US, Japanese, and A-share stocks | Optional: Eastmoney Miaoxiang tools and `moomoo-technical-anomaly` |
+
+## Highlights
+
+- **One suite for multiple markets**  
+  A-shares, Japanese stocks, US stocks, ETFs, indexes, earnings calendars, macro events, and option structure live in one repository while each skill keeps a clear boundary.
+
+- **Public-safe by design**  
+  The repository stores only generic workflows, public-safe rules, and scripts. It should not contain watchlists, credentials, API keys, `.env` files, private RAG, runtime caches, or private outputs.
+
+- **Evidence-first market research**  
+  Move analysis separates confirmed catalysts, market speculation, forum heat, technical confirmation, macro amplifiers, and background noise.
+
+- **Designed for skill composition**  
+  Move-reason, sentiment-cycle, macro-tape, technical-analysis, and gamma-structure skills can be combined when the question needs more than one signal.
+
+- **Chinese reports first**  
+  The default operating style is Chinese market research and intraday decision support. English and Japanese READMEs are provided for installation and public documentation.
+
+## Which Skill To Use
+
+| User intent | Recommended skill |
+| --- | --- |
+| "Why did this A-share hit limit-up, limit-down, or break the board?" | `cn-stock-move-reason` |
+| "Is this Japanese stock moving on news or message-board speculation?" | `jp-stock-move-reason` |
+| "Why did this US stock move premarket or after hours?" | `us-stock-move-reason` |
+| "Which A-share themes are strongest or weakest today?" | `cn-theme-strength-mx` |
+| "Is this stock in main-line launch, climax divergence, or retreat rebound?" | `stock-sentiment-analysis` |
+| "Is there a macro or broad-market reason behind the move?" | `macro-news-check` |
+| "How does the technical setup look right now?" | `stock-technical-analysis` |
+| "What does SPX/SPY/single-name option gamma look like?" | `us-stock-gamma-moomoo` |
+| "Write a premarket strategy or closing review." | `market-daily-strategist` |
+| "Put this week's earnings and market events on the calendar." | `market-calendar-google` |
+
+## Skill Details
+
+<details>
+<summary><code>market-calendar-google</code> - Market calendar</summary>
 
 Organizes US earnings, Japan earnings, China/US/Japan macro data, central-bank events, Treasury auctions, and other market-moving events, then writes them to Google Calendar according to the user's rules.
 
+Dependencies: required - `google-calendar:google-calendar`.
+
+Companion skills: none.
+
 Use it to:
 
-- Process a weekly Earnings Whispers US earnings image.
+- Process this week or next week's Earnings Whispers US earnings image.
 - Filter US or Japan earnings through a user watchlist.
 - Build a high-importance China/US/Japan market-event calendar.
 - Add events in the user's local time while avoiding duplicates.
 
-### [`jp-stock-move-reason`](docs/jp-stock-move-reason.md)
+</details>
 
-Collects evidence for a user-provided Japanese stock code from Yahoo Finance's live quote page, Yahoo message board, Yahoo/Kabutan/Traders news, and basic stock metrics, then lets Codex analyze the likely reason for the move. This skill does not call Gemini or any other LLM API, and it does not read credentials.
+<details>
+<summary><code>jp-stock-move-reason</code> - Japan stock move reason</summary>
+
+Collects evidence for a user-provided Japanese stock code from Yahoo Finance's live quote page, Yahoo message board, Yahoo/Kabutan/Traders news, and basic stock metrics, then lets Codex analyze the likely reason for the move.
+
+Dependencies: none.
+
+Companion skills: `stock-sentiment-analysis`, `macro-news-check`, `stock-technical-analysis`.
 
 Use it to:
 
@@ -25,51 +118,121 @@ Use it to:
 - Separate confirmed news catalysts from Yahoo message-board speculation.
 - Inspect current change, market cap, PER/PBR, margin ratio, and message-board heat.
 
-### [`cn-stock-move-reason`](docs/cn-stock-move-reason.md)
+</details>
 
-Collects evidence for one user-provided A-share stock code from Eastmoney public quote data, announcements, and guba/news-like posts, then adds Sohu index/sector context and A-share advance/decline counts so Codex can analyze the likely move reason, market/sector/stock-level resonance, and short-term sentiment-cycle position. This skill does not call Gemini or any other LLM API, and it does not read credentials.
+<details>
+<summary><code>cn-stock-move-reason</code> - A-share move reason</summary>
+
+Collects evidence for one user-provided A-share stock code from Eastmoney public quote data, announcements, and guba/news-like posts, then adds Sohu index/sector context and A-share advance/decline counts so Codex can analyze the likely move reason, market/sector/stock-level resonance, and short-term sentiment-cycle position.
+
+Dependencies: optional - `mx-data`, `mx-search`, `mx-xuangu`, `mx-zixuan` for Eastmoney Miaoxiang enhancement.
+
+Companion skills: `stock-sentiment-analysis`, `macro-news-check`, `stock-technical-analysis`.
 
 Use it to:
 
 - Analyze why an A-share stock hit limit-up, limit-down, broke a board, or saw unusual volume.
 - Separate confirmed announcement/earnings catalysts from guba speculation.
 - Separate market-wide resonance, sector/concept leadership, and stock-specific catalysts using indexes, sector/concept boards, and advance/decline counts.
-- Classify the short-term emotion cycle: ice point, repair, launch, acceleration, climax, or retreat.
+- Classify the short-term emotion cycle: ice point, repair/stealth positioning, launch, acceleration, climax, high-level divergence/differentiation, or retreat.
 
-### [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md)
+</details>
+
+<details>
+<summary><code>cn-theme-strength-mx</code> - A-share theme strength</summary>
+
+Reads local A-share theme mapping caches and Chinese theme labels, fetches intraday or latest-trading-day A-share quotes through Eastmoney Miaoxiang watchlist and screener tools, calculates weighted theme performance, outputs Chinese TOP10 and BOTTOM10 theme names, and checks the leading stock in each TOP3 theme with guba clues and Miaoxiang news. It is designed for intraday use and reports fetch progress, including watchlist coverage, remaining fills, batch progress, rate-limit retries, and final completion status.
+
+Dependencies: required - `mx-zixuan`, `mx-xuangu`, `mx-search`; optional - `mx-data` for later financial or valuation checks.
+
+Companion skills: `cn-stock-move-reason`.
+
+Use it to:
+
+- Check which locally mapped A-share themes are strongest or weakest intraday.
+- Use Eastmoney watchlists for fast quote coverage, then fill missing constituents through Miaoxiang screeners.
+- Rank A-share theme strength by mapping weight instead of raw board names or individual stocks.
+- Show full TOP10, BOTTOM10, and TOP3 theme-driver checks in the answer without writing files by default.
+
+</details>
+
+<details>
+<summary><code>stock-sentiment-analysis</code> - Sentiment framework</summary>
 
 Provides a reusable public-safe sentiment and market-emotion framework for A-shares, Japanese stocks, US stocks, indexes, and sector themes. It helps other stock skills classify emotion cycles, main-line versus follower status, expectation gaps, forum/message-board heat, crowded trades, and cross-market risk-on/risk-off context without committing private RAG material.
+
+Dependencies: optional - `mx-data`, `mx-search`, `mx-xuangu` for A-share evidence, theme constituents, and screening; `mx-zixuan` only when the user explicitly asks for watchlist work; `moomoo-comment-sentiment` for US community samples.
+
+Companion skills: `cn-stock-move-reason`, `jp-stock-move-reason`, `us-stock-move-reason`, `stock-technical-analysis`, `us-stock-gamma-moomoo`.
 
 Use it to:
 
 - Synthesize forum/message-board heat, news expectation gaps, breadth, and chart confirmation into a sentiment conclusion.
-- Provide a shared sentiment framework for `cn-stock-move-reason`, `jp-stock-move-reason`, `us-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
+- Provide a shared sentiment framework for move-reason, technical, and gamma skills.
 - When the user provides a private RAG directory, guide them to build a local index with topics, source aliases, page/slide ranges, keywords, and public-safe summaries; never write private source material into this public repository.
 
-### [`macro-news-check`](docs/macro-news-check.md)
+</details>
 
-Checks current macro and broad-market tape for other market skills, but only when a stock, index, technical, or gamma analysis genuinely needs live macro context. It prioritizes Jin10, then uses Wallstreetcn and FinancialJuice for supplementary confirmation.
+<details>
+<summary><code>macro-news-check</code> - Macro headline check</summary>
+
+Checks current macro and broad-market tape for other market skills, but only when a stock, index, technical, or gamma analysis genuinely needs live macro context. The user only needs to ask whether broad-market, macro, cross-asset, or risk-sentiment factors are involved; the skill selects public headline and market-confirmation sources.
+
+Dependencies: none.
+
+Companion skills: none.
 
 Use it to:
 
 - Judge whether a stock or index move is affected by rates, FX, central banks, economic data, commodities, geopolitics, or broad risk-on/risk-off tape.
-- Provide macro tape to `cn-stock-move-reason`, `jp-stock-move-reason`, `us-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
+- Provide macro tape to `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, and `us-stock-gamma-moomoo`.
 - Turn 2-5 relevant live headlines into a main-driver, secondary-amplifier, or background-noise judgment for the current instrument.
 
-### [`us-stock-move-reason`](docs/us-stock-move-reason.md)
+</details>
 
-Combines official moomoo news, stock digest, community sentiment, capital anomalies, option anomalies, technical anomalies, and local gamma/technical/macro skills so Codex can explain why a U.S. stock or ETF moved. It treats official moomoo anomaly skills as data/scanner layers and keeps the final reasoning evidence-based.
+<details>
+<summary><code>market-daily-strategist</code> - Market strategy report</summary>
+
+Routes Chinese market-strategy reports for US, Japan, and A-share markets, covering premarket strategy, closing review, and long-term single-name recommendations. It reads the relevant market/time-window references and compresses macro context, move reasons, sentiment cycle, technical structure, and available local market tools into a decision-oriented report.
+
+Dependencies: optional - `mx-data`, `mx-search`, `mx-xuangu` for A-share market, news, sector/concept constituents; `mx-zixuan` only when the user explicitly asks for watchlist work; official moomoo news, digest, comment, capital, option, and technical anomaly skills for US market enhancement.
+
+Companion skills: `macro-news-check`, `stock-sentiment-analysis`, `stock-technical-analysis`, `cn-stock-move-reason`, `jp-stock-move-reason`, `us-stock-move-reason`, `us-stock-gamma-moomoo`.
 
 Use it to:
 
-- Analyze why U.S. stocks such as DELL, NVDA, or TSLA rose, fell, gapped premarket, or moved after hours.
+- Write US, Japan, or A-share premarket strategy.
+- Write US, Japan, or A-share closing review.
+- Recommend one US stock, Japanese stock, A-share, ETF, or LOF with entry points, risks, and validation conditions.
+
+</details>
+
+<details>
+<summary><code>us-stock-move-reason</code> - US stock move reason</summary>
+
+Combines official moomoo news, stock digest, community sentiment, capital anomalies, option anomalies, technical anomalies, and local gamma/technical/macro skills so Codex can explain why a US stock or ETF moved.
+
+Dependencies: optional but recommended - `moomoo-news-search`, `moomoo-stock-digest`, `moomoo-comment-sentiment`, `moomoo-capital-anomaly`, `moomoo-derivatives-anomaly`, `moomoo-technical-anomaly`; optional - local moomoo OpenD and Python SDK.
+
+Companion skills: `us-stock-gamma-moomoo`, `stock-technical-analysis`, `stock-sentiment-analysis`, `macro-news-check`.
+
+Use it to:
+
+- Analyze why US stocks such as DELL, NVDA, or TSLA rose, fell, gapped premarket, or moved after hours.
 - Separate confirmed earnings/guidance/ratings/orders/news from community speculation.
-- Check U.S.-applicable option unusual activity, IV, option sentiment, capital flow, short-sale, and technical anomaly evidence.
+- Check US-applicable option unusual activity, IV, option sentiment, capital flow, short-sale, and technical anomaly evidence.
 - Merge macro, technical, and option/gamma structure for SPY/QQQ/SPX-related move questions.
 
-### [`us-stock-gamma-moomoo`](docs/us-stock-gamma-moomoo.md)
+</details>
+
+<details>
+<summary><code>us-stock-gamma-moomoo</code> - Option gamma structure</summary>
 
 Uses moomoo OpenD to fetch US stock and option data so Codex can analyze gamma/GEX, gamma walls, gamma flip levels, SPX/SPY/ES intraday structure, and 0DTE option scenario value tables. This skill requires moomoo OpenD to be running locally; if the environment is missing, guide the user to install or launch OpenD first.
+
+Dependencies: required - local moomoo OpenD and Python SDK `moomoo`; optional - `moomoo-derivatives-anomaly` for US option anomalies, unusual trades, IV, PCR, and option sentiment scans.
+
+Companion skills: `macro-news-check`, `stock-technical-analysis`, `stock-sentiment-analysis`, `us-stock-move-reason`.
 
 Use it to:
 
@@ -78,16 +241,26 @@ Use it to:
 - Build time-by-underlying theoretical value tables for 0DTE calls/puts to evaluate recovery, take-profit, or stop levels.
 - Output text conclusions, lists, and plain-text tables; for repeated intraday questions in the same conversation, compare with earlier same-session gamma results to judge level migration and strengthening or weakening.
 
-### [`stock-technical-analysis`](docs/stock-technical-analysis.md)
+</details>
 
-Analyzes technical structure for US, Japanese, and A-share stocks, including intraday trend, support/resistance, volume-price behavior, KDJ/MACD/RSI, Vegas channels, chart reads, and whether a stock can reach a target level. This is a self-contained public-safe skill and does not depend on private RAG.
+<details>
+<summary><code>stock-technical-analysis</code> - Technical analysis</summary>
+
+Analyzes technical structure for US, Japanese, and A-share stocks, including intraday trend, support/resistance, volume-price behavior, KDJ/MACD/RSI, Vegas channels, chart reads, and whether a stock can reach a target level.
+
+Dependencies: optional - `mx-data`, `mx-search`, `mx-xuangu` for A-share market, news, sector/concept constituents, and technical screening; `mx-zixuan` only when the user explicitly asks for watchlist work; `moomoo-technical-anomaly` for official US technical anomaly scans.
+
+Companion skills: `macro-news-check`, `stock-sentiment-analysis`, `cn-stock-move-reason`, `jp-stock-move-reason`, `us-stock-move-reason`, `us-stock-gamma-moomoo`.
 
 Use it to:
 
 - Classify setups such as trend continuation, high-level consolidation, pullback confirmation, failed breakout, divergence, or breakdown rebound.
 - Distinguish touch, break, and tradable hold so one wick is not mistaken for a confirmed breakout.
 - Read moomoo/Yahoo/broker charts or screenshots and produce current read, structure, momentum, execution meaning, and next validation level.
-- Combine with move-reason or US gamma skills to judge whether the chart confirms or contradicts a catalyst; for U.S. stocks, `moomoo-technical-anomaly` can be used as a first-pass scanner, but final judgment stays with this skill's price-action framework.
+- Combine with Japan/A-share move-reason or US gamma skills to judge whether the chart confirms the catalyst.
+- For US stocks, use official technical anomalies as prompts, then judge validity through trend position, VWAP/moving averages, volume-price behavior, momentum divergence, support/resistance, and failed breakouts.
+
+</details>
 
 ## Installation
 
@@ -122,11 +295,23 @@ Analyze whether 300750 is moving on confirmed announcements or short-term theme 
 ```
 
 ```text
+Check current A-share theme strength and show TOP10 and BOTTOM10.
+```
+
+```text
+Intraday, show which A-share themes are strongest and weakest.
+```
+
+```text
 Analyze whether this stock is in main-line launch, climax divergence, or retreat rebound.
 ```
 
 ```text
-Check Jin10, Wallstreetcn, and FinancialJuice for any broad-market or macro headlines affecting this stock.
+Check whether any broad-market or macro reason is affecting this stock today.
+```
+
+```text
+Write today's A-share closing review, focusing on main lines, tomorrow's risks, and actionable directions.
 ```
 
 ```text
@@ -141,18 +326,19 @@ Price this SPXW 0DTE 7370C across different times and SPX levels.
 Analyze this stock's technical setup, support, and resistance right now.
 ```
 
-## Safety Notes
+## Safety Boundaries
 
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
+- `cn-theme-strength-mx` must use Eastmoney Miaoxiang `mx-zixuan` and `mx-xuangu`; it reads watchlists only for theme-strength or watchlist workflows requested by the user, does not automatically add/delete/modify watchlists, and must not commit `MX_APIKEY`, full watchlists, local theme-mapping caches, raw API responses, or runtime caches.
 - `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, personal labels, raw notes, screenshots, or trade logs.
 - `macro-news-check` reads only public macro/news pages, feeds, or endpoints; it does not read login cookies, tokens, account data, or private research material, and it should not copy long news text.
-- `us-stock-move-reason` stores only a public-safe U.S. move-reason workflow. Official moomoo skills and OpenD are runtime data layers; do not commit account data, OpenD logs, raw community dumps, private outputs, or personal trade records.
-- `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on private RAG and should not commit personal account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
+- `market-daily-strategist` is a report routing and synthesis layer; local/private market tools are optional enhancements and should not leak watchlists, private outputs, or tool caches into the public repository.
+- `us-stock-move-reason` stores only a public-safe US move-reason workflow. Official moomoo skills and OpenD are runtime data layers; do not commit account data, OpenD logs, raw community dumps, private outputs, or personal trade records.
+- `us-stock-gamma-moomoo` uses the user's local moomoo OpenD quote interface and does not call trade-unlock APIs. The public version does not depend on private RAG and should not commit account data, OpenD logs, screenshots, private quote outputs, original strategy names, or private person names/handles.
 - `stock-technical-analysis` stores only generalized technical-analysis rules. The public version does not depend on private RAG and should not commit personal positions, trade plans, raw screenshots, private research paths, proprietary indicator names, original strategy names, or private person names/handles.
-- If personal study materials are useful, keep them in a private RAG/knowledge base outside this public repository and copy back only distilled generic rules.
-- Do not commit personal watchlists, credentials, `.env` files, runtime caches, or private outputs to this repository.
+- Do not commit personal watchlists, credentials, API keys, `.env` files, private RAG, runtime caches, or private outputs to this repository.
 
 ## Repository Layout
 
@@ -171,6 +357,10 @@ skills/
     agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
+  cn-theme-strength-mx/
+    SKILL.md
+    agents/openai.yaml
+    scripts/
   stock-sentiment-analysis/
     SKILL.md
     agents/openai.yaml
@@ -179,6 +369,9 @@ skills/
   macro-news-check/
     SKILL.md
     agents/openai.yaml
+  market-daily-strategist/
+    SKILL.md
+    references/
   us-stock-move-reason/
     SKILL.md
     agents/openai.yaml
@@ -210,5 +403,5 @@ shared/
 ## Languages
 
 - 中文：`README.md`
-- 日本語：`README.ja.md`
 - English: `README.en.md`
+- 日本語：`README.ja.md`
