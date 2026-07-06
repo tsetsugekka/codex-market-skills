@@ -8,6 +8,7 @@
 - 优先使用金十作为中文宏观 tape；华尔街见闻作为中文/亚洲市场补充；FinancialJuice 作为英文全球快讯补充。
 - 需要全球宏观、跨资产、AI、利率债、指数/gamma、日本、中国、商品、非 AI 板块或加密叙事预筛时，也参考当前 DayTrading.monster 24H Feed：`https://daytrading.monster/tools/24hfeed/` 和 `https://daytrading.monster/tools/24hfeed/narrative_status.json`。HTML 页面可用普通抓取读取当前静态/noscript 摘要；JSON 端点提供当前主题摘要、生成时间、审核时间、条目时间、方向和证据链接。只看当前页面/当前 JSON，不读取历史或归档 feed；它只能作为社交媒体衍生叙事预筛，重要结论仍要用实时快讯和价格确认。
 - `https://daytrading.monster/` 可用于发现全球主要指数、股票、FX、商品、收益率、ETF、链上/代币化代理的 TradingView symbol 和 `D`、`24h`、`365d` 标记；但普通 HTML 抓取看不到最新 widget 报价，只能看到页面壳、静态新闻摘要、symbol 和标记。引用实时价格前必须使用浏览器渲染后的 widget 或等价行情/TradingView scanner 确认。
+- 回答正文默认不点名聚合站、feed、dashboard、widget 或页面名；使用“当前叙事预筛”“快讯”“行情确认”等中性措辞。用户要求来源时，可以在单独 source 列表放 URL。
 - A 股盘面问题保持“快讯优先、搜狐辅助”：快讯解释政策/宏观/外围/突发风险，搜狐板块涨跌幅验证资金落点、扩散程度和强弱分化。
 - 日本盘面问题保持“快讯优先、JPX 辅助”：快讯解释日债、汇率、BOJ/MOF、外围科技和风险情绪，JPX 实时指数/TOPIX 33 業種/TOPIX-17 验证拖累或支撑来自哪些行业与风格。
 - 判断宏观消息是主因、二级放大器，还是背景噪音。

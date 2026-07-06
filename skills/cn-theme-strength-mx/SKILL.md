@@ -53,6 +53,8 @@ python3 <cn-theme-strength-mx>/scripts/refresh_theme_assets_from_daytrading_mons
 
 If network access fails but the local cache files are valid, continue with the existing local cache and state that the mapping refresh was skipped. If the cache files are missing or invalid and refresh fails, ask the user for local mapping files instead of inventing the theme universe. If the user explicitly provides a newer local theme-mapping path, use that path for the current run, but do not write the user's local data back to the repository unless the user explicitly asks to update a local cache.
 
+When the refresh source is used or skipped, do not name DayTrading.monster, theme-data, local paths, or other source names in the final answer prose by default. Use generic wording such as `本地题材映射缓存已刷新`, `题材映射刷新跳过`, or `题材映射缓存不可用`. URLs may appear only in a dedicated source list if the user asks for sources or an audit trail.
+
 When manually updating the local cache from a local source directory, this copy script is still available:
 
 ```bash

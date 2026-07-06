@@ -12,7 +12,7 @@ Prefer Japanese-language sources:
 - トレーダーズ・ウェブ
 - みんかぶ
 - Nikkei/Reuters/Bloomberg/CNBC Japan when available
-- daytrading.monster/pts for after-close PTS movers
+- daytrading.monster/pts for after-close PTS movers. In output prose, call this layer `PTS异动` or `PTS名单`; do not name the site/source by default. If no relevant PTS mover changes the conclusion, omit the layer instead of writing negative filler.
 
 ## Required Data
 

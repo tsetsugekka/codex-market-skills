@@ -44,6 +44,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
 - For US earnings, the default personal watchlist source is the user's moomoo watchlist via the `us-stock-gamma-moomoo` skill/OpenD workflow. If it is unavailable or incomplete, `https://daytrading.monster/themes/theme-data.json` may be used as the backup candidate theme list.
 - For Japan earnings, the default candidate list source is `https://daytrading.monster/themes/theme-data.json`, because local moomoo OpenD may not expose individual Japan stock watchlist codes. If the user provides a Japan CSV or another usable personal list, that personal list takes priority.
 - Treat `daytrading.monster` as a market-relevance candidate pool, not as a personal watchlist. Its useful fields are `market`, `code`, `name`, `theme`, `weight`, and `reason`; prefer higher `weight`, currently relevant `theme`, and names that match the earnings calendar.
+- Do not mention DayTrading.monster, theme-data, candidate-source names, local paths, or other source boilerplate in Calendar titles/descriptions or final prose by default. If sources are requested, URLs may be included in a separate source/audit list.
 
 ## Earnings Workflow
 

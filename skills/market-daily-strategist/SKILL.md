@@ -40,6 +40,7 @@ During question decomposition, actively expand broad market, sector, theme, and 
    Treat the output as social-media-derived narrative candidates only. Account quality is assumed acceptable; the required check is timeliness: feed `generatedAt`/`reviewedAt` should be fresh, and each entry's `sourceCreatedAt`/`updatedAt` must fit the report window. If the helper returns `stale_feed`, errors, or stale entries, skip or downgrade that layer rather than forcing it into the report.
    The helper reads the current DayTrading.monster 24H Feed (`https://daytrading.monster/tools/24hfeed/narrative_status.json`). For pre-market and close-review reports, use only the current page/current JSON state when the report needs current cross-asset or theme discovery, then verify decisive items with live news and prices. Do not fetch or mine historical/archive 24H Feed data for normal reports. The HTML page `https://daytrading.monster/tools/24hfeed/` also has a current static/noscript summary that can be read without browser control.
    For broad macro price context, DayTrading.monster home (`https://daytrading.monster/`) is useful for discovering TradingView symbols and whether a symbol is `D`, `24h`, or `365d`, but the latest widget prices are not visible in plain HTML fetches. Use a rendered browser/widget view or a programmatic TradingView/scanner equivalent before citing live prices from that dashboard.
+   In the final report prose, do not name DayTrading.monster, 24H Feed, dashboard/widget names, page names, or other aggregator/source names by default. Describe the evidence generically as `当前叙事预筛`, `当前价格代理`, `PTS异动`, `评级线索`, or `行情确认`. URLs may be included only in a dedicated source list when the user asks for sources or when an audit trail is required.
 5. Never invent prices, index levels, futures, percentage moves, gamma/options levels, flows, valuation, financials, or news. If unavailable, say `暂无具体数值` or `初步`.
 6. Apply `shared.md` market-news and local-data discipline: scan enough current news before finalizing, avoid broad local-data sweeps, and prioritize items confirmed by price action, volume, flows, earnings, ratings, policy catalysts, or direct trading relevance.
 7. Produce pure simplified Chinese output in the exact structure required by the task reference.
@@ -66,6 +67,7 @@ Cross-skill calls are operational: actually load the supporting skill's `SKILL.m
 - The first line is always a 60-80 Chinese-character decisive title when the task reference requires it.
 - Prioritize actionable conclusions: 追高、等回踩、低吸、减仓、观察、避开财报风险、仓位与止损.
 - Attribute important live figures and news to sources.
+- When internal/current-page helper data is used, do not name DayTrading.monster, 24H Feed, dashboard/widget names, page names, or other aggregator/source names in the report prose by default; source URLs may appear in a separate source list when needed.
 - For recommendation reports, clearly state that the output is not financial advice.
 
 ## Guardrails
