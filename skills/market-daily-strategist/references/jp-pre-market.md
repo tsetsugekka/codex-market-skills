@@ -8,7 +8,7 @@ Prefer Japanese-language sources and keywords:
 
 - kabutan.jp
 - finance.yahoo.co.jp
-- daytrading.monster/pts
+- daytrading.monster/pts runtime app data, using current `data.json` or a rendered page view, not the static `noscript` SEO fallback
 - トレーダーズ・ウェブ
 - みんかぶ
 - `日経先物最新`
@@ -19,7 +19,7 @@ Prefer Japanese-language sources and keywords:
 
 - First confirm whether today is a Japan market trading day. If closed, state the closure and briefly note overnight risks; do not output normal trade advice.
 - Nikkei 225 futures latest level and expected move.
-- PTS sharp risers/fallers as the primary stock-discovery layer, prioritizing `https://daytrading.monster/pts/`; use company/news searches after the PTS list to explain why the stock moved.
+- PTS sharp risers/fallers as the primary stock-discovery layer, prioritizing the current runtime data behind `https://daytrading.monster/pts/`: read `https://daytrading.monster/pts/data.json` or inspect the rendered page. Do not use the HTML `noscript` SEO fallback as current evidence because it can lag the live app. Use company/news searches after the PTS list to explain why the stock moved.
 - In output prose, call this layer `PTS异动` or `PTS名单`; do not name the site/source by default. If no PTS mover matters to the report, omit the layer instead of writing that no relevant source item was found.
 - Main pre-market theme heat, unusual stocks, speculative/institutional flow references, derived mainly from PTS and confirmed news.
 - Important after-close news, policy expectations, breaking news, earnings, and rating changes.

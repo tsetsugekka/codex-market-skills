@@ -43,7 +43,7 @@ The optional online refresh source is DayTrading.monster. The refresh script dow
 - `https://daytrading.monster/themes/theme-data.json`
 - `https://daytrading.monster/themes/theme-label-i18n.json`
 
-Do not fetch `theme-material-i18n.json` or `theme-quotes.json` for this skill. Theme material is not needed for the ranking workflow, and quote data must still come from MX during the current run.
+Use only those direct JSON files for the optional refresh. Do not scrape the `/themes/` frontend HTML, `noscript`, or static SEO text as theme evidence because those page fallbacks can lag the runtime app. Do not fetch `theme-material-i18n.json` or `theme-quotes.json` for this skill. Theme material is not needed for the ranking workflow, and quote data must still come from MX during the current run.
 
 At the start of a normal theme-strength run, try this local refresh command once. It creates the cache if either file is missing, and skips network access when both files are valid and fresher than 7 days:
 

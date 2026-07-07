@@ -12,7 +12,7 @@ Prefer Japanese-language sources:
 - トレーダーズ・ウェブ
 - みんかぶ
 - Nikkei/Reuters/Bloomberg/CNBC Japan when available
-- daytrading.monster/pts for after-close PTS movers. In output prose, call this layer `PTS异动` or `PTS名单`; do not name the site/source by default. If no relevant PTS mover changes the conclusion, omit the layer instead of writing negative filler.
+- daytrading.monster/pts runtime app data for after-close PTS movers. Read current `data.json` or inspect the rendered page; do not use the static `noscript` SEO fallback as current PTS evidence because it can lag the live app. In output prose, call this layer `PTS异动` or `PTS名单`; do not name the site/source by default. If no relevant PTS mover changes the conclusion, omit the layer instead of writing negative filler.
 
 ## Required Data
 
@@ -23,7 +23,7 @@ Prefer Japanese-language sources:
 - Active sectors/themes mapped to Japanese stocks, ranked by price action, breadth, turnover, and catalyst strength.
 - Unusual movers with codes or Japanese short names, direction, and catalyst/negative driver.
 - Earnings, guidance revisions, buybacks, capital policy, rating changes, policy news, geopolitical events, and after-close PTS moves.
-- Use PTS as the main after-close stock-discovery layer; after identifying PTS risers/fallers, search company disclosures and news to explain the move instead of trying to discover every mover from general news first.
+- Use PTS as the main after-close stock-discovery layer. For the PTS app data, map `mode2` to after-close movers and `mode3` to night-session movers, and check the matching `mode*UpdatedAt` timestamp before citing a mover. After identifying PTS risers/fallers, search company disclosures and news to explain the move instead of trying to discover every mover from general news first.
 - Apply the shared `Market News Discipline` and `Optional Local / Private Data Discipline`; close-review reports must scan after-close and next-session catalysts, not only index closes.
 
 ## Output Format
