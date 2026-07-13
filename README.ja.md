@@ -144,7 +144,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 
 盤中/引け後の A 株について、テーマ強弱 TOP10/BOTTOM10、セクター主力資金、涨停池、機関調査の 4 モジュールをまとめて確認します。テーマはローカルマッピングと Eastmoney Miaoxiang の行情を重み付きで集計し、他のモジュールは Miaoxiang の集約データを優先します。項目が未対応または不完全な場合は、公開集約ソースへ切り替え、時刻・口径・ソース変更を明記します。
 
-依存：テーマ強弱は `mx-zixuan`、`mx-xuangu`、`mx-search`；他モジュールは `mx-data` を優先；機関調査は `cn-institutional-survey-heat` と連携可能です。
+依存：テーマ強弱は `mx-zixuan`、`mx-xuangu`、`mx-search`；他モジュールは `mx-data` を優先；機関調査は内蔵集約スクリプトを使います。
 
 連携 skill：原因確認が必要な場合のみ `cn-stock-move-reason`、`macro-news-check`。
 

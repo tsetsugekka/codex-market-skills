@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Aggregate A-share institutional survey heat from Eastmoney public data."""
+"""Aggregate A-share institutional survey heat from public market data."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import json
+import random
 import sys
 import tempfile
 import time
@@ -16,10 +17,11 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
 
 
 SURVEY_URL = "https://datacenter-web.eastmoney.com/api/data/v1/get"
-QUOTE_URL = "https://push2.eastmoney.com/api/qt/ulist.np/get"
+QUOTE_URL = "https://push2delay.eastmoney.com/api/qt/ulist.np/get"
 QUOTE_UT = "fa5fd1943c7b386f172d6893dbfba10b"
 
 SURVEY_COLUMNS = ",".join(
@@ -71,7 +73,23 @@ def write_cache(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
 
-def fetch_json(url: str, timeout: int) -> dict[str, Any]:
+def endpoint_family(url: str) -> str:
+    parsed = urllib.parse.urlsplit(url)
+    return f"{parsed.netloc}{parsed.path}"
+
+
+def throttle_same_host(url: str, request_state: dict[str, Any]) -> None:
+    host = urllib.parse.urlsplit(url).netloc
+    last_host = request_state.get("last_host")
+    consecutive = int(request_state.get("consecutive", 0)) if last_host == host else 0
+    if consecutive and consecutive % 3 == 0:
+        time.sleep(random.uniform(8.0, 20.0))
+    request_state["last_host"] = host
+    request_state["consecutive"] = consecutive + 1
+
+
+def fetch_json(url: str, timeout: int, request_state: dict[str, Any]) -> dict[str, Any]:
+    throttle_same_host(url, request_state)
     req = urllib.request.Request(
         url,
         headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"},
@@ -80,16 +98,28 @@ def fetch_json(url: str, timeout: int) -> dict[str, Any]:
         return json.load(resp)
 
 
-def fetch_with_retry(url: str, timeout: int, retries: int, retry_sleep: float) -> dict[str, Any]:
+def fetch_with_retry(
+    url: str,
+    timeout: int,
+    retries: int,
+    retry_sleep: float,
+    request_state: dict[str, Any],
+) -> dict[str, Any]:
     last_error: Exception | None = None
     for attempt in range(retries + 1):
         try:
-            return fetch_json(url, timeout)
+            return fetch_json(url, timeout, request_state)
+        except (HTTPError, URLError, TimeoutError) as exc:
+            message = f"request failed: host={urllib.parse.urlsplit(url).netloc} endpoint={endpoint_family(url)} error={exc}"
+            raise RuntimeError(message) from exc
         except Exception as exc:  # noqa: BLE001 - CLI should surface concise network failures.
             last_error = exc
             if attempt < retries:
                 time.sleep(retry_sleep)
-    raise RuntimeError(f"request failed after {retries + 1} attempts: {last_error}")
+    raise RuntimeError(
+        f"request failed after {retries + 1} attempts: "
+        f"host={urllib.parse.urlsplit(url).netloc} endpoint={endpoint_family(url)} error={last_error}"
+    )
 
 
 def fetch_survey_rows(args: argparse.Namespace, start: date, end: date) -> tuple[list[dict[str, Any]], int, int]:
@@ -119,7 +149,7 @@ def fetch_survey_rows(args: argparse.Namespace, start: date, end: date) -> tuple
         params = dict(base_params)
         params["pageNumber"] = str(page)
         url = SURVEY_URL + "?" + urllib.parse.urlencode(params)
-        return fetch_with_retry(url, args.timeout, args.retries, args.retry_sleep)
+        return fetch_with_retry(url, args.timeout, args.retries, args.retry_sleep, args.request_state)
 
     first = fetch_page(1)
     result = first.get("result") or {}
@@ -162,7 +192,7 @@ def fetch_industry_map(args: argparse.Namespace, codes: list[str]) -> tuple[dict
             "ut": QUOTE_UT,
         }
         url = QUOTE_URL + "?" + urllib.parse.urlencode(params)
-        data = fetch_with_retry(url, args.timeout, args.retries, args.retry_sleep)
+        data = fetch_with_retry(url, args.timeout, args.retries, args.retry_sleep, args.request_state)
         batches += 1
         by_plain_code = {code.split(".")[0]: code for code in batch}
         for item in (data.get("data") or {}).get("diff") or []:
@@ -419,14 +449,19 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
+    args.request_state = {}
     end = parse_date(args.end_date)
     stock_start = end - timedelta(days=args.days - 1)
     weekly_start = calendar_month_start(end, args.months)
     fetch_start = min(stock_start, weekly_start)
 
-    rows, pages, raw_count = fetch_survey_rows(args, fetch_start, end)
-    stock_names, records = collect_names_and_orgs(rows)
-    industry_map, quote_batches = fetch_industry_map(args, list(stock_names))
+    try:
+        rows, pages, raw_count = fetch_survey_rows(args, fetch_start, end)
+        stock_names, records = collect_names_and_orgs(rows)
+        industry_map, quote_batches = fetch_industry_map(args, list(stock_names))
+    except RuntimeError as exc:
+        print(f"机构调研数据源失败：{exc}", file=sys.stderr)
+        return 2
 
     top_stocks, top_sectors = aggregate_stock_and_sector(records, industry_map, stock_start, end, args.top)
     weeks, weekly_sectors, _sector_stock_week = aggregate_weekly_sectors(records, industry_map, weekly_start, end, args.top)

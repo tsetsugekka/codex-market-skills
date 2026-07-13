@@ -144,7 +144,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 统一处理 A 股盘中/盘后的题材强弱、板块主力资金流、涨停池和机构调研。题材模块读取本地题材映射和中文标签，用东方财富妙想行情按映射权重计算 TOP10/BOTTOM10；其他模块优先使用妙想聚合数据，字段不支持或不完整时切换到公开聚合备用源，并报告数据时间、口径和来源变化。
 
-依赖：题材强弱必需 - `mx-zixuan`、`mx-xuangu`、`mx-search`；其他模块优先 - `mx-data`；机构调研协同 - `cn-institutional-survey-heat`。
+依赖：题材强弱必需 - `mx-zixuan`、`mx-xuangu`、`mx-search`；其他模块优先 - `mx-data`；机构调研使用本 skill 内置聚合脚本。
 
 协同调用：`cn-stock-move-reason`、`macro-news-check`，仅在用户要求解释原因时调用。
 
