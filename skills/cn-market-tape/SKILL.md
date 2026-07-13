@@ -116,31 +116,13 @@ theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
 
 ## Module 4: Institutional Survey
 
-当前或最近交易日：优先运行内置聚合脚本，或用 MX 查询调研记录，输出统计窗口、机构调研次数、股票 Top10 和行业 Top10。默认命令：
-
-```bash
-python3 skills/cn-market-tape/scripts/institutional_survey_heat.py
-```
-
-常用参数：
-
-```bash
-python3 skills/cn-market-tape/scripts/institutional_survey_heat.py --end-date 2026-06-30
-python3 skills/cn-market-tape/scripts/institutional_survey_heat.py --days 7 --months 2 --top 10 --format json
-python3 skills/cn-market-tape/scripts/institutional_survey_heat.py --save-csv --output-dir /private/tmp/survey_heat
-```
-
-机构口径只计 `RECEIVE_OBJECT_TYPE == "001"` 的记录。股票榜按窗口内每只股票的去重机构数排序，行业榜按股票机构数汇总到行情行业字段，周度榜按“股票-周”去重后汇总。`机构数` 是去重后的机构参与数，不是会议场次。
+当前或最近交易日：使用本 skill 内置的 `scripts/institutional_survey_heat.py` 或 MX 查询调研记录，按既有机构调研口径输出股票、行业和周度热度。
 
 历史请求：
 
 1. 优先使用公开历史调研热度数据或对应的历史 JSON 快照。
-2. 校验目标日期/日期区间、`RECEIVE_START_DATE` 和数据生成时间。脚本默认按 `RECEIVE_START_DATE` 过滤，不使用公告日期替代。
+2. 校验目标日期/日期区间、`RECEIVE_START_DATE` 和数据生成时间。
 3. 若历史源没有对应日期、字段或完整窗口，直接写“尚不支持该时间/数据”，不得用当前快照冒充历史数据。
-
-脚本读取机构调研明细表 `RPT_ORG_SURVEYNEW`，并按批量行情字段补齐行业标签。分页和行业补齐都必须低频执行，使用缓存时不要重复抓同一日期窗口。
-
-输出中分开写“今日/最近交易日新增调研”和“近 7 个自然日/近 2 个月汇总”，避免把不同窗口横向比较。
 
 ## Combined workflow
 

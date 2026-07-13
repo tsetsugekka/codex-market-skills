@@ -89,13 +89,7 @@ BOTTOM10
 
 ### 机构调研
 
-当前/最近交易日优先运行内置机构调研聚合脚本或使用 MX 调研记录查询。默认命令：
-
-```bash
-python3 skills/cn-market-tape/scripts/institutional_survey_heat.py
-```
-
-它输出最近 7 个自然日的股票 Top10、行业 Top10，以及最近 2 个自然月的行业周度热度。可用 `--end-date`、`--days`、`--months`、`--top`、`--format json` 和 `--save-csv` 调整窗口或格式。机构口径只计 `RECEIVE_OBJECT_TYPE == "001"`，机构数按机构名称去重，不等于会议场次。
+当前/最近交易日使用本 skill 内置机构调研聚合脚本或 MX 调研记录查询，沿用既有的股票、行业和周度热度口径。
 
 历史请求优先读取公开历史调研热度数据，校验目标日期、`RECEIVE_START_DATE` 和生成时间。若指定日期或字段不可用，原样说明“尚不支持该时间/数据”。
 
