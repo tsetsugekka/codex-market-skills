@@ -144,6 +144,8 @@ Use it to:
 
 Combines four A-share intraday and after-close modules: weighted theme strength TOP10/BOTTOM10, sector or board main-money flows, the limit-up pool, and institutional survey heat. Theme rankings use local theme mappings plus Eastmoney Miaoxiang quotes; the other modules prefer Miaoxiang aggregate data and fall back to public aggregate sources when a field is unsupported or incomplete. Each result reports its timestamp, data scope, and source change.
 
+Repeated intraday money-flow queries automatically compare the latest same-scope snapshot and keep the result in table form with current value, previous value, change, and rank movement.
+
 Dependencies: theme ranking requires `mx-zixuan`, `mx-xuangu`, and `mx-search`; other modules prefer `mx-data`; institutional surveys use the bundled aggregation script.
 
 Companion skills: `cn-stock-move-reason` and `macro-news-check` only when the user asks for drivers.
