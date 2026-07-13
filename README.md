@@ -43,7 +43,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 | [`market-calendar-google`](docs/market-calendar-google.md) | 整理财报、宏观数据、央行事件、拍卖和其他财经事件，并写入 Google Calendar | 必需：`google-calendar:google-calendar` |
 | [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 分析日本股票急涨、急跌、放量和掲示板/新闻驱动 | 无 |
 | [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | 分析 A 股涨停、跌停、炸板、放量和市场/板块/个股共振 | 可选：`mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan` |
-| [`cn-theme-strength-mx`](docs/cn-theme-strength-mx.md) | 盘中计算本地 A 股题材映射的 TOP10/BOTTOM10 强弱榜 | 必需：`mx-zixuan`、`mx-xuangu`、`mx-search` |
+| [`cn-market-tape`](docs/cn-market-tape.md) | 盘中/盘后计算题材强弱、板块资金流、涨停池和机构调研 | 题材必需：`mx-zixuan`、`mx-xuangu`、`mx-search`；其他模块优先：`mx-data` |
 | [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | 给其他股票 skill 复用的公开安全情绪面分析框架 | 可选：东方财富妙想、moomoo 社区样本增强 |
 | [`macro-news-check`](docs/macro-news-check.md) | 在个股、指数、技术或 gamma 分析需要时检查宏观和大盘背景 | 无 |
 | [`market-daily-strategist`](docs/market-daily-strategist.md) | 输出美股、日股、A 股盘前策略、收盘复盘和长线推荐 | 可选：市场数据、异动、技术、情绪、gamma skill |
@@ -75,7 +75,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 | “这只 A 股为什么涨停/跌停/炸板？” | `cn-stock-move-reason` |
 | “这只日股是新闻驱动还是掲示板思惑？” | `jp-stock-move-reason` |
 | “这只美股为什么盘前/盘后异动？” | `us-stock-move-reason` |
-| “A 股今天哪些题材最强、最弱？” | `cn-theme-strength-mx` |
+| “A 股今天哪些题材最强、最弱，资金去了哪些板块？” | `cn-market-tape` |
+| “现在的涨停池和机构调研热度如何？” | `cn-market-tape` |
 | “这个票是不是主线启动、高潮分歧或退潮反抽？” | `stock-sentiment-analysis` |
 | “有没有宏观或大盘因素影响？” | `macro-news-check` |
 | “这只股票现在技术面怎么看？” | `stock-technical-analysis` |
@@ -139,20 +140,21 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 </details>
 
 <details>
-<summary><code>cn-theme-strength-mx</code> - A 股题材强弱</summary>
+<summary><code>cn-market-tape</code> - A 股盘面数据</summary>
 
-读取本地 A 股题材映射缓存和中文题材标签，用东方财富妙想自选股和选股接口抓取 A 股盘中或最新交易日行情，按映射权重计算题材加权涨跌幅，用中文题材名输出 TOP10 和 BOTTOM10，并对 TOP3 题材各选 1 只涨幅最高的代表股，用股吧线索和妙想资讯辅助判断题材为什么异动。该 skill 的特点是盘中可用，并且会实时报告抓取进度：自选接口覆盖多少、还需补抓多少、补抓批次完成到第几批、是否遇到限频重试、最终是否补齐。
+统一处理 A 股盘中/盘后的题材强弱、板块主力资金流、涨停池和机构调研。题材模块读取本地题材映射和中文标签，用东方财富妙想行情按映射权重计算 TOP10/BOTTOM10；其他模块优先使用妙想聚合数据，字段不支持或不完整时切换到公开聚合备用源，并报告数据时间、口径和来源变化。
 
-依赖：必需 - `mx-zixuan`、`mx-xuangu`、`mx-search`；可选 - `mx-data`（用于后续追查财务或估值）。
+依赖：题材强弱必需 - `mx-zixuan`、`mx-xuangu`、`mx-search`；其他模块优先 - `mx-data`；机构调研协同 - `cn-institutional-survey-heat`。
 
-协同调用：`cn-stock-move-reason`。
+协同调用：`cn-stock-move-reason`、`macro-news-check`，仅在用户要求解释原因时调用。
 
 适用场景：
 
-- 盘中查看本地 A 股题材映射里哪些题材涨得最好、哪些最差。
-- 先用东方财富自选股快速拿行情，再用妙想选股补齐自选接口没有返回的题材成分。
-- 按题材权重输出 A 股题材强弱榜，而不是简单按板块名称或单只股票排序。
-- 只在回答中显示完整 TOP10、BOTTOM10 和 TOP3 题材驱动检查，不默认写文件。
+- 盘中/盘后输出题材强弱 TOP10/BOTTOM10。
+- 按“主力净流入 Top10 / 主力净流出 Top10”格式输出板块资金流。
+- 查看涨停数量、连板梯队、炸板和行业/题材分布。
+- 查看最近交易日或历史窗口的机构调研热度；没有对应历史数据时明确说明不支持。
+- 不默认写文件；备用接口遇到限流、封禁或不稳定时报告 host、接口类别和错误。
 
 </details>
 
@@ -270,7 +272,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 请从 https://github.com/tsetsugekka/codex-market-skills 安装我需要的 Codex skills。
 ```
 
-如果只需要其中一个，可以把 skill 名一起告诉 Codex，例如 `stock-technical-analysis` 或 `cn-theme-strength-mx`。
+如果只需要其中一个，可以把 skill 名一起告诉 Codex，例如 `stock-technical-analysis` 或 `cn-market-tape`。
 
 ## 示例请求
 
@@ -331,7 +333,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
-- `cn-theme-strength-mx` 必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`；只在用户要求题材强弱/自选相关工作流时读取自选股，不自动添加、删除或修改自选股，不提交 `MX_APIKEY`、完整自选股列表、题材映射本地缓存、原始 API 响应或运行缓存。
+- `cn-market-tape` 的题材强弱必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`；只查询自选股，不自动添加、删除或修改自选股。资金流、涨停池和机构调研优先使用妙想聚合查询，备用接口必须批量、低频、带随机等待，不提交 `MX_APIKEY`、完整自选股列表、题材映射本地缓存、原始 API 响应或运行缓存。
 - `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、个人标签、原始笔记、截图或交易日志。
 - `macro-news-check` 只读取公开宏观快讯页面/Feed/接口；不读取登录 cookie、token、账号数据或私有研究资料，不复制长篇新闻正文。
 - `market-daily-strategist` 是报告路由和综合层；本地/私有行情工具只作为可选增强，不应把个人关注列表、私有输出或工具缓存提交到公开仓库。
@@ -357,9 +359,10 @@ skills/
     agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
-  cn-theme-strength-mx/
+  cn-market-tape/
     SKILL.md
     agents/openai.yaml
+    references/
     scripts/
   stock-sentiment-analysis/
     SKILL.md
@@ -389,7 +392,7 @@ docs/
   market-calendar-google.md
   jp-stock-move-reason.md
   cn-stock-move-reason.md
-  cn-theme-strength-mx.md
+  cn-market-tape.md
   macro-news-check.md
   market-daily-strategist.md
   stock-sentiment-analysis.md

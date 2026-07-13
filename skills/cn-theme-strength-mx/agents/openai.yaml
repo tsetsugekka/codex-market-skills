@@ -1,4 +1,0 @@
-interface:
-  display_name: "CN Theme Strength MX"
-  short_description: "Rank A-share theme strength with MX quotes."
-  default_prompt: "看看当前 A 股题材强弱，显示 TOP10 和 BOTTOM10，并对 TOP3 题材做简短驱动检查。"

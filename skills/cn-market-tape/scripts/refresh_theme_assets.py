@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy A-share theme mapping files into the cn-theme-strength-mx local cache."""
+"""Copy A-share theme mapping files into the CN market-tape local cache."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh cn-theme-strength-mx local theme cache from DayTrading.monster.
+"""Refresh the local CN market-tape theme cache from the configured public source.
 
 The script updates only the local skill cache. It keeps a stamp file and skips
 network access when the cached files are fresh enough, defaulting to 7 days.
@@ -124,7 +124,7 @@ def download_json(url: str, dest: Path) -> dict[str, str | None]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Refresh local A-share theme mapping cache from DayTrading.monster.")
+    parser = argparse.ArgumentParser(description="Refresh the local A-share theme mapping cache from the configured public source.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL that serves theme-data.json and theme-label-i18n.json")
     parser.add_argument("--target-dir", type=Path, default=Path(__file__).resolve().parents[1] / "assets" / "themes", help="Directory to update; defaults to this skill's local assets/themes cache")
     parser.add_argument("--max-age-days", type=int, default=7, help="Skip refresh when local assets are fresher than this many days")

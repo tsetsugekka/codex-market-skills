@@ -43,7 +43,7 @@ It covers four major task areas:
 | [`market-calendar-google`](docs/market-calendar-google.md) | Organizes earnings, macro data, central-bank events, auctions, and other market events, then writes them to Google Calendar | Required: `google-calendar:google-calendar` |
 | [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | Analyzes Japanese stock rallies, selloffs, volume spikes, and news/message-board drivers | None |
 | [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | Analyzes A-share limit-ups, limit-downs, board breaks, volume spikes, and market/sector/stock-level resonance | Optional: `mx-data`, `mx-search`, `mx-xuangu`, `mx-zixuan` |
-| [`cn-theme-strength-mx`](docs/cn-theme-strength-mx.md) | Computes intraday TOP10/BOTTOM10 strength rankings for local A-share theme mappings | Required: `mx-zixuan`, `mx-xuangu`, `mx-search` |
+| [`cn-market-tape`](docs/cn-market-tape.md) | Reads intraday/after-close A-share themes, sector flows, limit-ups, and institutional surveys | Theme ranking: `mx-zixuan`, `mx-xuangu`, `mx-search`; other modules prefer `mx-data` |
 | [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | Provides a public-safe sentiment framework reused by other stock skills | Optional: Eastmoney Miaoxiang tools and moomoo community samples |
 | [`macro-news-check`](docs/macro-news-check.md) | Checks macro and broad-market context when a stock, index, technical, or gamma analysis needs it | None |
 | [`market-daily-strategist`](docs/market-daily-strategist.md) | Produces premarket strategies, closing reviews, and long-term single-name recommendations for US, Japan, and A-share markets | Optional: market data, move-reason, technical, sentiment, and gamma skills |
@@ -75,7 +75,8 @@ It covers four major task areas:
 | "Why did this A-share hit limit-up, limit-down, or break the board?" | `cn-stock-move-reason` |
 | "Is this Japanese stock moving on news or message-board speculation?" | `jp-stock-move-reason` |
 | "Why did this US stock move premarket or after hours?" | `us-stock-move-reason` |
-| "Which A-share themes are strongest or weakest today?" | `cn-theme-strength-mx` |
+| "Which A-share themes are strongest or weakest, and where is money flowing?" | `cn-market-tape` |
+| "What does today's limit-up pool or institutional survey heat look like?" | `cn-market-tape` |
 | "Is this stock in main-line launch, climax divergence, or retreat rebound?" | `stock-sentiment-analysis` |
 | "Is there a macro or broad-market reason behind the move?" | `macro-news-check` |
 | "How does the technical setup look right now?" | `stock-technical-analysis` |
@@ -139,20 +140,21 @@ Use it to:
 </details>
 
 <details>
-<summary><code>cn-theme-strength-mx</code> - A-share theme strength</summary>
+<summary><code>cn-market-tape</code> - A-share market tape</summary>
 
-Reads local A-share theme mapping caches and Chinese theme labels, fetches intraday or latest-trading-day A-share quotes through Eastmoney Miaoxiang watchlist and screener tools, calculates weighted theme performance, outputs Chinese TOP10 and BOTTOM10 theme names, and checks the leading stock in each TOP3 theme with guba clues and Miaoxiang news. It is designed for intraday use and reports fetch progress, including watchlist coverage, remaining fills, batch progress, rate-limit retries, and final completion status.
+Combines four A-share intraday and after-close modules: weighted theme strength TOP10/BOTTOM10, sector or board main-money flows, the limit-up pool, and institutional survey heat. Theme rankings use local theme mappings plus Eastmoney Miaoxiang quotes; the other modules prefer Miaoxiang aggregate data and fall back to public aggregate sources when a field is unsupported or incomplete. Each result reports its timestamp, data scope, and source change.
 
-Dependencies: required - `mx-zixuan`, `mx-xuangu`, `mx-search`; optional - `mx-data` for later financial or valuation checks.
+Dependencies: theme ranking requires `mx-zixuan`, `mx-xuangu`, and `mx-search`; other modules prefer `mx-data`; institutional surveys can use `cn-institutional-survey-heat`.
 
-Companion skills: `cn-stock-move-reason`.
+Companion skills: `cn-stock-move-reason` and `macro-news-check` only when the user asks for drivers.
 
 Use it to:
 
-- Check which locally mapped A-share themes are strongest or weakest intraday.
-- Use Eastmoney watchlists for fast quote coverage, then fill missing constituents through Miaoxiang screeners.
-- Rank A-share theme strength by mapping weight instead of raw board names or individual stocks.
-- Show full TOP10, BOTTOM10, and TOP3 theme-driver checks in the answer without writing files by default.
+- Compute intraday or after-close theme strength TOP10/BOTTOM10.
+- Show `Main-money inflow Top10` and `Main-money outflow Top10` in a fixed table format.
+- Inspect limit-up counts, consecutive-board ladder, board breaks, and industry/theme distribution.
+- Inspect current or historical institutional survey heat, explicitly marking unsupported dates or fields.
+- Avoid writing files by default and report host, endpoint family, and error when a fallback source is rate-limited or unstable.
 
 </details>
 
@@ -270,7 +272,7 @@ In Codex, send the repository URL and ask Codex to install all or selected skill
 Install the Codex skills I need from https://github.com/tsetsugekka/codex-market-skills.
 ```
 
-If you only need one skill, include its name, such as `stock-technical-analysis` or `cn-theme-strength-mx`.
+If you only need one skill, include its name, such as `stock-technical-analysis` or `cn-market-tape`.
 
 ## Example Prompts
 
@@ -331,7 +333,7 @@ Analyze this stock's technical setup, support, and resistance right now.
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
-- `cn-theme-strength-mx` must use Eastmoney Miaoxiang `mx-zixuan` and `mx-xuangu`; it reads watchlists only for theme-strength or watchlist workflows requested by the user, does not automatically add/delete/modify watchlists, and must not commit `MX_APIKEY`, full watchlists, local theme-mapping caches, raw API responses, or runtime caches.
+- `cn-market-tape` must use Eastmoney Miaoxiang `mx-zixuan` and `mx-xuangu` for theme strength and only query watchlists; it must not automatically add/delete/modify them. Money flows, limit-ups, and institutional surveys should prefer aggregate Miaoxiang queries; fallback sources must be batched, low-frequency, and randomly delayed. Never commit `MX_APIKEY`, full watchlists, local theme-mapping caches, raw API responses, or runtime caches.
 - `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, personal labels, raw notes, screenshots, or trade logs.
 - `macro-news-check` reads only public macro/news pages, feeds, or endpoints; it does not read login cookies, tokens, account data, or private research material, and it should not copy long news text.
 - `market-daily-strategist` is a report routing and synthesis layer; local/private market tools are optional enhancements and should not leak watchlists, private outputs, or tool caches into the public repository.
@@ -357,9 +359,10 @@ skills/
     agents/openai.yaml
     references/experience.md
     scripts/stock_move_sources.py
-  cn-theme-strength-mx/
+  cn-market-tape/
     SKILL.md
     agents/openai.yaml
+    references/
     scripts/
   stock-sentiment-analysis/
     SKILL.md
@@ -389,7 +392,7 @@ docs/
   market-calendar-google.md
   jp-stock-move-reason.md
   cn-stock-move-reason.md
-  cn-theme-strength-mx.md
+  cn-market-tape.md
   macro-news-check.md
   market-daily-strategist.md
   stock-sentiment-analysis.md
