@@ -49,6 +49,17 @@ Read this section before using the stock technical analysis skill.
 - Never paste long raw chart output or forum posts here. Store only distilled, reusable principles.
 - Do not store personal positions, credentials, private URLs, or content that should not be committed or shared.
 
+## A-Share Cross/Trend Signal Backtest Reference
+
+- User-provided screenshots report A-share backtest accuracy for the following bearish signals. The sample range, test window, entry/exit definition, and survivorship treatment were not provided, so these percentages are reference statistics rather than independently verified edge estimates:
+  - `顶背离死叉`: 20-day moving average above + ordinary + bullish alignment + index above its 20-day line — `63.37%`.
+  - `死叉`: 20-day moving average above + ordinary death cross + index below its 20-day line — `59.51%`.
+  - `空头排列反弹死叉`: 20-day moving average below + ordinary + bearish alignment + index above its 20-day line — `57.68%`.
+  - `水下死叉`: 20-day moving average below + ordinary + bearish alignment + index below its 20-day line — `57.68%`.
+- The user-provided bullish screenshot reports `金叉`: 20-day moving average below + volume-expanding golden cross + index above its 20-day line — `58.80%`.
+- Treat these as A-share auxiliary signal labels. When one is present, report the label and its reference accuracy, then require price/volume confirmation, support or resistance behavior, and broad-market/sector context before classifying a move as confirmed. Do not convert the percentage directly into a trade probability or use a cross alone as a buy/sell conclusion.
+- In signal conflicts, prioritize the current price structure and volume-price confirmation: a golden cross below a broken support is only a rebound candidate; a death cross that holds a reclaimed support in a strong higher-timeframe trend can be digestion rather than full trend failure.
+
 ## Archive
 
 - 2026-05-13: Added execution-realism rules from an intraday resistance discussion. Ticker details omitted; the reusable lesson is to distinguish tick-level breakouts from tradable holds, and to separate profit-taking execution from trend-holding logic.
