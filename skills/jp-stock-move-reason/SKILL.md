@@ -58,6 +58,33 @@ Useful options:
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
 
+### PTS Turnover Ranking Sub-skill
+
+When the user asks for PTS day/night mover lists ranked by `成交额`, `売買代金`,
+`turnover`, or says `不是成交量，是成交额`, use the PTS turnover sub-skill before
+running per-stock reason collection. Read
+`references/pts-turnover-ranking.md`, then run:
+
+```bash
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-abs-pct 3 --top 10 --reason-commands
+```
+
+Default to `--session auto`: trading weekdays `08:20-15:30` 日中取引 and
+`15:30-16:30` 大引け後 use `pts_day_price_increase/decrease`; `17:00-06:00`,
+other out-of-session times, weekends, and known non-trading days use
+`pts_night_price_increase/decrease`. The script handles weekends automatically;
+for Japanese exchange holidays on weekdays, force `--session night`.
+
+The helper ranks rows by `PTS株価 * PTS出来高` after filtering by percentage
+change, and it fetches enough 50-row pages to cross the requested threshold.
+After ranking, run `stock_move_sources.py` only for the selected top codes that
+need reasons. For many names, collect reasons sequentially: fetch one code, read
+and summarize it, then proceed to the next, with moderate randomized sleeps
+between repeated requests to the same host. Do not pre-scrape every 掲示板 at high
+frequency. ETF or ETN rows should be explained from their underlying
+index/strategy, and tiny turnover PTS jumps should be labeled low-confidence if
+no hard news exists.
+
 3. If a sandboxed collector call was already attempted by mistake and network
    access fails in Codex, rerun the same command with sandbox escalation
    according to the normal approval policy. In this local environment, the

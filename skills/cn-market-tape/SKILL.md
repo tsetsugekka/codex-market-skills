@@ -29,6 +29,7 @@ description: Use when the user asks for A-share intraday or after-close market t
 其他模块：
 
 - `mx-data`：优先用于板块资金、涨停池、机构调研和指定字段的补充查询。
+- `visualize`：用户要求分钟级折线图时，用于渲染带零轴和拐点标注的分时资金图；不可用时退回分钟数据表并说明限制。
 - `scripts/institutional_survey_heat.py`：机构调研明细的低频抓取、去重和股票/行业/周度聚合。
 - `cn-stock-move-reason`：只有用户需要解释涨停池或个别板块异动时再调用。
 - `macro-news-check`：只有用户要求把宏观、跨市场或大盘因素纳入时再调用。
@@ -99,6 +100,19 @@ theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
 金额必须带单位，优先统一为亿元；同时给出市场宽度或指数快照（如可得）。说明榜单是当前快照还是收盘值，且不要把两个榜单的金额相加：不同板块标签可能重叠，资金流也可能按不同板块口径重复统计。
 
 如果只获得部分板块或只获得净流入方向，明确标注“不完整”，不要补造另一张榜。
+
+### Intraday minute flow and line chart
+
+When the user asks for `分时流入流出`、`分钟级资金`、`资金折线图`、`资金曲线` or asks to see the intraday turning point of a named sector/theme:
+
+1. Disambiguate the object first. `融资融券` can mean the `融资融券` concept board or the market-wide margin-financing/margin-trading account statistics. The former can use minute-level board fund-flow data; the latter is generally an exchange daily summary and must not be presented as a minute chart.
+2. Resolve the requested industry/concept board to its public board code with one aggregate board-list request. Do not guess a code from the board name.
+3. Query the board's minute fund-flow series from the public aggregate source using the board code. Preserve the timestamps and trading-session gaps exactly as returned; do not interpolate the lunch break or missing points.
+4. Interpret the returned fields as cumulative intraday flow unless the source explicitly says otherwise: `f51` = timestamp, `f52` = main net inflow, `f53` = small-order net inflow, `f54` = medium-order net inflow, `f55` = large-order net inflow, `f56` = super-large-order net inflow. The main net amount should reconcile to large-order plus super-large-order net amounts within source rounding.
+5. Plot the cumulative main net inflow in亿元 with a visible zero line. Mark the intraday low/high, zero-crossing when present, and latest point. Use the `visualize` skill for a conversation line chart when the user asks for a chart; the chart must state the data time, source, unit, and whether the series is cumulative or per-minute delta.
+6. If the user asks for per-minute inflow/outflow rather than a cumulative curve, calculate adjacent-point differences from `f52`, label the result as per-minute delta, and keep it separate from the cumulative series.
+
+The default chart read should state whether the tape is early outflow then recovery, persistent outflow, early inflow then distribution, or two-way high-level divergence. A chart does not replace the current snapshot table, and a positive latest point after a deep intraday drawdown should be described as a recovery path rather than automatically as a full-day inflow trend.
 
 ### Intraday snapshot comparison
 

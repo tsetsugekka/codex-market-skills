@@ -25,6 +25,15 @@
 - 涨停池：东方财富 `push2ex.eastmoney.com/getTopicZTPool`，按交易日读取聚合池。
 - `push2.eastmoney.com` 不作为默认源；若尝试后出现 502 或其他非 JSON 响应，报告 host 和 endpoint family 并停止继续重试。
 
+### Intraday sector-flow series
+
+- Board-code resolution: use one aggregate `clist/get` request on `push2delay.eastmoney.com` for the relevant industry or concept universe, then select the exact board name/code. Typical universe selectors are `m:90+t:2` for industries and `m:90+t:3` for concepts.
+- Minute fund-flow series: use `api/qt/stock/fflow/kline/get` on the same public host with `secid=90.<board-code>`, `klt=1`, and `lmt=0`. Request `fields2=f51,f52,f53,f54,f55,f56`.
+- Field mapping: `f51` timestamp; `f52` cumulative main net inflow; `f53` small-order net inflow; `f54` medium-order net inflow; `f55` large-order net inflow; `f56` super-large-order net inflow. Convert amounts to亿元 only after parsing numeric values. Adjacent differences of `f52` are per-minute changes; the raw `f52` series is cumulative.
+- Use the returned `tradePeriods` and `klines` as the source of truth. Do not fill 11:31-13:00, manufacture a 09:30 point when the source starts at 09:31, or infer missing data from the sector's latest snapshot.
+- The endpoint is a current-day intraday source, not a guaranteed historical minute database. If it returns an empty series, stale data, non-JSON, 429/403/5xx, timeout, DNS failure, or connection reset, report the host and endpoint family, stop increasing request volume, and fall back only to a clearly labeled current snapshot or say the chart is unavailable.
+- For a chart request, use the `visualize` skill to render the cumulative main-net line with a zero axis, key turning-point annotations, the latest timestamp, source, and unit. Do not save the raw API response or chart data in the repository.
+
 ### Market breadth and limit-up pool
 
 - 大盘指数和涨跌家数优先使用单次聚合快照接口。
