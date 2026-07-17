@@ -12,7 +12,7 @@ description: Use when the user asks for A-share intraday or after-close market t
 先判断用户要的是盘中快照、收盘数据还是历史数据，再选择模块：
 
 1. `题材强弱`、`题材 TOP10/BOTTOM10`：使用本 skill 的加权题材流程。
-2. `板块流入流出`、`主力净流入/净流出`：先尝试 `mx-data` 或等价 MX 查询；MX 不支持、字段为空或接口不可用时，使用聚合的公开资金流备用源。
+2. `板块流入流出`、`主力净流入/净流出`：先尝试 `mx-data` 或等价 MX 查询；MX 不支持、字段为空、只返回“全部A股”市场合计、日期不匹配或接口不可用时，使用聚合的公开资金流备用源。
 3. `涨停池`：先尝试 MX 或已有的聚合涨停池接口；不要逐只股票抓取涨停状态。
 4. `机构调研`：当前/最近交易日优先运行本 skill 内置的机构调研聚合脚本或 MX 查询；历史请求优先使用公开历史调研热度数据，找不到对应日期或字段时明确声明不支持。
 
@@ -79,9 +79,9 @@ theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
 
 ### Source priority
 
-先用 MX 查询板块或行业的主力净流入/净流出及数据时间。若 MX 不支持该排行、返回字段为空、日期不匹配或调用失败，切换到一个聚合的公开资金流接口；不要逐板块、逐股票循环抓取。
+先用 MX 查询板块或行业的主力净流入/净流出及数据时间。只有返回结果同时包含目标板块/行业名称、板块级资金字段和目标交易日，才算有效板块结果；如果只返回“全部A股”市场合计、`dataTableDTOList` 为空、字段缺失、日期不匹配或调用失败，切换到一个聚合的公开资金流接口。不要逐板块、逐股票循环抓取。
 
-备用源的字段、请求顺序、超时和错误处理见 `references/market-tape-source-routing.md`。同一 host 连续请求超过 3 次后必须加入 8-20 秒随机等待；已出现 HTTP 429/403/5xx、超时、DNS 失败或连接重置时，立即报告 host、endpoint family 和错误，停止继续增加该 host 的请求量。
+备用源的字段、请求顺序、超时和错误处理见 `references/market-tape-source-routing.md`。排名榜必须分别获取净流入方向和净流出方向；不能只取按降序返回的第一页，再把末尾几行误称为净流出。若接口声明的总数超过本次返回条数，要记录分页/返回上限风险。金额原始值按元解析后再统一换算为亿元，并保留接口更新时间。同一 host 连续请求超过 3 次后必须加入 8-20 秒随机等待；已出现 HTTP 429/403/5xx、超时、DNS 失败或连接重置时，立即报告 host、endpoint family 和错误，停止继续增加该 host 的请求量。
 
 ### Required output
 
@@ -101,24 +101,24 @@ theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
 
 如果只获得部分板块或只获得净流入方向，明确标注“不完整”，不要补造另一张榜。
 
-### Intraday minute flow and line chart
+### Intraday minute flow and theme/sector chart SOP
 
-When the user asks for `分时流入流出`、`分钟级资金`、`资金折线图`、`资金曲线` or asks to see the intraday turning point of a named sector/theme:
+When the user asks for `分时流入流出`、`分钟级资金`、`资金折线图`、`资金曲线` or asks to see the intraday turning point of a named sector/theme, follow the full SOP in `references/intraday-flow-chart-sop.md`. The short version is:
 
 1. Disambiguate the object first. `融资融券` can mean the `融资融券` concept board or the market-wide margin-financing/margin-trading account statistics. The former can use minute-level board fund-flow data; the latter is generally an exchange daily summary and must not be presented as a minute chart.
-2. Resolve the requested industry/concept board to its public board code with one aggregate board-list request. Do not guess a code from the board name.
-3. Query the board's minute fund-flow series from the public aggregate source using the board code. Preserve the timestamps and trading-session gaps exactly as returned; do not interpolate the lunch break or missing points.
-4. Interpret the returned fields as cumulative intraday flow unless the source explicitly says otherwise: `f51` = timestamp, `f52` = main net inflow, `f53` = small-order net inflow, `f54` = medium-order net inflow, `f55` = large-order net inflow, `f56` = super-large-order net inflow. The main net amount should reconcile to large-order plus super-large-order net amounts within source rounding.
-5. Plot the cumulative main net inflow in亿元 with a visible zero line. Mark the intraday low/high, zero-crossing when present, and latest point. Use the `visualize` skill for a conversation line chart when the user asks for a chart; the chart must state the data time, source, unit, and whether the series is cumulative or per-minute delta.
-6. If the user asks for per-minute inflow/outflow rather than a cumulative curve, calculate adjacent-point differences from `f52`, label the result as per-minute delta, and keep it separate from the cumulative series.
+2. Resolve the exact industry/concept board code from an aggregate board list; use `m:90+t:2` for industries and `m:90+t:3` for concepts. Do not guess a code, and do not mistake a constituent-stock response for a board row. In the same run, accept a minute series only when its `data.name` exactly confirms the requested board.
+3. Query the current-day minute series with `klt=1` and `lmt=240`. Preserve provider timestamps and trading-session gaps exactly; never interpolate the lunch break or missing points. Record the series' latest point separately from the ranking snapshot's update time because the minute endpoint may lag.
+4. Interpret `f51` as timestamp, `f52` as cumulative main net inflow, `f53`/`f54` as small/medium-order net flow, and `f55`/`f56` as large/super-large-order net flow. Parse yuan first, then convert to亿元. Check that `f52` approximately reconciles to `f55 + f56` before charting.
+5. For one board, plot cumulative `f52` with a visible zero line, y-axis unit, date/time, source, cumulative label, lunch gap, low/high, zero crossings, and latest point. For multiple themes/boards, use one shared time axis; use 分面图 when scales differ and do not normalize away the yuan/亿元 meaning. The chart is supplemental to the latest snapshot table.
+6. Only when the user explicitly asks for “每分钟变化/增量” calculate adjacent-point differences of `f52`; render and label that series separately from the cumulative curve.
 
-The default chart read should state whether the tape is early outflow then recovery, persistent outflow, early inflow then distribution, or two-way high-level divergence. A chart does not replace the current snapshot table, and a positive latest point after a deep intraday drawdown should be described as a recovery path rather than automatically as a full-day inflow trend.
+The default chart read should state whether the tape is persistent outflow, early outflow then recovery, early inflow then distribution, or two-way high-level divergence. A positive latest point after a deep intraday drawdown is a recovery path, not automatically a full-day inflow trend. If the endpoint is empty, stale, non-JSON, rate-limited, timed out, or otherwise unstable, report the host/endpoint family and stop increasing request volume; return the validated snapshot table or state that the chart is unavailable.
 
 ### Intraday snapshot comparison
 
 同一交易日内再次查询资金流时，自动读取本次会话中的上一次结果；若会话中没有，则读取运行时快照缓存。缓存只保存聚合榜单、交易日、数据时间、来源、资金口径和单位，不保存原始响应或账户数据。默认缓存位置为用户级 Codex 运行时目录，不得写入本仓库。
 
-只有当交易日、资金口径、来源和单位一致时才做数值比较。MX 切换到备用源、榜单口径变化或日期不一致时，仍输出当前表，但在表头写明“上次快照不可比”，不能把不同口径的数字相减。
+只有当交易日、资金口径、来源、单位、板块/行业宇宙和数据时间范围一致时才做数值比较。MX 切换到备用源、榜单口径变化或日期不一致时，仍输出当前表，但在表头写明“上次快照不可比”，不能把不同口径的数字相减。分时图比较优先使用相同时间点；只能取得各自最新点时，明确写出时间不一致和接口滞后。
 
 首次查询时保存当前快照，并在表头写 `上次快照：无`。再次查询时，仍然只输出两张表，但列改为：
 

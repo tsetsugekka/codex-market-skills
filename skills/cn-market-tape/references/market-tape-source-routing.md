@@ -13,8 +13,8 @@
 ### Sector money flow
 
 1. 先使用 `mx-data` 或其他 MX 聚合查询，要求返回板块/行业名称、主力净流入、主力净流出、数据时间和单位。
-2. MX 不支持或字段不完整时，使用同花顺公开概念资金流聚合页作为备用。
-3. 备用页面只请求一次并在本地解析全量板块榜；不要按板块名称逐个请求。
+2. MX 不支持或字段不完整时，使用公开聚合资金流备用源；同花顺页面可作为页面级备用，东方财富批量接口可作为已验证的行业/概念排名及分钟序列备用。
+3. 备用页面/接口只请求整页或整榜，在本地解析全量板块；不要按板块名称逐个请求。
 
 资金榜金额通常以亿元展示。若源返回的是“主力净流入”一列，负值可用于净流出排序，但最终表格要把符号和列名写清楚。
 
@@ -22,15 +22,18 @@
 
 - 板块资金流：同花顺公开概念资金流页面 `data.10jqka.com.cn/funds/gnzjl/`，一次读取整榜。
 - 大盘宽度/批量快照：东方财富 `push2delay.eastmoney.com`，只做聚合或批量请求。
+- 行业/概念板块排名：东方财富 `api/qt/clist/get`，行业用 `fs=m:90+t:2`，概念用 `fs=m:90+t:3`；按 `fid=f62` 分别请求 `po=1` 的净流入和 `po=0` 的净流出，不能把同一方向榜单的末尾行当作另一方向。`f62` 为元，解析后换算为亿元；`total` 大于返回条数时要提示分页/返回上限风险。
 - 涨停池：东方财富 `push2ex.eastmoney.com/getTopicZTPool`，按交易日读取聚合池。
 - `push2.eastmoney.com` 不作为默认源；若尝试后出现 502 或其他非 JSON 响应，报告 host 和 endpoint family 并停止继续重试。
 
 ### Intraday sector-flow series
 
-- Board-code resolution: use one aggregate `clist/get` request on `push2delay.eastmoney.com` for the relevant industry or concept universe, then select the exact board name/code. Typical universe selectors are `m:90+t:2` for industries and `m:90+t:3` for concepts.
-- Minute fund-flow series: use `api/qt/stock/fflow/kline/get` on the same public host with `secid=90.<board-code>`, `klt=1`, and `lmt=0`. Request `fields2=f51,f52,f53,f54,f55,f56`.
+- Board-code resolution: use an aggregate `clist/get` request on `push2delay.eastmoney.com` for the relevant industry or concept universe, then select the exact board name/code. Typical universe selectors are `m:90+t:2` for industries and `m:90+t:3` for concepts. A capped first page is not proof that a requested board does not exist; paginate or use an exact supported resolver. A constituent-stock response is not a board-code confirmation.
+- Minute fund-flow series: use `api/qt/stock/fflow/kline/get` on the same public host with `secid=90.<board-code>`, `klt=1`, and `lmt=240` for the current trading day. Request `fields2=f51,f52,f53,f54,f55,f56`. Accept the result only when `data.name` exactly matches the requested board.
 - Field mapping: `f51` timestamp; `f52` cumulative main net inflow; `f53` small-order net inflow; `f54` medium-order net inflow; `f55` large-order net inflow; `f56` super-large-order net inflow. Convert amounts to亿元 only after parsing numeric values. Adjacent differences of `f52` are per-minute changes; the raw `f52` series is cumulative.
 - Use the returned `tradePeriods` and `klines` as the source of truth. Do not fill 11:31-13:00, manufacture a 09:30 point when the source starts at 09:31, or infer missing data from the sector's latest snapshot.
+- Preserve each module's update time. The minute series may lag the board ranking snapshot; show both timestamps and call out the lag instead of silently merging them. If several boards are requested, use a shared time axis and 分面图 when their scales differ.
+- For the chart SOP, render cumulative `f52` in亿元 with a zero line, date/time, source, unit, lunch gap, low/high, zero crossings and latest point. Calculate adjacent differences only for an explicit per-minute-change request; label that chart separately.
 - The endpoint is a current-day intraday source, not a guaranteed historical minute database. If it returns an empty series, stale data, non-JSON, 429/403/5xx, timeout, DNS failure, or connection reset, report the host and endpoint family, stop increasing request volume, and fall back only to a clearly labeled current snapshot or say the chart is unavailable.
 - For a chart request, use the `visualize` skill to render the cumulative main-net line with a zero axis, key turning-point annotations, the latest timestamp, source, and unit. Do not save the raw API response or chart data in the repository.
 
