@@ -4,7 +4,7 @@
 Rank Kabutan PTS movers by computed turnover.
 
 This helper is intentionally small and public-safe. It fetches Kabutan PTS day
-or night mover pages, filters movers by percentage change, and ranks by:
+or night mover pages, filters movers by percentage change and volume, and ranks by:
 
     PTS price * PTS volume
 
@@ -241,10 +241,18 @@ def collect_side(session: str, side: str, min_abs_pct: float, max_pages: int) ->
     return stamp, all_rows
 
 
-def filter_rows(rows: Iterable[PtsRow], side: str, min_abs_pct: float, exclude_etf: bool) -> list[PtsRow]:
+def filter_rows(
+    rows: Iterable[PtsRow],
+    side: str,
+    min_abs_pct: float,
+    min_volume: int,
+    exclude_etf: bool,
+) -> list[PtsRow]:
     result: list[PtsRow] = []
     for row in rows:
         if exclude_etf and is_etf(row):
+            continue
+        if row.volume <= min_volume:
             continue
         if side == "increase" and row.pct >= min_abs_pct:
             result.append(row)
@@ -261,14 +269,25 @@ def format_amount(value: float) -> str:
     return f"{value:.0f}日元"
 
 
-def print_markdown(side: str, rows: list[PtsRow], top: int, stamp: str, session: str) -> None:
+def print_markdown(
+    side: str,
+    rows: list[PtsRow],
+    top: int,
+    stamp: str,
+    session: str,
+    min_abs_pct: float,
+    min_volume: int,
+) -> None:
     title = "涨幅" if side == "increase" else "跌幅"
     section_name = "日中" if session == "day" else "夜间"
     print(f"## PTS{section_name}{title}榜 成交额Top{top}")
     if stamp:
         print(f"- Kabutan时间: {stamp}")
     print(f"- Kabutan section: pts_{session}_price_{side}")
-    print("- 口径: 先按 PTS涨跌幅过滤，再按 `PTS株价 × PTS出来高` 排序")
+    print(
+        f"- 口径: 先筛 `abs(PTS涨跌幅) >= {min_abs_pct:g}%` 且 "
+        f"`PTS出来高 > {min_volume:,}`，再按 `PTS株价 × PTS出来高` 排序"
+    )
     print()
     print("| 排名 | 代码 | 名称 | 市场 | PTS价 | 涨跌幅 | 出来高 | 估算成交额 |")
     print("|---:|---|---|---|---:|---:|---:|---:|")
@@ -294,6 +313,12 @@ def main() -> None:
     )
     parser.add_argument("--side", choices=["increase", "decrease", "both"], default="both")
     parser.add_argument("--min-abs-pct", type=float, default=3.0, help="Minimum absolute PTS change percentage.")
+    parser.add_argument(
+        "--min-volume",
+        type=int,
+        default=2000,
+        help="Minimum exclusive PTS volume threshold. Default keeps rows with volume > 2000.",
+    )
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--max-pages", type=int, default=20)
     parser.add_argument("--exclude-etf", action="store_true", help="Exclude ETF/ETN-like rows.")
@@ -313,12 +338,17 @@ def main() -> None:
 
     for side in sides:
         stamp, rows = collect_side(session, side, args.min_abs_pct, args.max_pages)
-        ranked = filter_rows(rows, side, args.min_abs_pct, args.exclude_etf)
+        ranked = filter_rows(rows, side, args.min_abs_pct, args.min_volume, args.exclude_etf)
         top_rows = ranked[: args.top]
         selected_codes.extend(row.code for row in top_rows)
-        output["sides"][side] = {"stamp": stamp, "rows": [asdict(row) for row in top_rows]}
+        output["sides"][side] = {
+            "stamp": stamp,
+            "min_abs_pct": args.min_abs_pct,
+            "min_volume_exclusive": args.min_volume,
+            "rows": [asdict(row) for row in top_rows],
+        }
         if args.format == "markdown":
-            print_markdown(side, ranked, args.top, stamp, session)
+            print_markdown(side, ranked, args.top, stamp, session, args.min_abs_pct, args.min_volume)
 
     if args.format == "json":
         print(json.dumps(output, ensure_ascii=False, indent=2))

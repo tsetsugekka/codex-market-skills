@@ -17,6 +17,13 @@ turnover column in the list view. Compute turnover as:
 computed_turnover = PTS株価 * PTS出来高
 ```
 
+Default screening is:
+
+```text
+abs(PTS騰落率) >= 3%
+PTS出来高 > 2000
+```
+
 Then rank by `computed_turnover`, not by page order and not by volume alone.
 
 ## Sources
@@ -58,6 +65,7 @@ python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py \
   --session auto \
   --side both \
   --min-abs-pct 3 \
+  --min-volume 2000 \
   --top 10 \
   --reason-commands
 ```
@@ -69,7 +77,7 @@ Useful variants:
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --side both
 
 # Force day PTS, both sides, percentage threshold 3%
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session day --side both --min-abs-pct 3
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session day --side both --min-abs-pct 3 --min-volume 2000
 
 # Force night PTS, both sides, include ETF/ETN
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session night --side both
@@ -96,6 +104,8 @@ last row crosses the requested threshold:
 
 Do not assume page 1 is enough unless its final row already crosses the
 threshold. Day-session decrease lists can be many pages during broad selloffs.
+The volume filter is applied after parsing rows; it does not change the
+percentage-based pagination stop rule.
 
 ## Cause Analysis Workflow
 
@@ -132,7 +142,8 @@ Report the timestamp, source, and method before the tables:
 
 ```text
 口径：Kabutan 夜间PTS，YYYY-MM-DD HH:MM JST；
-只筛 涨幅 >= +3%、跌幅 <= -3%，再按 PTS价格 × PTS出来高 算成交额取Top10。
+只筛 abs(PTS涨跌幅) >= 3% 且 出来高 > 2,000，
+再按 PTS价格 × PTS出来高 算成交额取Top10。
 ```
 
 Use compact tables:

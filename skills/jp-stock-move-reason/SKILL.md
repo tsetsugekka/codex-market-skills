@@ -66,7 +66,7 @@ running per-stock reason collection. Read
 `references/pts-turnover-ranking.md`, then run:
 
 ```bash
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-abs-pct 3 --top 10 --reason-commands
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-abs-pct 3 --min-volume 2000 --top 10 --reason-commands
 ```
 
 Default to `--session auto`: trading weekdays `08:20-15:30` 日中取引 and
@@ -75,8 +75,9 @@ other out-of-session times, weekends, and known non-trading days use
 `pts_night_price_increase/decrease`. The script handles weekends automatically;
 for Japanese exchange holidays on weekdays, force `--session night`.
 
-The helper ranks rows by `PTS株価 * PTS出来高` after filtering by percentage
-change, and it fetches enough 50-row pages to cross the requested threshold.
+The helper ranks rows by `PTS株価 * PTS出来高` after filtering to
+`abs(PTS騰落率) >= 3%` and `PTS出来高 > 2000`, and it fetches enough 50-row pages
+to cross the requested percentage threshold.
 After ranking, run `stock_move_sources.py` only for the selected top codes that
 need reasons. For many names, collect reasons sequentially: fetch one code, read
 and summarize it, then proceed to the next, with moderate randomized sleeps
