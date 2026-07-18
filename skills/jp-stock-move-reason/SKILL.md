@@ -78,13 +78,17 @@ for Japanese exchange holidays on weekdays, force `--session night`.
 The helper ranks rows by `PTS株価 * PTS出来高` after filtering to
 `abs(PTS騰落率) >= 3%` and `PTS出来高 > 2000`, and it fetches enough 50-row pages
 to cross the requested percentage threshold.
-After ranking, run `stock_move_sources.py` only for the selected top codes that
-need reasons. For many names, collect reasons sequentially: fetch one code, read
-and summarize it, then proceed to the next, with moderate randomized sleeps
-between repeated requests to the same host. Do not pre-scrape every 掲示板 at high
-frequency. ETF or ETN rows should be explained from their underlying
-index/strategy, and tiny turnover PTS jumps should be labeled low-confidence if
-no hard news exists.
+After ranking, final PTS mover answers must include a `原因` column unless the
+user explicitly says they only want the raw list, only want numbers, or do not
+need reasons. Run `stock_move_sources.py` for the selected turnover Top codes
+before the final answer and summarize each reason from news/disclosures first,
+using Yahoo 掲示板 only as a retail heat check. If there are many names, collect
+reasons sequentially: fetch one code, read and summarize it, then proceed to the
+next, with moderate randomized sleeps between repeated requests to the same
+host. Do not pre-scrape every 掲示板 at high frequency, but also do not return a
+bare ranking table without reasons. ETF or ETN rows should be explained from
+their underlying index/strategy, and tiny turnover PTS jumps should be labeled
+low-confidence if no hard news exists.
 
 3. If a sandboxed collector call was already attempted by mistake and network
    access fails in Codex, rerun the same command with sandbox escalation

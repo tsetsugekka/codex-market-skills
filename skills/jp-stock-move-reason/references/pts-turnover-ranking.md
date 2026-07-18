@@ -112,27 +112,34 @@ percentage-based pagination stop rule.
 After ranking:
 
 1. Deduplicate the selected codes across increase/decrease lists.
-2. Collect reasons for the selected turnover Top names in a small sequential
+2. Unless the user explicitly asks for a raw list only or says reasons are not
+   needed, final PTS mover answers must include reasons. Do not stop at a bare
+   ranking table.
+3. Collect reasons for the selected turnover Top names in a small sequential
    loop. Do not high-frequency fetch Yahoo 掲示板/comments for all names at once.
    Use the natural rhythm: fetch one code, read and summarize the likely reason,
    then move to the next code. Keep moderate randomized sleeps between repeated
    requests to the same host once there are more than three consecutive
    requests, but do not force the user to wait for unnecessary full-list
    scraping before analysis begins.
-3. For ordinary stocks, run:
+4. For ordinary stocks, run:
 
    ```bash
    python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py CODE \
      --format markdown --hours 48 --comments 12 --news-limit 10
    ```
 
-4. For ETF/ETN rows, explain them by the underlying index or strategy instead
+5. Prioritize concrete news, disclosures, earnings, guidance, ratings, orders,
+   buybacks, lawsuits, capital actions, or shareholder benefits. Use Yahoo
+   掲示板 only to identify what retail is discussing and whether the move looks
+   crowded or speculative.
+6. For ETF/ETN rows, explain them by the underlying index or strategy instead
    of forcing single-stock news. Examples:
    - Nikkei inverse ETFs rise when Nikkei falls.
    - Nikkei leveraged ETFs fall when Nikkei falls.
    - S&P 500 income/covered-call ETFs may move on the underlying index, FX, and
      thin PTS prints.
-5. For rows with very small computed turnover, explicitly mark the reason as
+7. For rows with very small computed turnover, explicitly mark the reason as
    low-confidence if no concrete news/disclosure exists. Thin PTS prints can
    jump several percent on only 100-300 shares.
 
@@ -149,8 +156,11 @@ Report the timestamp, source, and method before the tables:
 Use compact tables:
 
 ```text
-| 排名 | 代码 | 名称 | PTS涨跌幅 | 成交额 | 原因 |
+| 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 成交额 | 原因 |
 ```
+
+Never omit the `原因` column in the final answer unless the user explicitly asks
+for numbers only.
 
 End with a quality note:
 
