@@ -13,7 +13,7 @@
 ### Sector money flow
 
 1. 先使用 `mx-data` 或其他 MX 聚合查询，要求返回板块/行业名称、主力净流入、主力净流出、数据时间和单位。
-2. MX 不支持或字段不完整时，使用公开聚合资金流备用源；同花顺页面可作为页面级备用，东方财富批量接口可作为已验证的行业/概念排名及分钟序列备用。
+2. MX 不支持或字段不完整时，默认使用东方财富 `push2.eastmoney.com` 的公开批量接口；同花顺页面可作为页面级备用，`push2delay.eastmoney.com` 作为东方财富接口的延迟/故障备用。
 3. 备用页面/接口只请求整页或整榜，在本地解析全量板块；不要按板块名称逐个请求。
 
 资金榜金额通常以亿元展示。若源返回的是“主力净流入”一列，负值可用于净流出排序，但最终表格要把符号和列名写清楚。
@@ -21,15 +21,15 @@
 已验证过的聚合备用接口族：
 
 - 板块资金流：同花顺公开概念资金流页面 `data.10jqka.com.cn/funds/gnzjl/`，一次读取整榜。
-- 大盘宽度/批量快照：东方财富 `push2delay.eastmoney.com`，只做聚合或批量请求。
-- 行业/概念板块排名：东方财富 `api/qt/clist/get`，行业用 `fs=m:90+t:2`，概念用 `fs=m:90+t:3`；按 `fid=f62` 分别请求 `po=1` 的净流入和 `po=0` 的净流出，不能把同一方向榜单的末尾行当作另一方向。`f62` 为元，解析后换算为亿元；`total` 大于返回条数时要提示分页/返回上限风险。
+- 大盘宽度/批量快照：东方财富 `push2.eastmoney.com`，只做聚合或批量请求；`push2delay.eastmoney.com` 仅在默认 host 失败时使用。
+- 行业/概念板块排名：默认使用东方财富 `push2.eastmoney.com/api/qt/clist/get`，行业用 `fs=m:90+t:2`，概念用 `fs=m:90+t:3`；按 `fid=f62` 分别请求 `po=1` 的净流入和 `po=0` 的净流出，不能把同一方向榜单的末尾行当作另一方向。`f62` 为元，解析后换算为亿元；`total` 大于返回条数时要提示分页/返回上限风险。默认 host 失败时，按同一参数切换到 `push2delay.eastmoney.com`，不在失败 host 上重复重试。
 - 涨停池：东方财富 `push2ex.eastmoney.com/getTopicZTPool`，按交易日读取聚合池。
-- `push2.eastmoney.com` 不作为默认源；若尝试后出现 502 或其他非 JSON 响应，报告 host 和 endpoint family 并停止继续重试。
+- `push2.eastmoney.com` 是本 skill 的默认东方财富聚合 host；若出现 429/403/5xx、超时、DNS 失败、连接重置或非 JSON 响应，报告 host 和 endpoint family，停止继续轰击该 host，并按需切换到 `push2delay.eastmoney.com`。备用 host 也失败时，回退到已取得的当前快照或明确说明不可用。
 
 ### Intraday sector-flow series
 
-- Board-code resolution: use an aggregate `clist/get` request on `push2delay.eastmoney.com` for the relevant industry or concept universe, then select the exact board name/code. Typical universe selectors are `m:90+t:2` for industries and `m:90+t:3` for concepts. A capped first page is not proof that a requested board does not exist; paginate or use an exact supported resolver. A constituent-stock response is not a board-code confirmation.
-- Minute fund-flow series: use `api/qt/stock/fflow/kline/get` on the same public host with `secid=90.<board-code>`, `klt=1`, and `lmt=240` for the current trading day. Request `fields2=f51,f52,f53,f54,f55,f56`. Accept the result only when `data.name` exactly matches the requested board.
+- Board-code resolution: use an aggregate `clist/get` request on the default `push2.eastmoney.com` host for the relevant industry or concept universe, then select the exact board name/code. Typical universe selectors are `m:90+t:2` for industries and `m:90+t:3` for concepts. A capped first page is not proof that a requested board does not exist; paginate or use an exact supported resolver. A constituent-stock response is not a board-code confirmation. If the default host fails, retry the same aggregate request once through `push2delay.eastmoney.com` under the error rules.
+- Minute fund-flow series: use `api/qt/stock/fflow/kline/get` on the default public host with `secid=90.<board-code>`, `klt=1`, and `lmt=240` for the current trading day. Request `fields2=f51,f52,f53,f54,f55,f56`. Accept the result only when `data.name` exactly matches the requested board. Use `push2delay.eastmoney.com` only as the one-time fallback when the default host is unavailable.
 - Field mapping: `f51` timestamp; `f52` cumulative main net inflow; `f53` small-order net inflow; `f54` medium-order net inflow; `f55` large-order net inflow; `f56` super-large-order net inflow. Convert amounts to亿元 only after parsing numeric values. Adjacent differences of `f52` are per-minute changes; the raw `f52` series is cumulative.
 - Use the returned `tradePeriods` and `klines` as the source of truth. Do not fill 11:31-13:00, manufacture a 09:30 point when the source starts at 09:31, or infer missing data from the sector's latest snapshot.
 - Preserve each module's update time. The minute series may lag the board ranking snapshot; show both timestamps and call out the lag instead of silently merging them. If several boards are requested, use a shared time axis and 分面图 when their scales differ.
