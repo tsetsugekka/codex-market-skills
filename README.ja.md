@@ -41,7 +41,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 | Skill | 用途 | 主な依存 |
 | --- | --- | --- |
 | [`market-calendar-google`](docs/market-calendar-google.md) | 決算、マクロ指標、中央銀行イベント、入札などを整理し Google Calendar に追加 | 必須：`google-calendar:google-calendar` |
-| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 日本株の急騰、急落、出来高急増、ニュース/掲示板材料を分析 | なし |
+| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 日本株の変動理由を分析し、時間帯別 PTS 売買代金 Top10 を作成 | なし |
 | [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | A 株の涨停、跌停、炸板、出来高急増、市場/セクター/個別株共振を分析 | 任意：`mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan` |
 | [`cn-market-tape`](docs/cn-market-tape.md) | 盤中/引け後の A 株テーマ、資金流、涨停池、機関調査を確認 | テーマ：`mx-zixuan`、`mx-xuangu`、`mx-search`；他モジュール：`mx-data` 優先 |
 | [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | 他の株式 skill で再利用する公開安全なセンチメント分析フレームワーク | 任意：Eastmoney Miaoxiang、moomoo コミュニティサンプル |
@@ -74,6 +74,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 | --- | --- |
 | 「この A 株はなぜ涨停/跌停/炸板した？」 | `cn-stock-move-reason` |
 | 「この日株はニュース材料か掲示板の思惑か？」 | `jp-stock-move-reason` |
+| 「現在の PTS 上昇・下落 Top10 を推計売買代金順で理由付き表示して。」 | `jp-stock-move-reason` |
 | 「この米国株はなぜ寄り前/引け後に動いた？」 | `us-stock-move-reason` |
 | 「今日の A 株で強い/弱いテーマと資金流は？」 | `cn-market-tape` |
 | 「涨停池と機関調査の温度感は？」 | `cn-market-tape` |
@@ -109,6 +110,8 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 
 入力された日本株コードについて、Yahoo Finance のリアルタイム株価欄、Yahoo 掲示板、Yahoo/Kabutan/Traders のニュース、基本指標を収集し、Codex が株価変動理由を分析するための材料を作ります。
 
+PTS 売買代金ランキングの副 skill も含みます。JST に基づいて Kabutan の day/night section を選び、PTS 騰落率の絶対値が 3%以上かつ PTS 出来高が2,000株超の銘柄を対象に、`PTS価格 × PTS出来高` で推計売買代金を計算し、上昇・下落 Top10 を理由付きで出力します。
+
 依存：なし。
 
 連携 skill：`stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`。
@@ -118,6 +121,7 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 - 日本株の急騰、急落、出来高急増の理由を調べる。
 - ニュースで確認できる材料と、掲示板上の思惑を分けて見る。
 - 現在の騰落率、時価総額、PER/PBR、信用倍率、掲示板の温度感を確認する。
+- 現在の PTS 上昇・下落銘柄を、出来高ではなく推計売買代金でランキングする。
 
 </details>
 

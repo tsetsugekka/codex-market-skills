@@ -41,7 +41,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 | Skill | 用途 | 关键依赖 |
 | --- | --- | --- |
 | [`market-calendar-google`](docs/market-calendar-google.md) | 整理财报、宏观数据、央行事件、拍卖和其他财经事件，并写入 Google Calendar | 必需：`google-calendar:google-calendar` |
-| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 分析日本股票急涨、急跌、放量和掲示板/新闻驱动 | 无 |
+| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 分析日本股票异动，并按时段计算 PTS 出来额涨跌 Top10 | 无 |
 | [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | 分析 A 股涨停、跌停、炸板、放量和市场/板块/个股共振 | 可选：`mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan` |
 | [`cn-market-tape`](docs/cn-market-tape.md) | 盘中/盘后计算题材强弱、板块资金流、涨停池和机构调研 | 题材必需：`mx-zixuan`、`mx-xuangu`、`mx-search`；其他模块优先：`mx-data` |
 | [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | 给其他股票 skill 复用的公开安全情绪面分析框架 | 可选：东方财富妙想、moomoo 社区样本增强 |
@@ -74,6 +74,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 | --- | --- |
 | “这只 A 股为什么涨停/跌停/炸板？” | `cn-stock-move-reason` |
 | “这只日股是新闻驱动还是掲示板思惑？” | `jp-stock-move-reason` |
+| “按当前时段跑 PTS 涨跌 Top10，并附上异动原因。” | `jp-stock-move-reason` |
 | “这只美股为什么盘前/盘后异动？” | `us-stock-move-reason` |
 | “A 股今天哪些题材最强、最弱，资金去了哪些板块？” | `cn-market-tape` |
 | “现在的涨停池和机构调研热度如何？” | `cn-market-tape` |
@@ -109,6 +110,8 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对用户输入的日本股票代码，抓取 Yahoo Finance 实时板、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻以及基础指标，让 Codex 分析个股异动理由。
 
+同时内置 PTS 出来额排名副 skill：按 JST 自动选择 Kabutan day/night section，筛选涨跌幅大于等于 3% 且 PTS 出来高大于 2,000 的股票，再按 `PTS价格 × PTS出来高` 计算出来额并输出涨跌 Top10。最终榜单默认逐只核对新闻、披露和掲示板并附原因。
+
 依赖：无。
 
 协同调用：`stock-sentiment-analysis`、`macro-news-check`、`stock-technical-analysis`。
@@ -118,6 +121,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 分析某只日股为什么急涨、急跌或突然放量。
 - 区分新闻确认的催化和 Yahoo 掲示板上的市场思惑。
 - 查看当前涨跌幅、市值、PER/PBR、信用倍率、掲示板温度等辅助信息。
+- 输出“PTS上涨/下跌 Top10（涨跌幅大于3%/成交量大于2000/成交额排序）”。
 
 </details>
 

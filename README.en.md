@@ -41,7 +41,7 @@ It covers four major task areas:
 | Skill | Purpose | Key Dependencies |
 | --- | --- | --- |
 | [`market-calendar-google`](docs/market-calendar-google.md) | Organizes earnings, macro data, central-bank events, auctions, and other market events, then writes them to Google Calendar | Required: `google-calendar:google-calendar` |
-| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | Analyzes Japanese stock rallies, selloffs, volume spikes, and news/message-board drivers | None |
+| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | Analyzes Japanese stock moves and produces session-aware PTS turnover Top10 lists | None |
 | [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | Analyzes A-share limit-ups, limit-downs, board breaks, volume spikes, and market/sector/stock-level resonance | Optional: `mx-data`, `mx-search`, `mx-xuangu`, `mx-zixuan` |
 | [`cn-market-tape`](docs/cn-market-tape.md) | Reads intraday/after-close A-share themes, sector flows, limit-ups, and institutional surveys | Theme ranking: `mx-zixuan`, `mx-xuangu`, `mx-search`; other modules prefer `mx-data` |
 | [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | Provides a public-safe sentiment framework reused by other stock skills | Optional: Eastmoney Miaoxiang tools and moomoo community samples |
@@ -74,6 +74,7 @@ It covers four major task areas:
 | --- | --- |
 | "Why did this A-share hit limit-up, limit-down, or break the board?" | `cn-stock-move-reason` |
 | "Is this Japanese stock moving on news or message-board speculation?" | `jp-stock-move-reason` |
+| "Run the current PTS gainers and decliners Top10 by computed turnover, with reasons." | `jp-stock-move-reason` |
 | "Why did this US stock move premarket or after hours?" | `us-stock-move-reason` |
 | "Which A-share themes are strongest or weakest, and where is money flowing?" | `cn-market-tape` |
 | "What does today's limit-up pool or institutional survey heat look like?" | `cn-market-tape` |
@@ -109,6 +110,8 @@ Use it to:
 
 Collects evidence for a user-provided Japanese stock code from Yahoo Finance's live quote page, Yahoo message board, Yahoo/Kabutan/Traders news, and basic stock metrics, then lets Codex analyze the likely reason for the move.
 
+It also includes a PTS turnover-ranking sub-skill. The workflow selects the Kabutan day or night section from JST, keeps stocks with an absolute PTS move of at least 3% and PTS volume above 2,000 shares, computes `PTS price * PTS volume`, and returns gainers and decliners Top10 with reasons.
+
 Dependencies: none.
 
 Companion skills: `stock-sentiment-analysis`, `macro-news-check`, `stock-technical-analysis`.
@@ -118,6 +121,7 @@ Use it to:
 - Analyze why a Japanese stock is rising, falling, or seeing unusual volume.
 - Separate confirmed news catalysts from Yahoo message-board speculation.
 - Inspect current change, market cap, PER/PBR, margin ratio, and message-board heat.
+- Rank current PTS gainers and decliners by computed trading value instead of raw volume.
 
 </details>
 
