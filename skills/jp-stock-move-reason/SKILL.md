@@ -78,6 +78,12 @@ for Japanese exchange holidays on weekdays, force `--session night`.
 The helper ranks rows by `PTS株価 * PTS出来高` after filtering to
 `abs(PTS騰落率) >= 3%` and `PTS出来高 > 2000`, and it fetches enough 50-row pages
 to cross the requested percentage threshold.
+Treat `PTS出来高` only as the `> 2000` eligibility filter. For a generic PTS
+Top10 request, or when the user loosely says `成交量` while referring to this
+workflow, still rank by the computed `PTS出来額 = PTS株価 * PTS出来高`; never
+silently switch the ranking key to raw volume. Rank by raw `PTS出来高` only when
+the user explicitly says `按出来高排序` or otherwise clearly requests a
+volume-ranked list.
 After ranking, final PTS mover answers must include a `原因` column unless the
 user explicitly says they only want the raw list, only want numbers, or do not
 need reasons. Run `stock_move_sources.py` for the selected turnover Top codes

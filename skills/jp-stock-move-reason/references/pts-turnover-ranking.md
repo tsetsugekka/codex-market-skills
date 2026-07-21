@@ -26,6 +26,12 @@ PTS出来高 > 2000
 
 Then rank by `computed_turnover`, not by page order and not by volume alone.
 
+`PTS出来高` is an eligibility filter, not the default ranking key. For generic
+requests such as `再跑一下PTS`, `PTS涨跌Top10`, or colloquial mentions of
+`成交量` within this established workflow, preserve turnover ranking. Do not
+silently sort by raw volume. Use raw-volume ranking only when the user explicitly
+asks for `按PTS出来高排序` or an equivalent unambiguous instruction.
+
 ## Sources
 
 Use the rendered/current Kabutan warning pages, with 50 rows per page via the
