@@ -278,11 +278,16 @@ def print_markdown(
     min_abs_pct: float,
     min_volume: int,
 ) -> None:
-    title = "涨幅" if side == "increase" else "跌幅"
+    title = (
+        "PTS上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）"
+        if side == "increase"
+        else "PTS下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）"
+    )
     section_name = "日中" if session == "day" else "夜间"
-    print(f"## PTS{section_name}{title}榜 成交额Top{top}")
+    print(f"## {title}")
     if stamp:
         print(f"- Kabutan时间: {stamp}")
+    print(f"- PTS时段: {section_name}")
     print(f"- Kabutan section: pts_{session}_price_{side}")
     print(
         f"- 口径: 先筛 `abs(PTS涨跌幅) >= {min_abs_pct:g}%` 且 "

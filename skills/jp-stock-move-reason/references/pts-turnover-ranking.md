@@ -55,6 +55,20 @@ Default to `--session auto`. The helper selects by JST clock:
 The script handles weekends automatically. If today is a Japanese exchange
 holiday on a weekday, pass `--session night` explicitly.
 
+Equivalent routing logic, always evaluated in JST:
+
+```text
+if non_trading_day:
+    session = night
+elif 08:20 <= JST < 16:30:
+    session = day
+else:
+    session = night
+```
+
+This means the `06:00-08:20` and `16:30-17:00` gaps also use the night
+section, as do all other times outside the day/after-close window.
+
 For day-session PTS, remember Kabutan compares:
 
 - `08:20-15:29`: against the previous regular-session close.
@@ -113,6 +127,25 @@ threshold. Day-session decrease lists can be many pages during broad selloffs.
 The volume filter is applied after parsing rows; it does not change the
 percentage-based pagination stop rule.
 
+## Fetch Discipline
+
+- Request the current Kabutan warning pages with the `shared_perpage=50`
+  cookie. Do not use stale `noscript` or SEO fallback content as a live list.
+- Add a cache-busting timestamp, parse the page's displayed
+  `YYYY年MM月DD日 HH:MM現在` stamp, and report it. Kabutan PTS is normally about
+  15 minutes delayed, so do not describe it as tick-level real time.
+- Fetch the complete percentage-qualified range before applying the volume
+  filter and turnover sort. Never take the first page or page order as the
+  turnover Top10 unless the threshold stop condition proves that it is enough.
+- Stop on an empty page and keep a finite page cap. If the host returns rate
+  limits, DNS errors, timeouts, resets, or repeated empty responses, report the
+  observed failure and stop increasing request frequency.
+- Add moderate randomized waits after more than three consecutive requests to
+  the same host. Do not parallel-burst Kabutan, Yahoo, or message-board pages.
+- Refresh the ranking once before the final answer. If reason collection took
+  long enough for membership to change, collect only newly entered codes and
+  reuse already verified same-turn reasons for unchanged names.
+
 ## Cause Analysis Workflow
 
 After ranking:
@@ -162,8 +195,15 @@ Report the timestamp, source, and method before the tables:
 Use compact tables:
 
 ```text
+PTS上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）
+| 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 成交额 | 原因 |
+
+PTS下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）
 | 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 成交额 | 原因 |
 ```
+
+Use these headings exactly. Report `日中` or `夜间` in the timestamp/method line
+below the heading rather than changing the heading text.
 
 Never omit the `原因` column in the final answer unless the user explicitly asks
 for numbers only.
