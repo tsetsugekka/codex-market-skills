@@ -1,42 +1,47 @@
-# PTS Turnover Ranking Sub-skill
+# Japanese Stock Mover Turnover Ranking Sub-skill
 
-Use this sub-skill when the user asks for Kabutan PTS day or night mover lists
-ranked by trading value / turnover, especially phrases such as:
+Use this sub-skill when the user asks for current Japanese-stock mover Top10
+lists or Kabutan PTS mover lists ranked by trading value / turnover, especially
+phrases such as:
 
+- `当前日股涨跌Top10`
+- `现在的涨跌榜`
 - `PTS夜间涨跌榜成交额Top10`
-- `PTS日中涨跌幅3%以上成交额`
 - `涨跌幅3%以上的成交额top10`
 - `不是成交量，是成交额`
 
 ## Core Rule
 
-Kabutan PTS warning pages show PTS price and PTS volume, but not always the
-turnover column in the list view. Compute turnover as:
+Kabutan mover pages provide price and volume, but not always turnover in the
+list view. Compute turnover as:
 
 ```text
-computed_turnover = PTS株価 * PTS出来高
+regular session: computed_turnover = 当前价 * 出来高
+PTS session:     computed_turnover = PTS株価 * PTS出来高
 ```
 
 Default screening is:
 
 ```text
-abs(PTS騰落率) >= 3%
-PTS出来高 > 2000
+abs(騰落率) >= 3%
+出来高 > 2000
 ```
 
 Then rank by `computed_turnover`, not by page order and not by volume alone.
 
-`PTS出来高` is an eligibility filter, not the default ranking key. For generic
-requests such as `再跑一下PTS`, `PTS涨跌Top10`, or colloquial mentions of
+`出来高` is an eligibility filter, not the default ranking key. For generic
+requests such as `看看当前涨跌Top10`, `再跑一下PTS`, or colloquial mentions of
 `成交量` within this established workflow, preserve turnover ranking. Do not
 silently sort by raw volume. Use raw-volume ranking only when the user explicitly
-asks for `按PTS出来高排序` or an equivalent unambiguous instruction.
+asks for `按出来高排序` or an equivalent unambiguous instruction.
 
 ## Sources
 
-Use the rendered/current Kabutan warning pages, with 50 rows per page via the
-`shared_perpage=50` cookie:
+Use the rendered/current Kabutan warning pages. Always request 50 rows per page
+via the `shared_perpage=50` cookie:
 
+- Regular increase: `https://kabutan.jp/warning/?mode=2_1`
+- Regular decrease: `https://kabutan.jp/warning/?mode=2_2`
 - Night increase: `https://kabutan.jp/warning/pts_night_price_increase`
 - Night decrease: `https://kabutan.jp/warning/pts_night_price_decrease`
 - Day increase: `https://kabutan.jp/warning/pts_day_price_increase`
@@ -44,13 +49,15 @@ Use the rendered/current Kabutan warning pages, with 50 rows per page via the
 
 ## Section Selection
 
-Default to `--session auto`. The helper selects by JST clock:
+Default to `--session auto`. The helper selects by JST clock on trading days:
 
-- Trading weekdays `08:20-15:30` 日中取引: use day-section URLs.
-- Trading weekdays `15:30-16:30` 大引け後: still use day-section URLs.
-- `17:00-06:00` 夜間取引: use night-section URLs.
-- Outside the day/after-close windows, weekends, and known non-trading days:
-  use night-section URLs.
+- `09:00-11:30`: use regular increase/decrease pages.
+- `11:30-12:30`: use PTS day-section pages.
+- `12:30-15:30`: use regular increase/decrease pages.
+- `15:30-17:00`: use PTS day-section pages.
+- `08:00-09:00`: use PTS day-section pages.
+- All other times, weekends, and known non-trading days: use PTS night-section
+  pages.
 
 The script handles weekends automatically. If today is a Japanese exchange
 holiday on a weekday, pass `--session night` explicitly.
@@ -59,20 +66,23 @@ Equivalent routing logic, always evaluated in JST:
 
 ```text
 if non_trading_day:
-    session = night
-elif 08:20 <= JST < 16:30:
-    session = day
+    section = pts_night
+elif 09:00 <= JST < 11:30 or 12:30 <= JST < 15:30:
+    section = regular
+elif 08:00 <= JST < 09:00 or 11:30 <= JST < 12:30 or 15:30 <= JST < 17:00:
+    section = pts_day
 else:
-    session = night
+    section = pts_night
 ```
 
-This means the `06:00-08:20` and `16:30-17:00` gaps also use the night
-section, as do all other times outside the day/after-close window.
+Treat each boundary as start-inclusive and end-exclusive. For example, `11:30`
+switches to PTS day, `12:30` switches back to the regular pages, and `15:30`
+switches to PTS day.
 
-For day-session PTS, remember Kabutan compares:
-
-- `08:20-15:29`: against the previous regular-session close.
-- `15:30+`: against the same-day regular-session close.
+For regular pages, the percentage change is against the prior regular close.
+For day-session PTS, remember Kabutan compares pre-close prints against the
+previous regular-session close and after-close prints against the same-day
+regular-session close.
 
 For night-session PTS, compare against the same-day regular-session close.
 
@@ -93,10 +103,13 @@ python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py \
 Useful variants:
 
 ```bash
-# Auto-select day/night section from JST clock
+# Auto-select regular/PTS day/PTS night section from JST clock
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --side both
 
-# Force day PTS, both sides, percentage threshold 3%
+# Force regular market pages
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session regular --side both --min-abs-pct 3 --min-volume 2000
+
+# Force PTS day, both sides, percentage threshold 3%
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session day --side both --min-abs-pct 3 --min-volume 2000
 
 # Force night PTS, both sides, include ETF/ETN
@@ -110,12 +123,12 @@ python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --side both 
 ```
 
 In this Codex desktop environment, live Kabutan fetching normally needs network
-escalation. If the user asks for current PTS data, run the helper with
+escalation. If the user asks for current mover data, run the helper with
 `sandbox_permissions: "require_escalated"` and a concise approval question.
 
 ## Pagination Stop Rule
 
-Kabutan sorts these pages by PTS percentage change. Fetch 50-row pages until the
+Kabutan sorts these pages by percentage change. Fetch 50-row pages until the
 last row crosses the requested threshold:
 
 - Increase pages: stop after the last row is below `+min_abs_pct`.
@@ -132,8 +145,9 @@ percentage-based pagination stop rule.
 - Request the current Kabutan warning pages with the `shared_perpage=50`
   cookie. Do not use stale `noscript` or SEO fallback content as a live list.
 - Add a cache-busting timestamp, parse the page's displayed
-  `YYYY年MM月DD日 HH:MM現在` stamp, and report it. Kabutan PTS is normally about
-  15 minutes delayed, so do not describe it as tick-level real time.
+  `YYYY年MM月DD日 HH:MM現在` stamp, and report it. Kabutan regular and PTS data
+  are normally about 15 minutes delayed, so do not describe them as tick-level
+  real time.
 - Fetch the complete percentage-qualified range before applying the volume
   filter and turnover sort. Never take the first page or page order as the
   turnover Top10 unless the threshold stop condition proves that it is enough.
@@ -152,7 +166,7 @@ After ranking:
 
 1. Deduplicate the selected codes across increase/decrease lists.
 2. Unless the user explicitly asks for a raw list only or says reasons are not
-   needed, final PTS mover answers must include reasons. Do not stop at a bare
+   needed, final mover answers must include reasons. Do not stop at a bare
    ranking table.
 3. Collect reasons for the selected turnover Top names in a small sequential
    loop. Do not high-frequency fetch Yahoo 掲示板/comments for all names at once.
@@ -179,12 +193,21 @@ After ranking:
    - S&P 500 income/covered-call ETFs may move on the underlying index, FX, and
      thin PTS prints.
 7. For rows with very small computed turnover, explicitly mark the reason as
-   low-confidence if no concrete news/disclosure exists. Thin PTS prints can
-   jump several percent on only 100-300 shares.
+   low-confidence if no concrete news/disclosure exists. Thin prints can jump
+   several percent with little actual capital committed.
 
 ## Final Answer Pattern
 
-Report the timestamp, source, and method before the tables:
+Report the timestamp, source, and method before the tables. During the regular
+cash session use:
+
+```text
+口径：Kabutan普通涨跌榜，YYYY-MM-DD HH:MM JST；
+只筛 abs(涨跌幅) >= 3% 且 出来高 > 2,000，
+再按 当前价 × 出来高 算成交额取Top10。
+```
+
+During a PTS session use:
 
 ```text
 口径：Kabutan 夜间PTS，YYYY-MM-DD HH:MM JST；
@@ -192,7 +215,17 @@ Report the timestamp, source, and method before the tables:
 再按 PTS价格 × PTS出来高 算成交额取Top10。
 ```
 
-Use compact tables:
+Use compact tables. During the regular cash session:
+
+```text
+上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）
+| 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 成交额 | 原因 |
+
+下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）
+| 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 成交额 | 原因 |
+```
+
+During PTS sessions:
 
 ```text
 PTS上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）

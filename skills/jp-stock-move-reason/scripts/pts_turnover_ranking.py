@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Rank Kabutan PTS movers by computed turnover.
+Rank Kabutan Japanese-stock movers by computed turnover.
 
-This helper is intentionally small and public-safe. It fetches Kabutan PTS day
-or night mover pages, filters movers by percentage change and volume, and ranks by:
+This helper is intentionally small and public-safe. During regular Tokyo market
+hours it reads Kabutan's regular price-mover pages. Around the open, lunch break,
+after the close, and overnight it reads the appropriate PTS section. It filters
+movers by percentage change and volume, then ranks by:
 
-    PTS price * PTS volume
+    current price * volume
 
 It does not infer reasons. Use stock_move_sources.py for the resulting stock
 codes when reasons are needed.
@@ -38,12 +40,12 @@ USER_AGENT = (
 
 
 @dataclass
-class PtsRow:
+class MoverRow:
     code: str
     name: str
     market: str
-    close: float
-    pts_price: float
+    reference_price: float
+    price: float
     diff: float
     pct: float
     volume: int
@@ -150,6 +152,9 @@ def build_url(session: str, side: str, page: int) -> str:
         "page": str(page),
         "cachebust": dt.datetime.now(JST).strftime("%Y%m%d%H%M%S"),
     }
+    if session == "regular":
+        params["mode"] = "2_1" if side == "increase" else "2_2"
+        return "https://kabutan.jp/warning/?" + urllib.parse.urlencode(params)
     return f"https://kabutan.jp/warning/pts_{session}_price_{side}?" + urllib.parse.urlencode(params)
 
 
@@ -167,17 +172,25 @@ def parse_as_of(value: str | None) -> dt.datetime:
 
 
 def auto_session(as_of: dt.datetime) -> str:
-    """Select Kabutan PTS section by JST clock.
+    """Select the Kabutan regular/PTS section by JST clock.
 
-    Trading-day 08:20-16:30 uses day section, including the 15:30-16:30
-    after-close window. Night section is used for weekends and all other times.
-    Japanese exchange holidays are not embedded; pass --session night if the
-    date is a known non-trading weekday.
+    On trading weekdays, regular market pages are used during the morning and
+    afternoon cash sessions. PTS day pages cover pre-open, lunch, and after-close
+    windows. PTS night is used at all other times and on weekends. Japanese
+    exchange holidays are not embedded; pass --session night on known holidays.
     """
     if as_of.weekday() >= 5:
         return "night"
     current = as_of.time()
-    if dt.time(8, 20) <= current < dt.time(16, 30):
+    if dt.time(9, 0) <= current < dt.time(11, 30):
+        return "regular"
+    if dt.time(12, 30) <= current < dt.time(15, 30):
+        return "regular"
+    if dt.time(8, 0) <= current < dt.time(9, 0):
+        return "day"
+    if dt.time(11, 30) <= current < dt.time(12, 30):
+        return "day"
+    if dt.time(15, 30) <= current < dt.time(17, 0):
         return "day"
     return "night"
 
@@ -188,48 +201,55 @@ def extract_stamp(html_text: str) -> str:
     return f"{match.group(1)} {match.group(2)}" if match else ""
 
 
-def parse_rows(html_text: str, page: int) -> list[PtsRow]:
+def parse_rows(html_text: str, page: int, session: str) -> list[MoverRow]:
     parser = StockTableParser()
     parser.feed(html_text)
-    rows: list[PtsRow] = []
+    rows: list[MoverRow] = []
     for cells in parser.rows:
         if len(cells) < 10:
             continue
-        close = parse_number(cells[5])
-        pts_price = parse_number(cells[6])
-        diff = parse_number(cells[7])
-        pct = parse_number(cells[8])
-        volume = parse_number(cells[9])
-        if close is None or pts_price is None or diff is None or pct is None or volume is None:
+        if session == "regular":
+            price = parse_number(cells[5])
+            diff = parse_number(cells[7])
+            pct = parse_number(cells[8])
+            volume = parse_number(cells[9])
+            reference_price = price - diff if price is not None and diff is not None else None
+        else:
+            reference_price = parse_number(cells[5])
+            price = parse_number(cells[6])
+            diff = parse_number(cells[7])
+            pct = parse_number(cells[8])
+            volume = parse_number(cells[9])
+        if reference_price is None or price is None or diff is None or pct is None or volume is None:
             continue
         rows.append(
-            PtsRow(
+            MoverRow(
                 code=cells[0],
                 name=cells[1],
                 market=cells[2],
-                close=close,
-                pts_price=pts_price,
+                reference_price=reference_price,
+                price=price,
                 diff=diff,
                 pct=pct,
                 volume=int(volume),
-                turnover=pts_price * volume,
+                turnover=price * volume,
                 page=page,
             )
         )
     return rows
 
 
-def is_etf(row: PtsRow) -> bool:
+def is_etf(row: MoverRow) -> bool:
     return "東Ｅ" in row.market or row.name.startswith(("日経", "ＴＰＸ", "上場", "ｉＦ", "ＭＸ", "ＧＸ", "楽天", "ＮＦ", "ｉＳ"))
 
 
-def collect_side(session: str, side: str, min_abs_pct: float, max_pages: int) -> tuple[str, list[PtsRow]]:
-    all_rows: list[PtsRow] = []
+def collect_side(session: str, side: str, min_abs_pct: float, max_pages: int) -> tuple[str, list[MoverRow]]:
+    all_rows: list[MoverRow] = []
     stamp = ""
     for page in range(1, max_pages + 1):
         html_text = fetch_url(build_url(session, side, page), pause=page > 1)
         stamp = extract_stamp(html_text) or stamp
-        rows = parse_rows(html_text, page)
+        rows = parse_rows(html_text, page, session)
         if not rows:
             break
         all_rows.extend(rows)
@@ -242,13 +262,13 @@ def collect_side(session: str, side: str, min_abs_pct: float, max_pages: int) ->
 
 
 def filter_rows(
-    rows: Iterable[PtsRow],
+    rows: Iterable[MoverRow],
     side: str,
     min_abs_pct: float,
     min_volume: int,
     exclude_etf: bool,
-) -> list[PtsRow]:
-    result: list[PtsRow] = []
+) -> list[MoverRow]:
+    result: list[MoverRow] = []
     for row in rows:
         if exclude_etf and is_etf(row):
             continue
@@ -271,58 +291,70 @@ def format_amount(value: float) -> str:
 
 def print_markdown(
     side: str,
-    rows: list[PtsRow],
+    rows: list[MoverRow],
     top: int,
     stamp: str,
     session: str,
     min_abs_pct: float,
     min_volume: int,
 ) -> None:
+    prefix = "" if session == "regular" else "PTS"
     title = (
-        "PTS上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）"
+        f"{prefix}上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）"
         if side == "increase"
-        else "PTS下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）"
+        else f"{prefix}下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）"
     )
-    section_name = "日中" if session == "day" else "夜间"
+    section_name = {"regular": "东京市场日中", "day": "PTS日中", "night": "PTS夜间"}[session]
+    section_url = (
+        f"warning/?mode={'2_1' if side == 'increase' else '2_2'}"
+        if session == "regular"
+        else f"pts_{session}_price_{side}"
+    )
+    price_label = "现价" if session == "regular" else "PTS价"
+    pct_label = "涨跌幅" if session == "regular" else "PTS涨跌幅"
+    volume_label = "出来高" if session == "regular" else "PTS出来高"
     print(f"## {title}")
     if stamp:
         print(f"- Kabutan时间: {stamp}")
-    print(f"- PTS时段: {section_name}")
-    print(f"- Kabutan section: pts_{session}_price_{side}")
+    print(f"- 数据时段: {section_name}")
+    print(f"- Kabutan section: {section_url}")
     print(
-        f"- 口径: 先筛 `abs(PTS涨跌幅) >= {min_abs_pct:g}%` 且 "
-        f"`PTS出来高 > {min_volume:,}`，再按 `PTS株价 × PTS出来高` 排序"
+        f"- 口径: 先筛 `abs({pct_label}) >= {min_abs_pct:g}%` 且 "
+        f"`{volume_label} > {min_volume:,}`，再按 `{price_label} × {volume_label}` 排序"
     )
     print()
-    print("| 排名 | 代码 | 名称 | 市场 | PTS价 | 涨跌幅 | 出来高 | 估算成交额 |")
+    print(f"| 排名 | 代码 | 名称 | 市场 | {price_label} | 涨跌幅 | 出来高 | 估算成交额 |")
     print("|---:|---|---|---|---:|---:|---:|---:|")
     for index, row in enumerate(rows[:top], 1):
         print(
             f"| {index} | {row.code} | {row.name} | {row.market} | "
-            f"{row.pts_price:g} | {row.pct:+.2f}% | {row.volume:,} | {format_amount(row.turnover)} |"
+            f"{row.price:g} | {row.pct:+.2f}% | {row.volume:,} | {format_amount(row.turnover)} |"
         )
     print()
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Rank Kabutan PTS movers by computed turnover.")
+    parser = argparse.ArgumentParser(description="Rank Kabutan regular/PTS movers by computed turnover.")
     parser.add_argument(
         "--session",
-        choices=["auto", "night", "day"],
+        choices=["auto", "regular", "night", "day"],
         default="auto",
-        help="PTS section to inspect. auto uses JST clock: day on trading weekdays 08:20-16:30, otherwise night.",
+        help=(
+            "Section to inspect. auto uses regular pages during 09:00-11:30 and 12:30-15:30 JST; "
+            "PTS day during 08:00-09:00, 11:30-12:30, and 15:30-17:00; otherwise PTS night."
+        ),
     )
     parser.add_argument(
         "--as-of",
         help="JST datetime for --session auto, e.g. 2026-07-17T15:45. Defaults to now.",
     )
     parser.add_argument("--side", choices=["increase", "decrease", "both"], default="both")
-    parser.add_argument("--min-abs-pct", type=float, default=3.0, help="Minimum absolute PTS change percentage.")
+    parser.add_argument("--min-abs-pct", type=float, default=3.0, help="Minimum absolute change percentage.")
     parser.add_argument(
         "--min-volume",
         type=int,
         default=2000,
-        help="Minimum exclusive PTS volume threshold. Default keeps rows with volume > 2000.",
+        help="Minimum exclusive volume threshold. Default keeps rows with volume > 2000.",
     )
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--max-pages", type=int, default=20)

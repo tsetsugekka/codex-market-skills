@@ -58,33 +58,37 @@ Useful options:
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
 
-### PTS Turnover Ranking Sub-skill
+### Mover Turnover Ranking Sub-skill
 
-When the user asks for PTS day/night mover lists ranked by `成交额`, `売買代金`,
-`turnover`, or says `不是成交量，是成交额`, use the PTS turnover sub-skill before
-running per-stock reason collection. Read
+When the user asks for current Japanese-stock increase/decrease Top10 lists,
+PTS mover lists ranked by `成交额`, `売買代金`, `turnover`, or says
+`不是成交量，是成交额`, use the mover-turnover sub-skill before running
+per-stock reason collection. Read
 `references/pts-turnover-ranking.md`, then run:
 
 ```bash
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-abs-pct 3 --min-volume 2000 --top 10 --reason-commands
 ```
 
-Default to `--session auto`: trading weekdays `08:20-15:30` 日中取引 and
-`15:30-16:30` 大引け後 use `pts_day_price_increase/decrease`; `17:00-06:00`,
-other out-of-session times, weekends, and known non-trading days use
-`pts_night_price_increase/decrease`. The script handles weekends automatically;
-for Japanese exchange holidays on weekdays, force `--session night`.
+Default to `--session auto` and evaluate routing in JST on trading days:
 
-The helper ranks rows by `PTS株価 * PTS出来高` after filtering to
-`abs(PTS騰落率) >= 3%` and `PTS出来高 > 2000`, and it fetches enough 50-row pages
-to cross the requested percentage threshold.
-Treat `PTS出来高` only as the `> 2000` eligibility filter. For a generic PTS
-Top10 request, or when the user loosely says `成交量` while referring to this
-workflow, still rank by the computed `PTS出来額 = PTS株価 * PTS出来高`; never
-silently switch the ranking key to raw volume. Rank by raw `PTS出来高` only when
-the user explicitly says `按出来高排序` or otherwise clearly requests a
-volume-ranked list.
-After ranking, final PTS mover answers must include a `原因` column unless the
+- `09:00-11:30` and `12:30-15:30`: use the regular Kabutan increase/decrease
+  pages `warning/?mode=2_1` and `warning/?mode=2_2`.
+- `08:00-09:00`, `11:30-12:30`, and `15:30-17:00`: use the PTS day-section
+  increase/decrease pages.
+- All other times, weekends, and known non-trading days: use the PTS night
+  section. The script handles weekends; force `--session night` on Japanese
+  exchange holidays that fall on weekdays.
+
+Always request 50 rows per page. Filter to `abs(涨跌幅) >= 3%` and
+`出来高 > 2000`, fetch enough percentage-sorted pages to cross the threshold,
+then rank by computed turnover. Regular-session turnover is `当前价 * 出来高`;
+PTS turnover is `PTS株价 * PTS出来高`. Volume is only the eligibility filter.
+For a generic Top10 request, or when the user loosely says `成交量` within this
+workflow, still rank by computed turnover. Rank by raw volume only when the user
+explicitly requests a volume-ranked list.
+
+After ranking, final mover answers must include a `原因` column unless the
 user explicitly says they only want the raw list, only want numbers, or do not
 need reasons. Run `stock_move_sources.py` for the selected turnover Top codes
 before the final answer and summarize each reason from news/disclosures first,
@@ -93,7 +97,7 @@ reasons sequentially: fetch one code, read and summarize it, then proceed to the
 next, with moderate randomized sleeps between repeated requests to the same
 host. Do not pre-scrape every 掲示板 at high frequency, but also do not return a
 bare ranking table without reasons. ETF or ETN rows should be explained from
-their underlying index/strategy, and tiny turnover PTS jumps should be labeled
+their underlying index/strategy, and tiny-turnover jumps should be labeled
 low-confidence if no hard news exists.
 
 3. If a sandboxed collector call was already attempted by mistake and network
