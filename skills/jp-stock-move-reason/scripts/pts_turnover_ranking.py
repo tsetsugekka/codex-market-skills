@@ -299,10 +299,11 @@ def print_markdown(
     min_volume: int,
 ) -> None:
     prefix = "" if session == "regular" else "PTS"
+    threshold_label = f"{min_abs_pct:g}%"
     title = (
-        f"{prefix}上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）"
+        f"{prefix}上涨 Top10（涨幅大于{threshold_label}/成交量大于{min_volume}/成交额排序）"
         if side == "increase"
-        else f"{prefix}下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）"
+        else f"{prefix}下跌 Top10（跌幅大于{threshold_label}/成交量大于{min_volume}/成交额排序）"
     )
     section_name = {"regular": "东京市场日中", "day": "PTS日中", "night": "PTS夜间"}[session]
     section_url = (
@@ -349,7 +350,7 @@ def main() -> None:
         help="JST datetime for --session auto, e.g. 2026-07-17T15:45. Defaults to now.",
     )
     parser.add_argument("--side", choices=["increase", "decrease", "both"], default="both")
-    parser.add_argument("--min-abs-pct", type=float, default=3.0, help="Minimum absolute change percentage.")
+    parser.add_argument("--min-abs-pct", type=float, default=1.0, help="Minimum absolute change percentage.")
     parser.add_argument(
         "--min-volume",
         type=int,

@@ -7,7 +7,7 @@ phrases such as:
 - `当前日股涨跌Top10`
 - `现在的涨跌榜`
 - `PTS夜间涨跌榜成交额Top10`
-- `涨跌幅3%以上的成交额top10`
+- `涨跌幅1%以上的成交额top10`
 - `不是成交量，是成交额`
 
 ## Core Rule
@@ -23,7 +23,7 @@ PTS session:     computed_turnover = PTS株価 * PTS出来高
 Default screening is:
 
 ```text
-abs(騰落率) >= 3%
+abs(騰落率) >= 1%
 出来高 > 2000
 ```
 
@@ -94,7 +94,7 @@ Run from the repository root:
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py \
   --session auto \
   --side both \
-  --min-abs-pct 3 \
+  --min-abs-pct 1 \
   --min-volume 2000 \
   --top 10 \
   --reason-commands
@@ -107,10 +107,10 @@ Useful variants:
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --side both
 
 # Force regular market pages
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session regular --side both --min-abs-pct 3 --min-volume 2000
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session regular --side both --min-abs-pct 1 --min-volume 2000
 
-# Force PTS day, both sides, percentage threshold 3%
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session day --side both --min-abs-pct 3 --min-volume 2000
+# Force PTS day, both sides, percentage threshold 1%
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session day --side both --min-abs-pct 1 --min-volume 2000
 
 # Force night PTS, both sides, include ETF/ETN
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session night --side both
@@ -205,7 +205,7 @@ cash session use:
 
 ```text
 口径：Kabutan普通涨跌榜，YYYY-MM-DD HH:MM JST；
-只筛 abs(涨跌幅) >= 3% 且 出来高 > 2,000，
+只筛 abs(涨跌幅) >= 1% 且 出来高 > 2,000，
 再按 当前价 × 出来高 算成交额取Top10。
 ```
 
@@ -213,27 +213,27 @@ During a PTS session use:
 
 ```text
 口径：Kabutan 夜间PTS，YYYY-MM-DD HH:MM JST；
-只筛 abs(PTS涨跌幅) >= 3% 且 出来高 > 2,000，
+只筛 abs(PTS涨跌幅) >= 1% 且 出来高 > 2,000，
 再按 PTS价格 × PTS出来高 算成交额取Top10。
 ```
 
 Use compact tables. During the regular cash session:
 
 ```text
-上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）
+上涨 Top10（涨幅大于1%/成交量大于2000/成交额排序）
 | 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 成交额 | 原因 |
 
-下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）
+下跌 Top10（跌幅大于1%/成交量大于2000/成交额排序）
 | 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 成交额 | 原因 |
 ```
 
 During PTS sessions:
 
 ```text
-PTS上涨 Top10（涨幅大于3%/成交量大于2000/成交额排序）
+PTS上涨 Top10（涨幅大于1%/成交量大于2000/成交额排序）
 | 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 成交额 | 原因 |
 
-PTS下跌 Top10（跌幅大于3%/成交量大于2000/成交额排序）
+PTS下跌 Top10（跌幅大于1%/成交量大于2000/成交额排序）
 | 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 成交额 | 原因 |
 ```
 

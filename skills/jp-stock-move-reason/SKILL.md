@@ -67,7 +67,7 @@ per-stock reason collection. Read
 `references/pts-turnover-ranking.md`, then run:
 
 ```bash
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-abs-pct 3 --min-volume 2000 --top 10 --reason-commands
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-abs-pct 1 --min-volume 2000 --top 10 --reason-commands
 ```
 
 Default to `--session auto` and evaluate routing in JST on trading days:
@@ -80,7 +80,7 @@ Default to `--session auto` and evaluate routing in JST on trading days:
   section. The script handles weekends; force `--session night` on Japanese
   exchange holidays that fall on weekdays.
 
-Always request 50 rows per page. Filter to `abs(涨跌幅) >= 3%` and
+Always request 50 rows per page. Filter to `abs(涨跌幅) >= 1%` and
 `出来高 > 2000`, fetch enough percentage-sorted pages to cross the threshold,
 then rank by computed turnover. Regular-session turnover is `当前价 * 出来高`;
 PTS turnover is `PTS株价 * PTS出来高`. Volume is only the eligibility filter.
