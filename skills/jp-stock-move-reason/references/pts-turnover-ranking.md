@@ -169,30 +169,32 @@ After ranking:
    needed, final mover answers must include reasons. Do not stop at a bare
    ranking table.
 3. Collect reasons for the selected turnover Top names in a small sequential
-   loop. Do not high-frequency fetch Yahoo 掲示板/comments for all names at once.
-   Use the natural rhythm: fetch one code, read and summarize the likely reason,
-   then move to the next code. Keep moderate randomized sleeps between repeated
-   requests to the same host once there are more than three consecutive
-   requests, but do not force the user to wait for unnecessary full-list
-   scraping before analysis begins.
+   loop using bulk mode. Bulk mode must not access Yahoo at all.
 4. For ordinary stocks, run:
 
    ```bash
    python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py CODE \
-     --format markdown --hours 48 --comments 12 --news-limit 10
+     --bulk-reason --format markdown --hours 48 --comments 0 --news-limit 10
    ```
 
-5. Prioritize concrete news, disclosures, earnings, guidance, ratings, orders,
+5. `--comments 0` is a hard request-disable switch, not merely an output limit.
+   Never run the default single-stock collector for every Top10/Top20 code.
+6. Prioritize concrete news, disclosures, earnings, guidance, ratings, orders,
    buybacks, lawsuits, capital actions, or shareholder benefits. Use Yahoo
-   掲示板 only to identify what retail is discussing and whether the move looks
-   crowded or speculative.
-6. For ETF/ETN rows, explain them by the underlying index or strategy instead
+   掲示板 only as an optional follow-up for at most two stocks whose causes remain
+   unclear after the non-Yahoo pass. Wait 15-30 seconds between those requests.
+   On HTTP 403/429, access-denied content, reset, or abnormal empty output, stop
+   all Yahoo requests for the rest of the turn; do not retry immediately.
+   The collector additionally enforces a shared cross-process 7-11 second Yahoo
+   host gap and a 30-minute cooldown after 403/429 or access-control content.
+   Never delete or bypass the cooldown for a ranking request.
+7. For ETF/ETN rows, explain them by the underlying index or strategy instead
    of forcing single-stock news. Examples:
    - Nikkei inverse ETFs rise when Nikkei falls.
    - Nikkei leveraged ETFs fall when Nikkei falls.
    - S&P 500 income/covered-call ETFs may move on the underlying index, FX, and
      thin PTS prints.
-7. For rows with very small computed turnover, explicitly mark the reason as
+8. For rows with very small computed turnover, explicitly mark the reason as
    low-confidence if no concrete news/disclosure exists. Thin prints can jump
    several percent with little actual capital committed.
 

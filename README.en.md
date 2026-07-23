@@ -110,7 +110,7 @@ Use it to:
 
 Collects evidence for a user-provided Japanese stock code from Yahoo Finance's live quote page, Yahoo message board, Yahoo/Kabutan/Traders news, and basic stock metrics, then lets Codex analyze the likely reason for the move.
 
-It also includes a mover turnover-ranking sub-skill. On trading days it uses Kabutan's regular mover pages during `09:00-11:30` and `12:30-15:30` JST, PTS day pages during `08:00-09:00`, `11:30-12:30`, and `15:30-17:00`, and PTS night pages at all other times and on non-trading days. It requests 50 rows per page, keeps stocks with an absolute move of at least 3% and volume above 2,000 shares, computes price times volume, and returns gainers and decliners Top10 with reasons.
+It also includes a mover turnover-ranking sub-skill. On trading days it uses Kabutan's regular mover pages during `09:00-11:30` and `12:30-15:30` JST, PTS day pages during `08:00-09:00`, `11:30-12:30`, and `15:30-17:00`, and PTS night pages at all other times and on non-trading days. It requests 50 rows per page, keeps stocks with an absolute move of at least 3% and volume above 2,000 shares, computes price times volume, and returns gainers and decliners Top10 with reasons. Bulk reason collection makes no Yahoo requests; Yahoo message boards may be checked at low frequency for at most two names whose causes remain unclear.
 
 Dependencies: none.
 

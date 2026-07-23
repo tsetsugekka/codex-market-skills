@@ -90,15 +90,26 @@ explicitly requests a volume-ranked list.
 
 After ranking, final mover answers must include a `原因` column unless the
 user explicitly says they only want the raw list, only want numbers, or do not
-need reasons. Run `stock_move_sources.py` for the selected turnover Top codes
-before the final answer and summarize each reason from news/disclosures first,
-using Yahoo 掲示板 only as a retail heat check. If there are many names, collect
-reasons sequentially: fetch one code, read and summarize it, then proceed to the
-next, with moderate randomized sleeps between repeated requests to the same
-host. Do not pre-scrape every 掲示板 at high frequency, but also do not return a
-bare ranking table without reasons. ETF or ETN rows should be explained from
-their underlying index/strategy, and tiny-turnover jumps should be labeled
+need reasons. Run `stock_move_sources.py --bulk-reason` for the selected
+turnover Top codes before the final answer. Bulk mode makes no Yahoo requests:
+it skips Yahoo quote/news/掲示板 and the per-stock PTS block, then uses
+Kabutan/Traders/news/disclosures for causes. Never run the default single-stock
+collector across the full Top10/Top20 list.
+
+Only after the non-Yahoo reason pass may Yahoo 掲示板 be considered for names
+whose cause remains genuinely unclear. Limit that optional follow-up to at most
+two stocks per ranking request, fetch sequentially with a 15-30 second gap, and
+do not fetch Yahoo again for names already collected in the same turn. On HTTP
+403/429, access-denied content, connection reset, or an empty/abnormal response,
+stop all Yahoo collection for the rest of the turn and report the block. Never
+retry immediately or increase request volume. A missing 掲示板 layer is
+preferable to triggering site controls. ETF or ETN rows should be explained
+from their underlying index/strategy, and tiny-turnover jumps should be labeled
 low-confidence if no hard news exists.
+
+The collector also enforces a cross-process 7-11 second Yahoo host gap. HTTP
+403/429 or access-control content activates a shared 30-minute local cooldown.
+Do not delete or bypass that cooldown to finish a ranking request.
 
 3. If a sandboxed collector call was already attempted by mistake and network
    access fails in Codex, rerun the same command with sandbox escalation

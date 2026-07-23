@@ -19,12 +19,19 @@ import json
 import random
 import re
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from html.parser import HTMLParser
+from pathlib import Path
 from typing import Any
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows fallback
+    fcntl = None
 
 
 JST = dt.timezone(dt.timedelta(hours=9), "JST")
@@ -62,6 +69,10 @@ INFO_KEYWORDS = [
     "配当",
     "優待",
 ]
+YAHOO_THROTTLE_STATE = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.json"
+YAHOO_THROTTLE_LOCK = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.lock"
+YAHOO_MIN_GAP_SECONDS = (7.0, 11.0)
+YAHOO_BLOCK_COOLDOWN_SECONDS = 30 * 60
 
 
 def now_jst() -> dt.datetime:
@@ -100,6 +111,56 @@ def yahoo_news_url(symbol: str) -> str:
     return f"{yahoo_quote_url(symbol)}/news"
 
 
+def read_yahoo_throttle_state() -> dict[str, float]:
+    try:
+        data = json.loads(YAHOO_THROTTLE_STATE.read_text(encoding="utf-8"))
+        return {
+            "last_request": float(data.get("last_request") or 0),
+            "blocked_until": float(data.get("blocked_until") or 0),
+        }
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return {"last_request": 0.0, "blocked_until": 0.0}
+
+
+def write_yahoo_throttle_state(state: dict[str, float]) -> None:
+    YAHOO_THROTTLE_STATE.write_text(json.dumps(state), encoding="utf-8")
+
+
+def before_yahoo_request() -> None:
+    YAHOO_THROTTLE_LOCK.touch(exist_ok=True)
+    with YAHOO_THROTTLE_LOCK.open("r+") as lock_file:
+        if fcntl is not None:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        state = read_yahoo_throttle_state()
+        current = time.time()
+        if state["blocked_until"] > current:
+            remaining = int(state["blocked_until"] - current)
+            raise RuntimeError(f"Yahoo access cooldown active ({remaining}s remaining)")
+        gap = random.uniform(*YAHOO_MIN_GAP_SECONDS)
+        wait_seconds = max(0.0, state["last_request"] + gap - current)
+        if wait_seconds:
+            time.sleep(wait_seconds)
+        state["last_request"] = time.time()
+        write_yahoo_throttle_state(state)
+        if fcntl is not None:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+
+def block_yahoo_requests() -> None:
+    YAHOO_THROTTLE_LOCK.touch(exist_ok=True)
+    with YAHOO_THROTTLE_LOCK.open("r+") as lock_file:
+        if fcntl is not None:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        state = read_yahoo_throttle_state()
+        state["blocked_until"] = max(
+            state["blocked_until"],
+            time.time() + YAHOO_BLOCK_COOLDOWN_SECONDS,
+        )
+        write_yahoo_throttle_state(state)
+        if fcntl is not None:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+
 def get_traders_prefix(market_name: str) -> str:
     if any(x in market_name for x in ["東Ｅ", "東E", "東証E", "ETF", "ETN"]):
         return "00"
@@ -113,7 +174,10 @@ def get_traders_prefix(market_name: str) -> str:
 
 
 def fetch_url(url: str, referer: str | None = None, timeout: int = 20, pause: bool = True) -> str:
-    if pause:
+    is_yahoo = "finance.yahoo.co.jp" in url
+    if is_yahoo:
+        before_yahoo_request()
+    elif pause:
         time.sleep(random.uniform(0.5, 1.4))
     if not referer:
         if "finance.yahoo.co.jp" in url:
@@ -136,16 +200,26 @@ def fetch_url(url: str, referer: str | None = None, timeout: int = 20, pause: bo
             "Cache-Control": "max-age=0",
         },
     )
-    with urllib.request.urlopen(req, timeout=timeout) as response:
-        body = response.read()
-        encoding = response.info().get("Content-Encoding", "")
-        if encoding == "gzip":
-            body = gzip.decompress(body)
-        elif encoding == "deflate":
-            import zlib
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            body = response.read()
+            encoding = response.info().get("Content-Encoding", "")
+            if encoding == "gzip":
+                body = gzip.decompress(body)
+            elif encoding == "deflate":
+                import zlib
 
-            body = zlib.decompress(body)
-        return body.decode("utf-8", errors="ignore")
+                body = zlib.decompress(body)
+            text = body.decode("utf-8", errors="ignore")
+    except urllib.error.HTTPError as exc:
+        if is_yahoo and exc.code in {403, 429}:
+            block_yahoo_requests()
+        raise
+
+    if is_yahoo and re.search(r"access denied|too many requests|rate limit", text, re.IGNORECASE):
+        block_yahoo_requests()
+        raise RuntimeError("Yahoo returned access-control content; cooldown activated")
+    return text
 
 
 def parse_jst_datetime(date_str: str) -> dt.datetime | None:
@@ -846,12 +920,13 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
     quote_page_html = ""
     quote_page_quote: dict[str, Any] = {}
 
-    try:
-        quote_page_info, quote_page_html = fetch_yahoo_quote_page(symbol)
-        profile.update(quote_page_info)
-        quote_page_quote = extract_yahoo_quote_from_page(quote_page_html)
-    except Exception as exc:
-        errors.append(f"Yahoo quote page: {exc}")
+    if not args.skip_yahoo:
+        try:
+            quote_page_info, quote_page_html = fetch_yahoo_quote_page(symbol)
+            profile.update(quote_page_info)
+            quote_page_quote = extract_yahoo_quote_from_page(quote_page_html)
+        except Exception as exc:
+            errors.append(f"Yahoo quote page: {exc}")
 
     quote = quote_page_quote
     market_hint = args.market_hint or str(quote.get("exchange") or "")
@@ -861,11 +936,29 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
     if not profile.get("name") and metrics.get("company_name"):
         profile["name"] = metrics.get("company_name")
 
-    bbs = fetch_yahoo_bbs(symbol, args.hours, args.comments)
+    skip_bbs = args.skip_yahoo or args.skip_bbs or args.comments <= 0
+    if skip_bbs:
+        reason = (
+            "bulk-reason/no-Yahoo mode"
+            if args.skip_yahoo
+            else "--skip-bbs"
+            if args.skip_bbs
+            else "--comments 0"
+        )
+        bbs = {
+            "url": yahoo_forum_url(symbol),
+            "comments": [],
+            "count": 0,
+            "source": "Yahoo掲示板",
+            "skipped": True,
+            "skip_reason": reason,
+        }
+    else:
+        bbs = fetch_yahoo_bbs(symbol, args.hours, args.comments)
     bbs["heat"] = calculate_bbs_heat(bbs.get("comments", []))
 
     pts: dict[str, Any] = {}
-    if "kabutan" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
+    if not args.skip_pts and "kabutan" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
         pts = fetch_kabutan_pts(code)
         if isinstance(pts.get("price"), (int, float)) and isinstance(quote.get("price"), (int, float)):
             diff = pts["price"] - quote["price"]
@@ -874,7 +967,7 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
                 pts["change_vs_regular_pct"] = diff / quote["price"] * 100
 
     news_groups = []
-    if "yahoo" in args.sources:
+    if "yahoo" in args.sources and not args.skip_yahoo:
         news_groups.append(fetch_yahoo_news(symbol, args.news_limit))
     if "kabutan" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
         kabutan = fetch_kabutan_news(code, args.news_limit)
@@ -901,6 +994,12 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
     return {
         "generated_at_jst": now_jst().strftime("%Y-%m-%d %H:%M:%S"),
         "window_hours": args.hours,
+        "collection": {
+            "bulk_reason": args.bulk_reason,
+            "skip_yahoo": args.skip_yahoo,
+            "skip_bbs": skip_bbs,
+            "skip_pts": args.skip_pts,
+        },
         "profile": profile,
         "quote": quote,
         "metrics": metrics,
@@ -923,6 +1022,7 @@ def fmt_num(value: Any, digits: int = 2) -> str:
 
 
 def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
+    collection = data.get("collection", {})
     profile = data.get("profile", {})
     quote = data.get("quote", {})
     metrics = data.get("metrics", {})
@@ -938,8 +1038,12 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
         lines.append("")
         lines.append(f"- 生成時刻(JST): {data.get('generated_at_jst')}")
         lines.append(f"- 対象期間: 直近{data.get('window_hours')}時間中心")
-        lines.append(f"- Yahoo: {yahoo_quote_url(profile.get('symbol', ''))}")
-        lines.append(f"- Yahoo掲示板: {bbs.get('url', '')}")
+        if collection.get("bulk_reason"):
+            lines.append("- 収集モード: bulk-reason (Yahooアクセスなし)")
+        elif not collection.get("skip_yahoo"):
+            lines.append(f"- Yahoo: {yahoo_quote_url(profile.get('symbol', ''))}")
+        if not bbs.get("skipped"):
+            lines.append(f"- Yahoo掲示板: {bbs.get('url', '')}")
         lines.append("")
         lines.append("## 基本情報・現在値")
         lines.append(f"- 現値: {fmt_num(quote.get('price'))} {quote.get('currency') or ''}".rstrip())
@@ -987,21 +1091,24 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
             lines.append("- 取得できたニュースなし")
         lines.append("")
         lines.append("## Yahoo掲示板")
-        lines.append(
-            f"- 人気度: {heat.get('level', '-')}/10 {heat.get('label', '')} "
-            f"(1h:{heat.get('n_1h', 0)}, 3h:{heat.get('n_3h', 0)}, 24h:{heat.get('n_24h', 0)}, "
-            f"24h likes:{heat.get('likes_sum_24h', 0)}, top:{heat.get('top_likes_24h', 0)})"
-        )
-        comments = bbs.get("comments", [])
-        if comments:
-            for idx, item in enumerate(comments, 1):
-                age = age_label(item.get("date", ""))
-                age_suffix = f" / {age}" if age else ""
-                text = clean_text(item.get("text", ""))
-                lines.append(f"{idx}. {item.get('date') or '日付不明'}{age_suffix} / 👍{item.get('likes', 0)}")
-                lines.append(f"   {text}")
+        if bbs.get("skipped"):
+            lines.append(f"- 取得をスキップ: {bbs.get('skip_reason') or 'request disabled'}")
         else:
-            lines.append("- 取得できた投稿なし")
+            lines.append(
+                f"- 人気度: {heat.get('level', '-')}/10 {heat.get('label', '')} "
+                f"(1h:{heat.get('n_1h', 0)}, 3h:{heat.get('n_3h', 0)}, 24h:{heat.get('n_24h', 0)}, "
+                f"24h likes:{heat.get('likes_sum_24h', 0)}, top:{heat.get('top_likes_24h', 0)})"
+            )
+            comments = bbs.get("comments", [])
+            if comments:
+                for idx, item in enumerate(comments, 1):
+                    age = age_label(item.get("date", ""))
+                    age_suffix = f" / {age}" if age else ""
+                    text = clean_text(item.get("text", ""))
+                    lines.append(f"{idx}. {item.get('date') or '日付不明'}{age_suffix} / 👍{item.get('likes', 0)}")
+                    lines.append(f"   {text}")
+            else:
+                lines.append("- 取得できた投稿なし")
         errors = data.get("errors") or []
         for group in data.get("news_groups", []):
             if group.get("error"):
@@ -1020,9 +1127,15 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
         lines.append("")
 
     lines.append("## Codexへの分析指示")
+    bbs_instruction = (
+        "Yahoo掲示板は負荷防止のため収集していません。掲示板温度は「未収集」と明記し、"
+        "掲示板情報を推測しないでください。"
+        if bbs.get("skipped")
+        else "Yahoo掲示板は市場心理・未確認材料として補助扱いにしてください。"
+    )
     lines.append(
         "上の材料だけを根拠に、この株の直近異動理由を中国語で分析してください。"
-        "ニュースを最優先、Yahoo掲示板は市場心理・未確認材料として補助扱いにしてください。"
+        f"ニュースを最優先、{bbs_instruction}"
         "回答は最低3〜4行、材料が十分なら短い市場ニュース記事くらいの詳しさにしてください。"
         "出力は 1) 最有力理由 2) 補助理由 3) 掲示板温度 4) 確度 5) 注意点 の順。"
         "材料が弱い場合は断定せず、「思惑」「期待」「確認待ち」と明記してください。"
@@ -1038,12 +1151,25 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--name", default="", help="Optional stock name override")
     parser.add_argument("--market-hint", default="", help="Optional market hint for Traders prefix, e.g. 東証G")
     parser.add_argument("--hours", type=int, default=24, help="Recent evidence window in hours")
-    parser.add_argument("--comments", type=int, default=20, help="Max Yahoo forum comments to print")
+    parser.add_argument(
+        "--comments",
+        type=int,
+        default=20,
+        help="Max Yahoo forum comments to print. Zero disables the forum request.",
+    )
     parser.add_argument("--news-limit", type=int, default=12, help="Max news items to print")
     parser.add_argument(
         "--sources",
         default="yahoo,kabutan,traders",
         help="Comma-separated news sources: yahoo,kabutan,traders",
+    )
+    parser.add_argument("--skip-bbs", action="store_true", help="Do not request Yahoo forum pages.")
+    parser.add_argument("--skip-yahoo", action="store_true", help="Do not request any Yahoo pages.")
+    parser.add_argument("--skip-pts", action="store_true", help="Do not request the per-stock Kabutan PTS block.")
+    parser.add_argument(
+        "--bulk-reason",
+        action="store_true",
+        help="Bulk ranking reason mode: skip Yahoo quote/news/forum and per-stock PTS requests.",
     )
     parser.add_argument("--format", choices=["markdown", "json", "prompt"], default="markdown")
     parser.add_argument("--output", default="", help="Write output to this path instead of stdout")
@@ -1054,6 +1180,14 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_arg_parser()
     args = parser.parse_args(argv)
     args.sources = {s.strip().lower() for s in args.sources.split(",") if s.strip()}
+    if args.comments < 0:
+        parser.error("--comments must be zero or greater")
+    if args.bulk_reason:
+        args.skip_yahoo = True
+        args.skip_bbs = True
+        args.skip_pts = True
+        args.comments = 0
+        args.sources.discard("yahoo")
     try:
         data = collect_sources(args)
     except KeyboardInterrupt:

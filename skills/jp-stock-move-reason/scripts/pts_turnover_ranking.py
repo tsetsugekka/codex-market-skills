@@ -394,7 +394,7 @@ def main() -> None:
         for code in dict.fromkeys(selected_codes):
             print(
                 "python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py "
-                f"{code} --format markdown --hours 48 --comments 12 --news-limit 10"
+                f"{code} --bulk-reason --format markdown --hours 48 --comments 0 --news-limit 10"
             )
 
 
