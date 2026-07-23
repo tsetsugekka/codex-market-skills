@@ -71,7 +71,7 @@ INFO_KEYWORDS = [
 ]
 YAHOO_THROTTLE_STATE = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.json"
 YAHOO_THROTTLE_LOCK = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.lock"
-YAHOO_MIN_GAP_SECONDS = (7.0, 11.0)
+YAHOO_MIN_GAP_SECONDS = (2.0, 4.0)
 YAHOO_BLOCK_COOLDOWN_SECONDS = 30 * 60
 
 

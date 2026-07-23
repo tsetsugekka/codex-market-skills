@@ -98,7 +98,7 @@ collector across the full Top10/Top20 list.
 
 Only after the non-Yahoo reason pass may Yahoo 掲示板 be considered for names
 whose cause remains genuinely unclear. Limit that optional follow-up to at most
-two stocks per ranking request, fetch sequentially with a 15-30 second gap, and
+two stocks per ranking request, fetch sequentially with a randomized 2-4 second gap, and
 do not fetch Yahoo again for names already collected in the same turn. On HTTP
 403/429, access-denied content, connection reset, or an empty/abnormal response,
 stop all Yahoo collection for the rest of the turn and report the block. Never
@@ -107,7 +107,7 @@ preferable to triggering site controls. ETF or ETN rows should be explained
 from their underlying index/strategy, and tiny-turnover jumps should be labeled
 low-confidence if no hard news exists.
 
-The collector also enforces a cross-process 7-11 second Yahoo host gap. HTTP
+The collector also enforces a cross-process randomized 2-4 second Yahoo host gap. HTTP
 403/429 or access-control content activates a shared 30-minute local cooldown.
 Do not delete or bypass that cooldown to finish a ranking request.
 

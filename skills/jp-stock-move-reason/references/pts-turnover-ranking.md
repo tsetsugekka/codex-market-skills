@@ -182,10 +182,10 @@ After ranking:
 6. Prioritize concrete news, disclosures, earnings, guidance, ratings, orders,
    buybacks, lawsuits, capital actions, or shareholder benefits. Use Yahoo
    掲示板 only as an optional follow-up for at most two stocks whose causes remain
-   unclear after the non-Yahoo pass. Wait 15-30 seconds between those requests.
+   unclear after the non-Yahoo pass. Wait a randomized 2-4 seconds between those requests.
    On HTTP 403/429, access-denied content, reset, or abnormal empty output, stop
    all Yahoo requests for the rest of the turn; do not retry immediately.
-   The collector additionally enforces a shared cross-process 7-11 second Yahoo
+   The collector additionally enforces a shared cross-process randomized 2-4 second Yahoo
    host gap and a 30-minute cooldown after 403/429 or access-control content.
    Never delete or bypass the cooldown for a ranking request.
 7. For ETF/ETN rows, explain them by the underlying index or strategy instead
