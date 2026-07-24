@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Rank Kabutan Japanese-stock movers by computed turnover.
+Rank Japanese-stock movers by estimated trading value.
 
 This helper is intentionally small and public-safe. During regular Tokyo market
-hours it reads Kabutan's regular price-mover pages. Around the open, lunch break,
-after the close, and overnight it reads the appropriate PTS section. It filters
-movers by percentage change and volume, then ranks by:
+hours it reads Yahoo Finance Japan's live price-mover pages. Around the open,
+lunch break, after the close, and overnight it reads the appropriate Kabutan PTS
+section. It filters movers by percentage change and volume, then ranks by:
 
     current price * volume
 
-It does not infer reasons. Use stock_move_sources.py for the resulting stock
-codes when reasons are needed.
+The result is an estimate, not exchange-reported trading value calculated from
+each execution. It does not infer reasons. Use stock_move_sources.py for the
+resulting stock codes when reasons are needed.
 """
 
 from __future__ import annotations
@@ -37,6 +38,7 @@ USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 )
+_LAST_YAHOO_FETCH = 0.0
 
 
 @dataclass
@@ -118,33 +120,58 @@ def parse_number(value: str) -> float | None:
 
 
 def fetch_url(url: str, pause: bool = True) -> str:
-    if pause:
+    global _LAST_YAHOO_FETCH
+
+    host = urllib.parse.urlparse(url).netloc
+    is_yahoo = host == "finance.yahoo.co.jp"
+    if is_yahoo:
+        if _LAST_YAHOO_FETCH:
+            minimum_gap = random.uniform(2.0, 4.0)
+            elapsed = time.monotonic() - _LAST_YAHOO_FETCH
+            if elapsed < minimum_gap:
+                time.sleep(minimum_gap - elapsed)
+    elif pause:
         time.sleep(random.uniform(0.8, 1.8))
+
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+        "Accept-Encoding": "gzip, deflate",
+        "Cache-Control": "max-age=0",
+    }
+    if is_yahoo:
+        headers["Referer"] = "https://finance.yahoo.co.jp/"
+    else:
+        headers["Referer"] = "https://kabutan.jp/"
+        headers["Cookie"] = "shared_perpage=50"
+
     req = urllib.request.Request(
         url,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-            "Accept-Encoding": "gzip, deflate",
-            "Referer": "https://kabutan.jp/",
-            "Cookie": "shared_perpage=50",
-            "Cache-Control": "max-age=0",
-        },
+        headers=headers,
     )
-    with urllib.request.urlopen(req, timeout=20) as response:
-        body = response.read()
-        encoding = response.info().get("Content-Encoding", "")
-        if encoding == "gzip":
-            body = gzip.decompress(body)
-        elif encoding == "deflate":
-            import zlib
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            body = response.read()
+            encoding = response.info().get("Content-Encoding", "")
+            if encoding == "gzip":
+                body = gzip.decompress(body)
+            elif encoding == "deflate":
+                import zlib
 
-            body = zlib.decompress(body)
-        return body.decode("utf-8", errors="ignore")
+                body = zlib.decompress(body)
+            return body.decode("utf-8", errors="ignore")
+    finally:
+        if is_yahoo:
+            _LAST_YAHOO_FETCH = time.monotonic()
 
 
 def build_url(session: str, side: str, page: int) -> str:
+    if session == "regular":
+        ranking = "up" if side == "increase" else "down"
+        params = {"market": "all", "term": "daily", "page": str(page)}
+        return f"https://finance.yahoo.co.jp/stocks/ranking/{ranking}?" + urllib.parse.urlencode(params)
+
     params = {
         "market": "0",
         "capitalization": "-1",
@@ -152,9 +179,6 @@ def build_url(session: str, side: str, page: int) -> str:
         "page": str(page),
         "cachebust": dt.datetime.now(JST).strftime("%Y%m%d%H%M%S"),
     }
-    if session == "regular":
-        params["mode"] = "2_1" if side == "increase" else "2_2"
-        return "https://kabutan.jp/warning/?" + urllib.parse.urlencode(params)
     return f"https://kabutan.jp/warning/pts_{session}_price_{side}?" + urllib.parse.urlencode(params)
 
 
@@ -172,7 +196,7 @@ def parse_as_of(value: str | None) -> dt.datetime:
 
 
 def auto_session(as_of: dt.datetime) -> str:
-    """Select the Kabutan regular/PTS section by JST clock.
+    """Select the Yahoo regular or Kabutan PTS section by JST clock.
 
     On trading weekdays, regular market pages are used during the morning and
     afternoon cash sessions. PTS day pages cover pre-open, lunch, and after-close
@@ -201,6 +225,66 @@ def extract_stamp(html_text: str) -> str:
     return f"{match.group(1)} {match.group(2)}" if match else ""
 
 
+def extract_yahoo_state(html_text: str) -> dict[str, object]:
+    marker = "window.__PRELOADED_STATE__ = "
+    if marker not in html_text:
+        raise ValueError("Yahoo ranking page has no PRELOADED_STATE")
+    payload = html_text.split(marker, 1)[1].split("</script>", 1)[0].strip().rstrip(";")
+    state = json.loads(payload)
+    if not isinstance(state, dict):
+        raise ValueError("Yahoo ranking PRELOADED_STATE is not an object")
+    return state
+
+
+def parse_yahoo_rows(html_text: str, page: int) -> tuple[str, list[MoverRow]]:
+    state = extract_yahoo_state(html_text)
+    ranking = state.get("mainRankingList")
+    if not isinstance(ranking, dict):
+        raise ValueError("Yahoo ranking data is missing mainRankingList")
+    results = ranking.get("results")
+    if not isinstance(results, list):
+        raise ValueError("Yahoo ranking data is missing results")
+
+    rows: list[MoverRow] = []
+    stamps: list[str] = []
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        ranking_result = item.get("rankingResult")
+        if not isinstance(ranking_result, dict):
+            continue
+        change = ranking_result.get("changePriceRate")
+        if not isinstance(change, dict):
+            continue
+
+        price = parse_number(str(item.get("savePrice") or ""))
+        diff = parse_number(str(change.get("changePrice") or ""))
+        pct = parse_number(str(change.get("changePriceRate") or ""))
+        volume = parse_number(str(change.get("volume") or ""))
+        if price is None or diff is None or pct is None or volume is None:
+            continue
+
+        update_time = clean_text(str(change.get("updateDateTime") or ""))
+        if update_time:
+            stamps.append(update_time)
+        name = clean_text(str(item.get("stockName") or "")).replace("(株)", "").strip()
+        rows.append(
+            MoverRow(
+                code=clean_text(str(item.get("stockCode") or "")),
+                name=name,
+                market=clean_text(str(item.get("marketName") or "")),
+                reference_price=price - diff,
+                price=price,
+                diff=diff,
+                pct=pct,
+                volume=int(volume),
+                turnover=price * volume,
+                page=page,
+            )
+        )
+    return max(stamps, default=""), rows
+
+
 def parse_rows(html_text: str, page: int, session: str) -> list[MoverRow]:
     parser = StockTableParser()
     parser.feed(html_text)
@@ -208,18 +292,11 @@ def parse_rows(html_text: str, page: int, session: str) -> list[MoverRow]:
     for cells in parser.rows:
         if len(cells) < 10:
             continue
-        if session == "regular":
-            price = parse_number(cells[5])
-            diff = parse_number(cells[7])
-            pct = parse_number(cells[8])
-            volume = parse_number(cells[9])
-            reference_price = price - diff if price is not None and diff is not None else None
-        else:
-            reference_price = parse_number(cells[5])
-            price = parse_number(cells[6])
-            diff = parse_number(cells[7])
-            pct = parse_number(cells[8])
-            volume = parse_number(cells[9])
+        reference_price = parse_number(cells[5])
+        price = parse_number(cells[6])
+        diff = parse_number(cells[7])
+        pct = parse_number(cells[8])
+        volume = parse_number(cells[9])
         if reference_price is None or price is None or diff is None or pct is None or volume is None:
             continue
         rows.append(
@@ -246,12 +323,21 @@ def is_etf(row: MoverRow) -> bool:
 def collect_side(session: str, side: str, min_abs_pct: float, max_pages: int) -> tuple[str, list[MoverRow]]:
     all_rows: list[MoverRow] = []
     stamp = ""
+    seen_page_signatures: set[tuple[str, ...]] = set()
     for page in range(1, max_pages + 1):
         html_text = fetch_url(build_url(session, side, page), pause=page > 1)
-        stamp = extract_stamp(html_text) or stamp
-        rows = parse_rows(html_text, page, session)
+        if session == "regular":
+            page_stamp, rows = parse_yahoo_rows(html_text, page)
+            stamp = page_stamp or stamp
+        else:
+            stamp = extract_stamp(html_text) or stamp
+            rows = parse_rows(html_text, page, session)
         if not rows:
             break
+        signature = tuple(row.code for row in rows)
+        if signature in seen_page_signatures:
+            break
+        seen_page_signatures.add(signature)
         all_rows.extend(rows)
         last_pct = rows[-1].pct
         if side == "increase" and last_pct < min_abs_pct:
@@ -301,30 +387,34 @@ def print_markdown(
     prefix = "" if session == "regular" else "PTS"
     threshold_label = f"{min_abs_pct:g}%"
     title = (
-        f"{prefix}上涨 Top10（涨幅大于{threshold_label}/成交量大于{min_volume}/成交额排序）"
+        f"{prefix}上涨 Top{top}（涨幅大于{threshold_label}/成交量大于{min_volume}/推定成交额排序）"
         if side == "increase"
-        else f"{prefix}下跌 Top10（跌幅大于{threshold_label}/成交量大于{min_volume}/成交额排序）"
+        else f"{prefix}下跌 Top{top}（跌幅大于{threshold_label}/成交量大于{min_volume}/推定成交额排序）"
     )
     section_name = {"regular": "东京市场日中", "day": "PTS日中", "night": "PTS夜间"}[session]
     section_url = (
-        f"warning/?mode={'2_1' if side == 'increase' else '2_2'}"
+        f"https://finance.yahoo.co.jp/stocks/ranking/{'up' if side == 'increase' else 'down'}?market=all"
         if session == "regular"
-        else f"pts_{session}_price_{side}"
+        else f"https://kabutan.jp/warning/pts_{session}_price_{side}"
     )
     price_label = "现价" if session == "regular" else "PTS价"
     pct_label = "涨跌幅" if session == "regular" else "PTS涨跌幅"
     volume_label = "出来高" if session == "regular" else "PTS出来高"
     print(f"## {title}")
     if stamp:
-        print(f"- Kabutan时间: {stamp}")
+        source_name = "Yahoo时间" if session == "regular" else "Kabutan时间"
+        print(f"- {source_name}: {stamp}")
     print(f"- 数据时段: {section_name}")
-    print(f"- Kabutan section: {section_url}")
+    print(f"- 数据源: {section_url}")
     print(
         f"- 口径: 先筛 `abs({pct_label}) >= {min_abs_pct:g}%` 且 "
-        f"`{volume_label} > {min_volume:,}`，再按 `{price_label} × {volume_label}` 排序"
+        f"`{volume_label} > {min_volume:,}`，再按 `{price_label} × {volume_label}` 计算"
+        " `推定成交额` 并排序"
     )
+    if session == "regular":
+        print("- 时点限制: Yahoo东证取引值为实时；出来高至少延迟15分钟，因此不是交易所实际売買代金")
     print()
-    print(f"| 排名 | 代码 | 名称 | 市场 | {price_label} | 涨跌幅 | 出来高 | 估算成交额 |")
+    print(f"| 排名 | 代码 | 名称 | 市场 | {price_label} | 涨跌幅 | 出来高 | 推定成交额 |")
     print("|---:|---|---|---|---:|---:|---:|---:|")
     for index, row in enumerate(rows[:top], 1):
         print(
@@ -335,13 +425,16 @@ def print_markdown(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Rank Kabutan regular/PTS movers by computed turnover.")
+    parser = argparse.ArgumentParser(
+        description="Rank Yahoo regular-market or Kabutan PTS movers by estimated trading value."
+    )
     parser.add_argument(
         "--session",
         choices=["auto", "regular", "night", "day"],
         default="auto",
         help=(
-            "Section to inspect. auto uses regular pages during 09:00-11:30 and 12:30-15:30 JST; "
+            "Section to inspect. auto uses Yahoo regular pages during 09:00-11:30 and "
+            "12:30-15:30 JST; "
             "PTS day during 08:00-09:00, 11:30-12:30, and 15:30-17:00; otherwise PTS night."
         ),
     )
@@ -381,6 +474,9 @@ def main() -> None:
         selected_codes.extend(row.code for row in top_rows)
         output["sides"][side] = {
             "stamp": stamp,
+            "source": "Yahoo Finance Japan" if session == "regular" else "Kabutan PTS",
+            "turnover_label": "推定成交额",
+            "turnover_label_ja": "売買代金推定",
             "min_abs_pct": args.min_abs_pct,
             "min_volume_exclusive": args.min_volume,
             "rows": [asdict(row) for row in top_rows],

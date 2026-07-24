@@ -41,7 +41,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 | Skill | 用途 | 关键依赖 |
 | --- | --- | --- |
 | [`market-calendar-google`](docs/market-calendar-google.md) | 整理财报、宏观数据、央行事件、拍卖和其他财经事件，并写入 Google Calendar | 必需：`google-calendar:google-calendar` |
-| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 分析日本股票异动，并按时段计算普通市场或 PTS 成交额涨跌 Top10 | 无 |
+| [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 分析日本股票异动，并按时段计算普通市场或 PTS 推定成交额涨跌 Top10 | 无 |
 | [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | 分析 A 股涨停、跌停、炸板、放量和市场/板块/个股共振 | 可选：`mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan` |
 | [`cn-market-tape`](docs/cn-market-tape.md) | 盘中/盘后计算题材强弱、板块资金流、涨停池和机构调研 | 题材必需：`mx-zixuan`、`mx-xuangu`、`mx-search`；其他模块优先：`mx-data` |
 | [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | 给其他股票 skill 复用的公开安全情绪面分析框架 | 可选：东方财富妙想、moomoo 社区样本增强 |
@@ -110,7 +110,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 针对用户输入的日本股票代码，抓取 Yahoo Finance 实时板、Yahoo 掲示板、Yahoo/Kabutan/Traders 新闻以及基础指标，让 Codex 分析个股异动理由。
 
-同时内置涨跌成交额排名副 skill：交易日 `09:00-11:30`、`12:30-15:30` 使用 Kabutan 普通涨跌幅榜，`08:00-09:00`、`11:30-12:30`、`15:30-17:00` 使用 PTS day section，其余时段及非交易日使用 PTS night section。每页固定 50 条，筛选涨跌幅绝对值大于等于 1% 且出来高大于 2,000 的股票，再按当前价（或 PTS 价格）乘以出来高计算成交额并输出涨跌 Top10。最终榜单使用不访问Yahoo的批量模式逐只核对Kabutan/Traders新闻和披露并附原因；Yahoo掲示板仅可对最多2只原因不明股票低频补查。
+同时内置涨跌推定成交额排名副 skill：交易日 `09:00-11:30`、`12:30-15:30` 使用 Yahoo Finance Japan 即时普通涨跌幅榜，`08:00-09:00`、`11:30-12:30`、`15:30-17:00` 使用 Kabutan PTS day section，其余时段及非交易日使用 PTS night section。每页固定 50 条，筛选涨跌幅绝对值大于等于 1% 且出来高大于 2,000 的股票，再按当前价（或 PTS 价格）乘以出来高计算推定成交额（`売買代金推定`）并输出涨跌 Top10；它不是逐笔成交价乘以成交量求和得到的交易所实际成交额。Yahoo东证取引值实时，但出来高最低延迟15分钟，普通榜输出会披露这一时点差。最终榜单使用不访问Yahoo的批量模式逐只核对Kabutan/Traders新闻和披露并附原因；Yahoo掲示板仅可对最多2只原因不明股票低频补查。
 
 依赖：无。
 
@@ -121,7 +121,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - 分析某只日股为什么急涨、急跌或突然放量。
 - 区分新闻确认的催化和 Yahoo 掲示板上的市场思惑。
 - 查看当前涨跌幅、市值、PER/PBR、信用倍率、掲示板温度等辅助信息。
-- 输出当前普通市场或 PTS 的上涨/下跌 Top10（涨跌幅大于1%、成交量大于2000、成交额排序）。
+- 输出当前普通市场或 PTS 的上涨/下跌 Top10（涨跌幅大于1%、成交量大于2000、推定成交额排序）。
 
 </details>
 

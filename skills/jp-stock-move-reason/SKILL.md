@@ -58,11 +58,11 @@ Useful options:
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
 
-### Mover Turnover Ranking Sub-skill
+### Mover Estimated Trading Value Ranking Sub-skill
 
 When the user asks for current Japanese-stock increase/decrease Top10 lists,
-PTS mover lists ranked by `成交额`, `売買代金`, `turnover`, or says
-`不是成交量，是成交额`, use the mover-turnover sub-skill before running
+PTS mover lists ranked by `推定成交额`, `売買代金推定`, `turnover estimate`, or
+says `不是成交量，是成交额`, use the mover-turnover sub-skill before running
 per-stock reason collection. Read
 `references/pts-turnover-ranking.md`, then run:
 
@@ -72,8 +72,10 @@ python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session au
 
 Default to `--session auto` and evaluate routing in JST on trading days:
 
-- `09:00-11:30` and `12:30-15:30`: use the regular Kabutan increase/decrease
-  pages `warning/?mode=2_1` and `warning/?mode=2_2`.
+- `09:00-11:30` and `12:30-15:30`: use Yahoo Finance Japan's current regular
+  market rankings:
+  `https://finance.yahoo.co.jp/stocks/ranking/up?market=all` and
+  `https://finance.yahoo.co.jp/stocks/ranking/down?market=all`.
 - `08:00-09:00`, `11:30-12:30`, and `15:30-17:00`: use the PTS day-section
   increase/decrease pages.
 - All other times, weekends, and known non-trading days: use the PTS night
@@ -82,16 +84,20 @@ Default to `--session auto` and evaluate routing in JST on trading days:
 
 Always request 50 rows per page. Filter to `abs(涨跌幅) >= 1%` and
 `出来高 > 2000`, fetch enough percentage-sorted pages to cross the threshold,
-then rank by computed turnover. Regular-session turnover is `当前价 * 出来高`;
-PTS turnover is `PTS株价 * PTS出来高`. Volume is only the eligibility filter.
-For a generic Top10 request, or when the user loosely says `成交量` within this
-workflow, still rank by computed turnover. Rank by raw volume only when the user
-explicitly requests a volume-ranked list.
+then rank by estimated trading value. Regular-session `推定成交额`
+(`売買代金推定`) is `当前价 * 出来高`; PTS `推定成交额` is
+`PTS株价 * PTS出来高`. It is not exchange-reported trading value calculated
+from each execution. Yahoo states that Tokyo Stock Exchange transaction prices
+are real time while all-market volume is delayed by at least 15 minutes, so
+regular-session output must disclose that mixed-timestamp limitation. Volume is
+only the eligibility filter. For a generic Top10 request, or when the user
+loosely says `成交量` within this workflow, still rank by `推定成交额`. Rank by
+raw volume only when the user explicitly requests a volume-ranked list.
 
 After ranking, final mover answers must include a `原因` column unless the
 user explicitly says they only want the raw list, only want numbers, or do not
 need reasons. Run `stock_move_sources.py --bulk-reason` for the selected
-turnover Top codes before the final answer. Bulk mode makes no Yahoo requests:
+`推定成交额` Top codes before the final answer. Bulk mode makes no Yahoo requests:
 it skips Yahoo quote/news/掲示板 and the per-stock PTS block, then uses
 Kabutan/Traders/news/disclosures for causes. Never run the default single-stock
 collector across the full Top10/Top20 list.
@@ -104,7 +110,7 @@ do not fetch Yahoo again for names already collected in the same turn. On HTTP
 stop all Yahoo collection for the rest of the turn and report the block. Never
 retry immediately or increase request volume. A missing 掲示板 layer is
 preferable to triggering site controls. ETF or ETN rows should be explained
-from their underlying index/strategy, and tiny-turnover jumps should be labeled
+from their underlying index/strategy, and tiny-estimate jumps should be labeled
 low-confidence if no hard news exists.
 
 The collector also enforces a cross-process randomized 2-4 second Yahoo host gap. HTTP
