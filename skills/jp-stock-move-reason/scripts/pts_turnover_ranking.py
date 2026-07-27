@@ -354,17 +354,23 @@ def filter_rows(
     min_volume: int,
     exclude_etf: bool,
 ) -> list[MoverRow]:
-    result: list[MoverRow] = []
+    result_by_code: dict[str, MoverRow] = {}
     for row in rows:
         if exclude_etf and is_etf(row):
             continue
         if row.volume <= min_volume:
             continue
         if side == "increase" and row.pct >= min_abs_pct:
-            result.append(row)
+            pass
         elif side == "decrease" and row.pct <= -min_abs_pct:
-            result.append(row)
-    return sorted(result, key=lambda row: row.turnover, reverse=True)
+            pass
+        else:
+            continue
+
+        previous = result_by_code.get(row.code)
+        if previous is None or row.volume > previous.volume:
+            result_by_code[row.code] = row
+    return sorted(result_by_code.values(), key=lambda row: row.turnover, reverse=True)
 
 
 def format_amount(value: float) -> str:

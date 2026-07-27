@@ -166,6 +166,10 @@ percentage-based pagination stop rule.
 - Fetch the complete percentage-qualified range before applying the volume
   filter and `推定成交额` sort. Never take the first page or page order as the
   Top10 unless the threshold stop condition proves that it is enough.
+- Yahoo's live ranking can reorder while consecutive pages are being fetched,
+  so deduplicate across pages by ticker before ranking. If the same ticker
+  appears more than once, keep the row with the larger cumulative volume as the
+  newer observation.
 - Stop on an empty page and keep a finite page cap. If the host returns rate
   limits, DNS errors, timeouts, resets, or repeated empty responses, report the
   observed failure and stop increasing request frequency.
