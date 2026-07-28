@@ -1202,7 +1202,7 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
             lines.append(
                 f"- 评论处理: 缓存{bbs.get('count', 0)}条 / {bbs.get('comment_window_hours', '-')}小时窗 / "
                 f"点赞≥{YAHOO_BBS_MIN_LIKES}后{bbs.get('eligible_comment_count', 0)}条 / "
-                f"去重短名单{bbs.get('shortlist_count', 0)}条 / 最终展示最多{YAHOO_BBS_OUTPUT_LIMIT}条"
+                f"去重短名单{bbs.get('shortlist_count', 0)}条 / 供Codex判断最多{YAHOO_BBS_OUTPUT_LIMIT}条"
             )
             comments = bbs.get("comments", [])
             if comments:
@@ -1263,7 +1263,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--comments",
         type=int,
         default=100,
-        help="Max Yahoo forum comments to cache from one page; only five selected comments are printed. Zero disables the forum request.",
+        help="Max Yahoo forum comments to cache from one page; five selected comments are passed to Codex for reasoning, not a user-facing list. Zero disables the forum request.",
     )
     parser.add_argument("--news-limit", type=int, default=12, help="Max news items to print")
     parser.add_argument(

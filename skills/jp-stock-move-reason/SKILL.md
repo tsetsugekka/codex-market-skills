@@ -53,7 +53,7 @@ python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 7203 --format 
 Useful options:
 
 - `--hours 24`: news evidence window. Yahoo 掲示板 comments automatically prefer 24 hours and expand to 72 hours only when the 24-hour cache has fewer than 100 posts.
-- `--comments 100`: cache at most 100 Yahoo 掲示板 comments from one page. After filtering and scoring, the collector prints only the best five for analysis.
+- `--comments 100`: cache at most 100 Yahoo 掲示板 comments from one page. After filtering and scoring, pass only five selected comments to Codex as internal reason inputs.
 - `--news-limit 15`: maximum news items to include.
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
@@ -104,7 +104,8 @@ stock and every selected Top10 name, use the same comment pipeline: prefer 24
 hours, expand to 72 only when fewer than 100 posts are cached, remove posts with
 fewer than five likes, score and deduplicate to a 20-post shortlist, reorder
 that shortlist by time and likes, then use only the first five posts to summarize
-the reason. Process codes sequentially;
+the reason. Those five posts are internal Codex inputs, not a user-facing list.
+Process codes sequentially;
 do not use Kabutan/Traders as the first-pass substitute for board discussion.
 Use news or disclosures only to validate a concrete event claimed in the board,
 and distinguish verified facts from market discussion. Never fetch more than one
@@ -113,6 +114,9 @@ On HTTP 403/429, access-denied content, connection reset, or an empty/abnormal
 response, stop all Yahoo collection for the rest of the turn and report the
 block. ETF or ETN rows should be explained from their underlying index/strategy,
 and tiny-estimate jumps should be labeled low-confidence if no hard catalyst exists.
+
+Return the synthesized `原因` in the ranking table. Do not quote or enumerate the
+raw five comments unless the user explicitly asks to see them.
 
 The collector enforces a cross-process randomized 1-3 second Yahoo host gap. HTTP
 403/429 or access-control content activates a shared 30-minute local cooldown.
