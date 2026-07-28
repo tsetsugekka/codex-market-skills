@@ -52,8 +52,8 @@ python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 7203 --format 
 
 Useful options:
 
-- `--hours 24`: evidence window. Use `72` when same-day materials are thin.
-- `--comments 30`: maximum Yahoo 掲示板 comments to include.
+- `--hours 24`: news evidence window. Yahoo 掲示板 comments automatically prefer 24 hours and expand to 72 hours only when the 24-hour cache has fewer than 100 posts.
+- `--comments 100`: cache at most 100 Yahoo 掲示板 comments from one page. After filtering and scoring, the collector prints only the best five for analysis.
 - `--news-limit 15`: maximum news items to include.
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
@@ -67,7 +67,7 @@ per-stock reason collection. Read
 `references/pts-turnover-ranking.md`, then run:
 
 ```bash
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-abs-pct 1 --min-volume 2000 --top 10 --reason-commands
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session auto --side both --min-volume 2000 --top 10 --reason-commands
 ```
 
 Default to `--session auto` and evaluate routing in JST on trading days:
@@ -82,9 +82,10 @@ Default to `--session auto` and evaluate routing in JST on trading days:
   section. The script handles weekends; force `--session night` on Japanese
   exchange holidays that fall on weekdays.
 
-Always request 50 rows per page. Filter to `abs(涨跌幅) >= 1%` and
-`出来高 > 2000`, fetch enough percentage-sorted pages to cross the threshold,
-then rank by estimated trading value. Regular-session `推定成交额`
+Always request 50 rows per page. First filter each side to `abs(涨跌幅) >= 3%`
+and `出来高 > 2000`, then rank by estimated trading value. If one side has
+fewer than five qualifying rows, re-fetch only that side to `abs(涨跌幅) >= 1%`
+and keep ranking by estimated trading value. Regular-session `推定成交额`
 (`売買代金推定`) is `当前价 * 出来高`; PTS `推定成交额` is
 `PTS株价 * PTS出来高`. It is not exchange-reported trading value calculated
 from each execution. Yahoo states that Tokyo Stock Exchange transaction prices
@@ -96,24 +97,24 @@ raw volume only when the user explicitly requests a volume-ranked list.
 
 After ranking, final mover answers must include a `原因` column unless the
 user explicitly says they only want the raw list, only want numbers, or do not
-need reasons. Run `stock_move_sources.py --bulk-reason` for the selected
-`推定成交额` Top codes before the final answer. Bulk mode makes no Yahoo requests:
-it skips Yahoo quote/news/掲示板 and the per-stock PTS block, then uses
-Kabutan/Traders/news/disclosures for causes. Never run the default single-stock
-collector across the full Top10/Top20 list.
+need reasons. For ranking requests, Yahoo 掲示板 is the primary reason source:
+deduplicate selected Top codes and request one forum page per code, caching up
+to 100 comments each, with `--forum-only --comments 100`. For every individual
+stock and every selected Top10 name, use the same comment pipeline: prefer 24
+hours, expand to 72 only when fewer than 100 posts are cached, remove posts with
+fewer than five likes, score and deduplicate to a 20-post shortlist, reorder
+that shortlist by time and likes, then use only the first five posts to summarize
+the reason. Process codes sequentially;
+do not use Kabutan/Traders as the first-pass substitute for board discussion.
+Use news or disclosures only to validate a concrete event claimed in the board,
+and distinguish verified facts from market discussion. Never fetch more than one
+forum page per code or repeat a forum fetch for the same code in the same turn.
+On HTTP 403/429, access-denied content, connection reset, or an empty/abnormal
+response, stop all Yahoo collection for the rest of the turn and report the
+block. ETF or ETN rows should be explained from their underlying index/strategy,
+and tiny-estimate jumps should be labeled low-confidence if no hard catalyst exists.
 
-Only after the non-Yahoo reason pass may Yahoo 掲示板 be considered for names
-whose cause remains genuinely unclear. Limit that optional follow-up to at most
-two stocks per ranking request, fetch sequentially with a randomized 2-4 second gap, and
-do not fetch Yahoo again for names already collected in the same turn. On HTTP
-403/429, access-denied content, connection reset, or an empty/abnormal response,
-stop all Yahoo collection for the rest of the turn and report the block. Never
-retry immediately or increase request volume. A missing 掲示板 layer is
-preferable to triggering site controls. ETF or ETN rows should be explained
-from their underlying index/strategy, and tiny-estimate jumps should be labeled
-low-confidence if no hard news exists.
-
-The collector also enforces a cross-process randomized 2-4 second Yahoo host gap. HTTP
+The collector enforces a cross-process randomized 1-3 second Yahoo host gap. HTTP
 403/429 or access-control content activates a shared 30-minute local cooldown.
 Do not delete or bypass that cooldown to finish a ranking request.
 

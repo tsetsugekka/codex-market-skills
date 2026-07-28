@@ -71,8 +71,14 @@ INFO_KEYWORDS = [
 ]
 YAHOO_THROTTLE_STATE = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.json"
 YAHOO_THROTTLE_LOCK = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.lock"
-YAHOO_MIN_GAP_SECONDS = (2.0, 4.0)
+YAHOO_MIN_GAP_SECONDS = (1.0, 3.0)
 YAHOO_BLOCK_COOLDOWN_SECONDS = 30 * 60
+YAHOO_BBS_MAX_FETCH = 100
+YAHOO_BBS_RECENT_HOURS = 24
+YAHOO_BBS_FALLBACK_HOURS = 72
+YAHOO_BBS_MIN_LIKES = 5
+YAHOO_BBS_SHORTLIST_LIMIT = 20
+YAHOO_BBS_OUTPUT_LIMIT = 5
 
 
 def now_jst() -> dt.datetime:
@@ -768,16 +774,62 @@ def fetch_traders_metrics(code: str, market_hint: str = "") -> dict[str, Any]:
         return {"error": str(exc), "source": "TradersWeb", "url": url}
 
 
-def score_comment(comment: dict[str, Any]) -> tuple[int, dt.datetime, int]:
+def normalize_comment_for_similarity(text: str) -> str:
+    normalized = re.sub(r"\s+", "", str(text or "").lower())
+    return re.sub(r"[、。！？!?,.・…「」『』（）()\[\]【】]", "", normalized)
+
+
+def is_low_value_summary_comment(text: str) -> bool:
+    clean = re.sub(r"\s+", "", str(text or ""))
+    if len(clean) < 10:
+        return True
+    hype_patterns = [
+        r"^(買い|買え|売り|売れ|上がれ|下がれ|終了|終わり|草|ｗ+|w+)$",
+        r"^(明日)?S高(確定|希望|だ|ですね|お願いします)?[!！。]*$",
+        r"^(ストップ高|爆上げ|爆益|爆死)[!！。]*$",
+    ]
+    return any(re.match(pattern, clean, re.IGNORECASE) for pattern in hype_patterns)
+
+
+def score_comment(comment: dict[str, Any]) -> int | None:
     text = str(comment.get("text") or "")
     likes = int(comment.get("likes") or 0)
-    parsed = parse_jst_datetime(comment.get("date", "")) or dt.datetime(1970, 1, 1)
+    if likes < YAHOO_BBS_MIN_LIKES or is_low_value_summary_comment(text):
+        return None
+    parsed = parse_jst_datetime(comment.get("date", ""))
+    if not parsed:
+        return None
     age_hours = (now_jst() - parsed).total_seconds() / 3600
+    age_hours = max(0.0, age_hours)
     recency = 5 if age_hours <= 6 else 4 if age_hours <= 24 else 2 if age_hours <= 72 else 1
     length = 3 if 30 <= len(text) <= 300 else 2 if len(text) > 300 else 1
     like_score = 4 if likes >= 100 else 3 if likes >= 50 else 2 if likes >= 20 else 1 if likes >= 5 else 0
     keyword_score = min(6, sum(1 for word in INFO_KEYWORDS if word.lower() in text.lower()))
-    return recency + length + like_score + keyword_score, parsed, likes
+    return recency + length + like_score + keyword_score
+
+
+def cache_comment_priority(comment: dict[str, Any]) -> tuple[int, int, int]:
+    parsed = parse_jst_datetime(comment.get("date", ""))
+    is_recent = bool(parsed and (now_jst() - parsed).days < 7)
+    length = len(str(comment.get("text") or ""))
+    length_score = 0
+    if is_recent:
+        length_score = 3 if length >= 50 else 2 if length >= 30 else 1 if length >= 10 else 0
+    return int(is_recent), length_score, int(comment.get("likes") or 0)
+
+
+def dedupe_comments(comments: list[dict[str, Any]], limit: int) -> list[dict[str, Any]]:
+    selected: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for comment in comments:
+        signature = normalize_comment_for_similarity(str(comment.get("text") or ""))[:60]
+        if not signature or signature in seen:
+            continue
+        seen.add(signature)
+        selected.append(comment)
+        if len(selected) >= limit:
+            break
+    return selected
 
 
 def fetch_yahoo_bbs(symbol: str, hours: int, limit: int) -> dict[str, Any]:
@@ -786,9 +838,51 @@ def fetch_yahoo_bbs(symbol: str, hours: int, limit: int) -> dict[str, Any]:
         page_html = fetch_url(url)
         parser = YahooBBSParser()
         parser.feed(page_html)
-        comments = [c for c in parser.comments if within_hours(c.get("date", ""), hours)]
-        comments.sort(key=score_comment, reverse=True)
-        return {"url": url, "comments": comments[:limit], "count": len(comments), "source": "Yahoo掲示板"}
+        # Keep one page only. Prefer 24 hours, widening to 72 hours only when
+        # fewer than 100 cached posts fall in the 24-hour window.
+        cached_comments = sorted(parser.comments, key=cache_comment_priority, reverse=True)[: min(limit, YAHOO_BBS_MAX_FETCH)]
+        recent_24h = [
+            comment
+            for comment in cached_comments
+            if within_hours(comment.get("date", ""), YAHOO_BBS_RECENT_HOURS)
+        ]
+        comment_window_hours = (
+            YAHOO_BBS_RECENT_HOURS
+            if len(recent_24h) >= YAHOO_BBS_MAX_FETCH
+            else YAHOO_BBS_FALLBACK_HOURS
+        )
+        candidates: list[tuple[int, dt.datetime, int, dict[str, Any]]] = []
+        for comment in cached_comments:
+            if not within_hours(comment.get("date", ""), comment_window_hours):
+                continue
+            score = score_comment(comment)
+            parsed = parse_jst_datetime(comment.get("date", ""))
+            if score is None or not parsed:
+                continue
+            candidates.append((score, parsed, int(comment.get("likes") or 0), comment))
+        candidates.sort(key=lambda item: (item[0], item[1], item[2]), reverse=True)
+        shortlisted_comments = dedupe_comments(
+            [comment for _, _, _, comment in candidates],
+            YAHOO_BBS_SHORTLIST_LIMIT,
+        )
+        display_comments = sorted(
+            shortlisted_comments,
+            key=lambda comment: (
+                parse_jst_datetime(comment.get("date", "")) or dt.datetime(1970, 1, 1),
+                int(comment.get("likes") or 0),
+            ),
+            reverse=True,
+        )[:YAHOO_BBS_OUTPUT_LIMIT]
+        return {
+            "url": url,
+            "comments": display_comments,
+            "cached_comments": cached_comments,
+            "count": len(cached_comments),
+            "comment_window_hours": comment_window_hours,
+            "eligible_comment_count": len(candidates),
+            "shortlist_count": len(shortlisted_comments),
+            "source": "Yahoo掲示板",
+        }
     except Exception as exc:
         return {"url": url, "comments": [], "count": 0, "source": "Yahoo掲示板", "error": str(exc)}
 
@@ -920,7 +1014,7 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
     quote_page_html = ""
     quote_page_quote: dict[str, Any] = {}
 
-    if not args.skip_yahoo:
+    if not args.skip_yahoo and not args.forum_only:
         try:
             quote_page_info, quote_page_html = fetch_yahoo_quote_page(symbol)
             profile.update(quote_page_info)
@@ -930,7 +1024,7 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
 
     quote = quote_page_quote
     market_hint = args.market_hint or str(quote.get("exchange") or "")
-    metrics = fetch_traders_metrics(code, market_hint)
+    metrics = {} if args.forum_only else fetch_traders_metrics(code, market_hint)
     if not profile.get("name") and args.name:
         profile["name"] = args.name
     if not profile.get("name") and metrics.get("company_name"):
@@ -955,10 +1049,15 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
         }
     else:
         bbs = fetch_yahoo_bbs(symbol, args.hours, args.comments)
-    bbs["heat"] = calculate_bbs_heat(bbs.get("comments", []))
+    bbs["heat"] = calculate_bbs_heat(bbs.get("cached_comments", bbs.get("comments", [])))
 
     pts: dict[str, Any] = {}
-    if not args.skip_pts and "kabutan" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
+    if (
+        not args.forum_only
+        and not args.skip_pts
+        and "kabutan" in args.sources
+        and re.match(r"^\d{3}[0-9A-Z]$", code)
+    ):
         pts = fetch_kabutan_pts(code)
         if isinstance(pts.get("price"), (int, float)) and isinstance(quote.get("price"), (int, float)):
             diff = pts["price"] - quote["price"]
@@ -967,14 +1066,14 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
                 pts["change_vs_regular_pct"] = diff / quote["price"] * 100
 
     news_groups = []
-    if "yahoo" in args.sources and not args.skip_yahoo:
+    if "yahoo" in args.sources and not args.skip_yahoo and not args.forum_only:
         news_groups.append(fetch_yahoo_news(symbol, args.news_limit))
-    if "kabutan" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
+    if not args.forum_only and "kabutan" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
         kabutan = fetch_kabutan_news(code, args.news_limit)
         if not profile.get("name") and kabutan.get("company_name"):
             profile["name"] = kabutan.get("company_name")
         news_groups.append(kabutan)
-    if "traders" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
+    if not args.forum_only and "traders" in args.sources and re.match(r"^\d{3}[0-9A-Z]$", code):
         news_groups.append(fetch_traders_news(code, args.news_limit, market_hint))
 
     all_news = []
@@ -996,6 +1095,7 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
         "window_hours": args.hours,
         "collection": {
             "bulk_reason": args.bulk_reason,
+            "forum_only": args.forum_only,
             "skip_yahoo": args.skip_yahoo,
             "skip_bbs": skip_bbs,
             "skip_pts": args.skip_pts,
@@ -1099,6 +1199,11 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
                 f"(1h:{heat.get('n_1h', 0)}, 3h:{heat.get('n_3h', 0)}, 24h:{heat.get('n_24h', 0)}, "
                 f"24h likes:{heat.get('likes_sum_24h', 0)}, top:{heat.get('top_likes_24h', 0)})"
             )
+            lines.append(
+                f"- 评论处理: 缓存{bbs.get('count', 0)}条 / {bbs.get('comment_window_hours', '-')}小时窗 / "
+                f"点赞≥{YAHOO_BBS_MIN_LIKES}后{bbs.get('eligible_comment_count', 0)}条 / "
+                f"去重短名单{bbs.get('shortlist_count', 0)}条 / 最终展示最多{YAHOO_BBS_OUTPUT_LIMIT}条"
+            )
             comments = bbs.get("comments", [])
             if comments:
                 for idx, item in enumerate(comments, 1):
@@ -1131,6 +1236,9 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
         "Yahoo掲示板は負荷防止のため収集していません。掲示板温度は「未収集」と明記し、"
         "掲示板情報を推測しないでください。"
         if bbs.get("skipped")
+        else "Yahoo掲示板是本次榜单原因的主要线索；把其中的未确认说法标为市场讨论，"
+        "只有具体事件才可再用新闻或披露核验。"
+        if collection.get("forum_only")
         else "Yahoo掲示板は市場心理・未確認材料として補助扱いにしてください。"
     )
     lines.append(
@@ -1154,8 +1262,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--comments",
         type=int,
-        default=20,
-        help="Max Yahoo forum comments to print. Zero disables the forum request.",
+        default=100,
+        help="Max Yahoo forum comments to cache from one page; only five selected comments are printed. Zero disables the forum request.",
     )
     parser.add_argument("--news-limit", type=int, default=12, help="Max news items to print")
     parser.add_argument(
@@ -1165,6 +1273,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--skip-bbs", action="store_true", help="Do not request Yahoo forum pages.")
     parser.add_argument("--skip-yahoo", action="store_true", help="Do not request any Yahoo pages.")
+    parser.add_argument(
+        "--forum-only",
+        action="store_true",
+        help="Request only the Yahoo forum page; skip quote, news, Kabutan, and Traders pages.",
+    )
     parser.add_argument("--skip-pts", action="store_true", help="Do not request the per-stock Kabutan PTS block.")
     parser.add_argument(
         "--bulk-reason",
@@ -1182,6 +1295,10 @@ def main(argv: list[str] | None = None) -> int:
     args.sources = {s.strip().lower() for s in args.sources.split(",") if s.strip()}
     if args.comments < 0:
         parser.error("--comments must be zero or greater")
+    if args.comments > YAHOO_BBS_MAX_FETCH:
+        parser.error(f"--comments must not exceed {YAHOO_BBS_MAX_FETCH}")
+    if args.forum_only and (args.skip_yahoo or args.skip_bbs or args.comments <= 0):
+        parser.error("--forum-only requires Yahoo forum access and --comments greater than zero")
     if args.bulk_reason:
         args.skip_yahoo = True
         args.skip_bbs = True

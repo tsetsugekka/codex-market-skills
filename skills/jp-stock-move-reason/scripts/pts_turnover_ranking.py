@@ -389,6 +389,7 @@ def print_markdown(
     session: str,
     min_abs_pct: float,
     min_volume: int,
+    fallback_used: bool,
 ) -> None:
     prefix = "" if session == "regular" else "PTS"
     threshold_label = f"{min_abs_pct:g}%"
@@ -417,6 +418,8 @@ def print_markdown(
         f"`{volume_label} > {min_volume:,}`，再按 `{price_label} × {volume_label}` 计算"
         " `推定成交额` 并排序"
     )
+    if fallback_used:
+        print("- 阈值回退: 本方向在3%口径下不足5只，已改用1%口径")
     if session == "regular":
         print("- 时点限制: Yahoo东证取引值为实时；出来高至少延迟15分钟，因此不是交易所实际売買代金")
     print()
@@ -449,7 +452,19 @@ def main() -> None:
         help="JST datetime for --session auto, e.g. 2026-07-17T15:45. Defaults to now.",
     )
     parser.add_argument("--side", choices=["increase", "decrease", "both"], default="both")
-    parser.add_argument("--min-abs-pct", type=float, default=1.0, help="Minimum absolute change percentage.")
+    parser.add_argument("--min-abs-pct", type=float, default=3.0, help="Primary minimum absolute change percentage.")
+    parser.add_argument(
+        "--fallback-min-abs-pct",
+        type=float,
+        default=1.0,
+        help="Fallback threshold for a side that has too few qualified rows.",
+    )
+    parser.add_argument(
+        "--fallback-min-rows",
+        type=int,
+        default=5,
+        help="Use the fallback threshold when one side has fewer than this many rows.",
+    )
     parser.add_argument(
         "--min-volume",
         type=int,
@@ -475,7 +490,26 @@ def main() -> None:
 
     for side in sides:
         stamp, rows = collect_side(session, side, args.min_abs_pct, args.max_pages)
-        ranked = filter_rows(rows, side, args.min_abs_pct, args.min_volume, args.exclude_etf)
+        effective_min_abs_pct = args.min_abs_pct
+        fallback_used = False
+        ranked = filter_rows(rows, side, effective_min_abs_pct, args.min_volume, args.exclude_etf)
+        if (
+            len(ranked) < args.fallback_min_rows
+            and args.fallback_min_abs_pct < args.min_abs_pct
+        ):
+            fallback_stamp, fallback_rows = collect_side(
+                session, side, args.fallback_min_abs_pct, args.max_pages
+            )
+            stamp = fallback_stamp or stamp
+            effective_min_abs_pct = args.fallback_min_abs_pct
+            fallback_used = True
+            ranked = filter_rows(
+                fallback_rows,
+                side,
+                effective_min_abs_pct,
+                args.min_volume,
+                args.exclude_etf,
+            )
         top_rows = ranked[: args.top]
         selected_codes.extend(row.code for row in top_rows)
         output["sides"][side] = {
@@ -483,21 +517,33 @@ def main() -> None:
             "source": "Yahoo Finance Japan" if session == "regular" else "Kabutan PTS",
             "turnover_label": "推定成交额",
             "turnover_label_ja": "売買代金推定",
-            "min_abs_pct": args.min_abs_pct,
+            "requested_min_abs_pct": args.min_abs_pct,
+            "min_abs_pct": effective_min_abs_pct,
+            "fallback_used": fallback_used,
+            "fallback_min_rows": args.fallback_min_rows,
             "min_volume_exclusive": args.min_volume,
             "rows": [asdict(row) for row in top_rows],
         }
         if args.format == "markdown":
-            print_markdown(side, ranked, args.top, stamp, session, args.min_abs_pct, args.min_volume)
+            print_markdown(
+                side,
+                ranked,
+                args.top,
+                stamp,
+                session,
+                effective_min_abs_pct,
+                args.min_volume,
+                fallback_used,
+            )
 
     if args.format == "json":
         print(json.dumps(output, ensure_ascii=False, indent=2))
     elif args.reason_commands:
-        print("## Reason collection commands")
+        print("## Forum collection commands")
         for code in dict.fromkeys(selected_codes):
             print(
                 "python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py "
-                f"{code} --bulk-reason --format markdown --hours 48 --comments 0 --news-limit 10"
+                f"{code} --forum-only --format markdown --hours 48 --comments 100"
             )
 
 

@@ -20,12 +20,17 @@ regular session: estimated_trading_value = 当前价 * 出来高
 PTS session:     estimated_trading_value = PTS株価 * PTS出来高
 ```
 
-Default screening is:
+Default screening is applied independently to the increase and decrease sides:
 
 ```text
-abs(騰落率) >= 1%
+abs(騰落率) >= 3%
 出来高 > 2000
 ```
+
+If one side has fewer than five qualified rows, re-fetch only that side using
+`abs(騰落率) >= 1%` while retaining `出来高 > 2000`. Always rank by estimated
+trading value. Report the effective threshold and the side-specific fallback in
+the final output.
 
 Call this `推定成交额` in Chinese and `売買代金推定` in Japanese. Do not call
 it actual `成交额` / `売買代金`, because actual trading value is the sum of
@@ -104,7 +109,6 @@ Run from the repository root:
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py \
   --session auto \
   --side both \
-  --min-abs-pct 1 \
   --min-volume 2000 \
   --top 10 \
   --reason-commands
@@ -117,10 +121,10 @@ Useful variants:
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --side both
 
 # Force Yahoo regular market pages
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session regular --side both --min-abs-pct 1 --min-volume 2000
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session regular --side both --min-volume 2000
 
-# Force PTS day, both sides, percentage threshold 1%
-python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session day --side both --min-abs-pct 1 --min-volume 2000
+# Force PTS day, both sides, default threshold and fallback logic
+python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session day --side both --min-volume 2000
 
 # Force night PTS, both sides, include ETF/ETN
 python3 skills/jp-stock-move-reason/scripts/pts_turnover_ranking.py --session night --side both
@@ -187,24 +191,32 @@ After ranking:
 2. Unless the user explicitly asks for a raw list only or says reasons are not
    needed, final mover answers must include reasons. Do not stop at a bare
    ranking table.
-3. Collect reasons for the selected `推定成交额` Top names in a small sequential
-   loop using bulk mode. Bulk mode must not access Yahoo at all.
+3. Collect reasons from Yahoo 掲示板 first for the selected `推定成交额` Top
+   names in one sequential loop. Fetch one page per code only and cache at most
+   100 comments per code. Apply the same individual-stock pipeline: prefer the
+   24-hour window, expand to 72 hours only if it contains fewer than 100 posts,
+   discard posts with fewer than five likes, score and deduplicate to at most
+   20 posts, reorder that shortlist by time and likes, then use only its first
+   five posts to summarize the reason. Do not
+   use Kabutan/Traders as the first-pass substitute for the board discussion.
 4. For ordinary stocks, run:
 
    ```bash
    python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py CODE \
-     --bulk-reason --format markdown --hours 48 --comments 0 --news-limit 10
+     --forum-only --format markdown --hours 48 --comments 100
    ```
 
-5. `--comments 0` is a hard request-disable switch, not merely an output limit.
-   Never run the default single-stock collector for every Top10/Top20 code.
-6. Prioritize concrete news, disclosures, earnings, guidance, ratings, orders,
-   buybacks, lawsuits, capital actions, or shareholder benefits. Use Yahoo
-   掲示板 only as an optional follow-up for at most two stocks whose causes remain
-   unclear after the non-Yahoo pass. Wait a randomized 2-4 seconds between those requests.
+5. Never fetch more than one forum page for the same code or repeat a Yahoo
+   forum fetch for a code in the same turn. The `--forum-only` mode avoids
+   quote, news, Kabutan, and Traders requests.
+6. Treat the board as the primary explanation layer for ranking requests.
+   Use concrete news, disclosures, earnings, guidance, ratings, orders,
+   buybacks, lawsuits, capital actions, or shareholder benefits only to verify
+   an event asserted in board discussion; do not replace the board with them.
+   Wait a randomized 1-3 seconds between Yahoo requests.
    On HTTP 403/429, access-denied content, reset, or abnormal empty output, stop
    all Yahoo requests for the rest of the turn; do not retry immediately.
-   The collector additionally enforces a shared cross-process randomized 2-4 second Yahoo
+   The collector additionally enforces a shared cross-process randomized 1-3 second Yahoo
    host gap and a 30-minute cooldown after 403/429 or access-control content.
    Never delete or bypass the cooldown for a ranking request.
 7. For ETF/ETN rows, explain them by the underlying index or strategy instead
@@ -219,12 +231,12 @@ After ranking:
 
 ## Final Answer Pattern
 
-Report the timestamp, source, and method before the tables. During the regular
+Report the timestamp, source, effective threshold, and method before the tables. During the regular
 cash session use:
 
 ```text
 口径：Yahoo即时涨跌幅榜，YYYY-MM-DD HH:MM JST；
-只筛 abs(涨跌幅) >= 1% 且 出来高 > 2,000，
+先筛 abs(涨跌幅) >= 3% 且 出来高 > 2,000；单侧不足5只时仅该侧回退到1%，
 再按 当前价 × 出来高 算推定成交额取Top10。
 东证取引值实时，但Yahoo出来高最低延迟15分钟。
 ```
@@ -233,27 +245,27 @@ During a PTS session use:
 
 ```text
 口径：Kabutan 夜间PTS，YYYY-MM-DD HH:MM JST；
-只筛 abs(PTS涨跌幅) >= 1% 且 出来高 > 2,000，
+先筛 abs(PTS涨跌幅) >= 3% 且 出来高 > 2,000；单侧不足5只时仅该侧回退到1%，
 再按 PTS价格 × PTS出来高 算推定成交额取Top10。
 ```
 
 Use compact tables. During the regular cash session:
 
 ```text
-上涨 Top10（涨幅大于1%/成交量大于2000/推定成交额排序）
+上涨 Top10（涨幅大于3%/成交量大于2000/推定成交额排序）
 | 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 推定成交额 | 原因 |
 
-下跌 Top10（跌幅大于1%/成交量大于2000/推定成交额排序）
+下跌 Top10（跌幅大于3%/成交量大于2000/推定成交额排序）
 | 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 推定成交额 | 原因 |
 ```
 
 During PTS sessions:
 
 ```text
-PTS上涨 Top10（涨幅大于1%/成交量大于2000/推定成交额排序）
+PTS上涨 Top10（涨幅大于3%/成交量大于2000/推定成交额排序）
 | 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 推定成交额 | 原因 |
 
-PTS下跌 Top10（跌幅大于1%/成交量大于2000/推定成交额排序）
+PTS下跌 Top10（跌幅大于3%/成交量大于2000/推定成交额排序）
 | 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 推定成交额 | 原因 |
 ```
 
