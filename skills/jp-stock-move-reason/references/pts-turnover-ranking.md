@@ -193,11 +193,13 @@ After ranking:
    ranking table.
 3. Collect reasons from Yahoo 掲示板 first for the selected `推定成交额` Top
    names in one sequential loop. Fetch one page per code only and cache at most
-   100 comments per code. Apply the same individual-stock pipeline: prefer the
-   24-hour window, expand to 72 hours only if it contains fewer than 100 posts,
-   discard posts with fewer than five likes, score and deduplicate to at most
-   20 posts, reorder that shortlist by time and likes, then use only its first
-   five posts to summarize the reason. Do not
+   the latest 100 comments per code. Count raw comments within 24 hours before
+   applying the likes filter. If fewer than 100 are within 24 hours, expand the
+   candidate window to 72 hours using only that same cache; never fetch comment
+   101 or later. Discard posts with fewer than five likes, score by recency,
+   likes, full body length, and company-material keywords, deduplicate similar
+   posts to a maximum 20-comment full-text shortlist, reorder it by time and
+   likes, and pass only `recent_comments[:5]` to Codex for reason judgment. Do not
    use Kabutan/Traders as the first-pass substitute for the board discussion.
 4. For ordinary stocks, run:
 

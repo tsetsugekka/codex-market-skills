@@ -78,7 +78,7 @@ YAHOO_BBS_RECENT_HOURS = 24
 YAHOO_BBS_FALLBACK_HOURS = 72
 YAHOO_BBS_MIN_LIKES = 5
 YAHOO_BBS_SHORTLIST_LIMIT = 20
-YAHOO_BBS_OUTPUT_LIMIT = 5
+YAHOO_BBS_AI_INPUT_LIMIT = 5
 
 
 def now_jst() -> dt.datetime:
@@ -353,7 +353,7 @@ class YahooBBSParser(HTMLParser):
                 {
                     "date": date_str,
                     "likes": likes,
-                    "text": body_text[:420] + ("..." if len(body_text) > 420 else ""),
+                    "text": body_text,
                 }
             )
 
@@ -808,16 +808,6 @@ def score_comment(comment: dict[str, Any]) -> int | None:
     return recency + length + like_score + keyword_score
 
 
-def cache_comment_priority(comment: dict[str, Any]) -> tuple[int, int, int]:
-    parsed = parse_jst_datetime(comment.get("date", ""))
-    is_recent = bool(parsed and (now_jst() - parsed).days < 7)
-    length = len(str(comment.get("text") or ""))
-    length_score = 0
-    if is_recent:
-        length_score = 3 if length >= 50 else 2 if length >= 30 else 1 if length >= 10 else 0
-    return int(is_recent), length_score, int(comment.get("likes") or 0)
-
-
 def dedupe_comments(comments: list[dict[str, Any]], limit: int) -> list[dict[str, Any]]:
     selected: list[dict[str, Any]] = []
     seen: set[str] = set()
@@ -832,20 +822,34 @@ def dedupe_comments(comments: list[dict[str, Any]], limit: int) -> list[dict[str
     return selected
 
 
+def comment_within_hours(comment: dict[str, Any], hours: int) -> bool:
+    parsed = parse_jst_datetime(comment.get("date", ""))
+    if not parsed:
+        return False
+    current = now_jst()
+    return current - dt.timedelta(hours=hours) <= parsed <= current + dt.timedelta(minutes=5)
+
+
 def fetch_yahoo_bbs(symbol: str, hours: int, limit: int) -> dict[str, Any]:
     url = yahoo_forum_url(symbol)
     try:
         page_html = fetch_url(url)
         parser = YahooBBSParser()
         parser.feed(page_html)
-        # Keep one page only. Prefer 24 hours, widening to 72 hours only when
-        # fewer than 100 cached posts fall in the 24-hour window.
-        cached_comments = sorted(parser.comments, key=cache_comment_priority, reverse=True)[: min(limit, YAHOO_BBS_MAX_FETCH)]
+        # Keep only the latest 100 raw posts from one page. Quality and likes
+        # must not affect this cache boundary.
+        cached_comments = sorted(
+            parser.comments,
+            key=lambda comment: parse_jst_datetime(comment.get("date", "")) or dt.datetime(1970, 1, 1),
+            reverse=True,
+        )[: min(limit, YAHOO_BBS_MAX_FETCH)]
         recent_24h = [
             comment
             for comment in cached_comments
-            if within_hours(comment.get("date", ""), YAHOO_BBS_RECENT_HOURS)
+            if comment_within_hours(comment, YAHOO_BBS_RECENT_HOURS)
         ]
+        # The fallback decision uses the raw time-filtered count before the
+        # likes threshold, quality scoring, or deduplication.
         comment_window_hours = (
             YAHOO_BBS_RECENT_HOURS
             if len(recent_24h) >= YAHOO_BBS_MAX_FETCH
@@ -853,7 +857,7 @@ def fetch_yahoo_bbs(symbol: str, hours: int, limit: int) -> dict[str, Any]:
         )
         candidates: list[tuple[int, dt.datetime, int, dict[str, Any]]] = []
         for comment in cached_comments:
-            if not within_hours(comment.get("date", ""), comment_window_hours):
+            if not comment_within_hours(comment, comment_window_hours):
                 continue
             score = score_comment(comment)
             parsed = parse_jst_datetime(comment.get("date", ""))
@@ -865,22 +869,25 @@ def fetch_yahoo_bbs(symbol: str, hours: int, limit: int) -> dict[str, Any]:
             [comment for _, _, _, comment in candidates],
             YAHOO_BBS_SHORTLIST_LIMIT,
         )
-        display_comments = sorted(
+        recent_comments = sorted(
             shortlisted_comments,
             key=lambda comment: (
                 parse_jst_datetime(comment.get("date", "")) or dt.datetime(1970, 1, 1),
                 int(comment.get("likes") or 0),
             ),
             reverse=True,
-        )[:YAHOO_BBS_OUTPUT_LIMIT]
+        )
+        ai_input_comments = recent_comments[:YAHOO_BBS_AI_INPUT_LIMIT]
         return {
             "url": url,
-            "comments": display_comments,
+            "comments": ai_input_comments,
             "cached_comments": cached_comments,
             "count": len(cached_comments),
+            "recent_24h_raw_count": len(recent_24h),
             "comment_window_hours": comment_window_hours,
             "eligible_comment_count": len(candidates),
             "shortlist_count": len(shortlisted_comments),
+            "ai_input_count": len(ai_input_comments),
             "source": "Yahoo掲示板",
         }
     except Exception as exc:
@@ -1200,9 +1207,11 @@ def render_markdown(data: dict[str, Any], prompt_only: bool = False) -> str:
                 f"24h likes:{heat.get('likes_sum_24h', 0)}, top:{heat.get('top_likes_24h', 0)})"
             )
             lines.append(
-                f"- 评论处理: 缓存{bbs.get('count', 0)}条 / {bbs.get('comment_window_hours', '-')}小时窗 / "
+                f"- 评论处理: 最新缓存{bbs.get('count', 0)}条 / 其中24小时内原始评论{bbs.get('recent_24h_raw_count', 0)}条 / "
+                f"采用{bbs.get('comment_window_hours', '-')}小时窗 / "
                 f"点赞≥{YAHOO_BBS_MIN_LIKES}后{bbs.get('eligible_comment_count', 0)}条 / "
-                f"去重短名单{bbs.get('shortlist_count', 0)}条 / 供Codex判断最多{YAHOO_BBS_OUTPUT_LIMIT}条"
+                f"评分去重短名单{bbs.get('shortlist_count', 0)}条（最多{YAHOO_BBS_SHORTLIST_LIMIT}条） / "
+                f"recent_comments[:{YAHOO_BBS_AI_INPUT_LIMIT}]供Codex判断{bbs.get('ai_input_count', 0)}条"
             )
             comments = bbs.get("comments", [])
             if comments:
@@ -1263,7 +1272,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--comments",
         type=int,
         default=100,
-        help="Max Yahoo forum comments to cache from one page; five selected comments are passed to Codex for reasoning, not a user-facing list. Zero disables the forum request.",
+        help="Max latest Yahoo forum comments to cache from one page; shortlist up to 20 full comments, then pass recent_comments[:5] to Codex. Zero disables the forum request.",
     )
     parser.add_argument("--news-limit", type=int, default=12, help="Max news items to print")
     parser.add_argument(

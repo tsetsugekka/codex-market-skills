@@ -53,7 +53,7 @@ python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 7203 --format 
 Useful options:
 
 - `--hours 24`: news evidence window. Yahoo 掲示板 comments automatically prefer 24 hours and expand to 72 hours only when the 24-hour cache has fewer than 100 posts.
-- `--comments 100`: cache at most 100 Yahoo 掲示板 comments from one page. After filtering and scoring, pass only five selected comments to Codex as internal reason inputs.
+- `--comments 100`: cache at most the latest 100 Yahoo 掲示板 comments from one page. Count the raw 24-hour posts before applying the likes filter; when that count is below 100, expand the candidate window to 72 hours from the same cached 100 posts. After filtering, scoring, and deduplication, shortlist up to 20 full comments, reorder them by time and likes, then pass `recent_comments[:5]` to Codex as internal reason inputs.
 - `--news-limit 15`: maximum news items to include.
 - `--sources yahoo,kabutan,traders`: default news sources.
 - `--market-hint 東証G`: improves Traders Web metric/news URL choice when known.
@@ -98,13 +98,15 @@ raw volume only when the user explicitly requests a volume-ranked list.
 After ranking, final mover answers must include a `原因` column unless the
 user explicitly says they only want the raw list, only want numbers, or do not
 need reasons. For ranking requests, Yahoo 掲示板 is the primary reason source:
-deduplicate selected Top codes and request one forum page per code, caching up
-to 100 comments each, with `--forum-only --comments 100`. For every individual
-stock and every selected Top10 name, use the same comment pipeline: prefer 24
-hours, expand to 72 only when fewer than 100 posts are cached, remove posts with
-fewer than five likes, score and deduplicate to a 20-post shortlist, reorder
-that shortlist by time and likes, then use only the first five posts to summarize
-the reason. Those five posts are internal Codex inputs, not a user-facing list.
+deduplicate selected Top codes and request one forum page per code, caching at
+most the latest 100 comments each, with `--forum-only --comments 100`. For every
+individual stock and every selected Top10 name, use the same comment pipeline:
+count how many of those raw cached posts are within 24 hours; if fewer than 100,
+expand the candidate window to 72 hours using only the same cached posts. Never
+fetch post 101 or later. Apply the five-like minimum only after deciding the time
+window, then score by recency, likes, body length, and company-material keywords,
+deduplicate similar posts to a maximum 20-comment full-text shortlist, reorder it
+by time and likes, and pass only `recent_comments[:5]` to Codex.
 Process codes sequentially;
 do not use Kabutan/Traders as the first-pass substitute for board discussion.
 Use news or disclosures only to validate a concrete event claimed in the board,
@@ -116,7 +118,7 @@ block. ETF or ETN rows should be explained from their underlying index/strategy,
 and tiny-estimate jumps should be labeled low-confidence if no hard catalyst exists.
 
 Return the synthesized `原因` in the ranking table. Do not quote or enumerate the
-raw five comments unless the user explicitly asks to see them.
+raw five-comment input set unless the user explicitly asks to see it.
 
 The collector enforces a cross-process randomized 1-3 second Yahoo host gap. HTTP
 403/429 or access-control content activates a shared 30-minute local cooldown.
