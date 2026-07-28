@@ -197,10 +197,25 @@ After ranking:
    applying the likes filter. If fewer than 100 are within 24 hours, expand the
    candidate window to 72 hours using only that same cache; never fetch comment
    101 or later. Discard posts with fewer than five likes, score by recency,
-   likes, full body length, and company-material keywords, deduplicate similar
-   posts to a maximum 20-comment full-text shortlist, reorder it by time and
-   likes, and pass only `recent_comments[:5]` to Codex for reason judgment. Do not
+   likes, full body length, and company-material keywords, deduplicate exact
+   normalized-prefix signatures to a maximum 20-comment full-text shortlist,
+   reorder it by time and likes, and pass only `recent_comments[:5]` to Codex for
+   reason judgment. Do not
    use Kabutan/Traders as the first-pass substitute for the board discussion.
+   The score is capped at 18: recency contributes 5/4/2/1 for `<=6h`, `<=24h`,
+   `<=48h`, and `>48h`; length contributes 3/2/1 for 30-300, over 300, and
+   10-29 characters; likes contribute 4/3/2/1 for 100+, 50-99, 20-49, and
+   5-19; company-material keyword hits contribute at most six. AI,
+   semiconductors, defense, drones, and other generic sector words do not score.
+   Sort by score, timestamp, and likes before 60-character normalized-signature
+   deduplication. After taking 20, re-sort by timestamp and likes before `[:5]`.
+   The signature is lowercase text with all whitespace and
+   `、。！？ ! ? , . ・ … 「」 『』 （） () [] 【】` removed, truncated to its first
+   60 characters. This is exact matching, not semantic similarity. Keep the
+   earlier item in score/timestamp/likes order. Equal prefixes collapse even if
+   later text differs; small prefix differences survive. Do not Unicode-normalize
+   widths or explicitly remove emoji, URLs, or usernames. Scope deduplication to
+   one stock's current collection.
 4. For ordinary stocks, run:
 
    ```bash

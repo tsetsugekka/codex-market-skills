@@ -45,29 +45,50 @@ INFO_KEYWORDS = [
     "下方修正",
     "増配",
     "減配",
+    "復配",
     "自社株買い",
     "株式分割",
     "提携",
     "資本提携",
     "業務提携",
     "受注",
+    "大型受注",
     "承認",
     "認可",
     "特許",
     "IR",
     "黒字",
     "黒字化",
+    "赤字縮小",
+    "業績",
     "TOB",
     "MBO",
     "買収",
+    "子会社化",
     "補助金",
+    "助成金",
     "採択",
+    "導入",
+    "販売開始",
+    "上市",
+    "共同開発",
+    "ライセンス",
     "契約",
     "大量保有",
+    "保有比率",
+    "株式取得",
     "新製品",
-    "月次",
+    "新サービス",
+    "事業譲渡",
+    "親会社",
+    "主要株主",
     "配当",
     "優待",
+    "月次",
+    "売上高",
+    "営業利益",
+    "経常利益",
+    "純利益",
 ]
 YAHOO_THROTTLE_STATE = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.json"
 YAHOO_THROTTLE_LOCK = Path(tempfile.gettempdir()) / "codex-market-skills-yahoo-throttle.lock"
@@ -801,7 +822,7 @@ def score_comment(comment: dict[str, Any]) -> int | None:
         return None
     age_hours = (now_jst() - parsed).total_seconds() / 3600
     age_hours = max(0.0, age_hours)
-    recency = 5 if age_hours <= 6 else 4 if age_hours <= 24 else 2 if age_hours <= 72 else 1
+    recency = 5 if age_hours <= 6 else 4 if age_hours <= 24 else 2 if age_hours <= 48 else 1
     length = 3 if 30 <= len(text) <= 300 else 2 if len(text) > 300 else 1
     like_score = 4 if likes >= 100 else 3 if likes >= 50 else 2 if likes >= 20 else 1 if likes >= 5 else 0
     keyword_score = min(6, sum(1 for word in INFO_KEYWORDS if word.lower() in text.lower()))

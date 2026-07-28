@@ -105,10 +105,35 @@ count how many of those raw cached posts are within 24 hours; if fewer than 100,
 expand the candidate window to 72 hours using only the same cached posts. Never
 fetch post 101 or later. Apply the five-like minimum only after deciding the time
 window, then score by recency, likes, body length, and company-material keywords,
-deduplicate similar posts to a maximum 20-comment full-text shortlist, reorder it
-by time and likes, and pass only `recent_comments[:5]` to Codex.
+deduplicate exact normalized-prefix signatures to a maximum 20-comment full-text
+shortlist, reorder it by time and likes, and pass only `recent_comments[:5]` to
+Codex.
 Process codes sequentially;
 do not use Kabutan/Traders as the first-pass substitute for board discussion.
+
+Use this exact comment-quality contract. Hard-filter posts outside the selected
+window, unparseable timestamps, fewer than five likes, bodies shorter than ten
+characters, and pure calls such as `買い`, `売り`, `上がれ`, `S高確定`,
+`ストップ高`, `爆上げ`, `爆益`, `草`, or standalone `www`. Score surviving
+posts out of 18: recency `<=6h:5`, `<=24h:4`, `<=48h:2`, `>48h:1`; body length
+`30-300:3`, `>300:2`, `10-29:1`; likes `100+:4`, `50-99:3`, `20-49:2`,
+`5-19:1`; company-material keywords add one point each, capped at six. Relevant
+keywords include earnings, guidance revisions, dividends, buybacks, splits,
+alliances, orders, approvals, patents, IR, profitability, M&A, subsidies,
+adoption, launches, joint development, contracts, products/services, shareholder
+benefits, revenue, and profit metrics. Generic sector words such as AI,
+semiconductors, defense, or drones add no points. Sort by total score, timestamp,
+then likes; normalize lowercase text by removing spaces and common punctuation,
+deduplicate on the first 60 normalized characters, and keep at most 20. Finally,
+sort those 20 by timestamp and likes and pass `recent_comments[:5]` to Codex.
+This is exact-signature deduplication, not semantic similarity: remove all
+whitespace and `、。！？ ! ? , . ・ … 「」 『』 （） () [] 【】`, then compare the
+first 60 normalized characters. The earlier comment in the score/timestamp/likes
+order wins. Matching prefixes collapse even when later text differs; any
+difference within the prefix survives. Do not apply Unicode width normalization
+or explicitly strip emoji, URLs, or usernames. Deduplicate only within the
+current stock's current collection.
+
 Use news or disclosures only to validate a concrete event claimed in the board,
 and distinguish verified facts from market discussion. Never fetch more than one
 forum page per code or repeat a forum fetch for the same code in the same turn.
