@@ -112,11 +112,6 @@
       border-top-style: dashed;
     }
 
-    .spx-gamma-heatmap .line-key.magnet {
-      border-color: var(--viz-series-3);
-      border-top-style: dotted;
-    }
-
     .spx-gamma-heatmap .line-key.call-wall {
       border-color: var(--viz-series-1);
       border-top-style: dashed;
@@ -189,7 +184,7 @@
       <div class="timestamp" data-role="timestamp"></div>
     </div>
     <div class="canvas-wrap">
-      <canvas class="gamma-canvas" aria-label="SPXW daily gamma heatmap with aggregate GEX bars, current SPX line, daily gamma flip line, and daily rough magnet line">
+      <canvas class="gamma-canvas" aria-label="SPXW daily gamma heatmap with aggregate GEX bars, current SPX line, daily gamma flip line, and daily call and put walls">
         SPXW daily gamma exposure heatmap.
       </canvas>
     </div>
@@ -198,17 +193,16 @@
       <span class="legend-item"><span class="swatch neg"></span>负 GEX</span>
       <span class="legend-item"><span class="line-key"></span>每日 Flip（实线，非价格预测）</span>
       <span class="legend-item"><span class="line-key spot"></span>当前 SPX（虚线）</span>
-      <span class="legend-item"><span class="line-key magnet"></span>每日 Rough Magnet（点线）</span>
       <span class="legend-item"><span class="line-key call-wall"></span>每日 Call Wall（当日 Call GEX 最大）</span>
       <span class="legend-item"><span class="line-key put-wall"></span>每日 Put Wall（当日 Put GEX 最负）</span>
     </div>
     <div class="method-note">
-      每一列只使用该日期到期的期权链。色带仅沿行权价做视觉平滑，不跨日期混合；净 GEX、Flip、Magnet、Call Wall 与 Put Wall 均保留原始值。Call/Put Wall 分别是该到期日 Call GEX 最大与 Put GEX 最负的行权价，都不是价格预测。
+      每一列只使用该日期到期的期权链。色带仅沿行权价做视觉平滑，不跨日期混合；净 GEX、Flip、Call Wall 与 Put Wall 均保留原始值。Call/Put Wall 分别是该到期日 Call GEX 最大与 Put GEX 最负的行权价，都不是价格预测。
     </div>
     <table class="sr-only" data-role="accessible-table">
       <caption>SPX daily gamma levels</caption>
       <thead>
-        <tr><th>Expiry</th><th>Net GEX</th><th>Gamma flip</th><th>Rough magnet</th><th>Call wall</th><th>Put wall</th></tr>
+        <tr><th>Expiry</th><th>Net GEX</th><th>Gamma flip</th><th>Call wall</th><th>Put wall</th></tr>
       </thead>
       <tbody></tbody>
     </table>
@@ -250,7 +244,6 @@
           day.expiry,
           formatGex(day.netGex),
           formatLevel(day.flip),
-          formatLevel(day.magnet && day.magnet.level),
           formatLevel(day.callWall),
           formatLevel(day.putWall)
         ].forEach((value) => {
@@ -385,7 +378,6 @@
         const muted = resolveColor("--muted");
         const positive = resolveColor("--viz-series-2");
         const negative = resolveColor("--viz-series-5");
-        const magnetColor = resolveColor("--viz-series-3");
         const callWallColor = resolveColor("--viz-series-1");
         const putWallColor = resolveColor("--viz-series-4");
 
@@ -494,19 +486,14 @@
             context.fillText(formatGex(day.netGex), x, compact ? 26 : 31);
             context.fillText(`F ${formatLevel(day.flip)}`, x, compact ? 38 : 44);
             context.fillText(
-              `M ${formatLevel(day.magnet && day.magnet.level)}`,
+              `CW ${formatLevel(day.callWall)}`,
               x,
               compact ? 50 : 57
             );
             context.fillText(
-              `CW ${formatLevel(day.callWall)}`,
-              x,
-              compact ? 60 : 71
-            );
-            context.fillText(
               `PW ${formatLevel(day.putWall)}`,
               x,
-              compact ? 70 : 84
+              compact ? 60 : 71
             );
           }
         });
@@ -567,18 +554,6 @@
           plotHeight,
           compact,
           compact ? 2 : 2.5
-        );
-        drawPointLine(
-          context,
-          days.map((day) => day.magnet && day.magnet.level),
-          magnetColor,
-          [2, 5],
-          heatLeft,
-          columnWidth,
-          top,
-          plotHeight,
-          compact,
-          compact ? 2.5 : 3
         );
       };
 

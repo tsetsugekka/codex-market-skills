@@ -13,7 +13,7 @@ Use `scripts/spx_intraday_latest.py` for this workflow. Do not substitute the ge
 5. **Key-strike cross-section**: for nearby decision levels and any user-mentioned levels, show 0DTE / Next2 / Fri2w / All GEX and All VEX. Use this to explain transitions such as "7400 still neutral/negative, 7450 locally positive, 7500 stronger positive gamma."
 6. **Opening context**: distinguish prior close, current price, and same-day open. If the user says the market gapped down, do not treat prior close as the open.
 7. **Index day-structure levels**: for SPX/index intraday work only, calculate prior-day pivot/CPR/Camarilla levels when prior high, low, and close are available. Use them as support/resistance confluence with gamma walls, flip, and pits; do not apply this requirement to ordinary single-stock gamma reports.
-8. **Key level map**: name nearby support/resistance as zones, not single magic points. Example: "7350 is the battlefield; 7330/7300 are next downside magnets; 7385-7415 is repair/sell-pressure."
+8. **Key level map**: name nearby support/resistance as zones, not single magic points. Example: "7350 is the battlefield; 7330/7300 are the next downside risk levels; 7385-7415 is repair/sell-pressure."
 9. **Flow interpretation**: in negative gamma, breaks can accelerate and rebounds can be violent short-covering. Do not call a bottom merely because price is near a put wall.
 10. **Invalidation**: state what would disprove the scenario, e.g. "reclaiming 7370 and holding above it makes 7385-7390 likely; losing 7350 and failing to reclaim opens 7330/7300."
 

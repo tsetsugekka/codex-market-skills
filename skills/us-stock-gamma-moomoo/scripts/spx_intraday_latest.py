@@ -22,10 +22,6 @@ SPY = "US.SPY"
 SCRIPT_DIR = Path(__file__).resolve().parent
 OPTION_CHAIN_DELAY_SECONDS = 3.2
 OPTION_CHAIN_RETRY_DELAY_SECONDS = 31.0
-ROUGH_MAGNET_WINDOW_POINTS = 250.0
-ROUGH_MAGNET_DECAY_POINTS = 100.0
-ROUGH_MAGNET_ROUND_POINTS = 5.0
-ROUGH_MAGNET_SOURCE_LIMIT = 5
 
 
 def f(value, default=0.0) -> float:
@@ -106,121 +102,10 @@ def side_gamma_wall(mapping: dict[float, float], side: str) -> dict | None:
     }
 
 
-def rough_gamma_magnet(by_strike: dict[float, float], spot: float) -> dict | None:
-    """Estimate a non-proprietary positive-GEX pinning center near spot."""
-    if spot <= 0:
-        return None
-
-    window = ROUGH_MAGNET_WINDOW_POINTS
-    decay = ROUGH_MAGNET_DECAY_POINTS
-    nearby = [(float(level), float(value)) for level, value in by_strike.items() if abs(level - spot) <= window]
-    positive = [(level, value) for level, value in nearby if value > 0]
-    if not positive:
-        return None
-
-    weighted = [
-        (
-            level,
-            value,
-            math.exp(-abs(level - spot) / decay),
-            value * math.exp(-abs(level - spot) / decay),
-        )
-        for level, value in positive
-    ]
-    total_weight = sum(item[3] for item in weighted)
-    if total_weight <= 0:
-        return None
-
-    raw_level = sum(level * weight for level, _, _, weight in weighted) / total_weight
-    level = round(raw_level / ROUGH_MAGNET_ROUND_POINTS) * ROUGH_MAGNET_ROUND_POINTS
-    local_concentration = (
-        sum(weight for strike, _, _, weight in weighted if abs(strike - raw_level) <= 25.0) / total_weight
-    )
-    gross = sum(abs(value) for _, value in nearby)
-    positive_share = sum(value for _, value in positive) / gross if gross else 0.0
-    squared_weight_sum = sum(weight * weight for _, _, _, weight in weighted)
-    effective_source_count = total_weight * total_weight / squared_weight_sum if squared_weight_sum else 0.0
-    source_breadth = min(effective_source_count / 3.0, 1.0)
-    score = 0.45 * positive_share + 0.35 * local_concentration + 0.20 * source_breadth
-    confidence = "high" if score >= 0.70 else "medium" if score >= 0.45 else "low"
-    bucket_net_gex = sum(float(value) for value in by_strike.values())
-    nearby_net_gex = sum(value for _, value in nearby)
-    conditional = bucket_net_gex < 0
-    source_levels = []
-    for strike, value, distance_decay, weight in sorted(weighted, key=lambda item: item[3], reverse=True)[
-        :ROUGH_MAGNET_SOURCE_LIMIT
-    ]:
-        source_levels.append(
-            {
-                "strike": float(strike),
-                "positive_gex": float(value),
-                "distance_from_spot": float(strike - spot),
-                "distance_decay": float(distance_decay),
-                "weight": float(weight),
-                "weight_share": float(weight / total_weight),
-            }
-        )
-
-    return {
-        "level": float(level),
-        "raw_level": float(raw_level),
-        "distance_from_spot": float(level - spot),
-        "confidence": confidence,
-        "score": float(score),
-        "confidence_components": {
-            "positive_gex_share": float(positive_share),
-            "local_weight_concentration_25pt": float(local_concentration),
-            "effective_source_count": float(effective_source_count),
-            "source_breadth_score": float(source_breadth),
-        },
-        "method": "non-proprietary positive-GEX distance-decay centroid",
-        "formula": (
-            "candidate: GEX_i>0 and abs(K_i-spot)<=250; "
-            "w_i=GEX_i*exp(-abs(K_i-spot)/100); "
-            "raw_level=sum(K_i*w_i)/sum(w_i); level=round(raw_level/5)*5"
-        ),
-        "window_points": window,
-        "decay_points": decay,
-        "round_points": ROUGH_MAGNET_ROUND_POINTS,
-        "candidate_count": len(positive),
-        "bucket_net_gex": float(bucket_net_gex),
-        "nearby_net_gex": float(nearby_net_gex),
-        "conditional": conditional,
-        "interpretation": "conditional_positive_gex_pin_center" if conditional else "positive_gex_pin_center",
-        "source_levels": source_levels,
-    }
-
-
-def run_rough_magnet_self_test() -> None:
+def run_gamma_level_self_test() -> None:
     assert side_gamma_wall({}, "CALL") is None
     assert side_gamma_wall({100.0: 3.0, 105.0: 9.0}, "CALL")["level"] == 105.0
     assert side_gamma_wall({95.0: -4.0, 100.0: -11.0}, "PUT")["level"] == 100.0
-
-    assert rough_gamma_magnet({}, 100.0) is None
-    assert rough_gamma_magnet({90.0: -5.0, 100.0: 0.0}, 100.0) is None
-    assert rough_gamma_magnet({400.0: 10.0}, 100.0) is None
-
-    symmetric = rough_gamma_magnet({95.0: 10.0, 105.0: 10.0}, 100.0)
-    assert symmetric is not None
-    assert math.isclose(symmetric["raw_level"], 100.0, abs_tol=1e-9)
-    assert symmetric["level"] == 100.0
-    assert symmetric["candidate_count"] == 2
-    assert len(symmetric["source_levels"]) == 2
-
-    asymmetric = rough_gamma_magnet({100.0: 10.0, 110.0: 20.0}, 100.0)
-    assert asymmetric is not None
-    expected_weight = 20.0 * math.exp(-10.0 / ROUGH_MAGNET_DECAY_POINTS)
-    expected_raw = (100.0 * 10.0 + 110.0 * expected_weight) / (10.0 + expected_weight)
-    assert math.isclose(asymmetric["raw_level"], expected_raw, rel_tol=1e-12)
-    assert asymmetric["formula"].startswith("candidate:")
-    assert all("weight_share" in source for source in asymmetric["source_levels"])
-
-    conditional = rough_gamma_magnet({95.0: -100.0, 100.0: 10.0, 105.0: 5.0}, 100.0)
-    assert conditional is not None
-    assert conditional["conditional"] is True
-    assert conditional["interpretation"] == "conditional_positive_gex_pin_center"
-    assert aggregate([], 100.0, "empty")["rough_magnet"] is None
-
     bucket = {
         "net_gex": -85.0,
         "net_vex": 0.0,
@@ -231,7 +116,6 @@ def run_rough_magnet_self_test() -> None:
         "vex_by_strike": [],
         "call_wall": {"level": 105.0, "gex": 10.0},
         "put_wall": {"level": 95.0, "gex": -100.0},
-        "rough_magnet": conditional,
     }
     synthetic = {
         "generated": "test",
@@ -242,11 +126,8 @@ def run_rough_magnet_self_test() -> None:
     }
     window_report = "\n".join(render_bucket_regime_table(synthetic))
     expiry_report = render_by_expiry_report(synthetic)
-    assert "100 (" in window_report and "条件性pin" in window_report
-    assert "非专有自算" in window_report
-    assert "rough magnet 100 (" in expiry_report and "条件性pin" in expiry_report
     assert "Call Wall 105，Put Wall 95" in expiry_report
-    print("rough magnet self-test: ok")
+    print("gamma level self-test: ok")
 
 
 def weighted_anchor_from_parity(rows: list[dict]) -> tuple[float, list[tuple]]:
@@ -302,7 +183,6 @@ def aggregate(rows: list[dict], spot: float, label: str) -> dict:
             "put_gex_by_strike": [],
             "call_wall": None,
             "put_wall": None,
-            "rough_magnet": None,
         }
 
     by_strike: dict[float, float] = defaultdict(float)
@@ -354,7 +234,6 @@ def aggregate(rows: list[dict], spot: float, label: str) -> dict:
         "put_gex_by_strike": [[float(k), float(v)] for k, v in sorted(put_gex.items())],
         "call_wall": side_gamma_wall(call_gex, "CALL"),
         "put_wall": side_gamma_wall(put_gex, "PUT"),
-        "rough_magnet": rough_gamma_magnet(by_strike, spot),
     }
 
 
@@ -439,14 +318,6 @@ def regime_label(net_gex: float, flip: float | None, spot: float) -> str:
     return "中性"
 
 
-def magnet_label(bucket: dict) -> str:
-    magnet = bucket.get("rough_magnet")
-    if not magnet:
-        return "NA"
-    qualifier = "; 条件性pin" if magnet.get("conditional") else ""
-    return f"{float(magnet['level']):.0f} ({magnet.get('confidence', 'low')}{qualifier})"
-
-
 def side_wall_label(bucket: dict, key: str) -> str:
     wall = bucket.get(key)
     if not isinstance(wall, dict) or wall.get("level") is None:
@@ -497,7 +368,7 @@ def strike_read(result: dict, strike: float) -> str:
     positives = sum(1 for v in values if v > 0)
     negatives = sum(1 for v in values if v < 0)
     if all_gex is not None and all_gex < 0 and strike <= spot:
-        return "下方加速/磁吸风险"
+        return "下方加速风险"
     if all_gex is not None and all_gex > 0 and strike >= spot:
         if positives >= 3:
             return "上方正gamma钉扎墙"
@@ -515,32 +386,23 @@ def render_bucket_regime_table(result: dict) -> list[str]:
         "",
         "Gamma regime by window:",
         "",
-        "| Window | Net GEX | Net VEX | Flip | Rough magnet | Main walls | Main pits | Read |",
-        "|---|---:|---:|---:|---:|---|---|---|",
+        "| Window | Net GEX | Net VEX | Flip | Main walls | Main pits | Read |",
+        "|---|---:|---:|---:|---|---|---|",
     ]
     for name in ["0DTE", "Next2", "Fri2w", "All"]:
         bucket = result.get("buckets", {}).get(name, {})
         flip = first_level(bucket.get("flips", []))
         lines.append(
-            "| {name} | {gex} | {vex} | {flip} | {magnet} | {walls} | {pits} | {read} |".format(
+            "| {name} | {gex} | {vex} | {flip} | {walls} | {pits} | {read} |".format(
                 name=name,
                 gex=money(float(bucket.get("net_gex", 0) or 0)),
                 vex=money(float(bucket.get("net_vex", 0) or 0)),
                 flip="" if flip is None else f"{flip:.0f}",
-                magnet=magnet_label(bucket),
                 walls=levels(bucket.get("walls", []), 4),
                 pits=levels(bucket.get("pits", []), 4),
                 read=regime_label(float(bucket.get("net_gex", 0) or 0), flip, spot),
             )
         )
-    lines.extend(
-        [
-            "",
-            "Rough magnet（非专有自算）= 现价±250点内正GEX行权价的距离衰减质心："
-            "w=正GEX×exp(-|strike-spot|/100)，质心按5点取整。"
-            "负净GEX窗口中的magnet只代表条件性正GEX pin中心，不是支撑、目标价或正gamma确认。",
-        ]
-    )
     return lines
 
 
@@ -704,7 +566,7 @@ def render_comparison(comparison: dict) -> list[str]:
     if support_lost:
         lines.append(f"- 支撑质量恶化：{support_lost} 一带出现正转负，原先的钉扎/缓冲消失，回踩更容易变成顺势下探。")
     elif downside_risk:
-        lines.append(f"- 下方风险增强：{downside_risk} 一带负 gamma 继续加深，说明这里不是稳固支撑，更像破位后的加速/磁吸区。")
+        lines.append(f"- 下方风险增强：{downside_risk} 一带负 gamma 继续加深，说明这里不是稳固支撑，更像破位后的加速区。")
     else:
         lines.append("- 支撑没有明显恢复：未看到关键下方执行价从负转正，短线反弹仍需要价格重新站回 flip 才能确认。")
 
@@ -826,7 +688,6 @@ def render_by_expiry_report(result: dict) -> str:
         walls = level_numbers(bucket.get("walls", []), 5)
         pits = level_numbers(bucket.get("pits", []), 5)
         flip_text = f"{flip:.0f}" if flip else "NA"
-        magnet_text = magnet_label(bucket)
         call_wall_text = side_wall_label(bucket, "call_wall")
         put_wall_text = side_wall_label(bucket, "put_wall")
         bias = expiry_bias(bucket, spot)
@@ -847,7 +708,7 @@ def render_by_expiry_report(result: dict) -> str:
             [
                 "",
                 f"**{expiry} {day}，{lead}：{bias}**",
-                f"净 GEX {money(net)}，flip {flip_text}，rough magnet {magnet_text}，"
+                f"净 GEX {money(net)}，flip {flip_text}，"
                 f"当日 Call Wall {call_wall_text}，Put Wall {put_wall_text}。"
                 f"下方风险主要在 {pits}；上方压力/钉扎在 {walls}。{meaning}",
             ]
@@ -896,11 +757,7 @@ def main() -> None:
     parser.add_argument("--compare-json", help="Previous JSON snapshot to compare against")
     parser.add_argument("--watch-strikes", help="Comma-separated strikes to compare, e.g. 7400,7425,7450")
     parser.add_argument("--by-expiry-report", action="store_true", help="Render each selected expiry date separately for future-days gamma reads")
-    parser.add_argument(
-        "--self-test-rough-magnet",
-        action="store_true",
-        help="Run pure-function rough-magnet checks without connecting to OpenD",
-    )
+    parser.add_argument("--self-test-levels", action="store_true", help="Run pure-function gamma-level checks")
     parser.add_argument("--strike-min", type=float, default=6600)
     parser.add_argument("--strike-max", type=float, default=8200)
     parser.add_argument("--future-count", type=int, default=4)
@@ -908,8 +765,8 @@ def main() -> None:
     parser.add_argument("--retry-delay", type=float, default=OPTION_CHAIN_RETRY_DELAY_SECONDS)
     args = parser.parse_args()
 
-    if args.self_test_rough_magnet:
-        run_rough_magnet_self_test()
+    if args.self_test_levels:
+        run_gamma_level_self_test()
         return
 
     ctx = create_quote_context()

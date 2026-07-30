@@ -12,8 +12,6 @@ from typing import Any
 
 
 STRIKE_STEP = 5.0
-MAGNET_WINDOW = 250.0
-MAGNET_DECAY = 100.0
 
 
 def finite_number(value: Any) -> float | None:
@@ -59,89 +57,6 @@ def normalize_wall(raw: Any) -> float | None:
     return None
 
 
-def fallback_rough_magnet(
-    mapping: dict[float, float], spot: float
-) -> dict[str, Any] | None:
-    nearby = [
-        (strike, value)
-        for strike, value in mapping.items()
-        if abs(strike - spot) <= MAGNET_WINDOW
-    ]
-    positive = [(strike, value) for strike, value in nearby if value > 0]
-    if not positive:
-        return None
-
-    weighted = [
-        (
-            strike,
-            value,
-            value * math.exp(-abs(strike - spot) / MAGNET_DECAY),
-        )
-        for strike, value in positive
-    ]
-    total_weight = sum(item[2] for item in weighted)
-    if total_weight <= 0:
-        return None
-
-    raw_level = sum(strike * weight for strike, _, weight in weighted) / total_weight
-    level = round(raw_level / STRIKE_STEP) * STRIKE_STEP
-    concentration = (
-        sum(
-            weight
-            for strike, _, weight in weighted
-            if abs(strike - level) <= 25.0
-        )
-        / total_weight
-    )
-    gross = sum(abs(value) for _, value in nearby)
-    positive_share = sum(value for _, value in positive) / gross if gross else 0.0
-    score = 0.65 * concentration + 0.35 * positive_share
-    confidence = "high" if score >= 0.65 else "medium" if score >= 0.42 else "low"
-    return {
-        "level": float(level),
-        "distance_from_spot": float(level - spot),
-        "confidence": confidence,
-        "score": float(score),
-        "method": "positive-GEX distance-decay centroid",
-        "window_points": MAGNET_WINDOW,
-        "decay_points": MAGNET_DECAY,
-        "source": "renderer-fallback",
-    }
-
-
-def normalize_rough_magnet(
-    raw: Any, mapping: dict[float, float], spot: float
-) -> dict[str, Any] | None:
-    if isinstance(raw, dict):
-        level = finite_number(raw.get("level"))
-        if level is not None:
-            return {
-                "level": level,
-                "distance_from_spot": finite_number(raw.get("distance_from_spot")),
-                "confidence": str(raw.get("confidence") or "unknown"),
-                "score": finite_number(raw.get("score")),
-                "method": str(
-                    raw.get("method") or "positive-GEX distance-decay centroid"
-                ),
-                "window_points": finite_number(raw.get("window_points")),
-                "decay_points": finite_number(raw.get("decay_points")),
-                "source": "json",
-            }
-    scalar = finite_number(raw)
-    if scalar is not None:
-        return {
-            "level": scalar,
-            "distance_from_spot": scalar - spot,
-            "confidence": "unknown",
-            "score": None,
-            "method": "JSON rough magnet",
-            "window_points": None,
-            "decay_points": None,
-            "source": "json",
-        }
-    return fallback_rough_magnet(mapping, spot)
-
-
 def strike_grid(min_strike: float, max_strike: float) -> list[float]:
     count = int(round((max_strike - min_strike) / STRIKE_STEP))
     return [min_strike + index * STRIKE_STEP for index in range(count + 1)]
@@ -185,13 +100,11 @@ def build_payload(
         mapping = strike_map(bucket)
         if not mapping:
             raise ValueError(f"per_expiry[{expiry!r}] has no usable gex_by_strike")
-        magnet = normalize_rough_magnet(bucket.get("rough_magnet"), mapping, spot)
         days.append(
             {
                 "expiry": expiry,
                 "netGex": finite_number(bucket.get("net_gex")) or 0.0,
                 "flip": choose_flip(bucket.get("flips"), spot),
-                "magnet": magnet,
                 "callWall": normalize_wall(bucket.get("call_wall")),
                 "putWall": normalize_wall(bucket.get("put_wall")),
                 "values": [mapping.get(round(strike, 6), 0.0) for strike in grid],
@@ -326,21 +239,11 @@ def main() -> None:
     args.html_output.parent.mkdir(parents=True, exist_ok=True)
     args.html_output.write_text(fragment, encoding="utf-8")
 
-    sources = [
-        day["magnet"]["source"] if day["magnet"] else "unavailable"
-        for day in payload["days"]
-    ]
     print(
         "Rendered "
         f"{len(payload['days'])} real expiries, "
         f"{len(payload['aggregate'])} strikes "
         f"({payload['minStrike']:g}-{payload['maxStrike']:g} by 5)."
-    )
-    print(
-        "Daily rough magnets: "
-        f"JSON={sources.count('json')}, "
-        f"fallback={sources.count('renderer-fallback')}, "
-        f"unavailable={sources.count('unavailable')}."
     )
     print(f"HTML fragment: {args.html_output}")
 

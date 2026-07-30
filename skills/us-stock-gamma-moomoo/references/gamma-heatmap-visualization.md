@@ -10,7 +10,6 @@ Use this reference when the user asks for a chart similar to a multi-expiry gamm
 - Left bars: all-selected-expiry GEX aggregated at each strike.
 - Solid line: each expiry's self-calculated gamma flip. This is a regime boundary, not a predicted SPX path.
 - Dashed line: current SPX pricing anchor.
-- Dotted point line: each expiry's self-calculated rough magnet. This is a positive-GEX pinning-center estimate, not support, a target, or a predicted price path.
 - Call-wall line: the `call_wall.level` calculated only from that expiry's contracts, meaning the strike with the largest call-side GEX at the current anchor.
 - Put-wall line: the `put_wall.level` calculated only from that expiry's contracts, meaning the strike with the most negative put-side GEX at the current anchor. It is not automatic support after price loses it.
 - Positive and negative colors must use host theme variables. Do not hard-code light/dark colors.
@@ -38,18 +37,9 @@ python3 scripts/render_spx_gamma_heatmap.py \
   --smooth-radius 5 --smooth-sigma 2.25
 ```
 
-The output is an inline HTML fragment, not a standalone page. It contains only the normalized chart payload: expiry dates, spot, raw 5-point GEX arrays, flips, rough magnets, summary values, and the selected rendering parameters. It does not embed the source/output path or identity-derived metadata.
+The output is an inline HTML fragment, not a standalone page. It contains only the normalized chart payload: expiry dates, spot, raw 5-point GEX arrays, flips, Call/Put Walls, summary values, and the selected rendering parameters. It does not embed the source/output path or identity-derived metadata.
 
 For Codex inline display, keep the fragment in the thread-scoped visualization directory and emit `::codex-inline-vis{file="basename.html"}`. The directive must use only the file name, not an absolute path. The fragment root must have a generated unique ID and the script must select it with `document.getElementById`; do not use `document.currentScript`.
-
-## Rough Magnet Compatibility
-
-- Prefer each `per_expiry[date].rough_magnet.level` produced by the gamma calculator.
-- Older JSON may not contain `rough_magnet`. The renderer then uses positive GEX strikes within 250 points of spot and weights each strike by `positive_gex * exp(-distance_from_spot / 100)`.
-- Round the resulting weighted centroid to the native 5-point strike grid.
-- If no positive GEX exists in the window, leave the magnet missing. Do not substitute a wall, pit, flip, or zero, and do not connect the point line across that missing expiry.
-- The fallback exists for file compatibility. It must stay mathematically aligned with the calculator's rough-magnet method.
-- Never smooth or interpolate magnet levels across expiries. Every plotted point belongs to one real listed expiry.
 
 ## Range And Granularity
 
@@ -68,7 +58,7 @@ Smoothing is a rendering operation, not a recalculation:
 - Default `radius=5` and `sigma=2.25` on a 5-point grid. This removes high-frequency striping while keeping major bands visible.
 - Draw the smoothed series with one-pixel linear interpolation. Do not use overlapping translucent pixel rows; overlap creates artificial scan lines.
 - Keep net GEX, flips, walls, pits, labels, and text conclusions from raw data. Never substitute the largest all-strike OI shelf for a daily Call/Put Wall; far-OTM legacy OI can dominate without carrying comparable current gamma.
-- Keep the spot, flip, magnet, call-wall, and put-wall overlays on raw levels; they are not inputs to the color smoothing.
+- Keep the spot, flip, call-wall, and put-wall overlays on raw levels; they are not inputs to the color smoothing.
 - State in the chart that visual smoothing does not change calculated values.
 
 If the user needs an audit view, set `--smooth-radius 0` to render the native unsmoothed rows.
@@ -89,7 +79,6 @@ Interpret `more negative net GEX` as stronger negative-gamma feedback, not stron
 
 - Verify every embedded expiry series has the expected strike count.
 - Verify the plotted expiry order exactly matches the JSON's real `expiries` list after de-duplication; do not synthesize missing dates.
-- Test both a current JSON with `rough_magnet` and an older JSON that exercises the renderer fallback.
 - Compile the generated JavaScript before delivery.
 - Render a desktop preview and inspect axis bounds, current-spot line, flip line, labels, and color continuity.
 - Check the header at a 736px-wide preview. Render `CW` and `PW` on separate rows so adjacent expiry columns cannot overlap.

@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.10
+  version: 0.1.11
 ---
 
 # US Stock Gamma With moomoo
@@ -117,7 +117,7 @@ python3 scripts/render_spx_gamma_heatmap.py \
   --smooth-radius 5 --smooth-sigma 2.25
 ```
 
-Use only real listed expiries from the JSON. Each chart column, flip, magnet, Call Wall, and Put Wall must use only contracts expiring on that column's date. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. The dotted point line is each expiry's self-calculated rough magnet. Call Wall is the strike with the largest call-side GEX for that expiry; Put Wall is the strike with the most negative put-side GEX. Do not substitute maximum all-strike OI, which can select far-OTM legacy positions with little current gamma. The renderer reads `rough_magnet` from JSON when present and uses the same positive-GEX distance-decay centroid as a compatibility fallback for older JSON. A magnet is a rough pinning center, not a target or forecast. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, flip, magnet, and Call/Put Wall values. Read `references/gamma-heatmap-visualization.md` before changing the range, smoothing, magnet fallback, or chart semantics.
+Use only real listed expiries from the JSON. Each chart column, Flip, Call Wall, and Put Wall must use only contracts expiring on that column's date. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. Call Wall is the strike with the largest call-side GEX for that expiry; Put Wall is the strike with the most negative put-side GEX. Do not substitute maximum all-strike OI, which can select far-OTM legacy positions with little current gamma. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, Flip, and Call/Put Wall values. Read `references/gamma-heatmap-visualization.md` before changing the range, smoothing, or chart semantics.
 
 For Codex inline display, generate the fragment inside the thread-scoped visualization directory and emit `::codex-inline-vis{file="basename.html"}` using only the file name. The fragment must use its generated unique root ID with `document.getElementById`, never `document.currentScript`. Show desktop CW and PW values on separate rows so adjacent expiry columns remain readable. Do not create or publish a website unless the user explicitly asks for one.
 
@@ -143,7 +143,7 @@ The script:
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
 - when JSON output is requested, includes per-strike `gex_by_strike` and `vex_by_strike` for each bucket so later runs can detect same-strike support/risk migration instead of only comparing top walls and pits;
 - includes a `per_expiry` section in JSON for each selected expiration date, so future-days gamma reads can say which exact date is weaker or stronger instead of only using `Next2` / `Fri2w` aggregate buckets;
-- includes per-expiry `call_wall` and `put_wall` from side-specific GEX within that expiry, plus a `rough_magnet` when positive GEX exists near spot; preserve `null` when no valid level exists;
+- includes per-expiry `call_wall` and `put_wall` from side-specific GEX within that expiry; preserve `null` when no valid level exists;
 - with `--by-expiry-report`, prints a per-date forward gamma memo that names each selected expiry date, net GEX, flip, main downside risk zone, upper pressure/pinning zone, and a baseline/bearish/repair scenario; use this mode for single stocks too when the user shares or asks about multi-expiry vol-trigger/gamma-wall tables;
 - with `--compare-json`, compares the new snapshot with a prior JSON snapshot and highlights material strike-level changes, including positive-to-negative GEX flips where a prior support/wall has disappeared and become a pit or acceleration risk;
 - prints a readable text memo by default; JSON export flags should be used only when the user explicitly asks for raw data.
@@ -179,7 +179,7 @@ Start with the shortest useful answer:
 Directional labels are incomplete without levels. Whenever using labels such as `中性偏多修复`, `偏多钉扎`, `中性钉扎`, `偏空/高波动`, or `高波动战场`, immediately attach the price zone that makes the label actionable:
 
 - **Current spot / pricing anchor**: state the current spot or pricing anchor before the directional label or in the same table row. A level is only actionable relative to spot; say whether spot is below, inside, or above the key zone. Example: `现价 198.18，偏多钉扎，钉扎区 200 附近`.
-- **Pinning / magnet zone**: name the exact strike or tight range being pinned, usually the nearest dominant `GW`, `CW`, `PW`, or confirmed OI shelf near spot. Example: `偏多钉扎，钉扎区 200 附近`.
+- **Pinning zone**: name the exact strike or tight range being pinned, usually the nearest dominant `GW`, `CW`, `PW`, or confirmed OI shelf near spot. Example: `偏多钉扎，钉扎区 200 附近`.
 - **Repair / confirmation level**: for repair labels, name the level that must be reclaimed or held, usually `VT/flip` first, then the nearest `GW/CW`. Example: `中性偏多修复，站稳 295，突破 297.5 才打开上沿`.
 - **Invalidation / downside risk**: name the put wall, flip, or gamma pit whose loss invalidates the bullish/neutral read. Example: `跌破 290/284.6 则修复失败`.
 - **Battlefield range**: for mixed or high-volatility labels, give the actual range between the nearest support and pressure levels. Example: `高波动战场，260-350 是主战场，跌破 205 扩大下行`.
@@ -190,9 +190,9 @@ Always build the read from these layers, in this order:
 
 1. **Spot vs vol trigger**: treat the nearest major `vol trigger` or gamma flip as the regime divider. Spot below the trigger means higher-volatility/negative-gamma risk unless price reclaims it. Spot above the trigger allows repair but still needs confirmation above the nearest wall.
 2. **Spot vs gamma wall**: gamma wall above spot is pressure, pinning, or a repair target; gamma wall below spot is support or a recapture zone. If spot is trapped between a put wall and a call wall, call it a battlefield instead of forcing a strong directional view.
-3. **Call wall / put wall distance**: nearest call wall is the first upside pressure or magnet; nearest put wall is the first downside support. A wide gap between walls allows trend movement; a tight gap implies chop/pinning.
+3. **Call wall / put wall distance**: nearest call wall is the first upside pressure or pinning reference; nearest put wall is the first downside support. A wide gap between walls allows trend movement; a tight gap implies chop/pinning.
 4. **Per-expiry net GEX**: identify which expiry actually dominates. Near-dated negative GEX can overpower longer-dated support and create squeeze/crash-style movement. Mixed positive and negative expiries mean conditional bias, not a clean all-in view.
-5. **Open interest shelves**: use absolute OI to confirm where real option interest clusters. Treat large OI shelves above as pressure/magnet and below as support/risk zones; do not assume OI alone reveals buyer direction.
+5. **Open interest shelves**: use absolute OI to confirm where real option interest clusters. Treat large OI shelves above as pressure/pinning references and below as support/risk zones; do not assume OI alone reveals buyer direction.
 6. **IV smile and skew**: high IV and steep downside skew strengthen the warning that the structure is defensive or volatility-seeking. A large vol smile with both call and put blocks often means long-vol/straddle/strangle positioning, not simple bullishness.
 7. **Unusual option flow**: classify prints as directional only when they are clean single-leg buys/sells and the bid/ask side is visible. Treat multi-leg, condor, butterfly, straddle, strangle, or paired call/put prints as volatility/range trades unless price action proves direction.
 8. **Delta hedging exposure**: use net delta-hedging pressure as a secondary force map. It can confirm where dealer hedging may add buying/selling, but it should not override spot vs trigger/wall structure.
@@ -203,7 +203,7 @@ Use the following directional rules:
 - **Bearish pressure**: spot is below the nearest vol trigger/gamma flip, near-dated net GEX is negative, and losing the nearest put wall opens a lower put wall or gamma trough. Wording: `跌破 X 转空，下一层看 Y/Z`.
 - **Neutral battlefield**: spot sits between a nearby put wall and call wall, or per-expiry GEX is mixed. Wording: `X-Y 是战场，不追单边；等站上 Y 或跌破 X`.
 - **High-volatility warning**: spot is below trigger with negative GEX, IV is high, and option flow shows large puts or long-vol structures. Wording: `不是单纯看空，是波动放大；方向等关键位确认`.
-- **False bullish signal**: do not call it bullish only because call wall is far above spot. A far call wall is potential upside/magnet only after spot reclaims trigger and nearby resistance.
+- **False bullish signal**: do not call it bullish only because call wall is far above spot. A far call wall is potential upside/pinning only after spot reclaims trigger and nearby resistance.
 - **False bearish signal**: do not call it bearish only because put OI is large. Put wall below spot can be support until it breaks; after it breaks, it becomes acceleration risk.
 
 For third-party trigger/wall table interpretation, map fields this way:
@@ -211,7 +211,7 @@ For third-party trigger/wall table interpretation, map fields this way:
 | Field | Read |
 |---|---|
 | `VOL TRIGGER` | regime divider / volatility trigger |
-| `GAMMA WALL` | main gamma magnet, pressure, or support |
+| `GAMMA WALL` | main gamma pinning, pressure, or support |
 | `CALL WALL` | upside pressure, pinning, or breakout target |
 | `PUT WALL` | downside support while held, acceleration risk after break |
 | `NET GEX` | dealer hedging regime; negative amplifies trend, positive favors chop |
@@ -224,7 +224,7 @@ For a complete OpenD-generated gamma memo, include these dimensions when the dat
 | Dimension | What to report | How to use in conclusion |
 |---|---|---|
 | `VT / Vol Trigger` | self-calculated gamma flip / volatility-regime divider | Above = repair or pinning possible; below = high-volatility or defensive unless reclaimed |
-| `GW / Gamma Wall` | strongest positive GEX / magnet or pressure level | Wall above = first pressure/target; wall below = recapture/support zone |
+| `GW / Gamma Wall` | strongest positive GEX / pinning or pressure level | Wall above = first pressure/target; wall below = recapture/support zone |
 | `CW / Call Wall` | largest call-side GEX/OI concentration | Upside pressure, pinning, or breakout target |
 | `PW / Put Wall` | largest put-side GEX/OI concentration | Downside support while held; acceleration risk after break |
 | `距VT / 距CW / 距PW` | percent distance from pricing anchor | Shows whether the next decision point is close enough to matter |
@@ -263,9 +263,7 @@ Key calculated levels:
 - CPR interpretation: narrow `TC-BC` means a larger directional expansion is easier; wide CPR means more chop/mean reversion. Spot above `TC` is constructive, between `TC/BC` is a balance zone, and below `BC` is weaker unless reclaimed.
 - Gamma map: wall above spot is pressure or pinning; wall below spot is support or a recapture zone; negative pit below spot is acceleration risk; flip or vol trigger is the regime divider. Say whether the current spot is above/below flip/trigger and whether GEX is strengthening or weakening.
 - Vanna map: combine top positive/negative VEX zones with IV direction, spot versus flip, and price action. Do not describe VEX alone as bullish or bearish.
-- Rough magnet/bias: if enough strike-level GEX/VEX data is available, estimate a self-calculated magnet from dominant nearby walls, pits, and VEX zones using distance decay around current spot. Label it as rough and non-proprietary. Report it as `magnet above/below current spot`, plus a plain bias such as `偏多修复`, `中性钉扎`, `上方压力`, or `下方加速风险`.
-
-When the user runs this skill multiple times during the same trading day in the same conversation, use earlier same-day results as optional but important context. Compare the new result with the earlier answer when migration could change the judgment, when the user asks "now/again", or when spot is near a wall, pit, flip, or trigger: spot, net GEX, net VEX, flip, nearest wall, nearest pit, CPR relationship, and rough magnet/bias if calculated. State what migrated and what strengthened/weakened. If a prior JSON snapshot exists or the user provides one, run `spx_intraday_latest.py --compare-json ...`; if the user asks about a specific level such as `7400支撑还在吗`, include it in `--watch-strikes`. Always check whether the same strike's GEX sign or magnitude changed materially across 0DTE, Next2, Fri2w, and All buckets, but do not mechanically dump same-strike change rows in the final answer. Translate the comparison into what it means and what it may foreshadow: support quality deteriorating or recovering, risk center migrating lower/higher, upper pinning weakening, reflexive selling/buying risk rising, or chop/pinning returning. Treat positive-to-negative GEX migration at an active battlefield strike as `支撑跑路/降级为加速风险`, not merely as a lower wall ranking. Treat negative-to-positive migration as `支撑恢复/加速风险缓和`, but still require price action to confirm. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
+When the user runs this skill multiple times during the same trading day in the same conversation, use earlier same-day results as optional but important context. Compare the new result with the earlier answer when migration could change the judgment, when the user asks "now/again", or when spot is near a wall, pit, flip, or trigger: spot, net GEX, net VEX, flip, nearest wall, nearest pit, and CPR relationship. State what migrated and what strengthened/weakened. If a prior JSON snapshot exists or the user provides one, run `spx_intraday_latest.py --compare-json ...`; if the user asks about a specific level such as `7400支撑还在吗`, include it in `--watch-strikes`. Always check whether the same strike's GEX sign or magnitude changed materially across `0DTE`, `Next2`, `Fri2w`, and `All` buckets, but do not mechanically dump same-strike change rows in the final answer. Translate the comparison into what it means and what it may foreshadow: support quality deteriorating or recovering, risk center migrating lower/higher, upper pinning weakening, reflexive selling/buying risk rising, or chop/pinning returning. Treat positive-to-negative GEX migration at an active battlefield strike as `支撑跑路/降级为加速风险`, not merely as a lower wall ranking. Treat negative-to-positive migration as `支撑恢复/加速风险缓和`, but still require price action to confirm. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
 
 ## Dark Pool / Short Data Layer
 
@@ -317,7 +315,7 @@ When answering a batch request with multiple stocks, ETFs, or mixed tickers, eve
 - **Current spot / pricing anchor**: the latest usable spot or anchor price used for option calculations, with the source/session caveat when relevant. Do not make the reader infer where price is relative to the levels.
 - **Gamma sign / regime**: positive, negative, or mixed, with `Net GEX` when available. This is the dealer-hedging/volatility map.
 - **Directional state / bias**: `偏多修复`, `中性钉扎`, `中性偏空防守`, `高波动战场`, or another explicit long/short/neutral state derived from spot vs flip/walls/pits. This is the trading interpretation.
-- **Actionable key levels / zone**: the exact pinning area, battlefield range, repair trigger, upside pressure, and/or downside invalidation that justifies the directional state. At minimum, include the nearest `VT/flip`, `GW/CW` pressure or magnet, and `PW`/pit support or risk when those fields are available.
+- **Actionable key levels / zone**: the exact pinning area, battlefield range, repair trigger, upside pressure, and/or downside invalidation that justifies the directional state. At minimum, include the nearest `VT/flip`, `GW/CW` pressure or pinning reference, and `PW`/pit support or risk when those fields are available.
 
 Do not let one replace the other. A stock can be `净 GEX 为正` but still `中性偏空/高波动` if spot is below the volatility trigger or trapped under a nearby wall; a stock can be locally positive gamma but still a poor long setup if it has not reclaimed the trigger. In tables, prefer columns like:
 
