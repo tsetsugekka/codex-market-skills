@@ -11,8 +11,8 @@ Use this reference when the user asks for a chart similar to a multi-expiry gamm
 - Solid line: each expiry's self-calculated gamma flip. This is a regime boundary, not a predicted SPX path.
 - Dashed line: current SPX pricing anchor.
 - Dotted point line: each expiry's self-calculated rough magnet. This is a positive-GEX pinning-center estimate, not support, a target, or a predicted price path.
-- Call-wall line: the first-ranked `top_call_oi` strike for each expiry, meaning the largest call open-interest concentration in that expiry.
-- Put-wall line: the first-ranked `top_put_oi` strike for each expiry, meaning the largest put open-interest concentration in that expiry. It is not automatic support after price loses it.
+- Call-wall line: the `call_wall.level` calculated only from that expiry's contracts, meaning the strike with the largest call-side GEX at the current anchor.
+- Put-wall line: the `put_wall.level` calculated only from that expiry's contracts, meaning the strike with the most negative put-side GEX at the current anchor. It is not automatic support after price loses it.
 - Positive and negative colors must use host theme variables. Do not hard-code light/dark colors.
 
 This chart is a transparent, self-calculated OpenD view. Do not claim that it reproduces a proprietary vendor's forward gamma model.
@@ -65,7 +65,7 @@ Smoothing is a rendering operation, not a recalculation:
 - Keep expiry columns independent. Do not smooth horizontally across dates.
 - Default `radius=5` and `sigma=2.25` on a 5-point grid. This removes high-frequency striping while keeping major bands visible.
 - Draw the smoothed series with one-pixel linear interpolation. Do not use overlapping translucent pixel rows; overlap creates artificial scan lines.
-- Keep net GEX, flips, walls, pits, labels, and text conclusions from raw data.
+- Keep net GEX, flips, walls, pits, labels, and text conclusions from raw data. Never substitute the largest all-strike OI shelf for a daily Call/Put Wall; far-OTM legacy OI can dominate without carrying comparable current gamma.
 - Keep the spot, flip, magnet, call-wall, and put-wall overlays on raw levels; they are not inputs to the color smoothing.
 - State in the chart that visual smoothing does not change calculated values.
 

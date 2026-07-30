@@ -199,11 +199,11 @@
       <span class="legend-item"><span class="line-key"></span>每日 Flip（实线，非价格预测）</span>
       <span class="legend-item"><span class="line-key spot"></span>当前 SPX（虚线）</span>
       <span class="legend-item"><span class="line-key magnet"></span>每日 Rough Magnet（点线）</span>
-      <span class="legend-item"><span class="line-key call-wall"></span>每日 Call Wall（最大 Call OI）</span>
-      <span class="legend-item"><span class="line-key put-wall"></span>每日 Put Wall（最大 Put OI）</span>
+      <span class="legend-item"><span class="line-key call-wall"></span>每日 Call Wall（当日 Call GEX 最大）</span>
+      <span class="legend-item"><span class="line-key put-wall"></span>每日 Put Wall（当日 Put GEX 最负）</span>
     </div>
     <div class="method-note">
-      色带仅在每个到期日内部沿行权价做视觉平滑，不跨日期混合；净 GEX、Flip、Magnet、Call Wall 与 Put Wall 均保留原始值。Rough Magnet 是正 GEX 距离衰减质心；Call/Put Wall 是对应到期日最大 OI 行权价，都不是价格预测。
+      每一列只使用该日期到期的期权链。色带仅沿行权价做视觉平滑，不跨日期混合；净 GEX、Flip、Magnet、Call Wall 与 Put Wall 均保留原始值。Call/Put Wall 分别是该到期日 Call GEX 最大与 Put GEX 最负的行权价，都不是价格预测。
     </div>
     <table class="sr-only" data-role="accessible-table">
       <caption>SPX daily gamma levels</caption>

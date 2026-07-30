@@ -47,14 +47,14 @@ def choose_flip(items: Any, spot: float) -> float | None:
     return min(levels, key=lambda level: abs(level - spot)) if levels else None
 
 
-def choose_ranked_wall(items: Any) -> float | None:
-    if not isinstance(items, list):
-        return None
-    for item in items:
-        candidate = item[0] if isinstance(item, (list, tuple)) and item else item
-        level = finite_number(candidate)
-        if level is not None:
-            return level
+def normalize_wall(raw: Any) -> float | None:
+    if isinstance(raw, dict):
+        return finite_number(raw.get("level"))
+    if isinstance(raw, (list, tuple)) and raw:
+        return finite_number(raw[0])
+    scalar = finite_number(raw)
+    if scalar is not None:
+        return scalar
     return None
 
 
@@ -191,8 +191,8 @@ def build_payload(
                 "netGex": finite_number(bucket.get("net_gex")) or 0.0,
                 "flip": choose_flip(bucket.get("flips"), spot),
                 "magnet": magnet,
-                "callWall": choose_ranked_wall(bucket.get("top_call_oi")),
-                "putWall": choose_ranked_wall(bucket.get("top_put_oi")),
+                "callWall": normalize_wall(bucket.get("call_wall")),
+                "putWall": normalize_wall(bucket.get("put_wall")),
                 "values": [mapping.get(round(strike, 6), 0.0) for strike in grid],
             }
         )

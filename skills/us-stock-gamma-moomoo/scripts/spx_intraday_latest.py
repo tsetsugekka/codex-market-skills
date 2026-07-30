@@ -89,6 +89,23 @@ def top_items(mapping: dict[float, float], n: int = 12, reverse: bool = True) ->
     return [[float(k), float(v)] for k, v in sorted(mapping.items(), key=lambda kv: kv[1], reverse=reverse)[:n]]
 
 
+def side_gamma_wall(mapping: dict[float, float], side: str) -> dict | None:
+    if not mapping:
+        return None
+    if side == "CALL":
+        level, value = max(mapping.items(), key=lambda item: item[1])
+    elif side == "PUT":
+        level, value = min(mapping.items(), key=lambda item: item[1])
+    else:
+        raise ValueError(f"Unsupported wall side: {side}")
+    return {
+        "level": float(level),
+        "gex": float(value),
+        "side": side,
+        "method": "largest side-specific GEX within one expiry",
+    }
+
+
 def rough_gamma_magnet(by_strike: dict[float, float], spot: float) -> dict | None:
     """Estimate a non-proprietary positive-GEX pinning center near spot."""
     if spot <= 0:
@@ -175,6 +192,10 @@ def rough_gamma_magnet(by_strike: dict[float, float], spot: float) -> dict | Non
 
 
 def run_rough_magnet_self_test() -> None:
+    assert side_gamma_wall({}, "CALL") is None
+    assert side_gamma_wall({100.0: 3.0, 105.0: 9.0}, "CALL")["level"] == 105.0
+    assert side_gamma_wall({95.0: -4.0, 100.0: -11.0}, "PUT")["level"] == 100.0
+
     assert rough_gamma_magnet({}, 100.0) is None
     assert rough_gamma_magnet({90.0: -5.0, 100.0: 0.0}, 100.0) is None
     assert rough_gamma_magnet({400.0: 10.0}, 100.0) is None
@@ -208,6 +229,8 @@ def run_rough_magnet_self_test() -> None:
         "pits": [[95.0, -100.0]],
         "gex_by_strike": [[95.0, -100.0], [100.0, 10.0], [105.0, 5.0]],
         "vex_by_strike": [],
+        "call_wall": {"level": 105.0, "gex": 10.0},
+        "put_wall": {"level": 95.0, "gex": -100.0},
         "rough_magnet": conditional,
     }
     synthetic = {
@@ -221,7 +244,8 @@ def run_rough_magnet_self_test() -> None:
     expiry_report = render_by_expiry_report(synthetic)
     assert "100 (" in window_report and "条件性pin" in window_report
     assert "非专有自算" in window_report
-    assert "自算 rough magnet 100 (" in expiry_report and "条件性pin" in expiry_report
+    assert "rough magnet 100 (" in expiry_report and "条件性pin" in expiry_report
+    assert "Call Wall 105，Put Wall 95" in expiry_report
     print("rough magnet self-test: ok")
 
 
@@ -274,21 +298,30 @@ def aggregate(rows: list[dict], spot: float, label: str) -> dict:
             "top_call_oi": [],
             "top_put_oi": [],
             "top_volume": [],
+            "call_gex_by_strike": [],
+            "put_gex_by_strike": [],
+            "call_wall": None,
+            "put_wall": None,
             "rough_magnet": None,
         }
 
     by_strike: dict[float, float] = defaultdict(float)
     by_vanna: dict[float, float] = defaultdict(float)
+    call_gex: dict[float, float] = defaultdict(float)
+    put_gex: dict[float, float] = defaultdict(float)
     call_oi: dict[float, int] = defaultdict(int)
     put_oi: dict[float, int] = defaultdict(int)
     volume: dict[float, int] = defaultdict(int)
     for row in rows:
-        by_strike[row["strike"]] += signed_gex(row, spot)
+        row_gex = signed_gex(row, spot)
+        by_strike[row["strike"]] += row_gex
         by_vanna[row["strike"]] += signed_vex(row, spot)
         volume[row["strike"]] += row["volume"]
         if row["type"] == "CALL":
+            call_gex[row["strike"]] += row_gex
             call_oi[row["strike"]] += row["oi"]
         else:
+            put_gex[row["strike"]] += row_gex
             put_oi[row["strike"]] += row["oi"]
 
     grid = []
@@ -317,6 +350,10 @@ def aggregate(rows: list[dict], spot: float, label: str) -> dict:
         "top_call_oi": [[float(k), int(v)] for k, v in sorted(call_oi.items(), key=lambda kv: kv[1], reverse=True)[:8]],
         "top_put_oi": [[float(k), int(v)] for k, v in sorted(put_oi.items(), key=lambda kv: kv[1], reverse=True)[:8]],
         "top_volume": [[float(k), int(v)] for k, v in sorted(volume.items(), key=lambda kv: kv[1], reverse=True)[:8]],
+        "call_gex_by_strike": [[float(k), float(v)] for k, v in sorted(call_gex.items())],
+        "put_gex_by_strike": [[float(k), float(v)] for k, v in sorted(put_gex.items())],
+        "call_wall": side_gamma_wall(call_gex, "CALL"),
+        "put_wall": side_gamma_wall(put_gex, "PUT"),
         "rough_magnet": rough_gamma_magnet(by_strike, spot),
     }
 
@@ -408,6 +445,13 @@ def magnet_label(bucket: dict) -> str:
         return "NA"
     qualifier = "; 条件性pin" if magnet.get("conditional") else ""
     return f"{float(magnet['level']):.0f} ({magnet.get('confidence', 'low')}{qualifier})"
+
+
+def side_wall_label(bucket: dict, key: str) -> str:
+    wall = bucket.get(key)
+    if not isinstance(wall, dict) or wall.get("level") is None:
+        return "NA"
+    return f"{float(wall['level']):.0f}"
 
 
 def transition_strikes(result: dict, limit: int = 11) -> list[float]:
@@ -783,6 +827,8 @@ def render_by_expiry_report(result: dict) -> str:
         pits = level_numbers(bucket.get("pits", []), 5)
         flip_text = f"{flip:.0f}" if flip else "NA"
         magnet_text = magnet_label(bucket)
+        call_wall_text = side_wall_label(bucket, "call_wall")
+        put_wall_text = side_wall_label(bucket, "put_wall")
         bias = expiry_bias(bucket, spot)
         day = weekday_label(expiry)
         if idx == 0:
@@ -801,7 +847,9 @@ def render_by_expiry_report(result: dict) -> str:
             [
                 "",
                 f"**{expiry} {day}，{lead}：{bias}**",
-                f"净 GEX {money(net)}，flip {flip_text}，自算 rough magnet {magnet_text}。下方风险主要在 {pits}；上方压力/钉扎在 {walls}。{meaning}",
+                f"净 GEX {money(net)}，flip {flip_text}，rough magnet {magnet_text}，"
+                f"当日 Call Wall {call_wall_text}，Put Wall {put_wall_text}。"
+                f"下方风险主要在 {pits}；上方压力/钉扎在 {walls}。{meaning}",
             ]
         )
 
