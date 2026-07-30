@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -258,17 +259,23 @@ def render_fragment(
     smooth_sigma: float,
 ) -> tuple[str, dict[str, Any]]:
     payload = build_payload(source, min_strike, max_strike)
+    payload_json = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace(
+        "</", "<\\/"
+    )
+    root_seed = f"{payload_json}|{smooth_radius}|{smooth_sigma}"
+    root_id = f"spx-gamma-{hashlib.sha256(root_seed.encode('utf-8')).hexdigest()[:12]}"
     required = {
-        "__SPX_GAMMA_PAYLOAD__": json.dumps(
-            payload, ensure_ascii=False, separators=(",", ":")
-        ).replace("</", "<\\/"),
-        "__SMOOTH_RADIUS__": str(smooth_radius),
-        "__SMOOTH_SIGMA__": repr(float(smooth_sigma)),
+        "__SPX_GAMMA_ROOT_ID__": (root_id, 2),
+        "__SPX_GAMMA_PAYLOAD__": (payload_json, 1),
+        "__SMOOTH_RADIUS__": (str(smooth_radius), 1),
+        "__SMOOTH_SIGMA__": (repr(float(smooth_sigma)), 1),
     }
     fragment = template
-    for marker, replacement in required.items():
-        if fragment.count(marker) != 1:
-            raise ValueError(f"Template must contain exactly one {marker} marker")
+    for marker, (replacement, expected_count) in required.items():
+        if fragment.count(marker) != expected_count:
+            raise ValueError(
+                f"Template must contain exactly {expected_count} {marker} marker(s)"
+            )
         fragment = fragment.replace(marker, replacement)
 
     lowered = fragment.lower()

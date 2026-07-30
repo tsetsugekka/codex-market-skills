@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.9
+  version: 0.1.10
 ---
 
 # US Stock Gamma With moomoo
@@ -118,6 +118,8 @@ python3 scripts/render_spx_gamma_heatmap.py \
 ```
 
 Use only real listed expiries from the JSON. Each chart column, flip, magnet, Call Wall, and Put Wall must use only contracts expiring on that column's date. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. The dotted point line is each expiry's self-calculated rough magnet. Call Wall is the strike with the largest call-side GEX for that expiry; Put Wall is the strike with the most negative put-side GEX. Do not substitute maximum all-strike OI, which can select far-OTM legacy positions with little current gamma. The renderer reads `rough_magnet` from JSON when present and uses the same positive-GEX distance-decay centroid as a compatibility fallback for older JSON. A magnet is a rough pinning center, not a target or forecast. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, flip, magnet, and Call/Put Wall values. Read `references/gamma-heatmap-visualization.md` before changing the range, smoothing, magnet fallback, or chart semantics.
+
+For Codex inline display, generate the fragment inside the thread-scoped visualization directory and emit `::codex-inline-vis{file="basename.html"}` using only the file name. The fragment must use its generated unique root ID with `document.getElementById`, never `document.currentScript`. Show desktop CW and PW values on separate rows so adjacent expiry columns remain readable. Do not create or publish a website unless the user explicitly asks for one.
 
 For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
 

@@ -22,7 +22,7 @@ This chart is a transparent, self-calculated OpenD view. Do not claim that it re
 1. Run `spx_intraday_latest.py` with `--by-expiry-report`, a sufficient `--future-count`, and a temporary `--json-output`.
 2. Confirm that the JSON contains `spot_anchor`, `expiries`, `per_expiry`, and `buckets.All`.
 3. Use `render_spx_gamma_heatmap.py` to generate an HTML fragment.
-4. Render or preview the fragment, then publish it through the host's inline visualization path.
+4. Render or preview the fragment, then show it through the host's inline visualization path. Do not build or publish a website unless the user explicitly requests one.
 5. Keep the JSON only when comparison or audit work still needs it; otherwise treat it as temporary.
 
 Example:
@@ -39,6 +39,8 @@ python3 scripts/render_spx_gamma_heatmap.py \
 ```
 
 The output is an inline HTML fragment, not a standalone page. It contains only the normalized chart payload: expiry dates, spot, raw 5-point GEX arrays, flips, rough magnets, summary values, and the selected rendering parameters. It does not embed the source/output path or identity-derived metadata.
+
+For Codex inline display, keep the fragment in the thread-scoped visualization directory and emit `::codex-inline-vis{file="basename.html"}`. The directive must use only the file name, not an absolute path. The fragment root must have a generated unique ID and the script must select it with `document.getElementById`; do not use `document.currentScript`.
 
 ## Rough Magnet Compatibility
 
@@ -90,5 +92,7 @@ Interpret `more negative net GEX` as stronger negative-gamma feedback, not stron
 - Test both a current JSON with `rough_magnet` and an older JSON that exercises the renderer fallback.
 - Compile the generated JavaScript before delivery.
 - Render a desktop preview and inspect axis bounds, current-spot line, flip line, labels, and color continuity.
+- Check the header at a 736px-wide preview. Render `CW` and `PW` on separate rows so adjacent expiry columns cannot overlap.
 - Confirm the fragment contains no `<html>`, `<head>`, or `<body>` wrapper when the host expects an inline visualization.
+- Confirm the root has a unique ID, `document.currentScript` is absent, and the final inline directive uses only the fragment file name.
 - Scan the output for credentials, personal paths, and source JSON paths. None should be embedded.

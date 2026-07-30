@@ -1,4 +1,4 @@
-<section class="spx-gamma-heatmap gamma-viz" aria-label="SPX daily-expiry gamma heatmap">
+<section id="__SPX_GAMMA_ROOT_ID__" class="spx-gamma-heatmap gamma-viz" aria-label="SPX daily-expiry gamma heatmap">
   <style>
     .spx-gamma-heatmap {
       width: 100%;
@@ -216,8 +216,7 @@
 
   <script>
     (() => {
-      const script = document.currentScript;
-      const root = script.closest(".spx-gamma-heatmap");
+      const root = document.getElementById("__SPX_GAMMA_ROOT_ID__");
       const canvas = root.querySelector(".gamma-canvas");
       const payload = __SPX_GAMMA_PAYLOAD__;
       const smoothRadius = __SMOOTH_RADIUS__;
@@ -393,7 +392,7 @@
         const left = compact ? 42 : 50;
         const barWidth = compact ? 42 : 110;
         const gap = compact ? 7 : 15;
-        const top = compact ? 64 : 84;
+        const top = compact ? 64 : 96;
         const bottom = 28;
         const heatLeft = left + barWidth + gap;
         const heatWidth = width - heatLeft - 6;
@@ -500,9 +499,14 @@
               compact ? 50 : 57
             );
             context.fillText(
-              `CW ${formatLevel(day.callWall)} · PW ${formatLevel(day.putWall)}`,
+              `CW ${formatLevel(day.callWall)}`,
               x,
               compact ? 60 : 71
+            );
+            context.fillText(
+              `PW ${formatLevel(day.putWall)}`,
+              x,
+              compact ? 70 : 84
             );
           }
         });
