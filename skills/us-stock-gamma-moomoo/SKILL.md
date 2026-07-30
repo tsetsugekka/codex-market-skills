@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.8
+  version: 0.1.9
 ---
 
 # US Stock Gamma With moomoo
@@ -104,6 +104,21 @@ python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py \
   --watch-strikes 7400,7425,7450
 ```
 
+When the user asks to draw a current or forward multi-expiry SPX gamma chart, first export the current calculation JSON, then generate the theme-aware heatmap fragment:
+
+```bash
+python3 scripts/spx_intraday_latest.py \
+  --by-expiry-report --future-count 6 \
+  --json-output /tmp/current-spx-gamma.json
+
+python3 scripts/render_spx_gamma_heatmap.py \
+  /tmp/current-spx-gamma.json /tmp/spx-gamma.html \
+  --min-strike 7000 --max-strike 7700 \
+  --smooth-radius 5 --smooth-sigma 2.25
+```
+
+Use only real listed expiries from the JSON. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. The dotted point line is each expiry's self-calculated rough magnet. Separate Call Wall and Put Wall lines use each expiry's largest call-OI and put-OI strike; keep these OI walls distinct from positive-GEX walls and gamma pits. The renderer reads `rough_magnet` from JSON when present and uses the same positive-GEX distance-decay centroid as a compatibility fallback for older JSON. A magnet is a rough pinning center, not a target or forecast. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, flip, magnet, and Call/Put Wall values. Read `references/gamma-heatmap-visualization.md` before changing the range, smoothing, magnet fallback, or chart semantics.
+
 For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
 
 ```bash
@@ -126,6 +141,7 @@ The script:
 - recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
 - when JSON output is requested, includes per-strike `gex_by_strike` and `vex_by_strike` for each bucket so later runs can detect same-strike support/risk migration instead of only comparing top walls and pits;
 - includes a `per_expiry` section in JSON for each selected expiration date, so future-days gamma reads can say which exact date is weaker or stronger instead of only using `Next2` / `Fri2w` aggregate buckets;
+- includes a per-expiry `rough_magnet` when positive GEX exists near spot; treat it as a non-proprietary pinning estimate and preserve `null` when no valid positive-GEX center exists;
 - with `--by-expiry-report`, prints a per-date forward gamma memo that names each selected expiry date, net GEX, flip, main downside risk zone, upper pressure/pinning zone, and a baseline/bearish/repair scenario; use this mode for single stocks too when the user shares or asks about multi-expiry vol-trigger/gamma-wall tables;
 - with `--compare-json`, compares the new snapshot with a prior JSON snapshot and highlights material strike-level changes, including positive-to-negative GEX flips where a prior support/wall has disappeared and become a pit or acceleration risk;
 - prints a readable text memo by default; JSON export flags should be used only when the user explicitly asks for raw data.
@@ -144,6 +160,7 @@ python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/option_scenario_table.py \
 Read extra references only when the request needs them:
 
 - For `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmap, or intraday index judgment, read `references/spx-intraday.md`.
+- For a continuous multi-expiry SPX gamma heatmap, visual smoothing, or same-session chart comparison, read `references/gamma-heatmap-visualization.md`.
 - For short-dated option value tables, account-recovery option targets, or “what is this call/put worth if price reaches X by time Y”, read `references/option-scenario-tables.md`.
 - For U.S. single-stock dark-pool/off-exchange, borrow-fee, short-volume, FTD, or ChartExchange confirmation, use the `Dark Pool / Short Data Layer` section below.
 

@@ -41,6 +41,12 @@
 - For U.S. stocks, do not blindly prefer `pre_price`: moomoo can leave stale pre-market fields populated after the session ends. Choose the pricing anchor by U.S. session: regular `last_price`, after-hours `after_price`, overnight `overnight_price`, and pre-market `pre_price`, with bid/ask midpoint or regular last only as fallback.
 - For single-stock gamma reports, default to a complete OpenD data group before giving the conclusion: VT/flip, gamma wall, call wall, put wall, distance to VT/CW/PW, net GEX, gamma pits, DEX, VEX/vanna zones, charm/day zones, call/put OI shelves, and front-expiry IV smile/skew. The final bias must cite the specific dimensions that drive it; do not conclude from one wall or one GEX aggregate alone.
 
+- For a forward SPX gamma heatmap, plot every real listed expiry returned by OpenD and preserve missing dates as missing; never interpolate or invent a daily expiry that is not in the chain.
+- Preserve the requested vertical range and the chain's native strike spacing. Do not collapse a 5-point SPXW chain into 25-point rows when the purpose is to show whether a broad downside zone remains continuously negative.
+- Smooth only the heatmap's visual layer. A Gaussian filter along strikes plus one-pixel linear interpolation can remove striping, but raw GEX, net GEX, walls, pits, and flip values must remain unchanged. Do not blend horizontally across expiries. Label the solid flip line as a regime boundary, not a forecast path, and keep current spot as a separate dashed line.
+- Plot each expiry's rough magnet as a separate dotted point line. Prefer the JSON `rough_magnet`; for older JSON, use the same positive-GEX distance-decay centroid within 250 points of spot with 100-point exponential decay. A missing positive-GEX center stays missing and breaks the line. Magnet is a rough pinning estimate, not support, a target, or a price forecast, and it must not be altered by heatmap smoothing.
+- Plot daily Call Wall and Put Wall from each expiry's first-ranked `top_call_oi` and `top_put_oi` strike. Keep these OI walls separate from positive-GEX walls, gamma pits, flip, and rough magnet; a Put Wall is only a potential defense while held and becomes an acceleration-risk reference after a confirmed break.
+
 ## Compression Protocol
 
 - Always read only `Active Playbook` first.

@@ -1,0 +1,596 @@
+<section class="spx-gamma-heatmap gamma-viz" aria-label="SPX daily-expiry gamma heatmap">
+  <style>
+    .spx-gamma-heatmap {
+      width: 100%;
+      max-width: 100%;
+      color: var(--foreground);
+      background: transparent;
+      font-family: var(--font-sans);
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-base);
+    }
+
+    .spx-gamma-heatmap * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    .spx-gamma-heatmap .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .spx-gamma-heatmap .metric {
+      min-width: 0;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--background);
+    }
+
+    .spx-gamma-heatmap .metric-label,
+    .spx-gamma-heatmap .timestamp,
+    .spx-gamma-heatmap .axis-note,
+    .spx-gamma-heatmap .legend {
+      color: var(--muted-foreground);
+      font-size: var(--font-size-small);
+    }
+
+    .spx-gamma-heatmap .metric-value {
+      margin-top: var(--spacing-xs);
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .spx-gamma-heatmap .plot-shell {
+      overflow: hidden;
+      padding: var(--spacing-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--background);
+    }
+
+    .spx-gamma-heatmap .plot-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .spx-gamma-heatmap .canvas-wrap {
+      width: 100%;
+      height: clamp(500px, 72vw, 680px);
+    }
+
+    .spx-gamma-heatmap canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .spx-gamma-heatmap .legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-sm);
+    }
+
+    .spx-gamma-heatmap .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .spx-gamma-heatmap .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .spx-gamma-heatmap .swatch.pos {
+      background: var(--viz-series-2);
+    }
+
+    .spx-gamma-heatmap .swatch.neg {
+      background: var(--viz-series-5);
+    }
+
+    .spx-gamma-heatmap .line-key {
+      width: 24px;
+      height: 0;
+      border-top: 2px solid var(--foreground);
+    }
+
+    .spx-gamma-heatmap .line-key.spot {
+      border-top-style: dashed;
+    }
+
+    .spx-gamma-heatmap .line-key.magnet {
+      border-color: var(--viz-series-3);
+      border-top-style: dotted;
+    }
+
+    .spx-gamma-heatmap .line-key.call-wall {
+      border-color: var(--viz-series-1);
+      border-top-style: dashed;
+    }
+
+    .spx-gamma-heatmap .line-key.put-wall {
+      border-color: var(--viz-series-4);
+      border-top-style: dashed;
+    }
+
+    .spx-gamma-heatmap .method-note {
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-left: 3px solid var(--viz-series-3);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      font-size: var(--font-size-small);
+    }
+
+    .spx-gamma-heatmap .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 560px) {
+      .spx-gamma-heatmap .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .spx-gamma-heatmap .plot-shell {
+        padding: var(--spacing-sm);
+      }
+
+      .spx-gamma-heatmap .plot-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+      }
+
+      .spx-gamma-heatmap .canvas-wrap {
+        height: 560px;
+      }
+    }
+  </style>
+
+  <div class="summary" aria-label="Current gamma summary">
+    <div class="metric">
+      <div class="metric-label">SPX 锚点</div>
+      <div class="metric-value" data-metric="spot"></div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">逐日合计净 GEX</div>
+      <div class="metric-value" data-metric="net-gex"></div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">合计 Gamma Flip</div>
+      <div class="metric-value" data-metric="all-flip"></div>
+    </div>
+  </div>
+
+  <div class="plot-shell">
+    <div class="plot-meta">
+      <div class="axis-note" data-role="axis-note"></div>
+      <div class="timestamp" data-role="timestamp"></div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas class="gamma-canvas" aria-label="SPXW daily gamma heatmap with aggregate GEX bars, current SPX line, daily gamma flip line, and daily rough magnet line">
+        SPXW daily gamma exposure heatmap.
+      </canvas>
+    </div>
+    <div class="legend" aria-label="Heatmap legend">
+      <span class="legend-item"><span class="swatch pos"></span>正 GEX</span>
+      <span class="legend-item"><span class="swatch neg"></span>负 GEX</span>
+      <span class="legend-item"><span class="line-key"></span>每日 Flip（实线，非价格预测）</span>
+      <span class="legend-item"><span class="line-key spot"></span>当前 SPX（虚线）</span>
+      <span class="legend-item"><span class="line-key magnet"></span>每日 Rough Magnet（点线）</span>
+      <span class="legend-item"><span class="line-key call-wall"></span>每日 Call Wall（最大 Call OI）</span>
+      <span class="legend-item"><span class="line-key put-wall"></span>每日 Put Wall（最大 Put OI）</span>
+    </div>
+    <div class="method-note">
+      色带仅在每个到期日内部沿行权价做视觉平滑，不跨日期混合；净 GEX、Flip、Magnet、Call Wall 与 Put Wall 均保留原始值。Rough Magnet 是正 GEX 距离衰减质心；Call/Put Wall 是对应到期日最大 OI 行权价，都不是价格预测。
+    </div>
+    <table class="sr-only" data-role="accessible-table">
+      <caption>SPX daily gamma levels</caption>
+      <thead>
+        <tr><th>Expiry</th><th>Net GEX</th><th>Gamma flip</th><th>Rough magnet</th><th>Call wall</th><th>Put wall</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    (() => {
+      const script = document.currentScript;
+      const root = script.closest(".spx-gamma-heatmap");
+      const canvas = root.querySelector(".gamma-canvas");
+      const payload = __SPX_GAMMA_PAYLOAD__;
+      const smoothRadius = __SMOOTH_RADIUS__;
+      const smoothSigma = __SMOOTH_SIGMA__;
+      const days = payload.days;
+
+      const formatGex = (value) => {
+        const absolute = Math.abs(value);
+        const sign = value > 0 ? "+" : value < 0 ? "-" : "";
+        if (absolute >= 1e9) return `${sign}${(absolute / 1e9).toFixed(2)}B`;
+        if (absolute >= 1e6) return `${sign}${(absolute / 1e6).toFixed(1)}M`;
+        return `${sign}${absolute.toFixed(0)}`;
+      };
+
+      const formatLevel = (value, decimals = 0) => (
+        Number.isFinite(value) ? value.toFixed(decimals) : "NA"
+      );
+
+      root.querySelector('[data-metric="spot"]').textContent = formatLevel(payload.spot, 1);
+      root.querySelector('[data-metric="net-gex"]').textContent = formatGex(payload.allNetGex);
+      root.querySelector('[data-metric="all-flip"]').textContent = formatLevel(payload.allFlip);
+      root.querySelector('[data-role="axis-note"]').textContent =
+        `原始 ${payload.strikeStep} 点数据；纵轴 ${payload.minStrike}–${payload.maxStrike}；高斯视觉平滑 radius=${smoothRadius}, sigma=${smoothSigma}`;
+      root.querySelector('[data-role="timestamp"]').textContent =
+        payload.generated ? `数据生成 ${payload.generated}` : "";
+
+      const tableBody = root.querySelector('[data-role="accessible-table"] tbody');
+      days.forEach((day) => {
+        const row = document.createElement("tr");
+        [
+          day.expiry,
+          formatGex(day.netGex),
+          formatLevel(day.flip),
+          formatLevel(day.magnet && day.magnet.level),
+          formatLevel(day.callWall),
+          formatLevel(day.putWall)
+        ].forEach((value) => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+        tableBody.appendChild(row);
+      });
+
+      const gaussianSmooth = (values) => {
+        if (smoothRadius <= 0) return values.slice();
+        const weights = Array.from(
+          {length: smoothRadius * 2 + 1},
+          (_, index) => Math.exp(
+            -0.5 * Math.pow((index - smoothRadius) / smoothSigma, 2)
+          )
+        );
+        return values.map((_, valueIndex) => {
+          let weightedValue = 0;
+          let totalWeight = 0;
+          weights.forEach((weight, weightIndex) => {
+            const sourceIndex = valueIndex + weightIndex - smoothRadius;
+            if (sourceIndex >= 0 && sourceIndex < values.length) {
+              weightedValue += values[sourceIndex] * weight;
+              totalWeight += weight;
+            }
+          });
+          return totalWeight ? weightedValue / totalWeight : values[valueIndex];
+        });
+      };
+
+      days.forEach((day) => {
+        day.smoothed = gaussianSmooth(day.values);
+      });
+
+      const quantile = (values, probability) => {
+        const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
+        if (!sorted.length) return 1;
+        const position = (sorted.length - 1) * probability;
+        const lower = Math.floor(position);
+        const upper = Math.ceil(position);
+        const fraction = position - lower;
+        return sorted[lower] + (sorted[upper] - sorted[lower]) * fraction || 1;
+      };
+
+      const resolveColor = (token) => {
+        const probe = document.createElement("span");
+        probe.style.color = `var(${token})`;
+        probe.style.display = "none";
+        root.appendChild(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      };
+
+      const yForLevel = (level, top, plotHeight) => (
+        top + (payload.maxStrike - level)
+          / (payload.maxStrike - payload.minStrike) * plotHeight
+      );
+
+      const drawPointLine = (
+        context,
+        levels,
+        color,
+        dash,
+        heatLeft,
+        columnWidth,
+        top,
+        plotHeight,
+        compact,
+        pointRadius
+      ) => {
+        context.save();
+        context.strokeStyle = color;
+        context.fillStyle = color;
+        context.lineWidth = compact ? 1.5 : 2;
+        context.setLineDash(dash);
+
+        let drawing = false;
+        context.beginPath();
+        levels.forEach((level, index) => {
+          const valid = Number.isFinite(level)
+            && level >= payload.minStrike
+            && level <= payload.maxStrike;
+          if (!valid) {
+            drawing = false;
+            return;
+          }
+          const x = heatLeft + (index + 0.5) * columnWidth;
+          const y = yForLevel(level, top, plotHeight);
+          if (drawing) context.lineTo(x, y);
+          else context.moveTo(x, y);
+          drawing = true;
+        });
+        context.stroke();
+        context.setLineDash([]);
+
+        levels.forEach((level, index) => {
+          if (
+            !Number.isFinite(level)
+            || level < payload.minStrike
+            || level > payload.maxStrike
+          ) return;
+          const x = heatLeft + (index + 0.5) * columnWidth;
+          const y = yForLevel(level, top, plotHeight);
+          context.beginPath();
+          context.arc(x, y, pointRadius, 0, Math.PI * 2);
+          context.fill();
+        });
+        context.restore();
+      };
+
+      const draw = () => {
+        const bounds = canvas.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return;
+
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(bounds.width * pixelRatio);
+        canvas.height = Math.round(bounds.height * pixelRatio);
+        const context = canvas.getContext("2d");
+        context.scale(pixelRatio, pixelRatio);
+
+        const width = bounds.width;
+        const height = bounds.height;
+        const compact = width < 560;
+        const styles = getComputedStyle(root);
+        const fontFamily = styles.fontFamily || "sans-serif";
+        const foreground = resolveColor("--foreground");
+        const mutedForeground = resolveColor("--muted-foreground");
+        const border = resolveColor("--border");
+        const muted = resolveColor("--muted");
+        const positive = resolveColor("--viz-series-2");
+        const negative = resolveColor("--viz-series-5");
+        const magnetColor = resolveColor("--viz-series-3");
+        const callWallColor = resolveColor("--viz-series-1");
+        const putWallColor = resolveColor("--viz-series-4");
+
+        const left = compact ? 42 : 50;
+        const barWidth = compact ? 42 : 110;
+        const gap = compact ? 7 : 15;
+        const top = compact ? 64 : 84;
+        const bottom = 28;
+        const heatLeft = left + barWidth + gap;
+        const heatWidth = width - heatLeft - 6;
+        const plotHeight = height - top - bottom;
+        const columnWidth = heatWidth / days.length;
+        const cellCap = quantile(
+          days.flatMap((day) => day.smoothed.map((value) => Math.abs(value))),
+          0.985
+        );
+        const aggregateCap = Math.max(
+          ...payload.aggregate.map((value) => Math.abs(value)),
+          1
+        );
+
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = muted;
+        context.fillRect(left, top, barWidth, plotHeight);
+        context.fillRect(heatLeft, top, heatWidth, plotHeight);
+
+        days.forEach((day, columnIndex) => {
+          const lastIndex = day.smoothed.length - 1;
+          for (let y = 0; y < Math.ceil(plotHeight); y += 1) {
+            const strike = payload.maxStrike
+              - (y / Math.max(plotHeight - 1, 1))
+              * (payload.maxStrike - payload.minStrike);
+            const position = (strike - payload.minStrike) / payload.strikeStep;
+            const lowerIndex = Math.max(0, Math.min(lastIndex, Math.floor(position)));
+            const upperIndex = Math.min(lastIndex, lowerIndex + 1);
+            const fraction = Math.max(0, Math.min(1, position - lowerIndex));
+            const value = day.smoothed[lowerIndex]
+              + (day.smoothed[upperIndex] - day.smoothed[lowerIndex]) * fraction;
+            const intensity = Math.min(1, Math.abs(value) / cellCap);
+            context.globalAlpha = 0.04 + Math.pow(intensity, 0.55) * 0.96;
+            context.fillStyle = value >= 0 ? positive : negative;
+            context.fillRect(
+              heatLeft + columnIndex * columnWidth,
+              top + y,
+              columnWidth + 0.5,
+              1
+            );
+          }
+        });
+        context.globalAlpha = 1;
+
+        const barCenter = left + barWidth / 2;
+        context.strokeStyle = border;
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(barCenter, top);
+        context.lineTo(barCenter, top + plotHeight);
+        context.stroke();
+
+        const rowHeight = plotHeight / payload.aggregate.length;
+        payload.aggregate.forEach((value, index) => {
+          const length = Math.min(1, Math.abs(value) / aggregateCap)
+            * (barWidth / 2 - 2);
+          context.globalAlpha = 0.16
+            + Math.pow(Math.abs(value) / aggregateCap, 0.55) * 0.84;
+          context.fillStyle = value >= 0 ? positive : negative;
+          context.fillRect(
+            value >= 0 ? barCenter : barCenter - length,
+            top + (payload.aggregate.length - 1 - index) * rowHeight,
+            length,
+            Math.max(1, rowHeight)
+          );
+        });
+        context.globalAlpha = 1;
+
+        context.font = `${compact ? 9 : 11}px ${fontFamily}`;
+        context.textBaseline = "middle";
+        context.fillStyle = mutedForeground;
+        context.strokeStyle = border;
+        context.lineWidth = 1;
+        const firstTick = Math.ceil(payload.minStrike / 100) * 100;
+        for (let strike = firstTick; strike <= payload.maxStrike; strike += 100) {
+          const y = yForLevel(strike, top, plotHeight);
+          context.beginPath();
+          context.moveTo(left, y);
+          context.lineTo(width - 6, y);
+          context.stroke();
+          context.textAlign = "right";
+          context.fillText(String(strike), left - 5, y);
+        }
+
+        context.textBaseline = "alphabetic";
+        context.textAlign = "center";
+        context.fillStyle = foreground;
+        context.font = `600 ${compact ? 9 : 11}px ${fontFamily}`;
+        context.fillText("All GEX", left + barWidth / 2, compact ? 14 : 17);
+        days.forEach((day, columnIndex) => {
+          const x = heatLeft + (columnIndex + 0.5) * columnWidth;
+          const shortDate = day.expiry.slice(5).replace("-", "/");
+          context.fillStyle = foreground;
+          context.font = `600 ${compact ? 8 : 11}px ${fontFamily}`;
+          context.fillText(shortDate, x, compact ? 13 : 16);
+          if (!compact || days.length <= 6) {
+            context.fillStyle = mutedForeground;
+            context.font = `${compact ? 7 : 9}px ${fontFamily}`;
+            context.fillText(formatGex(day.netGex), x, compact ? 26 : 31);
+            context.fillText(`F ${formatLevel(day.flip)}`, x, compact ? 38 : 44);
+            context.fillText(
+              `M ${formatLevel(day.magnet && day.magnet.level)}`,
+              x,
+              compact ? 50 : 57
+            );
+            context.fillText(
+              `CW ${formatLevel(day.callWall)} · PW ${formatLevel(day.putWall)}`,
+              x,
+              compact ? 60 : 71
+            );
+          }
+        });
+
+        if (
+          payload.spot >= payload.minStrike
+          && payload.spot <= payload.maxStrike
+        ) {
+          const spotY = yForLevel(payload.spot, top, plotHeight);
+          context.save();
+          context.setLineDash([6, 5]);
+          context.strokeStyle = foreground;
+          context.lineWidth = 1.5;
+          context.beginPath();
+          context.moveTo(heatLeft, spotY);
+          context.lineTo(width - 6, spotY);
+          context.stroke();
+          context.restore();
+          context.textAlign = "left";
+          context.textBaseline = "bottom";
+          context.font = `600 ${compact ? 8 : 10}px ${fontFamily}`;
+          context.fillStyle = foreground;
+          context.fillText(`SPX ${payload.spot.toFixed(1)}`, heatLeft + 4, spotY - 3);
+        }
+
+        drawPointLine(
+          context,
+          days.map((day) => day.callWall),
+          callWallColor,
+          [8, 5],
+          heatLeft,
+          columnWidth,
+          top,
+          plotHeight,
+          compact,
+          compact ? 1.8 : 2.2
+        );
+        drawPointLine(
+          context,
+          days.map((day) => day.putWall),
+          putWallColor,
+          [4, 5],
+          heatLeft,
+          columnWidth,
+          top,
+          plotHeight,
+          compact,
+          compact ? 1.8 : 2.2
+        );
+        drawPointLine(
+          context,
+          days.map((day) => day.flip),
+          foreground,
+          [],
+          heatLeft,
+          columnWidth,
+          top,
+          plotHeight,
+          compact,
+          compact ? 2 : 2.5
+        );
+        drawPointLine(
+          context,
+          days.map((day) => day.magnet && day.magnet.level),
+          magnetColor,
+          [2, 5],
+          heatLeft,
+          columnWidth,
+          top,
+          plotHeight,
+          compact,
+          compact ? 2.5 : 3
+        );
+      };
+
+      let pendingFrame = 0;
+      const scheduleDraw = () => {
+        cancelAnimationFrame(pendingFrame);
+        pendingFrame = requestAnimationFrame(draw);
+      };
+      const resizeObserver = new ResizeObserver(scheduleDraw);
+      resizeObserver.observe(canvas.parentElement);
+      const themeObserver = new MutationObserver(scheduleDraw);
+      themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class", "style"]
+      });
+      scheduleDraw();
+    })();
+  </script>
+</section>
