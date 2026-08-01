@@ -319,7 +319,11 @@ def select_option_expiries(underlying: str, expiry_values: list[str], ref_date: 
             parsed.append((datetime.strptime(str(value), "%Y-%m-%d").date(), str(value)))
         except Exception:
             continue
-    parsed = sorted((d, s) for d, s in parsed if d >= ref_date)
+    now_et = datetime.now(ZoneInfo("America/New_York"))
+    expiry_floor = max(ref_date, now_et.date())
+    if now_et.weekday() < 5 and now_et.time() >= dt_time(16, 0):
+        expiry_floor = max(expiry_floor, now_et.date() + timedelta(days=1))
+    parsed = sorted((d, s) for d, s in parsed if d >= expiry_floor)
 
     selected: set[str] = set()
 

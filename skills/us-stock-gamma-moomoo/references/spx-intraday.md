@@ -7,6 +7,8 @@ Use `scripts/spx_intraday_latest.py` for this workflow. Do not substitute the ge
 ## Analysis Order
 
 1. **Anchor**: current SPX cash when available from a live source. If moomoo rejects the SPX index snapshot but `US..SPX` 0DTE chains are available, infer the intraday anchor from liquid SPXW put-call parity (`spot/forward ~= strike + call_mid - put_mid`) using same-expiry PM-settled pairs near the market. Do not use delayed/static TradingView page text as the intraday anchor unless a live chart value is explicitly confirmed. SPY is only a sanity check or last-resort proxy.
+
+   After the U.S. options session ends, discard the just-expired SPXW expiry. Use the next listed unexpired SPXW expiry as the front bucket for parity, flip, walls, and range calculations. The implementation keeps the bucket key `0DTE` for compatibility with the live workflow, but output must identify it as a `next-expiry proxy after close`; it is not a live same-day 0DTE map.
 2. **0DTE structure**: net GEX, call/put volume balance, largest positive walls above, largest negative pits below, and gamma flip if meaningful.
 3. **Vanna structure**: compute vanna from SPXW spot/strike/IV/DTE, aggregate VEX by strike, and name the top positive/negative vanna pressure zones. This is required when the user asks for SPX/SP500 gamma unless speed is explicitly more important than completeness.
 4. **Window regime table**: always compare `0DTE`, `Next2`, `Fri2w`, and `All`: net GEX, net VEX, flip, top walls, top pits, and a one-line read. This prevents confusing same-day gamma with future-window gamma.

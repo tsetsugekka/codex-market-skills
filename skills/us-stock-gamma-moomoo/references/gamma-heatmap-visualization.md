@@ -33,7 +33,6 @@ python3 scripts/spx_intraday_latest.py \
 
 python3 scripts/render_spx_gamma_heatmap.py \
   /tmp/current-spx-gamma.json /tmp/spx-gamma.html \
-  --min-strike 7000 --max-strike 7700 \
   --smooth-radius 5 --smooth-sigma 2.25
 ```
 
@@ -44,7 +43,7 @@ For Codex inline display, keep the fragment in the thread-scoped visualization d
 ## Range And Granularity
 
 - Honor a user-specified range exactly when the option-chain data covers it.
-- If no range is supplied, choose a range around spot that exposes both the nearest repair zone and downside risk area.
+- If no range is supplied, use `floor(spot / 100) * 100 - 300` to `ceil(spot / 100) * 100 + 300`. An anchor of 7480 therefore renders 7100-7800. Do not retain a fixed 7000-7700 default.
 - Do not replace native 5-point strikes with 25-point buckets merely to reduce row count. Broad negative zones can disappear visually after coarse aggregation.
 - Missing exact strikes remain zero in the GEX-by-strike map. Do not interpolate missing contracts as if open interest existed there.
 - Label only major axis levels, normally every 100 points, while retaining native strike data internally.

@@ -9,9 +9,10 @@ import math
 import statistics
 import time
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, time as dt_time, timedelta
 from pathlib import Path
 import sys
+from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(Path.home() / ".codex/skills/moomooapi/scripts"))
 from common import RET_OK, create_quote_context, safe_close  # noqa: E402
@@ -590,15 +591,17 @@ def render_text_report(result: dict) -> str:
     top_pit = zero.get("pits", [[None, 0]])[0][0] if zero.get("pits") else None
     wall_text = f"{top_wall:g}" if top_wall is not None else "无"
     pit_text = f"{top_pit:g}" if top_pit is not None else "无"
+    front_is_proxy = result.get("front_expiry_mode") == "next_expiry_proxy_after_close"
+    front_name = "收盘后前端到期日代理" if front_is_proxy else "0DTE"
 
     lines = [
             "SPX/SPXW intraday gamma memo",
             "",
-            f"一句话：SPX 锚点 {spot:.2f}（{result.get('spot_method', '')}），0DTE 为 {zero_regime}，全窗口为 {all_regime}；0DTE 主 wall {wall_text}，主 pit {pit_text}。",
+            f"一句话：SPX 锚点 {spot:.2f}（{result.get('spot_method', '')}），{front_name}为 {zero_regime}，全窗口为 {all_regime}；{front_name}主 wall {wall_text}，主 pit {pit_text}。",
             f"我会怎么做：先把 {levels(zero.get('walls', []), 4)} 当作上方钉扎/阻力观察，把 {levels(zero.get('pits', []), 4)} 当作下方加速风险区；突破或跌破后再用期指、成交和宏观 tape 确认。",
-            f"什么情况说明我错了：若价格穿越 0DTE flip {levels(zero.get('flips', []), 4)} 后没有延续，说明当日期权地图被现货流或宏观消息覆盖。",
+            f"什么情况说明我错了：若价格穿越 {front_name} flip {levels(zero.get('flips', []), 4)} 后没有延续，说明前端期权地图被现货流或宏观消息覆盖。",
             "",
-            "0DTE：",
+            f"{front_name}：",
             f"- 净 GEX: {money(zero.get('net_gex', 0))}; 净 VEX: {money(zero.get('net_vex', 0))}; 样本数: {zero.get('count', 0)}",
             f"- Gamma walls: {levels_with_value(zero.get('walls', []))}",
             f"- Gamma pits: {levels_with_value(zero.get('pits', []))}",
@@ -648,7 +651,7 @@ def render_by_expiry_report(result: dict) -> str:
 
     future_flips = [
         first_level(per_expiry[e].get("flips", []))
-        for e in expiries[1:4]
+        for e in expiries[:4]
         if first_level(per_expiry[e].get("flips", []))
     ]
     flips = future_flips or [first_level(per_expiry[e].get("flips", [])) for e in expiries if first_level(per_expiry[e].get("flips", []))]
@@ -676,7 +679,7 @@ def render_by_expiry_report(result: dict) -> str:
     lines = [
         "SPX/SPXW future-days gamma memo",
         "",
-        f"从“未来几天 gamma”角度看：现价约 {spot:.0f}，短线还没修复，未来几天更像高波动、反弹先看卖压；除非先收回 {resistance_text}，进一步站上 {repair_text}。",
+        f"从“未来几天 gamma”角度看：现价约 {spot:.0f}，短线先看 {repair_text} 的 gamma 分水岭；守住后再看 {resistance_text} 的上方钉扎/卖压。",
         "",
         "按具体到期日看：",
     ]
@@ -693,7 +696,7 @@ def render_by_expiry_report(result: dict) -> str:
         bias = expiry_bias(bucket, spot)
         day = weekday_label(expiry)
         if idx == 0:
-            lead = "当天到期"
+            lead = "收盘后前端到期日代理" if result.get("front_expiry_mode") == "next_expiry_proxy_after_close" else "当天到期"
         elif idx <= 2:
             lead = "近端到期"
         else:
@@ -721,7 +724,7 @@ def render_by_expiry_report(result: dict) -> str:
             "",
             f"**基准情形**：围绕 {risk_text} 到 {resistance_text} 高波动震荡，反弹先看能否站稳第一压力；站不上，仍是弱势结构。",
             f"**偏空情形**：跌破 {risk_text} 后反抽弱，容易继续向下一组 put gamma 风险位扩散。",
-            f"**修复情形**：先重新站回 {resistance_text}，再看 {repair_text}；只有站上主要 future flip 区，未来几天才可能从“下跌放大”切回“震荡修复”。",
+            f"**修复情形**：先重新站回 {repair_text}，再看 {resistance_text}；只有守住主要 flip 区并突破前端 call wall，未来几天才可能从“下跌放大”切回“震荡修复”。",
             "",
             f"所以按日期结论是：{weakest} 最弱；" + (f"{easing_text} 的弱势开始缓和但还没转强；" if easing_text else "") + f"真正修复要看价格能否重新站上 {repair_text}。",
         ]
@@ -748,6 +751,31 @@ def get_option_chain(ctx, expiry: str, strike_min: float, strike_max: float, ret
     if ret != RET_OK:
         raise RuntimeError(chain)
     return chain[(chain["strike_price"] >= strike_min) & (chain["strike_price"] <= strike_max)].copy()
+
+
+def active_expiries(expiries: list[str], now_et: datetime | None = None) -> tuple[list[str], str]:
+    """Exclude an expired 0DTE chain once its U.S. session is over.
+
+    Outside regular hours the nearest still-listed expiry becomes the front
+    bucket.  Keeping the bucket key as ``0DTE`` preserves downstream level and
+    range calculations, while ``front_expiry_mode`` makes the proxy explicit.
+    """
+    now_et = now_et or datetime.now(ZoneInfo("America/New_York"))
+    cutoff = now_et.date()
+    if now_et.weekday() < 5 and now_et.time() >= dt_time(16, 0):
+        cutoff += timedelta(days=1)
+    active = []
+    for expiry in expiries:
+        try:
+            if datetime.strptime(expiry, "%Y-%m-%d").date() >= cutoff:
+                active.append(expiry)
+        except ValueError:
+            continue
+    if not active:
+        raise RuntimeError("No unexpired SPX option expiries returned")
+    front_date = datetime.strptime(active[0], "%Y-%m-%d").date()
+    mode = "live_0dte" if front_date == now_et.date() else "next_expiry_proxy_after_close"
+    return active, mode
 
 
 def main() -> None:
@@ -785,9 +813,10 @@ def main() -> None:
         if not expiries:
             raise RuntimeError("No SPX option expiries returned")
 
-        today = expiries[0]
-        near_expiries = expiries[1 : 1 + max(args.future_count, 0)]
-        friday_expiries = [x for x in expiries[1:] if datetime.strptime(x, "%Y-%m-%d").weekday() == 4][:2]
+        active, front_expiry_mode = active_expiries(expiries)
+        today = active[0]
+        near_expiries = active[1 : 1 + max(args.future_count, 0)]
+        friday_expiries = [x for x in active[1:] if datetime.strptime(x, "%Y-%m-%d").weekday() == 4][:2]
         selected_expiries = []
         for expiry in [today, *near_expiries, *friday_expiries]:
             if expiry not in selected_expiries:
@@ -852,8 +881,9 @@ def main() -> None:
         next2 = set(future_expiries[:2])
         friday2 = set([x for x in future_expiries if datetime.strptime(x, "%Y-%m-%d").weekday() == 4][:2])
 
+        front_bucket_label = "0DTE SPXW PM" if front_expiry_mode == "live_0dte" else f"Next listed expiry {today} SPXW proxy after close"
         buckets = {
-            "0DTE": aggregate([r for r in rows if r["bucket"] == "0DTE"], spot, "0DTE SPXW PM"),
+            "0DTE": aggregate([r for r in rows if r["bucket"] == "0DTE"], spot, front_bucket_label),
             "Next2": aggregate([r for r in rows if r["expiry"] in next2], spot, "Next 2 listed expiries"),
             "Fri2w": aggregate([r for r in rows if r["expiry"] in friday2], spot, "Next two Friday expiries"),
             "All": aggregate(rows, spot, "All selected near expiries"),
@@ -866,12 +896,13 @@ def main() -> None:
         out = {
             "generated": datetime.now().isoformat(timespec="seconds"),
             "spot_anchor": spot,
-            "spot_method": "SPXW 0DTE put-call parity weighted median/trimmed mean; SPY only sanity check",
+            "spot_method": "SPXW front-expiry put-call parity weighted median/trimmed mean; SPY only sanity check",
             "spy_snapshot": {k: str(spy.get(k, "")) for k in ["last_price", "bid_price", "ask_price", "update_time", "open_price", "high_price", "low_price", "prev_close_price"]},
             "parity_estimates_near_spot": parity,
             "row_count": len(rows),
             "expiries": selected_expiries,
-            "filters": {"0DTE": "SPXW + PM settled only", "strike_window": [args.strike_min, args.strike_max]},
+            "front_expiry_mode": front_expiry_mode,
+            "filters": {"0DTE": "SPXW + PM settled only; after close this bucket is the next listed expiry proxy", "strike_window": [args.strike_min, args.strike_max]},
             "buckets": buckets,
             "per_expiry": per_expiry,
         }

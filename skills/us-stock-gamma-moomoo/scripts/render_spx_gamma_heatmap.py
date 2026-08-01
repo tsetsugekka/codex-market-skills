@@ -148,15 +148,41 @@ def build_payload(
     }
 
 
-def validate_args(args: argparse.Namespace) -> None:
-    if args.max_strike <= args.min_strike:
+def validate_range(min_strike: float, max_strike: float) -> None:
+    if max_strike <= min_strike:
         raise ValueError("--max-strike must be greater than --min-strike")
     for name, value in (
-        ("--min-strike", args.min_strike),
-        ("--max-strike", args.max_strike),
+        ("--min-strike", min_strike),
+        ("--max-strike", max_strike),
     ):
         if abs(value / STRIKE_STEP - round(value / STRIKE_STEP)) > 1e-8:
             raise ValueError(f"{name} must align to the native 5-point grid")
+
+
+def default_strike_range(source: dict[str, Any]) -> tuple[float, float]:
+    """Return a stable visible range around the current SPX anchor.
+
+    The lower bound rounds down to a whole hundred before subtracting 300;
+    the upper bound rounds up before adding 300.  This keeps the anchor from
+    landing against an edge while preserving obvious 100-point labels.
+    """
+    spot = finite_number(source.get("spot_anchor"))
+    if spot is None or spot <= 0:
+        raise ValueError("JSON must contain a positive spot_anchor")
+    return math.floor(spot / 100.0) * 100.0 - 300.0, math.ceil(spot / 100.0) * 100.0 + 300.0
+
+
+def resolve_strike_range(
+    source: dict[str, Any], min_override: float | None, max_override: float | None
+) -> tuple[float, float]:
+    default_min, default_max = default_strike_range(source)
+    min_strike = default_min if min_override is None else min_override
+    max_strike = default_max if max_override is None else max_override
+    validate_range(min_strike, max_strike)
+    return min_strike, max_strike
+
+
+def validate_args(args: argparse.Namespace) -> None:
     if args.smooth_radius < 0:
         raise ValueError("--smooth-radius must be zero or greater")
     if args.smooth_sigma <= 0:
@@ -207,8 +233,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("json_input", type=Path)
     parser.add_argument("html_output", type=Path)
-    parser.add_argument("--min-strike", type=float, default=7000.0)
-    parser.add_argument("--max-strike", type=float, default=7700.0)
+    parser.add_argument("--min-strike", type=float, help="Optional explicit lower bound; defaults from spot")
+    parser.add_argument("--max-strike", type=float, help="Optional explicit upper bound; defaults from spot")
     parser.add_argument("--smooth-radius", type=int, default=5)
     parser.add_argument("--smooth-sigma", type=float, default=2.25)
     parser.add_argument(
@@ -227,12 +253,13 @@ def main() -> None:
     source = json.loads(args.json_input.read_text(encoding="utf-8"))
     if not isinstance(source, dict):
         raise ValueError("Input JSON root must be an object")
+    min_strike, max_strike = resolve_strike_range(source, args.min_strike, args.max_strike)
     template = args.template.read_text(encoding="utf-8")
     fragment, payload = render_fragment(
         source,
         template,
-        args.min_strike,
-        args.max_strike,
+        min_strike,
+        max_strike,
         args.smooth_radius,
         args.smooth_sigma,
     )

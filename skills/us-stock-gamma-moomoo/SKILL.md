@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.11
+  version: 0.1.13
 ---
 
 # US Stock Gamma With moomoo
@@ -65,6 +65,8 @@ Route the request before choosing a script:
 
 - **Ordinary US stocks/ETFs**: use `scripts/gamma_report.py`, then interpret the output with the `Single-Stock Directional Framework` below before giving a bullish/bearish view.
 - **SPX / SPXW / SP500 / 标普500 / S&P 500 index gamma**: do not use `gamma_report.py` as the final workflow. Use `scripts/spx_intraday_latest.py` and `references/spx-intraday.md`: query `US..SPX`, keep SPX/SPXW strikes directly, infer the spot anchor from SPXW 0DTE put-call parity when the SPX index snapshot is unavailable, and treat SPY only as a sanity check or fallback.
+
+After the U.S. options session closes, never retain an expired same-day SPXW chain in a forward chart or memo. Start from the next listed unexpired expiry; the script uses that front expiry in the existing `0DTE` calculation bucket so its Flip, walls, range, and comparison logic remain front-expiry based. Label it as a `next-expiry proxy after close`, not as live 0DTE.
 - **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels, and do not use a current Nikkei anchor against a stale EWJ close. Use EWJ only as a proxy option book, then convert with a time-aligned bridge: EWJ quote-time value -> `NKDmain`/Nikkei futures at that same time -> current `NIYmain`/Nikkei CFD or the user's current index anchor. Use `scripts/proxy_index_gamma.py`. The report must state every anchor, ratio, timestamp, and limitation.
 
 Default to a concise chat/terminal text summary. Do not create files as part of this skill unless the user explicitly requests raw JSON export.
@@ -113,11 +115,12 @@ python3 scripts/spx_intraday_latest.py \
 
 python3 scripts/render_spx_gamma_heatmap.py \
   /tmp/current-spx-gamma.json /tmp/spx-gamma.html \
-  --min-strike 7000 --max-strike 7700 \
   --smooth-radius 5 --smooth-sigma 2.25
 ```
 
 Use only real listed expiries from the JSON. Each chart column, Flip, Call Wall, and Put Wall must use only contracts expiring on that column's date. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. Call Wall is the strike with the largest call-side GEX for that expiry; Put Wall is the strike with the most negative put-side GEX. Do not substitute maximum all-strike OI, which can select far-OTM legacy positions with little current gamma. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, Flip, and Call/Put Wall values. Read `references/gamma-heatmap-visualization.md` before changing the range, smoothing, or chart semantics.
+
+When no axis range is explicitly requested, render SPX from `floor(spot / 100) * 100 - 300` through `ceil(spot / 100) * 100 + 300`. For example, an anchor of 7480 renders `7100–7800`. Explicit `--min-strike` and `--max-strike` remain available for a user-requested audit range.
 
 For Codex inline display, generate the fragment inside the thread-scoped visualization directory and emit `::codex-inline-vis{file="basename.html"}` using only the file name. The fragment must use its generated unique root ID with `document.getElementById`, never `document.currentScript`. Show desktop CW and PW values on separate rows so adjacent expiry columns remain readable. Do not create or publish a website unless the user explicitly asks for one.
 
@@ -376,6 +379,7 @@ When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversio
 Use a broader but still relevant option window instead of blindly taking the first few expiries. Keep horizons clean instead of mixing daily, weekly, and monthly expiries:
 
 - **0DTE / expiry day**: when the user asks about an expiry-day gamma pin, analyze the same-day expiry as its own bucket.
+- **After the U.S. options close**: remove the expired same-day contracts from all forward-looking reports and charts. Start at the next listed unexpired expiry. For SPX/SPXW, use that front expiry as the `0DTE` calculation proxy and label it clearly as such; for ordinary stocks/ETFs, omit the expired date entirely.
 - **Next 2 trading days**: for high-frequency option tickers, include the next 2 listed trading-day/daily expiries after today. Do not include today in this bucket when 0DTE is already shown separately.
 - **Future 2 weeks weekly options**: include only Friday expiries after today within the next 14 calendar days. Do not mix Monday-Thursday daily expiries into this weekly bucket.
 - **Future monthly options**: include only standard monthly expiries for the current month and next 2 months, and only include the current month if it has not passed and is not already being handled as the same-day 0DTE bucket.
