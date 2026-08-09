@@ -46,7 +46,7 @@
 ### Institutional survey
 
 - 当前/最近交易日：优先 `cn-market-tape/scripts/institutional_survey_heat.py` 的低频缓存/聚合查询，或 MX 的调研记录查询。
-- 历史：优先使用 `https://daytrading.monster/surveyheat/` 及其公开历史 JSON 快照；只接受能校验日期和字段的结果。
+- 如需 DTM 的当前机构调研补充，只读取当前快照 `https://daytrading.monster/tools/chinastock/data.json`；不读取历史归档或按日期分片。
 - 历史数据缺失时，输出“尚不支持该时间/数据”，不要回退到当前快照。
 
 ## Request discipline

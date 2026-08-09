@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch and filter a 24h market narrative status JSON feed.
+"""Fetch and filter the current 24h market narrative snapshot.
 
 This helper is intentionally narrow: it is an optional pre-screen for market
 reports, not a primary news or price source.
@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 
-DEFAULT_URL = "https://daytrading.monster/tools/24hfeed/narrative_status.json"
+DEFAULT_URL = "https://daytrading.monster/24hfeed/feed24.json"
 
 MARKET_KEYS = {
     "us": ["ai", "us_iran", "commodities", "rates_bonds", "spx_gamma", "non_ai", "crypto"],
