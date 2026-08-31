@@ -71,6 +71,8 @@ When the report needs market-regime, mainline, or bull/bear structure judgment, 
 
 Apply the user's strategy framework silently. Do not expose private source-framework labels or mnemonic names; use plain terms such as 长期均线、趋势支撑、均线密集区、反转结构、突破回踩.
 
+Before scoring a candidate, classify its primary return source using `strategy-archetypes.md`. The classification is a decision tool, not a quota: do not force all six types into a report. Entry, invalidation/stop, time horizon, and exit must test the same thesis. Distinguish a nearby execution stop from a slower fundamental thesis invalidation, and add a time stop when the expected catalyst or momentum has a deadline.
+
 Cover, as relevant:
 
 - beta: market strength/weakness, trend, sector beta, macro/geopolitical risk, volatility.
@@ -78,4 +80,4 @@ Cover, as relevant:
 - momentum and reversal: RSI, MACD, KDJ, Japanese candlestick continuation/reversal structures, volume-price relationship.
 - sentiment and positioning:情绪周期,资金流,期权/gamma, put/call ratio, short interest/空卖, credit margin data when market-specific.
 - fundamentals and catalysts: latest earnings, valuation, industry trend, policy/news, orders, buybacks, lock-up expiry, financing/warrants when relevant.
-- risk management: entry, batch plan, stop-loss reference, invalidation conditions.
+- risk management: primary strategy archetype, entry trigger, batch plan, execution stop, thesis invalidation, time stop when relevant, and thesis-consistent exit.

@@ -405,7 +405,28 @@ Output from chart-app analysis should include:
 - `执行含义`: distinguish touch/break/tradable hold; separate intraday profit-taking from trend holding if both matter.
 - `下一验证点`: the exact level or candle behavior that would change the conclusion.
 
-## 16. Response Guardrails
+## 16. Thesis-Aligned Entry, Invalidation, And Exit
+
+When the user asks for a complete trade plan, technical levels must serve a stated return thesis rather than replace it.
+
+- `Entry trigger`: the observable price/volume structure that makes the timing acceptable now.
+- `Execution invalidation`: a nearby level or failed pattern showing the entry timing is wrong. It protects capital before a slower thesis can be fully disproved.
+- `Thesis invalidation`: evidence that the underlying return source is wrong—systemic normalization failed, the catalyst failed, fair value fell, dividend coverage weakened, or growth milestones broke.
+- `Time stop`: the deadline after which absent follow-through weakens the setup. It is especially important for event and momentum trades.
+- `Exit`: the realization condition implied by the original thesis. Do not replace a failed event or swing thesis with an indefinite value thesis merely because price fell.
+
+Match the technical plan to the primary setup:
+
+- `Crisis-beta/index mean reversion`: require market-wide stress plus stabilization/reclaim; the panic low or renewed systemic deterioration invalidates; exit as volatility/trend normalizes.
+- `Core-quality swing`: add on supported pullbacks or breakout-retests; the tactical stop follows swing structure, while the core thesis requires separate fundamental evidence; trim the tactical sleeve near resistance/overextension.
+- `Dividend/income`: technical timing can improve entry, but dividend coverage, cash flow, leverage, and rate-relative valuation define thesis invalidation; high yield alone is not support.
+- `Event repricing`: compare expectation with the result and require price acceptance; event-level failure or a time stop invalidates; do not turn a failed event trade into a long-term hold.
+- `Quality value`: use technical stabilization to avoid catching a falling knife, but fair-value inputs and balance-sheet quality control thesis invalidation and exit near the evidence-based value range.
+- `Growth/optionality`: require milestone evidence plus price confirmation; smaller size and tighter execution discipline are appropriate when financing or valuation uncertainty is high; milestone failure is more important than a hoped-for multiple.
+
+Do not use average cost, already-realized gains, or `negative cost` framing as evidence that risk has disappeared. A position can still lose capital or opportunity value after earlier profits.
+
+## 17. Response Guardrails
 
 - Do not issue direct buy/sell commands.
 - State the data source and whether it is live, delayed, screenshot-based, or inferred.

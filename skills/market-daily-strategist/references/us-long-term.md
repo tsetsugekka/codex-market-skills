@@ -11,6 +11,7 @@ Prioritize Yahoo Finance, Seeking Alpha, Bloomberg, TradingView, CNBC, MarketWat
 - Recommend exactly one US stock.
 - Avoid recently recommended names when the history is available.
 - The stock must have medium/long-term continuity plus confirmed trend or reversal signal and near-term upward momentum.
+- Classify the target into one primary strategy archetype from `strategy-archetypes.md`. Pure event trades or crisis-beta rebounds qualify only when a durable medium/long-term thesis remains after the catalyst or normalization.
 - The buy price must be latest available/current price or within 2% of it.
 - If the regular US session has not opened, clearly say the price is pre-market or latest available, not regular-session live price.
 
@@ -24,6 +25,7 @@ Then analyze:
 
 - Technical trend/reversal signal, support/resistance, volume-price relationship, moving averages, MA144, Vegas-style channels, MACD, KDJ, RSI, GMMA, VWAP, Fibonacci, gaps, Japanese candlestick patterns, Wyckoff structure, sentiment cycle.
 - Fundamentals, industry cycle, news/policy catalyst, institutional holding, short interest, options put/call ratio, gamma wall, buybacks, lock-up expiry.
+- Thesis-aligned plan: primary archetype, why entry is valid now, nearby execution invalidation, slower thesis invalidation, time stop when relevant, and the exit condition tied to the same return source.
 
 ## Output Format
 
@@ -35,11 +37,11 @@ The title must include stock name/code, core logic, buy price, and target price.
 
 Then exactly:
 
-1. 推荐股票概览（股票名称、代码、当前买入价位）。
+1. 推荐股票概览（股票名称、代码、当前买入价位、主要策略类型）。
 2. 推荐核心原因（先分析 beta 环境，再拆解短期向上动能与中长线持续性）。
-3. 买入策略（买入价位、分批方式、当天是否可立即执行）。
-4. 目标价位与持有周期（具体目标价位区间、预期持有周期、主要上行催化剂）。
-5. 风险提示（主要下行风险及止损参考位）。
+3. 买入策略（为什么现在进入、买入价位、分批方式、当天是否可立即执行、执行失效位）。
+4. 目标价位与持有周期（具体目标价位区间、预期持有周期、主要上行催化剂、同逻辑退出条件）。
+5. 风险提示（主要下行风险、执行止损、长期逻辑失效及时间止损如适用）。
 6. 信心度：XX%（综合确定性）。
 
 End or include clearly: `以上不是投资建议。`

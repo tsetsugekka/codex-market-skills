@@ -1,6 +1,6 @@
 ---
 name: stock-technical-analysis
-description: Use when the user asks for technical analysis of an individual US, Japanese, or A-share stock, including intraday trend, pressure/support, whether it can reach a price, K-line structure, volume-price behavior, moving averages, KDJ/MACD/RSI, Vegas channels, moomoo/Yahoo chart reads, US-only dark-pool level confirmation, or whether a breakout/pullback is confirmed.
+description: Use when the user asks for technical analysis or a technically grounded entry-stop-exit plan for an individual US, Japanese, or A-share stock, including intraday trend, pressure/support, whether it can reach a price, K-line structure, volume-price behavior, moving averages, KDJ/MACD/RSI, Vegas channels, moomoo/Yahoo chart reads, US-only dark-pool level confirmation, or whether a breakout/pullback is confirmed.
 metadata:
   short-description: Technical analysis playbook for US, JP, and A-share stocks
 ---
@@ -34,14 +34,15 @@ For U.S. single-stock technical anomaly checks, use `moomoo-technical-anomaly` a
 
 Never answer only by following the latest tick. Use the sequence:
 
-1. Determine the timeframe: intraday trade, 1h+ swing, trend holding, or post-event reaction. For 1h+ and swing judgments, combine technicals with sentiment/news context instead of reading the chart alone.
-2. Read price location: current price versus prior high/low, opening price, yesterday close, VWAP if available, 5/20-day lines, and obvious pressure/support.
-3. Check volume-price confirmation: breakout must show volume and stand above the level; volume without price progress is possible distribution; shrinking pullback can be healthy only if support holds.
-4. Check momentum: KDJ, MACD, RSI, and whether price makes a new high while momentum does not.
-5. Check structure: trend continuation, high-level divergence, 空中加油, 回踩确认, 破位反抽, or 冲高回落.
-6. For U.S.-listed stocks/ETFs only, optionally use ChartExchange dark-pool/off-exchange levels as hidden-liquidity reference zones when the stock has unusual volume, unexplained movement, repeated support/resistance, or a news reaction that price is accepting/rejecting. Do not apply this to A-shares or Japanese stocks. Dark-pool data has no buy/sell side; a level matters technically only after price confirms it with acceptance, rejection, repeated defense, or failure to reclaim.
-7. Check market context: sector/peer confirmation, broad market tone, rates/FX/volatility when relevant, and for A-shares the emotion cycle. Call `macro-news-check` only when current macro or broad-market tape can plausibly change the read, such as index-wide selloffs/squeezes, rates/FX shocks, central-bank or data releases, commodities, geopolitics, or sudden futures moves. Use `stock-sentiment-analysis` for a deeper shared sentiment framework.
-8. Give conditional conclusions rather than one-point predictions.
+1. Identify the return thesis and holding horizon: crisis-beta, core-quality swing, dividend/income, event repricing, quality value, growth/optionality, or another clearly stated thesis. If the user only provides a chart, state that technical analysis can define execution invalidation but cannot prove a fundamental thesis.
+2. Determine the timeframe: intraday trade, 1h+ swing, trend holding, or post-event reaction. For 1h+ and swing judgments, combine technicals with sentiment/news context instead of reading the chart alone.
+3. Read price location: current price versus prior high/low, opening price, yesterday close, VWAP if available, 5/20-day lines, and obvious pressure/support.
+4. Check volume-price confirmation: breakout must show volume and stand above the level; volume without price progress is possible distribution; shrinking pullback can be healthy only if support holds.
+5. Check momentum: KDJ, MACD, RSI, and whether price makes a new high while momentum does not.
+6. Check structure: trend continuation, high-level divergence, 空中加油, 回踩确认, 破位反抽, or 冲高回落.
+7. For U.S.-listed stocks/ETFs only, optionally use ChartExchange dark-pool/off-exchange levels as hidden-liquidity reference zones when the stock has unusual volume, unexplained movement, repeated support/resistance, or a news reaction that price is accepting/rejecting. Do not apply this to A-shares or Japanese stocks. Dark-pool data has no buy/sell side; a level matters technically only after price confirms it with acceptance, rejection, repeated defense, or failure to reclaim.
+8. Check market context: sector/peer confirmation, broad market tone, rates/FX/volatility when relevant, and for A-shares the emotion cycle. Call `macro-news-check` only when current macro or broad-market tape can plausibly change the read, such as index-wide selloffs/squeezes, rates/FX shocks, central-bank or data releases, commodities, geopolitics, or sudden futures moves. Use `stock-sentiment-analysis` for a deeper shared sentiment framework.
+9. Give conditional conclusions and make entry, execution stop, thesis invalidation, time stop, and exit test the same return thesis.
 
 For A-share technical reads, optionally use 东方财富妙想 skills when they are already installed, but keep them as a supplemental data layer rather than a replacement for the existing price-action workflow. Continue to judge trend, support/resistance, volume-price confirmation, sector/broad-market context, sentiment, and macro when relevant. `mx-data` can supplement current quote,涨跌幅,成交额/量,主力资金, historical prices, index/sector context, and valuation fields; `mx-search` can supplement current event/news context when a technical break may be news-driven; `mx-xuangu` can help build peer or board constituent comparisons and can run natural-language technical screens such as consecutive moving-average alignment plus price-above/below-MA conditions. If the user asks which A-shares belong to a sector/theme or asks for `相关股`, `概念股`, `龙头股`, or `板块成分`, use `mx-xuangu` first when available. Do not block the analysis if these skills are unavailable or fail; you may briefly suggest installing/configuring 妙想 only when that layer would materially improve the exact A-share request. Use `mx-zixuan` and `mx-moni` only when the user explicitly asks for self-selected-stock management/filtering or simulated portfolio/trade operations.
 
@@ -60,6 +61,7 @@ For quick answers, apply the core rule directly.
 For any of the following, read `references/technical-analysis-playbook.md` first:
 
 - The user asks "能不能到某个价格", "现在怎么看", "日内", "分时", "压力位", "支撑位", "技术分析", "买点", "卖点", "突破", "回踩", "空中加油", "KDJ", "MACD", "RSI", or "Vegas".
+- The user asks for an entry plan, stop-loss, invalidation, holding period, take-profit, or exit plan.
 - The stock has already moved sharply today.
 - The answer may affect a same-day trading decision.
 - You are using moomoo, Yahoo chart, or screenshots to read the chart.
@@ -82,6 +84,7 @@ Use this compact structure when useful:
 3. `量价/动能`: volume, KDJ/MACD/RSI, divergence, and funding/order-flow clues if available.
 4. `触发条件`: what must happen for the bullish or bearish scenario to confirm.
 5. `失效条件`: the level or signal that invalidates the read.
+6. `计划一致性`: when a trade plan is requested, distinguish execution invalidation from thesis invalidation and state the exit/time-stop condition derived from the same thesis.
 
 Avoid giving direct trading instructions. Use probability bands only when the evidence supports them, and explain what would change the probability.
 

@@ -15,6 +15,7 @@ Prioritize 东方财富、同花顺、雪球、财联社、新浪财经 and othe
 - Confirm the target can be bought on the next A-share trading day.
 - Avoid recently recommended names when the history is available.
 - Must show medium/long-term continuity plus confirmed trend or reversal signal and short-term upward momentum.
+- Classify the target into one primary strategy archetype from `strategy-archetypes.md`. Pure event trades or crisis-beta rebounds qualify only when a durable medium/long-term thesis remains after the catalyst or normalization.
 - Avoid pure left-side bottom fishing or no-momentum targets.
 - Buy price must be latest/current price or within 2% of it.
 
@@ -28,6 +29,7 @@ Then analyze:
 
 - Technical reversal/trend signals, fundamentals, news/policy catalysts, sentiment recovery, industry outlook, short-term upward momentum, medium/long-term continuity.
 - A-share specifics: 大盘指数、板块强弱、两融余额/融资买入、北向/主力资金、ETF资金流、龙虎榜/机构席位、限售解禁、股东减持、政策催化、成交额/换手率、筹码集中度、涨停/炸板/情绪周期.
+- Thesis-aligned plan: primary archetype, why entry is valid now, nearby execution invalidation, slower thesis invalidation, time stop when relevant, and the exit condition tied to the same return source.
 
 ## Output Format
 
@@ -37,11 +39,11 @@ First line must be 60-80 Chinese characters:
 
 Then exactly:
 
-1. 推荐标的概览（股票/ETF名称、代码、市场类型、当前买入价位）。
+1. 推荐标的概览（股票/ETF名称、代码、市场类型、当前买入价位、主要策略类型）。
 2. 推荐核心原因（must start with current beta analysis: market strength/weakness, trend, sector strength, geopolitical or macro risk; then analyze technical reversal/trend signals, fundamentals, news/policy catalysts, sentiment recovery, industry outlook, short-term upward momentum and medium/long-term continuity）。
-3. 买入策略（买入价位、suggested batch-buying method, and whether it can be executed immediately on the next trading day）。
-4. 目标价位与持有周期（specific target range, expected holding period, and main upside catalysts）。
-5. 风险提示（main downside risks and stop-loss reference level）。
+3. 买入策略（为什么现在进入、买入价位、suggested batch-buying method, whether it can be executed immediately on the next trading day, and execution invalidation）。
+4. 目标价位与持有周期（specific target range, expected holding period, main upside catalysts, and thesis-consistent exit conditions）。
+5. 风险提示（main downside risks, execution stop, long-term thesis invalidation, and time stop when relevant）。
 6. 信心度：XX%（综合判断本次推荐的确定性）。
 
 End or include clearly: `以上不是投资建议。`

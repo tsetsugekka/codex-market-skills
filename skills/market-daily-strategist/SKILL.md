@@ -1,6 +1,6 @@
 ---
 name: market-daily-strategist
-description: Use when the user asks for daily market strategy, broad-market trading guidance, pre-market strategy, close recap, or one-name long-term recommendation reports covering US stocks, Japanese stocks, or A-shares. Also use for natural current-session or next-session market questions such as "明天日股如何做", "今天日股怎么做", "日经明天怎么看", "美股今晚怎么做", "纳指今晚怎么看", "A股明天怎么操作", or "大盘今天怎么办" when the intent is market-level strategy. Applies to ad-hoc requests that need live market/news data, strict no-fabrication data discipline, price-confirmed catalysts, and decision-oriented trading guidance.
+description: Use when the user asks for daily market strategy, broad-market trading guidance, pre-market strategy, close recap, or daily/one-name long-term recommendation reports covering US stocks, Japanese stocks, or A-shares. Also use for natural current-session or next-session market questions such as "明天日股如何做", "今天日股怎么做", "日经明天怎么看", "美股今晚怎么做", "纳指今晚怎么看", "A股明天怎么操作", or "大盘今天怎么办" when the intent is market-level strategy. Applies to ad-hoc requests that need live market/news data, strict no-fabrication data discipline, price-confirmed catalysts, and decision-oriented trading guidance.
 metadata:
   short-description: Daily market strategy and one-stock recommendation reports
 ---
@@ -15,13 +15,15 @@ Use this skill for the user's market reports. This is not a scheduler; ignore an
 - 日股收盘、今天日股复盘、日本市场复盘: read `references/jp-close-briefing.md`.
 - A股盘前、A股早盘、开盘前策略、明天A股如何做、今天A股怎么做、A股明天怎么操作、大盘今天怎么办、沪指明天怎么看、创业板明天怎么看、科创板今天怎么做、A股大盘策略: read `references/cn-pre-market.md`.
 - A股收盘、A股复盘、今天A股市场回顾: read `references/cn-close-briefing.md`.
-- 美股长线推荐、推荐一只美股: read `references/us-long-term.md`.
-- 日股长线推荐、推荐一只日股: read `references/jp-long-term.md`.
-- A股长线推荐、推荐一只A股/ETF/LOF: read `references/cn-long-term.md`.
+- 美股长线推荐、每日美股荐股、推荐一只美股: read `references/us-long-term.md`.
+- 日股长线推荐、每日日股荐股、推荐一只日股: read `references/jp-long-term.md`.
+- A股长线推荐、每日A股荐股、推荐一只A股/ETF/LOF: read `references/cn-long-term.md`.
 
 If the user asks a broad current-session or next-session question such as `明天/今天/今晚 + 市场/大盘/美股/纳指/标普/日股/日经/TOPIX/A股/沪指/创业板/科创板 + 如何做/怎么做/怎么看/怎么操作/怎么办`, treat it as a pre-market, current-session, or next-session strategy request for the named market, not as a generic macro question. If the market is named by an index, map it to the corresponding market reference above. If the user says only `盘前信息`, `收盘复盘`, `大盘怎么做`, or `推荐一只股票`, infer the market from the conversation. If unclear, ask one concise question for the market: 美股、日股、还是A股.
 
 Always read `references/shared.md` first, then only the one task-specific reference that matches the user request.
+
+For any daily or one-name recommendation, also read `references/strategy-archetypes.md`. Assign one primary strategy archetype before choosing entry, invalidation/stop, holding period, and exit. Do not combine an event-trade entry with a value-investing stop, or a swing entry with an indefinite long-term exit.
 
 Reference reading rule: when this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans.
 
