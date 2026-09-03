@@ -177,6 +177,7 @@ Description:
 ### 1. Build The Weekly List
 
 - Cover China, US, and Japan events that can move equity, rates, FX, commodities, crypto, or the user's watched stocks.
+- Treat the candidate list as research input, not a calendar to copy. A market calendar should answer: "What could change a trading decision before the next session?" rather than attempt exhaustive news coverage.
 - Prioritize Japan because the user trades Japan most actively. Include Japan events that can realistically move JGB yields, USDJPY/JPY crosses, Japanese banks, exporters, growth stocks, real estate, semiconductors, or broad TOPIX/Nikkei risk appetite.
 - Do not turn this into a generic economic calendar. If there are too many candidates, keep only the events that are tied to the current market theme and have a plausible trading impact.
 - Always identify the current market theme before ranking events. Examples:
@@ -186,23 +187,38 @@ Description:
 - Raise the priority of events that match the current theme; lower or exclude events that are normally important but not relevant to the current trading narrative.
 - Exclude categories the user already says they are handling separately, such as earnings or Treasury auctions.
 - Include only events with enough confidence in date/time. Treat unconfirmed diplomacy or political headlines as an observation item unless there is recent official confirmation.
+- When a user provides an article, image, or screenshot, inspect the complete article and every embedded image, table, caption, and calendar panel before deciding what is incremental. Do not infer that the visible headline or first image contains the whole weekly list.
 - For current or future event calendars, browse current sources. Build candidates from a mix of comprehensive economic calendars, Chinese market-weekly calendars, and official calendars:
   - Use comprehensive calendars such as ActionForex, Investing.com, Trading Economics, Myfxbook, ForexFactory, and similar sources to collect cross-country data releases, forecast/consensus, and prior values.
   - Use Chinese market-calendar and market-weekly sources such as Jin10 (`jin10.com` / `xnews.jin10.com`) and Wallstreetcn Calendar (`https://wallstreetcn.com/calendar`) to catch China/HK-market framing, geopolitics, oil/gold/inflation narratives, and events that may not surface clearly in official data calendars.
   - Prefer official release calendars for final confirmation of high-importance US/Japan/China event dates and times: Fed, US Treasury, BLS/BEA/Census, BOJ, Japan MOF, Japan Statistics Bureau, Cabinet Office, China NBS, PBOC/LPR, customs, and finance ministry sources when available.
   - Treat Jin10 and Wallstreetcn as candidate discovery and market-narrative inputs, not as the sole authority for critical times. Cross-check `★★★★` and `★★★★★` events against official or another high-quality calendar before writing to Google Calendar whenever possible.
 
-### 2. Rank And Filter
+### 2. Classify Before Ranking
+
+Classify each candidate so that its evaluation and Calendar treatment are consistent:
+
+1. **Systemic macro**: employment, inflation, growth, central-bank decisions, central-bank communication, and sovereign-auction supply/demand.
+2. **Market structure**: index rebalances, expiry/settlement, inclusion changes, lock-up expiries, and scheduled trading-rule changes.
+3. **Theme/company catalyst**: confirmed AI, semiconductor, energy, automotive, battery, or other industry conferences; product launches; and investor days. Earnings remain a separate workflow.
+4. **Policy/geopolitical catalyst**: confirmed policy implementation, tariff deadlines, official meetings, or diplomacy with a clear asset-price transmission path.
+
+Exclude vague commentary, routine sector events, one-off company items without a user-relevant read-through, and unconfirmed political headlines. Keep skipped candidates in the final audit only when that helps the user understand an intentional omission.
+
+### 3. Rank And Filter
 
 - Assign importance stars from `★` to `★★★★★`.
 - For Calendar writing, if the user asks for "四星以上", include only `★★★★` and `★★★★★`.
 - Even when the user says "四星以上", do not add every `★★★★` event automatically. Add `★★★★` only when it is connected to the current market theme and has a clear impact path. Add all `★★★★★` unless there is no concrete time or the event is unconfirmed.
 - Default to a smaller, higher-signal calendar. The goal is not coverage; the goal is to prevent noise while preserving events that can change trading decisions.
+- Score each candidate across five practical checks before assigning stars: (1) likely intraday price impact, (2) ability to change the next days/weeks market narrative, (3) direct connection to the user's markets, watchlist, or active themes, (4) scope for a meaningful surprise versus consensus, and (5) confidence in the date, time, and event itself.
+- A `★★★★` entry needs both a clear transmission path and a current-theme connection. `★★★★★` is reserved for systemic catalysts or unusually sensitive Japan rates/JPY events. A headline's own star label is a discovery hint, not the final rating.
 - Treat Japan inflation, BOJ communication, and JGB supply/demand events as high priority only when Japan rates/JPY are an active market driver. Examples include national CPI, Tokyo CPI, CGPI, BOJ decision/outlook/report, Summary of Opinions, BOJ minutes, Governor/deputy governor speeches, and 10y/20y/30y/40y JGB auctions.
-- Require a concrete time for Calendar insertion unless the user explicitly wants all-day/undated watch items.
+- Require a concrete time for normal Calendar insertion. For a confirmed, high-signal conference, product launch, or policy meeting with no public time, use a transparent 0-minute `08:00` local-time marker only when the user's established preference permits it; state that the precise time is unannounced. For multi-day events, create one marker on the first day and include the date span in the title.
+- Convert the source-market date and time into the user's local timezone. For a cross-timezone event with only a local date, try to confirm the actual start time before choosing the local Calendar date; do not silently present an uncertain conversion as an exact appointment.
 - Data releases use duration 0 minutes. Speeches or press conferences use duration 30 minutes unless the user specifies otherwise.
 
-### 3. Required Details
+### 4. Required Details
 
 For each event, collect or estimate:
 
@@ -212,8 +228,10 @@ For each event, collect or estimate:
 - "If lower than expected" impact.
 - Make impacts concrete where possible: USD, JPY, CNH, yields, Nasdaq/growth stocks, value/cyclicals, gold, crypto, commodities, China/HK equities, Japanese banks/exporters.
 - For Japan-relevant events, explicitly state the likely direction for JGB yields, JPY, and affected Japanese equity groups when applicable: banks, exporters, growth stocks, real estate, semiconductors, domestic demand, or commodities.
+- For confirmed non-numeric events, replace forced forecast fields with the decision variables that matter: for example production guidance and commercialisation for a product launch, policy language and export controls for a government meeting, or supply guidance for OPEC+.
+- When a fresher credible source revises a consensus or prior value, update the existing Calendar description rather than create a duplicate event. Do not retain stale estimates merely because they appeared in an earlier weekly source.
 
-### 4. Calendar Format
+### 5. Calendar Format
 
 Single event title:
 
@@ -270,4 +288,5 @@ After writing:
 
 - Search the target week for the created/updated title prefix or keyword.
 - Confirm count, titles, dates/times, and color for 5-star items.
-- Summarize only what changed and mention anything intentionally excluded, such as unconfirmed events or no concrete time.
+- Confirm the date conversion for events sourced outside the user's timezone and the `08:00` placeholder convention for confirmed undated events.
+- Summarize only what changed and mention anything intentionally excluded, such as unconfirmed events, weak read-through, or no concrete time.
