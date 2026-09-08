@@ -13,6 +13,10 @@ skill 目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本�
 - 自动合并同一 30 分钟时间段内的多个事件。
 - 为五星事件设置醒目的 Google Calendar 颜色。
 
+## DTM API 接入
+
+DTM 候选池改用 API Docs 的 `https://daytrading.monster/api/themes?market=jp` 和 `https://daytrading.monster/api/themes?market=us`，读取 `themes[]` 及其 `constituents[]` 的代码、名称、权重和 `reason_zh`。个人名单优先级不变；该接口不提供财报日期。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+
 ## 【依赖】
 
 - 必需：`google-calendar:google-calendar`。

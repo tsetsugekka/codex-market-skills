@@ -10,7 +10,9 @@ skill 目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本�
 - 获取市值、PER、PBR、股息收益率、信用倍率等基础指标。
 - 抓取 Yahoo 掲示板近期评论，用来观察散户关注点和市场温度。
 - 汇总 Yahoo、Kabutan、Traders Web 等公开新闻线索。
-- 检查机构评级当前页数据，确认目标代码是否有券商评级、目标价上调/下调、评级上调/下调或集中评级变化。实际只读取当前页公开快照：`/tools/rating/data.json`、`/tools/rating/quotes.json`、`/tools/rating/ranking.json`、`/tools/rating/reasons.json`。不读取 `/tools/rating/days/*` 历史日档；只有有当前匹配评级/目标价变化并可能影响异动时才在正文提及，未匹配或无新变化时不写负面占位句。
+- 日本评级仅读取 `https://daytrading.monster/api/ratings-jp`，检查日本当地今天及前三个自然日内的目标代码报告；仅有匹配且能解释异动的评级/目标价更新时提及，未匹配时不写负面占位句。
+- 使用 `https://daytrading.monster/api/themes` 的全市场数据判断跨市场题材传导，结合成员、权重、中文依据与已完成交易日表现。
+- 综合观察 PTS 上涨整体情况时，优先读取 `https://daytrading.monster/api/pts/model1`、`model2`、`model3`，按日盘、收盘后、夜盘及各自更新时间选取或比较。其他榜单、PTS 下跌等细分查询可参考 `https://kabutan.jp/warning/` 和 `https://finance.yahoo.co.jp/stocks/ranking/up`；既有推定成交额 Top10 流程保持不变。
 - 财报或指引相关问题会额外查找公司 IR、TDnet/Kabutan PDF、決算説明資料、補足説明資料、事業計画及び成長可能性に関する事項、中期経営計画、決算説明会 Q&A、产品/项目发布等说明材料；不仅看财报数字和掲示板。
 - 帮 Codex 区分“新闻确认的催化”和“掲示板上的思惑”。
 - 按日本交易时段自动选择 Yahoo 即时普通涨跌榜、Kabutan PTS day 或 PTS night，筛选有效异动后计算推定成交额 Top10，并逐只补充原因。

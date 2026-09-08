@@ -17,7 +17,7 @@ from urllib.error import URLError, HTTPError
 from urllib.request import Request, urlopen
 
 
-DEFAULT_BASE_URL = "https://daytrading.monster/themes"
+DEFAULT_URL = "https://daytrading.monster/api/themes?market=cn"
 ASSET_FILES = ("theme-data.json", "theme-label-i18n.json")
 STAMP_FILE = ".last_refresh.json"
 REQUIRED_DATA_KEYS = {"market", "code", "theme", "weight"}
@@ -68,7 +68,7 @@ def validate_assets(target_dir: Path) -> None:
     validate_labels(target_dir / "theme-label-i18n.json")
 
 
-def is_cache_fresh(target_dir: Path, max_age_days: int) -> bool:
+def is_cache_fresh(target_dir: Path, max_age_days: int, source_url: str = DEFAULT_URL) -> bool:
     asset_paths = [target_dir / filename for filename in ASSET_FILES]
     if not all(path.exists() for path in asset_paths):
         return False
@@ -80,7 +80,9 @@ def is_cache_fresh(target_dir: Path, max_age_days: int) -> bool:
         stamp = load_json(stamp_path)
     except Exception:
         return False
-    fetched_at = parse_time(stamp.get("fetchedAt")) if isinstance(stamp, dict) else None
+    if not isinstance(stamp, dict) or stamp.get("sourceUrl") != source_url:
+        return False
+    fetched_at = parse_time(stamp.get("fetchedAt"))
     if fetched_at is None:
         return False
     age_seconds = (utc_now() - fetched_at).total_seconds()
@@ -96,36 +98,41 @@ def is_cache_fresh(target_dir: Path, max_age_days: int) -> bool:
     return True
 
 
-def download_json(url: str, dest: Path) -> dict[str, str | None]:
+def download_json(url: str) -> dict[str, Any]:
     req = Request(url, headers={"User-Agent": "codex-market-skills/refresh-theme-assets"})
     try:
         with urlopen(req, timeout=30) as response:
             body = response.read()
-            headers = response.headers
     except (HTTPError, URLError, TimeoutError) as exc:
         raise SystemExit(f"failed to download {url}: {exc}") from exc
 
     # Parse before writing so HTML error pages never replace valid assets.
     try:
-        json.loads(body.decode("utf-8"))
+        return json.loads(body.decode("utf-8"))
     except Exception as exc:
         raise SystemExit(f"{url} did not return valid JSON") from exc
 
-    with tempfile.NamedTemporaryFile("wb", delete=False, dir=str(dest.parent), prefix=dest.name, suffix=".tmp") as tmp:
-        tmp.write(body)
-        tmp_path = Path(tmp.name)
-    tmp_path.replace(dest)
-    return {
-        "url": url,
-        "etag": headers.get("ETag"),
-        "lastModified": headers.get("Last-Modified"),
-        "contentLength": headers.get("Content-Length"),
-    }
+
+def project_assets(payload: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Convert the documented API into the existing membership/label cache."""
+    if payload.get("ok") is not True or not isinstance(payload.get("themes"), list):
+        raise SystemExit("themes API must return ok=true and themes[]")
+    rows = []
+    labels = {}
+    for theme in payload["themes"]:
+        if theme.get("market") != "CN":
+            continue
+        key = theme["theme_key"]
+        labels[key] = {"zh": theme["theme_name_zh"]}
+        for member in theme["constituents"]:
+            rows.append({"market": "CN", "code": member["code"], "name": member["name"],
+                         "theme": key, "weight": member["weight"], "reason": member["reason_zh"]})
+    return {"generatedAt": payload.get("generated_at"), "rows": rows}, labels
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Refresh the local A-share theme mapping cache from the configured public source.")
-    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL that serves theme-data.json and theme-label-i18n.json")
+    parser.add_argument("--url", default=DEFAULT_URL, help="Documented themes API URL")
     parser.add_argument("--target-dir", type=Path, default=Path(__file__).resolve().parents[1] / "assets" / "themes", help="Directory to update; defaults to this skill's local assets/themes cache")
     parser.add_argument("--max-age-days", type=int, default=7, help="Skip refresh when local assets are fresher than this many days")
     parser.add_argument("--force", action="store_true", help="Refresh even when the local cache is still fresh")
@@ -133,9 +140,8 @@ def main() -> int:
     args = parser.parse_args()
 
     target_dir = args.target_dir.expanduser().resolve()
-    target_dir.mkdir(parents=True, exist_ok=True)
 
-    if not args.force and is_cache_fresh(target_dir, args.max_age_days):
+    if not args.force and is_cache_fresh(target_dir, args.max_age_days, args.url):
         print(f"theme assets are fresh; skip refresh ({target_dir})")
         return 0
 
@@ -143,21 +149,23 @@ def main() -> int:
         print(f"theme assets would refresh into {target_dir}")
         return 0
 
-    base_url = args.base_url.rstrip("/")
-    file_meta: dict[str, dict[str, str | None]] = {}
-    for filename in ASSET_FILES:
-        url = f"{base_url}/{filename}"
-        file_meta[filename] = download_json(url, target_dir / filename)
-
-    validate_assets(target_dir)
+    payload = download_json(args.url)
+    data, labels = project_assets(payload)
 
     stamp = {
         "fetchedAt": utc_now().isoformat().replace("+00:00", "Z"),
-        "baseUrl": base_url,
+        "sourceUrl": args.url,
         "maxAgeDays": args.max_age_days,
-        "files": file_meta,
+        "sourceGeneratedAt": payload.get("generated_at"),
     }
-    (target_dir / STAMP_FILE).write_text(json.dumps(stamp, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    target_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=target_dir, prefix=".refresh-") as staging:
+        stage = Path(staging)
+        for filename, value in zip((*ASSET_FILES, STAMP_FILE), (data, labels, stamp)):
+            (stage / filename).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        validate_assets(stage)
+        for filename in (*ASSET_FILES, STAMP_FILE):
+            (stage / filename).replace(target_dir / filename)
 
     print(f"refreshed {target_dir / 'theme-data.json'}")
     print(f"refreshed {target_dir / 'theme-label-i18n.json'}")

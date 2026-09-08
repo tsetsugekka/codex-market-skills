@@ -12,6 +12,10 @@ skill 目录里的 `SKILL.md` 是给 Codex 执行时读取的规则文件；本�
 - 获取搜狐证券指数、行业板块、概念板块背景；今日盘中涨跌家数优先参考东方财富指数页 quote 接口（`push2delay.eastmoney.com`），历史涨跌停/涨跌家数参考搜狐 `zdt.shtml`，用于判断大盘、板块、个股是否同步共振。
 - 按冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮七段分析短线情绪位置，并区分健康分歧和高位分化。
 
+## DTM API 接入
+
+DTM 接入使用 `https://daytrading.monster/api/chinastock-anomaly` 的题材、涨停和异动原因；`https://daytrading.monster/api/themes` 不限市场，侧重跨市场题材传导。不读取 DTM 机构调研数据。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+
 ## 【依赖】
 
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，作为东方财富妙想增强层，用于 A 股行情、财务/估值、资金流、资讯/公告/政策、板块/概念成分、同行和条件筛选。

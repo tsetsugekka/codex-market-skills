@@ -79,6 +79,10 @@ Useful options:
 
 7. If the analysis or multi-turn correction produces a durable reusable lesson, update experience after answering. First decide scope: if the lesson applies to both A-shares and Japanese stocks, update both stock-skill `references/experience.md` files and consider `stock-sentiment-analysis/references/experience.md`; if it is specific to A-shares, update only this skill. Follow the `Conversation Learning Protocol` and `Compression Protocol`: generalize the lesson, merge repeated lessons into the active summary, keep the active section short, and move only distinct older details into the archive.
 
+## DTM API Context
+
+Use the canonical JSON interfaces in `https://daytrading.monster/api-docs/` for DTM reads. `https://daytrading.monster/api/chinastock-anomaly` supplies current rising/falling themes, limit-up concepts, hourly ranking snapshots, individual move reasons, and limit-up rows; match the target code and snapshot time. Read `https://daytrading.monster/api/themes` without a market filter to trace cross-market industry-chain and theme transmission across China, Japan, and the US. Use `themes[]` and `constituents[]` for members, `weight`, `reason_zh`, coverage, and completed-session returns; check dates instead of treating them as live moves. Parse the `text/plain` response bodies as JSON. Do not use DTM institution-survey data.
+
 ## A-share Emotion Cycle
 
 Classify the short-term emotion backdrop qualitatively into one of seven stages from the single-stock materials, price action, 股吧 discussion, market indexes, sector/concept boards, today's breadth, and recent Sohu zdt history:

@@ -6,7 +6,7 @@
 
 - 检查利率、汇率、央行、经济数据、商品、地缘、指数期货和 risk-on/risk-off 快讯。
 - 优先使用金十作为中文宏观 tape；华尔街见闻作为中文/亚洲市场补充；FinancialJuice 作为英文全球快讯补充。
-- 需要全球宏观、跨资产、AI、利率债、指数/gamma、日本、中国、商品、非 AI 板块或加密叙事预筛时，也参考当前 DayTrading.monster 24H Feed：`https://daytrading.monster/24hfeed/` 和当前快照 `https://daytrading.monster/24hfeed/feed24.json`。账号层仅在必要时读取当前快照 `https://daytrading.monster/24hfeed/x-monitor-feed.json`。不读取账号索引、日分片、叙事历史或旧账号 JSON；只把当前快照作为社交媒体衍生叙事预筛，重要结论仍要用实时快讯和价格确认。
+- 需要全球宏观、跨资产、AI、利率债、指数/gamma、日本、中国、商品、非 AI 板块或加密叙事预筛时，也参考[DTM API Docs](https://daytrading.monster/api-docs/) 的正式接口：`https://daytrading.monster/api/24hfeed/details` 提供最近 120 小时最多 100 条标题、链接、时间及分类；无需完整叙事 JSON，必要时阅读链接正文。账号层仅在必要时读取 `https://daytrading.monster/api/24hfeed/x-monitor` 的 8 小时快照窗口。两个响应虽为 `text/plain`，正文按 JSON 解析。不读取账号索引、日分片、叙事历史或旧账号 JSON；只把当前快照作为社交媒体衍生叙事预筛，重要结论仍要用实时快讯和价格确认。
 - `https://daytrading.monster/` 可用于发现全球主要指数、股票、FX、商品、收益率、ETF、链上/代币化代理的 TradingView symbol 和 `D`、`24h`、`365d` 标记；但普通 HTML 抓取看不到最新 widget 报价，只能看到页面壳、静态新闻摘要、symbol 和标记。引用实时价格前必须使用浏览器渲染后的 widget 或等价行情/TradingView scanner 确认。
 - 回答正文默认不点名聚合站、feed、dashboard、widget 或页面名；使用“当前叙事预筛”“快讯”“行情确认”等中性措辞。用户要求来源时，可以在单独 source 列表放 URL。
 - A 股盘面问题保持“快讯优先、搜狐辅助”：快讯解释政策/宏观/外围/突发风险，搜狐板块涨跌幅验证资金落点、扩散程度和强弱分化。

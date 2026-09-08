@@ -9,7 +9,8 @@
 - 推荐一只美股、日股或 A 股/ETF/LOF，并给出买点、风险和验证条件。
 - 将每日/单只推荐先归类为危机Beta、核心优质股波段、股息现金流、事件重估、优质价值或成长可选性，再用同一收益来源约束入场、执行失效、长期逻辑失效、时间止损和退出。
 - 在必要时调用其他市场 skill，而不是把每个数据层都做成固定前置步骤。
-- 做盘前和收盘复盘时，可把当前 DayTrading.monster 24H Feed 作为当前全球叙事预筛，覆盖 AI、地缘、商品、利率债、指数/gamma、日本、中国、非 AI 板块和加密方向；只看当前页面/当前 JSON，不读取历史或归档 feed，且必须再用实时新闻、行情或行业价格确认。
+- 做盘前和收盘复盘时，使用 `/api/24hfeed/details` 新闻索引及必要的详情链接、`/api/24hfeed/x-monitor` 八小时快照做全球叙事预筛；不读取旧 feed 文件，且必须再用实时新闻、行情或行业价格确认。`narrative_status.py` 已按新闻标题、链接、栏目和时间解析。
+- DTM 接入优先遵循 `https://daytrading.monster/api-docs/`：`/api/themes` 用于 US/JP/CN 跨市场题材传导；日本 PTS 整体上涨优先 `/api/pts/model1`、`model2`、`model3`，其他日股榜单及下跌查询参考 Kabutan/Yahoo 榜单入口；A 股用 `/api/chinastock-anomaly`，指数背景按需用 `/api/gamma/lite`、`/api/camarilla/nikkei`、`/api/camarilla/sse`。本策略 Skill 不请求两个 DTM ratings API。
 - 可用 DayTrading.monster 首页发现全球指数、FX、商品、收益率、ETF、链上/代币化代理的 TradingView symbol 和延迟/24h/365d 标记；普通 HTML 抓取看不到最新 widget 报价，引用价格前需要浏览器渲染或等价行情接口确认。
 - 报告正文默认不点名聚合站、feed、dashboard、widget、评级页或候选池名称；使用“当前叙事预筛”“当前评级数据”“PTS异动”“行情确认”等中性措辞。若评级或 PTS 层没有影响结论的新变化，就直接省略该层。用户要求来源时，可以在单独 source 列表放 URL。
 - 美股报告可选择性使用官方 moomoo 新闻、摘要、社区、资金、期权和技术异动 skill，但策略判断仍由本 skill 综合完成。

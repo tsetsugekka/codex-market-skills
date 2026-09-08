@@ -11,6 +11,10 @@ Use this skill as the U.S. stock counterpart to `jp-stock-move-reason` and `cn-s
 
 This public-safe skill must not store account data, OpenD logs, API keys, cookies, private RAG paths, personal positions, screenshots, raw private notes, or proprietary labels. It may call official moomoo skills when installed, but those skills remain external data/anomaly providers.
 
+## DTM API Context
+
+Use the canonical JSON interfaces in `https://daytrading.monster/api-docs/` for DTM reads. `https://daytrading.monster/api/ratings-us` supplies recent analyst reports (US-local today and the preceding three calendar days); match the target symbol and report date. Use `https://daytrading.monster/api/themes` without a market filter to trace cross-market industry-chain and theme transmission across US, Japan, and China. Read `themes[]` and `constituents[]` for members, `weight`, `reason_zh`, coverage, and completed-session returns; check dates instead of treating them as live moves. Parse the `text/plain` response bodies as JSON.
+
 ## Workflow
 
 1. Normalize the target into a U.S. market symbol such as `US.NVDA`, `US.DELL`, `US.SPY`, or `US.TSLA`. If the user gives only a name and the listing is ambiguous, ask one concise question. Treat broad index questions (`SPX`, `SPY`, `QQQ`, `NQ`) as U.S. index/ETF workflows and consider `macro-news-check` by default.

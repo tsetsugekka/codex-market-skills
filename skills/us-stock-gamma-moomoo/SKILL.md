@@ -49,6 +49,10 @@ Before running scripts or writing the final answer, classify the request and loa
 
 Final answers for index gamma should include a compact `融合口径` line naming the layers used, for example: `自算 SPXW gamma + macro-news-check tape + stock-technical-analysis price action + stock-sentiment-analysis emotion/expectation gap`. This makes skipped or missing skill fusion visible.
 
+## DTM SPX Reference
+
+For SPX/SPXW context, first reference the canonical `https://daytrading.monster/api/gamma/lite` interface documented in `https://daytrading.monster/api-docs/`. Parse its `text/plain` body as JSON and check its session/update time. It provides current SPX structure, expiry summaries, selected strike levels, Camarilla, and 0DTE five-minute samples. It is a fixed SPX/SPXW reference, not a full strike grid or an arbitrary-ticker endpoint. Keep the existing moomoo collection and computation workflow for full-chain calculations, requested scenario/heatmap detail, and other stocks or ETFs; do not present a DTM snapshot as a local calculation. Reuse an applicable upstream snapshot instead of requesting it twice.
+
 ## Environment Check
 
 This skill requires moomoo OpenD plus the Python SDK/skills environment.

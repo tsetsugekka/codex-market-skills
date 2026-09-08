@@ -27,6 +27,10 @@ NVDA 盘后为什么跌，moomoo 评论和期权大单怎么看？
 SPY 今天是宏观原因还是技术突破？
 ```
 
+## DTM API 接入
+
+DTM 接入优先使用 API Docs 正式接口：`https://daytrading.monster/api/ratings-us` 用于近期评级报告；`https://daytrading.monster/api/themes` 不限市场，用于中美日题材与产业链传导。核对报告日期、行情日期和覆盖度。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+
 ## 【依赖】
 
 - 可选但推荐：官方 moomoo skills，包括 `moomoo-news-search`、`moomoo-stock-digest`、`moomoo-comment-sentiment`、`moomoo-capital-anomaly`、`moomoo-derivatives-anomaly`、`moomoo-technical-anomaly`。

@@ -38,6 +38,10 @@ When this skill selects a reference file, first scan the file structure, then re
 6. Classify the move through three lenses: `confirmed catalyst`, `emotion/positioning`, and `technical confirmation`. Do not let forum heat replace confirmed news.
 7. If a multi-turn correction reveals a reusable lesson, update `references/experience.md` after answering. Generalize the lesson; remove ticker-specific personal details and private labels.
 
+## DTM Context
+
+Prefer data already obtained by the upstream market-specific skill. When the relevant context is missing, use the canonical JSON interfaces in `https://daytrading.monster/api-docs/`: `https://daytrading.monster/api/themes` for cross-market theme members and completed-session participation/relative strength; `https://daytrading.monster/api/chinastock-anomaly` for A-share theme rotation, limit-up structure, and move reasons; and `https://daytrading.monster/api/24hfeed/x-monitor` for discussion within the returned eight-hour snapshot window. Read `themes[]` and `constituents[]`, including coverage and quote dates; do not infer live flows from daily returns or whole-market sentiment from an account sample. Parse the `text/plain` bodies as JSON. Fetch only the layers needed for the question, retaining the existing source hierarchy and interpretation rules.
+
 ## Optional Private RAG
 
 If the user wants to use private study materials, ask them to specify a local RAG or index folder. Do not assume a default private path. Use it only for extracting reusable rules relevant to the current task.

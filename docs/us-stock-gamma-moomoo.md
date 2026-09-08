@@ -29,6 +29,10 @@
 算一下 SPXW 0DTE 7370C 在不同时间和 SPX 点位下的理论价值。
 ```
 
+## DTM API 接入
+
+SPX/SPXW 背景优先参考 `https://daytrading.monster/api/gamma/lite` 的当前结构、关键位置与 0DTE 五分钟轨迹；完整链、情景计算、详细热图及其他股票/ETF 保持既有 moomoo 采集计算流程。DTM 快照不得表述为本地自算结果。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+
 ## 【依赖】
 
 - 必需：本机安装并运行 moomoo OpenD。

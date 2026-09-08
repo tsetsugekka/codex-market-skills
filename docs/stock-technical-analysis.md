@@ -12,6 +12,10 @@
 - 对美股个股，可先用 `moomoo-technical-anomaly` 做官方技术异动扫描；但该结果只是提示，最终仍按趋势位置、VWAP/均线、量价、动能背离、支撑压力和失败突破判断。
 - 与日股、A 股、美股 gamma 等市场 skill 配合：先找催化/基本面，再看技术结构是否确认。
 
+## DTM API 接入
+
+DTM 指数背景按需使用 `https://daytrading.monster/api/gamma/lite`、`https://daytrading.monster/api/camarilla/nikkei`、`https://daytrading.monster/api/camarilla/sse`；日股/A股盘前跳过对应 Camarilla。题材背景使用 `/api/themes?market=us`、`market=jp` 或 `market=cn`。这些固定指数和已完成交易日数据不替代个股 K 线。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+
 ## 【依赖】
 
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、资讯、板块/概念成分、同行对比和自然语言技术筛选增强。

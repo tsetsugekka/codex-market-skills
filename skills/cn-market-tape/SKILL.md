@@ -18,6 +18,15 @@ description: Use when the user asks for A-share intraday or after-close market t
 
 若用户只要求“盘中快照”，不要自动抓股吧、新闻或历史数据；若用户要求“为什么”或“复盘”，再按需要调用 `mx-search`、`cn-stock-move-reason` 和 `macro-news-check`。
 
+### DTM 接口
+
+DTM 数据优先使用 `https://daytrading.monster/api-docs/` 中的正式接口：
+
+- `https://daytrading.monster/api/chinastock-anomaly`：最新涨跌题材 Top10、涨停概念 Top8、当日小时榜单、完整异动原因和涨停池。逐块核对交易日和时间；该榜单与下文 MX 成分加权榜是不同口径，不能混合排名或当作同口径历史快照。
+- `https://daytrading.monster/api/themes?market=cn`：A 股题材成员、权重、中文名称与依据及阶段表现；阶段涨跌与 `price_dates` 不作为实时行情。映射缓存由此接口生成，现有 MX 行情、加权计算和资金流流程保持原样。
+
+接口正文是 JSON，即使 Content-Type 为 `text/plain`。不读取 DTM 机构调研数据；机构调研继续使用既有流程。
+
 ## Dependencies
 
 题材强弱的必需依赖：
@@ -40,7 +49,7 @@ MX 未配置、认证失败、超 quota 或返回空数据时，不要假装已�
 
 ### Theme universe
 
-题材强弱榜使用本地 A 股题材映射缓存和配置的公共题材 JSON 源。缓存文件为：
+题材强弱榜使用本地 A 股题材映射缓存；刷新脚本从正式 `/api/themes?market=cn` 的 `themes[].constituents[]` 提取成员和权重，并从 `theme_name_zh` 生成中文标签。缓存文件为：
 
 - `assets/themes/theme-data.json`
 - `assets/themes/theme-label-i18n.json`

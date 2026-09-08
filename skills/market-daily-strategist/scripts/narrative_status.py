@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch and filter the current 24h market narrative snapshot.
+"""Fetch and filter the current DTM news-details index.
 
 This helper is intentionally narrow: it is an optional pre-screen for market
 reports, not a primary news or price source.
@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 
-DEFAULT_URL = "https://daytrading.monster/24hfeed/feed24.json"
+DEFAULT_URL = "https://daytrading.monster/api/24hfeed/details"
 
 MARKET_KEYS = {
     "us": ["ai", "us_iran", "commodities", "rates_bonds", "spx_gamma", "non_ai", "crypto"],
@@ -60,75 +60,53 @@ def select_keys(market: str) -> list[str]:
 
 
 def entry_fresh(entry: dict[str, Any], now: datetime, max_entry_age_hours: float) -> tuple[bool, float | None]:
-    source_time = parse_time(entry.get("sourceCreatedAt"))
-    updated_time = parse_time(entry.get("updatedAt"))
-    primary_time = source_time or updated_time
+    primary_time = parse_time(entry.get("time"))
     entry_age = age_hours(primary_time, now)
     if entry_age is None:
         return False, None
-    return entry_age <= max_entry_age_hours, entry_age
+    return 0 <= entry_age <= max_entry_age_hours, entry_age
 
 
 def build_summary(data: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
+    if data.get("ok") is not True or not isinstance(data.get("items"), list):
+        raise ValueError("details API did not return ok=true and items[]")
     now = datetime.now(timezone.utc)
-    generated_at = parse_time(data.get("generatedAt"))
-    reviewed_at = parse_time(data.get("reviewedAt"))
+    generated_at = parse_time(data.get("generated_at"))
+    reviewed_at = parse_time(data.get("reviewed_at"))
     feed_age = age_hours(generated_at or reviewed_at, now)
-    feed_is_fresh = feed_age is not None and feed_age <= args.max_feed_age_hours
+    feed_is_fresh = feed_age is not None and 0 <= feed_age <= args.max_feed_age_hours
 
     wanted_keys = set(select_keys(args.market))
-    items = []
-    for item in data.get("items", []):
-        key = item.get("key")
+    groups: dict[str, dict[str, Any]] = {}
+    for entry in data["items"]:
+        key = entry.get("category")
         if wanted_keys and key not in wanted_keys:
             continue
-        fresh_entries = []
-        stale_entries = 0
-        for entry in item.get("entries", []):
-            is_fresh, entry_age = entry_fresh(entry, now, args.max_entry_age_hours)
-            if not is_fresh:
-                stale_entries += 1
-                continue
-            fresh_entries.append(
-                {
-                    "text": entry.get("text"),
-                    "direction": entry.get("direction"),
-                    "updatedAt": entry.get("updatedAt"),
-                    "sourceCreatedAt": entry.get("sourceCreatedAt"),
-                    "ageHours": None if entry_age is None else round(entry_age, 2),
-                    "evidenceTweetIds": entry.get("evidenceTweetIds", []),
-                }
-            )
-            if len(fresh_entries) >= args.limit:
-                break
-        items.append(
-            {
-                "key": key,
-                "label": item.get("label"),
-                "freshEntries": fresh_entries,
-                "staleEntriesSkipped": stale_entries,
-                "topDirection": item.get("direction"),
-                "topText": item.get("text"),
-                "updatedAt": item.get("updatedAt"),
-            }
-        )
+        group = groups.setdefault(key, {"key": key, "label": entry.get("category_label"),
+                                       "freshEntries": [], "staleEntriesSkipped": 0})
+        is_fresh, entry_age = entry_fresh(entry, now, args.max_entry_age_hours)
+        if not is_fresh:
+            group["staleEntriesSkipped"] += 1
+        elif len(group["freshEntries"]) < args.limit:
+            group["freshEntries"].append({"title": entry.get("title"), "url": entry.get("url"),
+                                          "time": entry.get("time"), "ageHours": round(entry_age, 2)})
 
     return {
         "status": "ok" if feed_is_fresh else "stale_feed",
-        "generatedAt": data.get("generatedAt"),
-        "reviewedAt": data.get("reviewedAt"),
+        "generatedAt": data.get("generated_at"),
+        "reviewedAt": data.get("reviewed_at"),
         "feedAgeHours": None if feed_age is None else round(feed_age, 2),
         "maxFeedAgeHours": args.max_feed_age_hours,
         "maxEntryAgeHours": args.max_entry_age_hours,
         "market": args.market,
-        "items": items,
+        "items": list(groups.values()),
         "discipline": "Use as a narrative pre-screen only; verify facts, prices, and market reaction elsewhere.",
     }
 
 
 def render_markdown(summary: dict[str, Any]) -> str:
     lines = [
-        f"# Narrative Status ({summary['market']})",
+        f"# News Details Status ({summary['market']})",
         "",
         f"- status: {summary['status']}",
         f"- generatedAt: {summary.get('generatedAt')}",
@@ -144,10 +122,9 @@ def render_markdown(summary: dict[str, Any]) -> str:
             continue
         lines.append(f"## {item['key']} - {item.get('label')}")
         for entry in entries:
-            ids = ",".join(entry.get("evidenceTweetIds") or [])
             lines.append(
-                f"- {entry.get('direction')}: {entry.get('text')} "
-                f"(sourceCreatedAt={entry.get('sourceCreatedAt')}, ageHours={entry.get('ageHours')}, evidenceTweetIds={ids})"
+                f"- [{entry.get('title')}]({entry.get('url')}) "
+                f"(time={entry.get('time')}, ageHours={entry.get('ageHours')})"
             )
         if item["staleEntriesSkipped"]:
             lines.append(f"- skipped stale entries: {item['staleEntriesSkipped']}")
@@ -159,7 +136,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", default=DEFAULT_URL)
     parser.add_argument("--market", choices=["us", "jp", "cn", "global", "crypto", "all"], default="global")
-    parser.add_argument("--limit", type=int, default=5, help="Fresh entries per narrative key")
+    parser.add_argument("--limit", type=int, default=5, help="Fresh news entries per category")
     parser.add_argument("--max-feed-age-hours", type=float, default=6.0)
     parser.add_argument("--max-entry-age-hours", type=float, default=24.0)
     parser.add_argument("--timeout", type=int, default=10)
@@ -172,7 +149,7 @@ def main(argv: list[str]) -> int:
     try:
         data = fetch_json(args.url, args.timeout)
         summary = build_summary(data, args)
-    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
+    except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
         print(json.dumps({"status": "error", "error": str(exc)}, ensure_ascii=False, indent=2))
         return 2
 

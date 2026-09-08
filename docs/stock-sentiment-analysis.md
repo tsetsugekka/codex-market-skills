@@ -12,6 +12,10 @@
 - 美股社区讨论可用 `moomoo-comment-sentiment` 辅助，但只代表 moomoo 社区样本，用于判断散户热度、分歧、追涨/恐慌，不替代新闻、财报、期权和价格行为。
 - A 股板块/题材成分、相关股、概念股、龙头股问题可用 `mx-xuangu` 做可选增强，再结合行情和资讯判断纯度、热度和催化。
 
+## DTM API 接入
+
+DTM 数据优先复用上游结果；按需使用 `https://daytrading.monster/api/themes` 的跨市场题材，`https://daytrading.monster/api/chinastock-anomaly` 的 A 股题材/涨停/异动，以及 `https://daytrading.monster/api/24hfeed/x-monitor` 的 8 小时讨论快照。核对时间与覆盖度，不将样本情绪视为全市场统计。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+
 ## 【依赖】
 
 - 可选：`mx-data`、`mx-search`、`mx-xuangu`，用于 A 股行情、资讯、题材成分和条件筛选增强。

@@ -33,6 +33,10 @@
 
 ## 数据口径
 
+### DTM 正式接口
+
+DTM 接入遵循 `https://daytrading.monster/api-docs/`：`/api/chinastock-anomaly` 提供涨跌题材、涨停概念、小时榜单、异动原因和涨停池；`/api/themes?market=cn` 提供题材成员、权重、中文名称、依据及阶段表现。逐块检查日期和时间，保持其榜单与下文 MX 加权榜的口径独立。机构调研不使用 DTM 数据，其他外部数据流程不变。
+
 ### 题材强弱
 
 题材映射缓存位于：
@@ -114,6 +118,8 @@ BOTTOM10
 ## 本地缓存刷新
 
 正常运行时，如果题材缓存缺失或超过 7 天，可以刷新本地快照：
+
+刷新只请求 `/api/themes?market=cn`，生成既有成员和中文标签缓存；不再下载站内原始 JSON 文件。旧来源缓存会在下一次正常刷新时迁移。
 
 ```bash
 python3 <cn-market-tape>/scripts/refresh_theme_assets_from_public_source.py
