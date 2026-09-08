@@ -407,7 +407,13 @@ docs/
   stock-technical-analysis.md
 shared/
   references/release-and-privacy.md
+final-response-status/
+  AGENTS.md
 ```
+
+## Final Response Status
+
+This repository also includes a standalone general rule in [`final-response-status/AGENTS.md`](final-response-status/AGENTS.md). Append it to, or integrate it with, an existing global or project `AGENTS.md`; do not replace the existing file. The rule requires every final response to end with the actual status, and requires a brief explanation when work remains unfinished or blocked. Use one of **【All complete / 全部完成】**, **【Partially complete / 阶段性完成】**, **【Awaiting choice / 待选择】**, **【Awaiting confirmation / 待确认】**, or **【Pending discussion / 待讨论】**.
 
 ## Languages
 
