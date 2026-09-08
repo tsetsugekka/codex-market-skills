@@ -407,13 +407,7 @@ docs/
   stock-technical-analysis.md
 shared/
   references/release-and-privacy.md
-final-response-status/
-  AGENTS.md
 ```
-
-## 最終回答の状況表示
-
-このリポジトリには、[`final-response-status/AGENTS.md`](final-response-status/AGENTS.md) に独立した汎用ルールも収録しています。既存のグローバルまたはプロジェクト用 `AGENTS.md` に追記・統合して使い、既存ファイルを置き換えないでください。毎回の最終回答の末尾に実際の状況を明示し、未完了または阻害要因がある場合は短く説明します。状態ラベルは **【すべて完了 / 全部完成】**、**【一部完了 / 阶段性完成】**、**【選択待ち / 待选择】**、**【確認待ち / 待确认】**、**【検討待ち / 待讨论】** を使います。
 
 ## 言語
 

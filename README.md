@@ -407,13 +407,7 @@ docs/
   stock-technical-analysis.md
 shared/
   references/release-and-privacy.md
-final-response-status/
-  AGENTS.md
 ```
-
-## 最终回答状态标注
-
-本仓库还包含一条可独立追加到全局或项目 `AGENTS.md` 的通用规则：[`final-response-status/AGENTS.md`](final-response-status/AGENTS.md)。将它追加或与现有规则整合使用，不要替换已有的 `AGENTS.md`。规则要求每次最终回答末尾明确标注实际状态；有未完成事项或阻塞时要简要说明，不能把暂停或部分完成写成全部完成。状态标签包括 **【全部完成】**、**【阶段性完成】**、**【待选择】**、**【待确认】** 和 **【待讨论】**。
 
 ## 语言
 
