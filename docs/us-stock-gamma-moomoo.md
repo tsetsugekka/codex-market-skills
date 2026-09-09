@@ -31,7 +31,7 @@
 
 ## DTM API 接入
 
-SPX/SPXW 背景优先参考 `https://daytrading.monster/api/gamma/lite` 的当前结构、关键位置与 0DTE 五分钟轨迹；完整链、情景计算、详细热图及其他股票/ETF 保持既有 moomoo 采集计算流程。DTM 快照不得表述为本地自算结果。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+SPX/SPXW 背景优先参考 `https://daytrading.monster/api/gamma/` 的当前结构、关键位置与 0DTE 五分钟轨迹，并用 `price_trajectory.points` 的 `timestamp`、`index_value` 读取该时段全部可用源价格点（不插值、不保证逐笔完整）；完整链、情景计算、详细热图及其他股票/ETF 保持既有 moomoo 采集计算流程。DTM 快照不得表述为本地自算结果。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/gamma)，响应正文按 JSON 解析。
 
 ## 【依赖】
 

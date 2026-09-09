@@ -14,7 +14,7 @@
 
 ## DTM API 接入
 
-DTM 指数背景按需使用 `https://daytrading.monster/api/gamma/lite`、`https://daytrading.monster/api/camarilla/nikkei`、`https://daytrading.monster/api/camarilla/sse`；日股/A股盘前跳过对应 Camarilla。题材背景使用 `/api/themes?market=us`、`market=jp` 或 `market=cn`。这些固定指数和已完成交易日数据不替代个股 K 线。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
+DTM 指数背景按需使用 `https://daytrading.monster/api/gamma/`、`https://daytrading.monster/api/camarilla/nikkei`、`https://daytrading.monster/api/camarilla/sse`；日股/A股盘前跳过对应 Camarilla。题材背景使用 `/api/themes?market=us`、`market=jp` 或 `market=cn`。这些固定指数和已完成交易日数据不替代个股 K 线。这些正式接口见 [API Docs](https://daytrading.monster/api-docs/)，响应正文按 JSON 解析。
 
 ## 【依赖】
 
