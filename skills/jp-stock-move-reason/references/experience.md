@@ -48,6 +48,7 @@ Read this section before using the JP stock skill. Keep it compact and current.
 
 ### Reusable Lessons From Recent Cases
 
+- For Kabutan article bodies, reuse the collector's `fetch_url()` and its existing request headers; do not substitute a bare `urllib` request. Use cookie-free HTTP for this path. Verify the target title and article body rather than treating HTTP 200 or a news-list entry as successful body extraction; exclude navigation, login prompts, and access-control pages. Report HTTP rejection, tool safety refusal, and parsing failure separately. A failed direct request does not establish browser inaccessibility or absence of news; on blocking, stop and follow the applicable retry policy.
 - If the current period beats but forward guidance is weak, expect "good result, bad reaction" risk.
 - If forward guidance beats consensus/market publications and shareholder return improves, the market can re-rate even after a pre-release run-up.
 - If sentiment is skeptical before release and the result clears the feared issue, the reaction can be stronger than the absolute numbers suggest.
@@ -100,6 +101,7 @@ Use this protocol after multi-turn discussion about the same stock.
 
 ## Archive
 
+- 2026-09-10 Kabutan retrieval check: a prior bare `urllib` article request returned HTTP 403; two later calls through the existing `fetch_url()` returned the target title and body without cookies or a browser. No header change was needed. This was not a controlled single-header comparison: do not attribute success solely to User-Agent or promise permanent access. The news-list collector still returns titles/links, so body retrieval must be explicitly performed when needed.
 - 2026-05-11 JP earnings review distilled into the active rules above; ticker-specific details intentionally removed from active guidance to keep the playbook reusable.
 - 2026-05-11 Added cross-market emotion-structure rules from an A-share sector discussion transcript; A-share-specific examples and current calls were intentionally omitted.
 - 2026-05-15 Added a generalized expectation-gap rule for numeric and qualitative catalysts, so move explanations compare prior expectation with actual news before assigning causality.
