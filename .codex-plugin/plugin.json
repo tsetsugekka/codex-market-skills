@@ -32,8 +32,8 @@
     "websiteURL": "https://github.com/tsetsugekka/codex-market-skills",
     "defaultPrompt": [
       "分析这只股票今天为什么异动，并区分确认催化、市场情绪和背景噪音。",
-      "写一份当前市场的盘前策略或收盘复盘，给出关键验证点和风险。",
-      "分析这只股票的技术结构、支撑压力、情绪和宏观背景。"
+      "現在の市場の寄り付き前の戦略または大引け後の振り返りをまとめ、重要な確認ポイントとリスクを示してください。",
+      "Analyze this stock’s technical structure, support and resistance, sentiment, and macro context."
     ],
     "composerIcon": "./assets/logo.svg",
     "logo": "./assets/logo.svg",
