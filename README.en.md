@@ -36,6 +36,14 @@ It covers four major task areas:
 | Macro and structure | Macro headlines, broad-market tape, technical structure, support/resistance, gamma/GEX, and 0DTE scenario tables |
 | Calendar and reports | US/Japan earnings, macro events, central-bank events, market strategy reports, and closing reviews |
 
+## Plugin Architecture
+
+[![DayTrading.Monster plugin architecture: skills, data sources, call relationships, and outputs](assets/architecture.en.svg)](assets/architecture.en.svg)
+
+[中文图](assets/architecture.zh-CN.svg) · [English diagram](assets/architecture.en.svg) · [日本語の図](assets/architecture.ja.svg)
+
+This diagram shows the logical collaboration of 10 skills, not the execution trace of a single request. Supporting capabilities are invoked as needed. moomoo/OpenD, MX, and Google Calendar are external dependencies that require separate setup and appropriate authorization. The plugin does not include a scheduler or place trades automatically.
+
 ## Skill Overview
 
 | Skill | Purpose | Key Dependencies |

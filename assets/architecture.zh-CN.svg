@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1450" viewBox="0 0 1800 1450" role="img" aria-labelledby="title desc" xml:lang="zh-CN">
+<title id="title">DayTrading.Monster 插件架构图</title>
+<desc id="desc">Skill → 数据源 → 调用关系 → 输出结构. 这是逻辑协作图，不是本轮执行记录；外部能力取决于宿主环境。本插件不内置定时器，也不自动下单。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker><marker id="write" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#d97706"/></marker></defs>
+<style>text{font-family:"Noto Sans CJK SC",sans-serif;fill:#172554}.h{font-size:26px;font-weight:700}.id{font-size:19px;font-weight:700}.body{font-size:20px}.small{font-size:18px;fill:#475569}.line{fill:none;stroke:#64748b;stroke-width:2.2;marker-end:url(#arrow)}.card{fill:white;stroke:#cbd5e1;stroke-width:1.2}</style>
+<rect width="1800" height="1450" fill="#ffffff"/>
+<text x="48" y="57" class="h" style="font-size:38px">DayTrading.Monster 插件架构图</text>
+<text x="48" y="92" class="body" style="font-size:22px">Skill → 数据源 → 调用关系 → 输出结构</text>
+<text x="1750" y="85" class="small" style="font-size:16px" text-anchor="end">公开版 · 10 SKILLS</text>
+<rect x="24" y="118" width="1752" height="122" rx="18" fill="#eff6ff"/>
+<rect x="44" y="136" width="36" height="36" rx="10" fill="#2563eb"/>
+<text x="62" y="162" class="h" style="font-size:24px;fill:#fff" text-anchor="middle">1</text>
+<text x="94" y="163" class="h">用户问题入口</text>
+<rect x="48" y="176" width="414" height="48" rx="10" fill="#fff" stroke="#bfdbfe"/>
+<text x="255" y="207" class="id" style="font-size:21px" text-anchor="middle">个股异动 · 为什么涨跌</text>
+<rect x="478" y="176" width="414" height="48" rx="10" fill="#fff" stroke="#bfdbfe"/>
+<text x="685" y="207" class="id" style="font-size:21px" text-anchor="middle">大盘 / 题材 · 盘前与复盘</text>
+<rect x="908" y="176" width="414" height="48" rx="10" fill="#fff" stroke="#bfdbfe"/>
+<text x="1115" y="207" class="id" style="font-size:21px" text-anchor="middle">技术面 / Gamma / 情绪</text>
+<rect x="1338" y="176" width="414" height="48" rx="10" fill="#fff" stroke="#bfdbfe"/>
+<text x="1545" y="207" class="id" style="font-size:21px" text-anchor="middle">财报 / 宏观事件 · 日历</text>
+<path d="M900 244V272" class="line"/>
+<text x="924" y="264" class="small" style="font-size:17px">识别意图，选择入口</text>
+<rect x="24" y="272" width="1752" height="219" rx="18" fill="#f0fdf4"/>
+<rect x="44" y="290" width="36" height="36" rx="10" fill="#15803d"/>
+<text x="62" y="316" class="h" style="font-size:24px;fill:#fff" text-anchor="middle">2</text>
+<text x="94" y="317" class="h">主 Skill · 入口与编排</text>
+<rect x="48" y="337" width="269" height="86" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="48" y="337" width="5" height="86" rx="2" fill="#15803d"/>
+<text x="65" y="366" class="id">market-daily-strategist</text>
+<text x="65" y="396" class="body" style="font-size:20px">美股 / 日股 / A股策略</text>
+<rect x="335" y="337" width="269" height="86" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="335" y="337" width="5" height="86" rx="2" fill="#15803d"/>
+<text x="352" y="366" class="id">us-stock-move-reason</text>
+<text x="352" y="396" class="body" style="font-size:20px">美股 / ETF 异动归因</text>
+<rect x="622" y="337" width="269" height="86" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="622" y="337" width="5" height="86" rx="2" fill="#15803d"/>
+<text x="639" y="366" class="id">jp-stock-move-reason</text>
+<text x="639" y="396" class="body" style="font-size:20px">日股异动 / PTS 排行</text>
+<rect x="909" y="337" width="269" height="86" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="909" y="337" width="5" height="86" rx="2" fill="#15803d"/>
+<text x="926" y="366" class="id">cn-stock-move-reason</text>
+<text x="926" y="396" class="body" style="font-size:20px">A股异动 / 板块共振</text>
+<rect x="1196" y="337" width="269" height="86" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="1196" y="337" width="5" height="86" rx="2" fill="#15803d"/>
+<text x="1213" y="366" class="id">cn-market-tape</text>
+<text x="1213" y="396" class="body" style="font-size:20px">题材 / 资金流 / 涨停池</text>
+<rect x="1483" y="337" width="269" height="86" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="1483" y="337" width="5" height="86" rx="2" fill="#d97706"/>
+<text x="1500" y="366" class="id">market-calendar-google</text>
+<text x="1500" y="396" class="body" style="font-size:20px">财报 / 宏观事件日历</text>
+<text x="48" y="453" class="small">策略 → 三市场异动 + 支撑分析；US 异动 → 四项支撑。</text>
+<text x="48" y="478" class="small">JP / CN 异动 → 技术、情绪、宏观；A股盘面 → CN 异动 / 宏观（需要解释时）。</text>
+<path d="M900 495V526" class="line" stroke-dasharray="6 5"/>
+<text x="924" y="516" class="small" style="font-size:17px">按需调用</text>
+<rect x="24" y="526" width="1752" height="188" rx="18" fill="#f5f3ff"/>
+<rect x="44" y="544" width="36" height="36" rx="10" fill="#7c3aed"/>
+<text x="62" y="570" class="h" style="font-size:24px;fill:#fff" text-anchor="middle">3</text>
+<text x="94" y="571" class="h">支撑 Skill · 按需协作</text>
+<rect x="48" y="590" width="414" height="84" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="48" y="590" width="5" height="84" rx="2" fill="#2563eb"/>
+<text x="65" y="619" class="id">stock-technical-analysis</text>
+<text x="65" y="649" class="body" style="font-size:20px">趋势 · 支撑阻力 · VWAP</text>
+<rect x="478" y="590" width="414" height="84" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="478" y="590" width="5" height="84" rx="2" fill="#db2777"/>
+<text x="495" y="619" class="id">stock-sentiment-analysis</text>
+<text x="495" y="649" class="body" style="font-size:20px">预期差 · 主线 / 跟随 · 拥挤度</text>
+<rect x="908" y="590" width="414" height="84" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="908" y="590" width="5" height="84" rx="2" fill="#7c3aed"/>
+<text x="925" y="619" class="id">us-stock-gamma-moomoo</text>
+<text x="925" y="649" class="body" style="font-size:20px">美股期权 · GEX / Flip / Wall</text>
+<rect x="1338" y="590" width="414" height="84" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="1338" y="590" width="5" height="84" rx="2" fill="#0f766e"/>
+<text x="1355" y="619" class="id">macro-news-check</text>
+<text x="1355" y="649" class="body" style="font-size:20px">利率 · 汇率 · 商品 · 大盘</text>
+<text x="48" y="700" class="small">支撑 Skill 也可直接作为入口；按线索调用，不是每次全部执行。</text>
+<path d="M900 719V756" class="line" marker-start="url(#arrow)"/>
+<text x="924" y="743" class="small" style="font-size:17px">Skill 检索、核验并接收证据</text>
+<rect x="24" y="756" width="1752" height="356" rx="18" fill="#fffbeb"/>
+<rect x="44" y="774" width="36" height="36" rx="10" fill="#b45309"/>
+<text x="62" y="800" class="h" style="font-size:24px;fill:#fff" text-anchor="middle">4</text>
+<text x="94" y="801" class="h">数据源与外部运行依赖</text>
+<rect x="48" y="820" width="364" height="252" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="48" y="820" width="5" height="252" rx="2" fill="#2563eb"/>
+<text x="65" y="849" class="id">DTM 结构化接口</text>
+<text x="65" y="879" class="body" style="font-size:18px">/api/themes</text>
+<text x="65" y="907" class="body" style="font-size:18px">/api/ratings-us · /api/ratings-jp</text>
+<text x="65" y="935" class="body" style="font-size:18px">/api/chinastock-anomaly</text>
+<text x="65" y="963" class="body" style="font-size:18px">/api/24hfeed/details</text>
+<text x="65" y="991" class="body" style="font-size:18px">/api/24hfeed/x-monitor</text>
+<text x="65" y="1019" class="body" style="font-size:18px">/api/pts/model1 / model2 / model3</text>
+<rect x="428" y="820" width="244" height="252" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="428" y="820" width="5" height="252" rx="2" fill="#2563eb"/>
+<text x="445" y="849" class="id">美股公开证据</text>
+<text x="445" y="879" class="body" style="font-size:18px">公司 IR / SEC</text>
+<text x="445" y="907" class="body" style="font-size:18px">财报 · 指引 · 评级</text>
+<text x="445" y="935" class="body" style="font-size:18px">行情 · 成交量</text>
+<text x="445" y="963" class="body" style="font-size:18px">同业与行业新闻</text>
+<rect x="688" y="820" width="244" height="252" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="688" y="820" width="5" height="252" rx="2" fill="#2563eb"/>
+<text x="705" y="849" class="id">日股公开证据</text>
+<text x="705" y="879" class="body" style="font-size:18px">Yahoo Finance Japan</text>
+<text x="705" y="907" class="body" style="font-size:18px">Kabutan / Traders Web</text>
+<text x="705" y="935" class="body" style="font-size:18px">TDnet / 公司 IR</text>
+<text x="705" y="963" class="body" style="font-size:18px">Yahoo 掲示板</text>
+<text x="705" y="991" class="body" style="font-size:18px">PTS：注明时段与延迟</text>
+<rect x="948" y="820" width="244" height="252" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="948" y="820" width="5" height="252" rx="2" fill="#2563eb"/>
+<text x="965" y="849" class="id">A股公开证据</text>
+<text x="965" y="879" class="body" style="font-size:18px">东方财富行情 / 公告</text>
+<text x="965" y="907" class="body" style="font-size:18px">股吧 / 资讯</text>
+<text x="965" y="935" class="body" style="font-size:18px">搜狐指数 / 板块</text>
+<text x="965" y="963" class="body" style="font-size:18px">涨跌家数 / 行业广度</text>
+<rect x="1208" y="820" width="244" height="252" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="1208" y="820" width="5" height="252" rx="2" fill="#2563eb"/>
+<text x="1225" y="849" class="id">宏观与跨资产</text>
+<text x="1225" y="879" class="body" style="font-size:18px">金十 / 华尔街见闻</text>
+<text x="1225" y="907" class="body" style="font-size:18px">FinancialJuice</text>
+<text x="1225" y="935" class="body" style="font-size:18px">JPX 指数 / 行业</text>
+<text x="1225" y="963" class="body" style="font-size:18px">美债 / 日债 / USDJPY</text>
+<text x="1225" y="991" class="body" style="font-size:18px">DXY / 原油 / 黄金</text>
+<rect x="1468" y="820" width="284" height="252" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="1468" y="820" width="5" height="252" rx="2" fill="#d97706"/>
+<text x="1485" y="849" class="id">外部工具 / 依赖</text>
+<text x="1485" y="879" class="body" style="font-size:18px">moomoo skills / OpenD</text>
+<text x="1485" y="907" class="body" style="font-size:18px">Python SDK / moomooapi</text>
+<text x="1485" y="935" class="body" style="font-size:18px">东方财富妙想（MX）</text>
+<text x="1485" y="963" class="body" style="font-size:18px">Google Calendar</text>
+<text x="1485" y="991" class="body" style="font-size:18px">需另行安装 / 连接 / 授权</text>
+<text x="48" y="1097" class="small">核对时间戳、交易日与延迟；主题 / 社区提供线索，关键催化仍需公告、原始新闻与价格验证。</text>
+<path d="M900 1117V1151" class="line"/>
+<text x="924" y="1140" class="small" style="font-size:17px">主 Skill 综合证据，生成结果</text>
+<rect x="24" y="1151" width="1752" height="185" rx="18" fill="#f0fdfa"/>
+<rect x="44" y="1169" width="36" height="36" rx="10" fill="#0f766e"/>
+<text x="62" y="1195" class="h" style="font-size:24px;fill:#fff" text-anchor="middle">5</text>
+<text x="94" y="1196" class="h">输出结构</text>
+<rect x="48" y="1215" width="328" height="102" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="48" y="1215" width="5" height="102" rx="2" fill="#0f766e"/>
+<text x="65" y="1244" class="id">异动分析</text>
+<text x="65" y="1274" class="body" style="font-size:19px">主因 / 辅因 / 置信度</text>
+<text x="65" y="1302" class="body" style="font-size:19px">社区温度 / 风险与待确认</text>
+<rect x="392" y="1215" width="328" height="102" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="392" y="1215" width="5" height="102" rx="2" fill="#0f766e"/>
+<text x="409" y="1244" class="id">策略报告</text>
+<text x="409" y="1274" class="body" style="font-size:19px">方向 / 主线 / 风险</text>
+<text x="409" y="1302" class="body" style="font-size:19px">下一验证条件</text>
+<rect x="736" y="1215" width="328" height="102" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="736" y="1215" width="5" height="102" rx="2" fill="#0f766e"/>
+<text x="753" y="1244" class="id">A股盘面</text>
+<text x="753" y="1274" class="body" style="font-size:19px">TOP / BOTTOM / 资金流</text>
+<text x="753" y="1302" class="body" style="font-size:19px">涨停结构 / 机构调研</text>
+<rect x="1080" y="1215" width="328" height="102" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="1080" y="1215" width="5" height="102" rx="2" fill="#0f766e"/>
+<text x="1097" y="1244" class="id">专题分析</text>
+<text x="1097" y="1274" class="body" style="font-size:19px">技术 / 情绪 / Gamma</text>
+<text x="1097" y="1302" class="body" style="font-size:19px">关键水位 / 条件化判断</text>
+<rect x="1424" y="1215" width="328" height="102" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<rect x="1424" y="1215" width="5" height="102" rx="2" fill="#d97706"/>
+<text x="1441" y="1244" class="id">日历与写入</text>
+<text x="1441" y="1274" class="body" style="font-size:19px">事件 / 时区 / 去重</text>
+<text x="1441" y="1302" class="body" style="font-size:19px">明确请求后写入日历</text>
+<path d="M1752 381H1770V978H1754M1770 978V1266H1754" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#write)"/>
+<rect x="24" y="1360" width="1752" height="68" rx="16" fill="#eef2ff"/>
+<text x="900" y="1389" class="id" style="font-size:21px" text-anchor="middle">核心逻辑：确认真实异动 → 寻找硬催化 → 检验板块与放大因素 → 输出条件化结论</text>
+<text x="900" y="1416" class="small" style="font-size:17px" text-anchor="middle">这是逻辑协作图，不是本轮执行记录；外部能力取决于宿主环境。本插件不内置定时器，也不自动下单。</text>
+</svg>
