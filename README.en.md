@@ -34,6 +34,12 @@ It covers four major task areas:
 | Macro and structure | Macro headlines, broad-market tape, technical structure, support/resistance, gamma/GEX, and 0DTE scenario tables |
 | Calendar and reports | US/Japan earnings, macro events, central-bank events, market strategy reports, and closing reviews |
 
+## Plugin Architecture
+
+[![DayTrading.Monster architecture: user entry, main skills, support skills, sources and outputs](assets/architecture.en.png)](assets/architecture.en.png)
+
+Choose an entry by task and add support skills as needed; not every skill runs for every request. Click to view full size.
+
 ## Skill Overview
 
 | Skill | Purpose | Key Dependencies |
