@@ -1,6 +1,6 @@
 {
   "name": "codex-market-skills",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Market research workflows for China, Japan, and US equities, covering stock-move analysis, market tape, macro context, sentiment, technicals, gamma, strategy reports, and market calendars.",
   "author": {
     "name": "tsetsugekka",
@@ -37,7 +37,7 @@
     ],
     "composerIcon": "./assets/logo.svg",
     "logo": "./assets/logo.svg",
-    "brandColor": "#23543B",
+    "brandColor": "#4945BE",
     "privacyPolicyURL": "https://github.com/tsetsugekka/codex-market-skills/blob/main/docs/plugin-privacy.md",
     "termsOfServiceURL": "https://github.com/tsetsugekka/codex-market-skills/blob/main/docs/plugin-terms.md"
   }
