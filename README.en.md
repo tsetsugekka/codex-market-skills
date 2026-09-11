@@ -1,4 +1,4 @@
-# Codex Market Skills
+<h1 align="center">Codex Market Skills</h1>
 
 <p align="center">
   <strong>A Codex Skill Suite for trading, investment research, market-move analysis, and market-calendar workflows.</strong>
@@ -39,10 +39,6 @@ It covers four major task areas:
 ## Plugin Architecture
 
 [![DayTrading.Monster plugin architecture: skills, data sources, call relationships, and outputs](assets/architecture.en.svg)](assets/architecture.en.svg)
-
-[中文图](assets/architecture.zh-CN.svg) · [English diagram](assets/architecture.en.svg) · [日本語の図](assets/architecture.ja.svg)
-
-This diagram shows the logical collaboration of 10 skills, not the execution trace of a single request. Supporting capabilities are invoked as needed. moomoo/OpenD, MX, and Google Calendar are external dependencies that require separate setup and appropriate authorization. The plugin does not include a scheduler or place trades automatically.
 
 ## Skill Overview
 
