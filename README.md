@@ -1,4 +1,4 @@
-# Codex Market Skills
+<h1 align="center">Codex Market Skills</h1>
 
 <p align="center">
   <strong>面向交易、投资研究、市场异动解释和财经日历管理的 Codex Skill Suite。</strong>
@@ -39,10 +39,6 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 ## 插件架构图
 
 [![DayTrading.Monster 插件架构图：Skill、数据源、调用关系与输出结构](assets/architecture.zh-CN.svg)](assets/architecture.zh-CN.svg)
-
-[中文图](assets/architecture.zh-CN.svg) · [English diagram](assets/architecture.en.svg) · [日本語の図](assets/architecture.ja.svg)
-
-此图展示 10 个 Skill 的逻辑协作关系，不是单次运行记录。支撑能力按需调用；moomoo/OpenD、MX 与 Google Calendar 属于需要另行配置及相应授权的外部依赖。本插件不内置定时器，也不自动下单。
 
 ## Skill 总览
 
