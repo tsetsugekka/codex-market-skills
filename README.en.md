@@ -11,17 +11,15 @@
 </p>
 
 <p align="center">
-  <code>Codex Skill</code> · <code>CN / JP / US Markets</code> · <code>Public-safe</code> · <code>No secrets</code>
+  <img alt="Codex" src="https://img.shields.io/badge/Codex-Skill%20Suite-4f46e5">
+  <img alt="Markets" src="https://img.shields.io/badge/Markets-CN%20%7C%20JP%20%7C%20US-22c55e">
+  <img alt="Language" src="https://img.shields.io/badge/Language-English-blue">
+  <img alt="Secrets" src="https://img.shields.io/badge/Secrets-not%20included-critical">
 </p>
 
 ---
 
 > A Codex Skill Suite for trading, investment research, market-move analysis, and market-calendar workflows.
-
-![Codex](https://img.shields.io/badge/Codex-Skill%20Suite-4f46e5)
-![Markets](https://img.shields.io/badge/Markets-CN%20%7C%20JP%20%7C%20US-22c55e)
-![Language](https://img.shields.io/badge/Language-English-blue)
-![Secrets](https://img.shields.io/badge/Secrets-not%20included-critical)
 
 ## What This Is
 

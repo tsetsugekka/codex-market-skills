@@ -1,208 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1728" height="1344" viewBox="0 0 1728 1344" role="img" aria-labelledby="title desc" xml:lang="ja">
-<title id="title">DayTrading.Monster — プラグイン構成</title><desc id="desc">Skill → データソース → 呼び出し関係 → 出力構造. 機能構成図であり実行記録ではない。外部環境・権限が必要。自動売買は行わない。</desc>
-<defs><style>
-text{font-family:"Noto Sans CJK JP","Noto Sans",Arial,sans-serif;fill:#142f3b} .muted{fill:#566d75;font-size:16px} .small{font-size:14px;fill:#566d75} .code{font-family:"DejaVu Sans Mono",monospace;font-size:14px;font-weight:600} .body{font-size:16px;fill:#3d555f} .card{fill:#fff;stroke:#cfdbd9;stroke-width:1.3} .h{font-size:20px;font-weight:700} .edge{fill:none;stroke:#285764;stroke-width:1.7;marker-end:url(#arrow)} .optional{fill:none;stroke:#3c7f82;stroke-width:1.7;stroke-dasharray:6 5} .gold{fill:none;stroke:#b98b45;stroke-width:2;marker-end:url(#gold-arrow)}
-</style><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#285764"/></marker><marker id="gold-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#b98b45"/></marker></defs>
-<rect x="0" y="0" width="1728" height="1344" rx="0" fill="#f5f7f4" stroke="#f5f7f4"/>
-<rect x="24" y="24" width="1680" height="122" rx="14" fill="#132f3c" stroke="#132f3c"/>
-<path d="M50 99V75M65 99V61M80 99V47M47 67L63 49L77 55L96 36" fill="none" stroke="#8dd0bd" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="117" y="76" font-size="38" style="fill:#ffffff" font-weight="700">DayTrading.Monster</text>
-<text x="117" y="115" font-size="20" style="fill:#b6cccf">Skill → データソース → 呼び出し関係 → 出力構造</text>
-<text x="1094" y="76" font-size="28" style="fill:#ffffff" font-weight="700">プラグイン構成</text>
-<text x="1094" y="114" font-size="16" style="fill:#b6cccf">10 の Skill · 3 市場</text>
-<rect x="24" y="174" width="1680" height="118" rx="12" fill="#fafbf8" stroke="#d7e1db"/>
-<rect x="24" y="174" width="188" height="118" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="174" width="14" height="118" fill="#1c4350"/>
-<text x="42" y="207" font-size="20" style="fill:#92c9bc" font-weight="700">01</text>
-<text x="42" y="240" font-size="18" style="fill:#ffffff" font-weight="700">ユーザーの質問</text>
-<text x="42" y="266" font-size="13" style="fill:#c3d4d4">自然言語から入口を選択</text>
-<rect x="24" y="322" width="1680" height="146" rx="12" fill="#edf3ef" stroke="#d7e1db"/>
-<rect x="24" y="322" width="188" height="146" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="322" width="14" height="146" fill="#1c4350"/>
-<text x="42" y="355" font-size="20" style="fill:#92c9bc" font-weight="700">02</text>
-<text x="42" y="388" font-size="18" style="fill:#ffffff" font-weight="700">入口 Skill</text>
-<text x="42" y="414" font-size="13" style="fill:#c3d4d4">市場とタスクで振り分け</text>
-<rect x="24" y="516" width="1680" height="184" rx="12" fill="#edf3ef" stroke="#d7e1db"/>
-<rect x="24" y="516" width="188" height="184" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="516" width="14" height="184" fill="#1c4350"/>
-<text x="42" y="549" font-size="20" style="fill:#92c9bc" font-weight="700">03</text>
-<text x="42" y="582" font-size="18" style="fill:#ffffff" font-weight="700">補助 Skill</text>
-<text x="42" y="608" font-size="13" style="fill:#c3d4d4">必要時に連携</text>
-<text x="42" y="628" font-size="13" style="fill:#c3d4d4">直接質問も可</text>
-<rect x="24" y="750" width="1680" height="269" rx="12" fill="#fafbf8" stroke="#d7e1db"/>
-<rect x="24" y="750" width="188" height="269" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="750" width="14" height="269" fill="#1c4350"/>
-<text x="42" y="783" font-size="20" style="fill:#92c9bc" font-weight="700">04</text>
-<text x="42" y="816" font-size="18" style="fill:#ffffff" font-weight="700">データソース</text>
-<text x="42" y="842" font-size="13" style="fill:#c3d4d4">市場・項目・権限で選択</text>
-<rect x="24" y="1065" width="1680" height="157" rx="12" fill="#fafbf8" stroke="#d7e1db"/>
-<rect x="24" y="1065" width="188" height="157" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="1065" width="14" height="157" fill="#1c4350"/>
-<text x="42" y="1098" font-size="20" style="fill:#92c9bc" font-weight="700">05</text>
-<text x="42" y="1131" font-size="18" style="fill:#ffffff" font-weight="700">出力構造</text>
-<text x="42" y="1157" font-size="13" style="fill:#c3d4d4">根拠に基づく</text>
-<text x="42" y="1177" font-size="13" style="fill:#c3d4d4">条件付き結論</text>
-<rect x="230" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="246" y="224" class="h">個別株はなぜ動いた？</text>
-<text x="246" y="255" font-size="15" style="fill:#566d75">騰落 / 出来高 / 寄り前・引け後</text>
-<rect x="598" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="614" y="224" class="h">市場・テーマ・戦略</text>
-<text x="614" y="255" font-size="15" style="fill:#566d75">市場動向 / 主導テーマ / 戦略・振り返り</text>
-<rect x="966" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="982" y="224" class="h">テクニカル・Gamma・心理</text>
-<text x="982" y="255" font-size="15" style="fill:#566d75">トレンド / オプション構造 / 期待差</text>
-<rect x="1334" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="1350" y="224" class="h">決算・経済カレンダー</text>
-<text x="1350" y="255" font-size="15" style="fill:#566d75">イベント選別 / 時差 / カレンダー登録</text>
-<path class="edge" d="M945 292V320"/>
-<text x="246" y="345" font-size="14" style="fill:#3e756e" font-weight="700">市場分析の入口</text>
-<text x="1222" y="345" font-size="14" style="fill:#917040" font-weight="700">専用タスクの入口</text>
-<rect x="230" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="242" y="392" class="code">market-daily-strategist</text>
-<text x="242" y="422" font-size="15" style="fill:#476069">米国株 / 日本株 / A 株戦略</text>
-<rect x="475" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="487" y="392" class="code">us-stock-move-reason</text>
-<text x="487" y="422" font-size="15" style="fill:#476069">米国株 / ETF の変動理由</text>
-<rect x="720" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="732" y="392" class="code">jp-stock-move-reason</text>
-<text x="732" y="422" font-size="15" style="fill:#476069">日本株の変動理由</text>
-<rect x="965" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="977" y="392" class="code">cn-stock-move-reason</text>
-<text x="977" y="422" font-size="15" style="fill:#476069">A 株の変動理由</text>
-<rect x="1210" y="359" width="231" height="94" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<text x="1222" y="392" class="code">cn-market-tape</text>
-<text x="1222" y="422" font-size="15" style="fill:#476069">A 株市場 / テーマ / 順位</text>
-<rect x="1455" y="359" width="231" height="94" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<text x="1467" y="392" class="code">market-calendar-google</text>
-<text x="1467" y="422" font-size="15" style="fill:#476069">決算 / 経済カレンダー</text>
-<path class="optional" d="M345 453V485"/>
-<path class="optional" d="M590 453V485"/>
-<path class="optional" d="M835 453V485"/>
-<path class="optional" d="M1080 453V485"/>
-<path class="optional" d="M1325 453V485"/>
-<path class="optional" d="M345 485H1518"/>
-<path class="optional" d="M407 485V514" marker-end="url(#arrow)"/>
-<path class="optional" d="M775 485V514" marker-end="url(#arrow)"/>
-<path class="optional" d="M1143 485V514" marker-end="url(#arrow)"/>
-<path class="optional" d="M1511 485V514" marker-end="url(#arrow)"/>
-<text x="243" y="541" font-size="14" style="fill:#3e756e">破線：必要に応じた連携。毎回すべてを呼び出すわけではない</text>
-<rect x="230" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="245" y="590" class="code">stock-technical-analysis</text>
-<text class="body">
-<tspan x="245" y="625">トレンド / 支持・抵抗 / 出来高</tspan>
-<tspan x="245" y="653">VWAP / ローソク足 / 指標確認</tspan>
-</text>
-<rect x="598" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="613" y="590" class="code">stock-sentiment-analysis</text>
-<text class="body">
-<tspan x="613" y="625">心理サイクル / 主導・追随銘柄</tspan>
-<tspan x="613" y="653">期待差 / 過熱度 / 投稿サンプル</tspan>
-</text>
-<rect x="966" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="981" y="590" class="code">us-stock-gamma-moomoo</text>
-<text class="body">
-<tspan x="981" y="625">米国株 Gamma / GEX / Flip / Wall</tspan>
-<tspan x="981" y="653">ローカル OpenD + moomoo SDK が必要</tspan>
-</text>
-<rect x="1334" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="1349" y="590" class="code">macro-news-check</text>
-<text class="body">
-<tspan x="1349" y="625">マクロ / 金利 / 為替 / 商品</tspan>
-<tspan x="1349" y="653">市場の広がり / 他市場の価格確認</tspan>
-</text>
-<path class="gold" d="M1570 453V482H1716V1046H1570V1062"/>
-<path class="edge" d="M945 700V748"/>
-<rect x="230" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="230" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="242" y="792" font-size="16" font-weight="700">DTM 構造化 API</text>
-<text class="small">
-<tspan x="242" y="831">/api/themes</tspan>
-<tspan x="242" y="852">/api/ratings-us</tspan>
-<tspan x="242" y="873">/api/ratings-jp</tspan>
-<tspan x="242" y="894">/api/chinastock-anomaly</tspan>
-<tspan x="242" y="915">/api/24hfeed/details</tspan>
-<tspan x="242" y="936">/api/24hfeed/x-monitor</tspan>
-<tspan x="242" y="957">/api/pts/model{1,2,3}</tspan>
-<tspan x="242" y="978">Gamma Lite / Camarilla</tspan>
-</text>
-<rect x="475" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="475" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="487" y="792" font-size="16" font-weight="700">米国株の公開情報</text>
-<text class="small">
-<tspan x="487" y="831">企業 IR / SEC</tspan>
-<tspan x="487" y="854">株価 / 寄り前・引け後</tspan>
-<tspan x="487" y="877">決算 / 見通し / アナリスト評価</tspan>
-<tspan x="487" y="900">moomoo ニュース / 要約</tspan>
-<tspan x="487" y="923">資金 / オプション / 技術的異常</tspan>
-<tspan x="487" y="946">投稿コメント（サンプル）</tspan>
-</text>
-<rect x="720" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="720" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="732" y="792" font-size="16" font-weight="700">日本株の公開情報</text>
-<text class="small">
-<tspan x="732" y="831">Yahoo Finance Japan</tspan>
-<tspan x="732" y="854">Kabutan / Traders Web</tspan>
-<tspan x="732" y="877">TDnet / 企業 IR</tspan>
-<tspan x="732" y="900">Yahoo 掲示板（サンプル）</tspan>
-<tspan x="732" y="923">現物 / PTS（時間帯別）</tspan>
-</text>
-<rect x="965" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="965" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="977" y="792" font-size="16" font-weight="700">A 株の公開情報</text>
-<text class="small">
-<tspan x="977" y="831">Eastmoney / 妙想 MX</tspan>
-<tspan x="977" y="854">株価 / 公告 / ニュース / 股吧</tspan>
-<tspan x="977" y="877">Sohu 指数 / 業種</tspan>
-<tspan x="977" y="900">テーマ / 資金 / ストップ高銘柄</tspan>
-<tspan x="977" y="923">機関投資家調査の集約データ</tspan>
-</text>
-<rect x="1210" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="1210" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="1222" y="792" font-size="16" font-weight="700">マクロ・クロスアセット</text>
-<text class="small">
-<tspan x="1222" y="831">マクロ速報 / 公式発表</tspan>
-<tspan x="1222" y="854">JPX 指数 / 業種別動向</tspan>
-<tspan x="1222" y="877">米国債 / 日本国債 / USDJPY</tspan>
-<tspan x="1222" y="900">DXY / 変動率 / 原油 / 金</tspan>
-<tspan x="1222" y="923">イベント × 市場価格</tspan>
-</text>
-<rect x="1455" y="766" width="231" height="218" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<rect x="1455" y="766" width="231" height="39" rx="9" fill="#f1e9da" stroke="#dbc6a2"/>
-<text x="1467" y="792" font-size="16" font-weight="700">外部ツール / 連携先</text>
-<text class="small">
-<tspan x="1467" y="831">moomoo ツール（必要時）</tspan>
-<tspan x="1467" y="854">OpenD + Python SDK</tspan>
-<tspan x="1467" y="877">MX ツール（モジュール別）</tspan>
-<tspan x="1467" y="900">Google Calendar</tspan>
-<tspan x="1467" y="923">予定登録はユーザー承認後</tspan>
-</text>
-<text x="242" y="1008" font-size="14" style="fill:#63776f">テーマの終値騰落率はリアルタイム資金流ではない。価格日付・時刻・遅延を確認する。</text>
-<path class="edge" d="M945 1019V1063"/>
-<rect x="230" y="1080" width="354" height="126" rx="9" fill="#ffffff" stroke="#c9dad0"/>
-<text x="246" y="1118" class="h">変動理由の分析</text>
-<text class="small">
-<tspan x="246" y="1154">主要材料 / 補助要因 / 投稿の温度感</tspan>
-<tspan x="246" y="1181">確度 / 注意点；米国株はオプション等も</tspan>
-</text>
-<rect x="598" y="1080" width="354" height="126" rx="9" fill="#ffffff" stroke="#c9dad0"/>
-<text x="614" y="1118" class="h">市場戦略レポート</text>
-<text class="small">
-<tspan x="614" y="1154">方向性 / 主導テーマ・循環 / リスク</tspan>
-<tspan x="614" y="1181">次の検証条件 / シナリオの無効化条件</tspan>
-</text>
-<rect x="966" y="1080" width="354" height="126" rx="9" fill="#ffffff" stroke="#c9dad0"/>
-<text x="982" y="1118" class="h">個別テーマの分析</text>
-<text class="small">
-<tspan x="982" y="1154">テクニカル / 心理 / Gamma / マクロ</tspan>
-<tspan x="982" y="1181">重要水準 / 一致・乖離 / データ不足</tspan>
-</text>
-<rect x="1334" y="1080" width="354" height="126" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<text x="1350" y="1118" class="h">カレンダーと実行</text>
-<text class="small">
-<tspan x="1350" y="1154">決算 / 経済イベント / 日時・時間帯</tspan>
-<tspan x="1350" y="1181">重複除去 → 承認後に Calendar へ登録</tspan>
-</text>
-<rect x="24" y="1240" width="1680" height="80" rx="12" fill="#132f3c" stroke="#132f3c"/>
-<text x="45" y="1271" font-size="19" style="fill:#ffffff" font-weight="600">値動きを確認 → 材料を検証 → セクター・マクロ・需給の増幅を確認 → 条件付き結論</text>
-<text x="45" y="1302" font-size="14" style="fill:#b6cccf">機能構成図であり実行記録ではない。外部環境・権限が必要。自動売買は行わない。</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1190" viewBox="0 0 960 1190" role="img" aria-labelledby="title desc" xml:lang="ja">
+<title id="title">DayTrading.Monster — プラグイン構成</title>
+<desc id="desc">質問に応じて Skill を選び、必要な分析を組み合わせる. Codex がタスクに応じて選択。すべての Skill を直接利用可能. 矢印はタスクの流れ。グループは機能の分類であり、固定の実行順序ではありません。</desc>
+<defs><style>text{font-family:Arial,"PingFang SC","Hiragino Sans",sans-serif;fill:#182638}.title{font-size:26px;font-weight:700}.head{font-size:19px;font-weight:700}.body{font-size:16px}.small{font-size:14px;fill:#526174}.code{font-family:monospace;font-size:13px;fill:#526174}.edge{fill:none;stroke:#68788d;stroke-width:2;marker-end:url(#arrow)}</style><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#68788d"/></marker></defs>
+<rect x="0" y="0" width="960" height="1190" rx="12" fill="#f7f9fc" stroke="#f7f9fc"/>
+<text x="28" y="44" class="title">DayTrading.Monster</text>
+<text x="28" y="76" class="body">質問に応じて Skill を選び、必要な分析を組み合わせる</text>
+<text x="28" y="110" class="small">プラグイン構成</text>
+<rect x="28" y="132" width="904" height="88" rx="12" fill="#eef0ff" stroke="#c7cdf5"/>
+<text x="48" y="161" class="head">ユーザーの質問</text>
+<text x="48" y="193" class="body">株価変動 · 市場戦略 · テクニカル · 経済カレンダー</text>
+<path d="M480 220V258" class="edge"/>
+<text x="48" y="246" class="small">Codex がタスクに応じて選択。すべての Skill を直接利用可能</text>
+<rect x="28" y="272" width="904" height="451" rx="12" fill="#fff" stroke="#d9e0e9"/>
+<text x="48" y="307" class="head">リサーチ · 9 Skills</text>
+<rect x="48" y="329" width="276" height="285" rx="12" fill="#f7f9fc" stroke="#d9e0e9"/>
+<text x="64" y="359" class="head">個別株の変動</text>
+<rect x="342" y="329" width="276" height="285" rx="12" fill="#f7f9fc" stroke="#d9e0e9"/>
+<text x="358" y="359" class="head">市場と戦略</text>
+<rect x="636" y="329" width="276" height="285" rx="12" fill="#f7f9fc" stroke="#d9e0e9"/>
+<text x="652" y="359" class="head">専門分析</text>
+<text x="64" y="392" class="body">中国 A 株の変動</text>
+<text x="64" y="412" class="code">cn-stock-move-reason</text>
+<text x="64" y="450" class="body">日本株 / PTS</text>
+<text x="64" y="470" class="code">jp-stock-move-reason</text>
+<text x="64" y="508" class="body">米国株 / ETF の変動</text>
+<text x="64" y="528" class="code">us-stock-move-reason</text>
+<text x="358" y="392" class="body">A 株の市況とテーマ</text>
+<text x="358" y="412" class="code">cn-market-tape</text>
+<text x="358" y="450" class="body">寄り前戦略 / 引け後レビュー</text>
+<text x="358" y="470" class="code">market-daily-strategist</text>
+<text x="652" y="392" class="body">マクロ背景</text>
+<text x="652" y="412" class="code">macro-news-check</text>
+<text x="652" y="450" class="body">テクニカル構造</text>
+<text x="652" y="470" class="code">stock-technical-analysis</text>
+<text x="652" y="508" class="body">センチメントと期待差</text>
+<text x="652" y="528" class="code">stock-sentiment-analysis</text>
+<text x="652" y="566" class="body">米国オプション Gamma</text>
+<text x="652" y="586" class="code">us-stock-gamma-moomoo</text>
+<text x="48" y="643" class="small">必要に応じて連携：戦略は変動・専門分析を活用。変動分析はマクロ・テクニカル・心理で補完。</text>
+<path d="M480 653V670" class="edge"/>
+<text x="48" y="688" class="head">出力：変動要因 · 市場戦略 · 専門分析</text>
+<text x="48" y="711" class="small">出典・時点・確度・検証条件を明記</text>
+<rect x="28" y="747" width="904" height="169" rx="12" fill="#fffaf0" stroke="#e8d3a4"/>
+<text x="48" y="780" class="head">カレンダー · 1 Skill</text>
+<text x="48" y="815" class="body">決算 / マクロイベント</text>
+<text x="48" y="840" class="code">market-calendar-google</text>
+<text x="48" y="868" class="small">選別 · 時差 · 重複排除</text>
+<path d="M292 835H346" class="edge"/>
+<text x="364" y="840" class="head">イベント一覧</text>
+<path d="M505 835H583" class="edge"/>
+<text x="594" y="815" class="small">ユーザー承認後に書き込み</text>
+<text x="594" y="846" class="head">Google Calendar</text>
+<text x="48" y="899" class="small">独立したフロー。書き込みには Google Calendar 接続が必要。</text>
+<rect x="28" y="940" width="904" height="202" rx="12" fill="#eef5f7" stroke="#cddfe4"/>
+<text x="48" y="974" class="head">外部データとツール</text>
+<text x="48" y="1001" class="small">タスクごとに根拠を収集。外部依存はプラグインに同梱しない</text>
+<text x="48" y="1040" class="head">DTM + 公開情報</text>
+<text x="48" y="1070" class="small">テーマ / ニュース / 評価 / PTS</text>
+<text x="48" y="1100" class="small">開示・相場・掲示板サンプル</text>
+<text x="350" y="1040" class="head">MX / moomoo</text>
+<text x="350" y="1070" class="small">市場・モジュール別に利用</text>
+<text x="350" y="1100" class="small">一部は追加 Skill が必要</text>
+<text x="646" y="1040" class="head">全チェーン Gamma</text>
+<text x="646" y="1070" class="small">ローカル OpenD + SDK</text>
+<text x="646" y="1100" class="small">moomooapi も必要</text>
+<text x="28" y="1173" class="small">矢印はタスクの流れ。グループは機能の分類であり、固定の実行順序ではありません。</text>
 </svg>
