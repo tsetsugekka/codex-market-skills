@@ -1,211 +1,192 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1728" height="1344" viewBox="0 0 1728 1344" role="img" aria-labelledby="title desc" xml:lang="en">
-<title id="title">DayTrading.Monster — Plugin architecture</title><desc id="desc">Skills → data sources → orchestration → outputs. Capability map, not a run log. External dependencies must be available. No automatic trading.</desc>
-<defs><style>
-text{font-family:"Noto Sans CJK SC","Noto Sans",Arial,sans-serif;fill:#142f3b} .muted{fill:#566d75;font-size:16px} .small{font-size:14px;fill:#566d75} .code{font-family:"DejaVu Sans Mono",monospace;font-size:14px;font-weight:600} .body{font-size:16px;fill:#3d555f} .card{fill:#fff;stroke:#cfdbd9;stroke-width:1.3} .h{font-size:20px;font-weight:700} .edge{fill:none;stroke:#285764;stroke-width:1.7;marker-end:url(#arrow)} .optional{fill:none;stroke:#3c7f82;stroke-width:1.7;stroke-dasharray:6 5} .gold{fill:none;stroke:#b98b45;stroke-width:2;marker-end:url(#gold-arrow)}
-</style><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#285764"/></marker><marker id="gold-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#b98b45"/></marker></defs>
-<rect x="0" y="0" width="1728" height="1344" rx="0" fill="#f5f7f4" stroke="#f5f7f4"/>
-<rect x="24" y="24" width="1680" height="122" rx="14" fill="#132f3c" stroke="#132f3c"/>
-<path d="M50 99V75M65 99V61M80 99V47M47 67L63 49L77 55L96 36" fill="none" stroke="#8dd0bd" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="117" y="76" font-size="38" style="fill:#ffffff" font-weight="700">DayTrading.Monster</text>
-<text x="117" y="115" font-size="20" style="fill:#b6cccf">Skills → data sources → orchestration → outputs</text>
-<text x="1094" y="76" font-size="28" style="fill:#ffffff" font-weight="700">Plugin architecture</text>
-<text x="1094" y="114" font-size="16" style="fill:#b6cccf">10 SKILLS · 3 MARKETS</text>
-<rect x="24" y="174" width="1680" height="118" rx="12" fill="#fafbf8" stroke="#d7e1db"/>
-<rect x="24" y="174" width="188" height="118" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="174" width="14" height="118" fill="#1c4350"/>
-<text x="42" y="207" font-size="20" style="fill:#92c9bc" font-weight="700">01</text>
-<text x="42" y="240" font-size="19" style="fill:#ffffff" font-weight="700">User questions</text>
-<text x="42" y="266" font-size="13" style="fill:#c3d4d4">Route natural-language</text>
-<text x="42" y="286" font-size="13" style="fill:#c3d4d4">intent</text>
-<rect x="24" y="322" width="1680" height="146" rx="12" fill="#edf3ef" stroke="#d7e1db"/>
-<rect x="24" y="322" width="188" height="146" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="322" width="14" height="146" fill="#1c4350"/>
-<text x="42" y="355" font-size="20" style="fill:#92c9bc" font-weight="700">02</text>
-<text x="42" y="388" font-size="19" style="fill:#ffffff" font-weight="700">Entry skills</text>
-<text x="42" y="414" font-size="13" style="fill:#c3d4d4">Select by market</text>
-<text x="42" y="434" font-size="13" style="fill:#c3d4d4">and task</text>
-<rect x="24" y="516" width="1680" height="184" rx="12" fill="#edf3ef" stroke="#d7e1db"/>
-<rect x="24" y="516" width="188" height="184" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="516" width="14" height="184" fill="#1c4350"/>
-<text x="42" y="549" font-size="20" style="fill:#92c9bc" font-weight="700">03</text>
-<text x="42" y="582" font-size="19" style="fill:#ffffff" font-weight="700">Support skills</text>
-<text x="42" y="608" font-size="13" style="fill:#c3d4d4">Use on demand</text>
-<text x="42" y="628" font-size="13" style="fill:#c3d4d4">or directly</text>
-<rect x="24" y="750" width="1680" height="269" rx="12" fill="#fafbf8" stroke="#d7e1db"/>
-<rect x="24" y="750" width="188" height="269" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="750" width="14" height="269" fill="#1c4350"/>
-<text x="42" y="783" font-size="20" style="fill:#92c9bc" font-weight="700">04</text>
-<text x="42" y="816" font-size="19" style="fill:#ffffff" font-weight="700">Data sources</text>
-<text x="42" y="842" font-size="13" style="fill:#c3d4d4">Select by field</text>
-<text x="42" y="862" font-size="13" style="fill:#c3d4d4">and access</text>
-<rect x="24" y="1065" width="1680" height="157" rx="12" fill="#fafbf8" stroke="#d7e1db"/>
-<rect x="24" y="1065" width="188" height="157" rx="12" fill="#1c4350" stroke="#1c4350"/>
-<rect x="198" y="1065" width="14" height="157" fill="#1c4350"/>
-<text x="42" y="1098" font-size="20" style="fill:#92c9bc" font-weight="700">05</text>
-<text x="42" y="1131" font-size="19" style="fill:#ffffff" font-weight="700">Outputs</text>
-<text x="42" y="1157" font-size="13" style="fill:#c3d4d4">Evidence-based</text>
-<text x="42" y="1177" font-size="13" style="fill:#c3d4d4">conclusions</text>
-<rect x="230" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="246" y="224" class="h">Why did this stock move?</text>
-<text x="246" y="255" font-size="15" style="fill:#566d75">Price / volume / premarket / after hours</text>
-<rect x="598" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="614" y="224" class="h">Markets, themes &amp; strategy</text>
-<text x="614" y="255" font-size="15" style="fill:#566d75">Market tone / leaders / strategy / review</text>
-<rect x="966" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="982" y="224" class="h">Technical, Gamma &amp; sentiment</text>
-<text x="982" y="255" font-size="15" style="fill:#566d75">Trend / options / expectation gaps</text>
-<rect x="1334" y="188" width="354" height="90" rx="9" fill="#ffffff" stroke="#d7e1dc"/>
-<text x="1350" y="224" class="h">Earnings &amp; market calendar</text>
-<text x="1350" y="255" font-size="15" style="fill:#566d75">Event filtering / time zones / calendar</text>
-<path class="edge" d="M945 292V320"/>
-<text x="246" y="345" font-size="14" style="fill:#3e756e" font-weight="700">MARKET ANALYSIS ENTRIES</text>
-<text x="1222" y="345" font-size="14" style="fill:#917040" font-weight="700">SPECIALIST ENTRIES</text>
-<rect x="230" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="242" y="392" class="code">market-daily-strategist</text>
-<text x="242" y="422" font-size="15" style="fill:#476069">US / JP / CN strategy</text>
-<rect x="475" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="487" y="392" class="code">us-stock-move-reason</text>
-<text x="487" y="422" font-size="15" style="fill:#476069">US stock / ETF moves</text>
-<rect x="720" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="732" y="392" class="code">jp-stock-move-reason</text>
-<text x="732" y="422" font-size="15" style="fill:#476069">Japan stock moves</text>
-<rect x="965" y="359" width="231" height="94" rx="9" fill="#ffffff" stroke="#b4cebf"/>
-<text x="977" y="392" class="code">cn-stock-move-reason</text>
-<text x="977" y="422" font-size="15" style="fill:#476069">A-share stock moves</text>
-<rect x="1210" y="359" width="231" height="94" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<text x="1222" y="392" class="code">cn-market-tape</text>
-<text x="1222" y="422" font-size="15" style="fill:#476069">A-share tape / rankings</text>
-<rect x="1455" y="359" width="231" height="94" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<text x="1467" y="392" class="code">market-calendar-google</text>
-<text x="1467" y="422" font-size="15" style="fill:#476069">Earnings / macro calendar</text>
-<path class="optional" d="M345 453V485"/>
-<path class="optional" d="M590 453V485"/>
-<path class="optional" d="M835 453V485"/>
-<path class="optional" d="M1080 453V485"/>
-<path class="optional" d="M1325 453V485"/>
-<path class="optional" d="M345 485H1518"/>
-<path class="optional" d="M407 485V514" marker-end="url(#arrow)"/>
-<path class="optional" d="M775 485V514" marker-end="url(#arrow)"/>
-<path class="optional" d="M1143 485V514" marker-end="url(#arrow)"/>
-<path class="optional" d="M1511 485V514" marker-end="url(#arrow)"/>
-<text x="243" y="541" font-size="14" style="fill:#3e756e">Dashed: compose when relevant; not every skill runs on every request</text>
-<rect x="230" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="245" y="590" class="code">stock-technical-analysis</text>
-<text class="body">
-<tspan x="245" y="625">Trend / support &amp; resistance / volume</tspan>
-<tspan x="245" y="653">VWAP / candles / indicator checks</tspan>
-</text>
-<rect x="598" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="613" y="590" class="code">stock-sentiment-analysis</text>
-<text class="body">
-<tspan x="613" y="625">Sentiment cycle / leaders &amp; followers</tspan>
-<tspan x="613" y="653">Expectation gaps / crowding / samples</tspan>
-</text>
-<rect x="966" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="981" y="590" class="code">us-stock-gamma-moomoo</text>
-<text class="body">
-<tspan x="981" y="625">US Gamma / GEX / Flip / Wall</tspan>
-<tspan x="981" y="653">Requires local OpenD + moomoo SDK</tspan>
-</text>
-<rect x="1334" y="558" width="354" height="126" rx="9" fill="#ffffff" stroke="#bfd5cf"/>
-<text x="1349" y="590" class="code">macro-news-check</text>
-<text class="body">
-<tspan x="1349" y="625">Macro / rates / FX / commodities</tspan>
-<tspan x="1349" y="653">Market breadth / cross-asset checks</tspan>
-</text>
-<path class="gold" d="M1570 453V482H1716V1046H1570V1062"/>
-<path class="edge" d="M945 700V748"/>
-<rect x="230" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="230" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="242" y="792" font-size="17" font-weight="700">DTM structured APIs</text>
-<text class="small">
-<tspan x="242" y="831">/api/themes</tspan>
-<tspan x="242" y="852">/api/ratings-us</tspan>
-<tspan x="242" y="873">/api/ratings-jp</tspan>
-<tspan x="242" y="894">/api/chinastock-anomaly</tspan>
-<tspan x="242" y="915">/api/24hfeed/details</tspan>
-<tspan x="242" y="936">/api/24hfeed/x-monitor</tspan>
-<tspan x="242" y="957">/api/pts/model{1,2,3}</tspan>
-<tspan x="242" y="978">Gamma Lite / Camarilla</tspan>
-</text>
-<rect x="475" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="475" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="487" y="792" font-size="17" font-weight="700">US public sources</text>
-<text class="small">
-<tspan x="487" y="831">Company IR / SEC</tspan>
-<tspan x="487" y="854">Quotes / premarket / after hours</tspan>
-<tspan x="487" y="877">Earnings / guidance / ratings</tspan>
-<tspan x="487" y="900">moomoo news / digest</tspan>
-<tspan x="487" y="923">Flow / options / technical scans</tspan>
-<tspan x="487" y="946">Community comments (sample)</tspan>
-</text>
-<rect x="720" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="720" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="732" y="792" font-size="17" font-weight="700">Japan public sources</text>
-<text class="small">
-<tspan x="732" y="831">Yahoo Finance Japan</tspan>
-<tspan x="732" y="854">Kabutan / Traders Web</tspan>
-<tspan x="732" y="877">TDnet / company IR</tspan>
-<tspan x="732" y="900">Yahoo message board (sample)</tspan>
-<tspan x="732" y="923">Cash / PTS (session-aware)</tspan>
-</text>
-<rect x="965" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="965" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="977" y="792" font-size="17" font-weight="700">A-share public sources</text>
-<text class="small">
-<tspan x="977" y="831">Eastmoney / Miaoxiang MX</tspan>
-<tspan x="977" y="854">Quotes / filings / news / Guba</tspan>
-<tspan x="977" y="877">Sohu indexes / sectors</tspan>
-<tspan x="977" y="900">Themes / flows / limit-up pool</tspan>
-<tspan x="977" y="923">Institutional survey aggregates</tspan>
-</text>
-<rect x="1210" y="766" width="231" height="218" rx="9" fill="#ffffff" stroke="#d0ded6"/>
-<rect x="1210" y="766" width="231" height="39" rx="9" fill="#e4eee8" stroke="#d0ded6"/>
-<text x="1222" y="792" font-size="17" font-weight="700">Macro &amp; cross-asset</text>
-<text class="small">
-<tspan x="1222" y="831">Macro news / official releases</tspan>
-<tspan x="1222" y="854">JPX indexes / sector breadth</tspan>
-<tspan x="1222" y="877">US / JP yields / USDJPY</tspan>
-<tspan x="1222" y="900">DXY / volatility / oil / gold</tspan>
-<tspan x="1222" y="923">Event stream × market prices</tspan>
-</text>
-<rect x="1455" y="766" width="231" height="218" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<rect x="1455" y="766" width="231" height="39" rx="9" fill="#f1e9da" stroke="#dbc6a2"/>
-<text x="1467" y="792" font-size="17" font-weight="700">External tools / targets</text>
-<text class="small">
-<tspan x="1467" y="831">moomoo tools (on demand)</tspan>
-<tspan x="1467" y="854">OpenD + Python SDK</tspan>
-<tspan x="1467" y="877">MX tools (module-dependent)</tspan>
-<tspan x="1467" y="900">Google Calendar</tspan>
-<tspan x="1467" y="923">Writes require authorization</tspan>
-</text>
-<text x="242" y="1008" font-size="14" style="fill:#63776f">Completed-session theme returns are not live fund flows. Check quote dates, timestamps and delays.</text>
-<path class="edge" d="M945 1019V1063"/>
-<rect x="230" y="1080" width="354" height="126" rx="9" fill="#ffffff" stroke="#c9dad0"/>
-<text x="246" y="1118" class="h">Move-reason analysis</text>
-<text class="small">
-<tspan x="246" y="1154">Catalyst / support / community sentiment</tspan>
-<tspan x="246" y="1181">Confidence / caveats; US adds options &amp; flows</tspan>
-</text>
-<rect x="598" y="1080" width="354" height="126" rx="9" fill="#ffffff" stroke="#c9dad0"/>
-<text x="614" y="1118" class="h">Strategy report</text>
-<text class="small">
-<tspan x="614" y="1154">Direction / leaders &amp; rotation / risks</tspan>
-<tspan x="614" y="1181">Next validation / invalidation conditions</tspan>
-</text>
-<rect x="966" y="1080" width="354" height="126" rx="9" fill="#ffffff" stroke="#c9dad0"/>
-<text x="982" y="1118" class="h">Focused analysis</text>
-<text class="small">
-<tspan x="982" y="1154">Technical / sentiment / Gamma / macro</tspan>
-<tspan x="982" y="1181">Key levels / agreement / gaps in evidence</tspan>
-</text>
-<rect x="1334" y="1080" width="354" height="126" rx="9" fill="#fcfaf5" stroke="#dbc6a2"/>
-<text x="1350" y="1118" class="h">Calendar &amp; execution</text>
-<text class="small">
-<tspan x="1350" y="1154">Earnings / macro events / times &amp; zones</tspan>
-<tspan x="1350" y="1181">Deduplicate → authorized Calendar write</tspan>
-</text>
-<rect x="24" y="1240" width="1680" height="80" rx="12" fill="#132f3c" stroke="#132f3c"/>
-<text x="45" y="1271" font-size="18" style="fill:#ffffff" font-weight="600">Confirm the move → verify catalysts → test sector, macro &amp; positioning effects → conditional conclusions</text>
-<text x="45" y="1302" font-size="14" style="fill:#b6cccf">Capability map, not a run log. External dependencies must be available. No automatic trading.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1320" viewBox="0 0 1800 1320" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">DayTrading.Monster — Plugin architecture</title>
+<desc id="desc">Skills → Data sources → Calls → Outputs. Conceptual architecture, not an execution trace. Dependencies, permissions and freshness govern availability.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#377e7b"/></marker></defs>
+<style>text{font-family:Inter,Arial,'Noto Sans CJK SC','Noto Sans CJK JP',sans-serif;fill:#153c46}.brand{font-size:42px;font-weight:750;letter-spacing:-1px}.sub{font-size:18px;fill:#687d80}.layer{font-size:25px;font-weight:700}.hint{font-size:14px;fill:#687d80}.card{fill:#fff;stroke:#d5e1df;stroke-width:1.4}.tint{fill:#ecf5f2;stroke:#bcd6cf;stroke-width:1.4}.skill{font-family:Arial,'Noto Sans CJK SC',sans-serif;font-size:15px;font-weight:700}.body{font-size:15px;fill:#49656c}.head{font-size:20px;font-weight:700}.code{font-family:'DejaVu Sans Mono',monospace;font-size:14px;fill:#355c67}.flow{fill:none;stroke:#377e7b;stroke-width:1.6;marker-end:url(#arrow)}.optional{fill:none;stroke:#63948f;stroke-width:1.5;stroke-dasharray:5 5;marker-end:url(#arrow)}</style>
+<rect width="1800" height="1320" rx="24" fill="#f7f8f4"/>
+<path d="M50 120H1750" stroke="#d4dfda"/>
+<rect x="50" y="34" width="9" height="54" rx="4" fill="#177b72"/>
+<text x="80" y="73" class="brand">DayTrading.Monster</text>
+<text x="560" y="73" font-size="32" font-weight="650">Plugin architecture</text>
+<text x="80" y="104" class="sub">Skills → Data sources → Calls → Outputs</text>
+<text x="1750" y="99" text-anchor="end" class="hint">10 SKILLS · CN / JP / US</text>
+<rect x="50" y="150" width="1700" height="120" rx="16" fill="#eef2ed"/>
+<circle cx="84" cy="182" r="16" fill="#153c46"/>
+<text x="84" y="188" text-anchor="middle" style="fill:#fff;font-size:16px;font-weight:700">01</text>
+<text x="112" y="191" class="layer" >User questions</text>
+<text x="72" y="226" class="hint" >Start with natural language</text>
+<rect x="50" y="326" width="1700" height="140" rx="16" fill="#eef2ed"/>
+<circle cx="84" cy="358" r="16" fill="#153c46"/>
+<text x="84" y="364" text-anchor="middle" style="fill:#fff;font-size:16px;font-weight:700">02</text>
+<text x="112" y="367" class="layer" >Primary skills</text>
+<text x="72" y="402" class="hint" >Route to the relevant workflow</text>
+<rect x="50" y="552" width="1700" height="156" rx="16" fill="#eaf1ed"/>
+<circle cx="84" cy="584" r="16" fill="#153c46"/>
+<text x="84" y="590" text-anchor="middle" style="fill:#fff;font-size:16px;font-weight:700">03</text>
+<text x="112" y="593" class="layer" >Supporting skills</text>
+<text x="72" y="628" class="hint" >Combine when evidence calls for it</text>
+<rect x="50" y="770" width="1700" height="292" rx="16" fill="#eef2ed"/>
+<circle cx="84" cy="802" r="16" fill="#153c46"/>
+<text x="84" y="808" text-anchor="middle" style="fill:#fff;font-size:16px;font-weight:700">04</text>
+<text x="112" y="811" class="layer" >Data &amp; tools</text>
+<text x="72" y="846" class="hint" >Read, cross-check and timestamp</text>
+<rect x="50" y="1120" width="1700" height="122" rx="16" fill="#eaf1ed"/>
+<circle cx="84" cy="1152" r="16" fill="#153c46"/>
+<text x="84" y="1158" text-anchor="middle" style="fill:#fff;font-size:16px;font-weight:700">05</text>
+<text x="112" y="1161" class="layer" >Outputs</text>
+<text x="72" y="1196" class="hint" >Evidence with clear boundaries</text>
+<rect x="350" y="174" width="326" height="71" rx="12" class="tint"/>
+<text x="368" y="215" class="head" style="font-size:16px">Single-stock moves</text>
+<rect x="692" y="174" width="326" height="71" rx="12" class="tint"/>
+<text x="710" y="215" class="head" style="font-size:16px">Markets / themes / sessions</text>
+<rect x="1034" y="174" width="326" height="71" rx="12" class="tint"/>
+<text x="1052" y="215" class="head" style="font-size:16px">Technical / gamma / sentiment</text>
+<rect x="1376" y="174" width="326" height="71" rx="12" class="tint"/>
+<text x="1394" y="215" class="head" style="font-size:16px">Earnings / economic calendar</text>
+<path d="M513 245V296H1149V338" class="flow" />
+<path d="M689 296V338" class="flow" />
+<path d="M919 296V338" class="flow" />
+<path d="M855 245V282H459V338" class="flow" />
+<path d="M855 282H1379V338" class="flow" />
+<path d="M1539 245V304H1609V338" class="flow" />
+<path d="M1197 245V290H1760V526H513V565" class="optional" />
+<path d="M855 526V565" class="optional" />
+<path d="M1197 526V565" class="optional" />
+<rect x="350" y="338" width="218" height="112" rx="12" class="tint"/>
+<text x="363" y="377" class="skill" style="font-size:13.5px">market-daily-strategist</text>
+<text x="363" y="414" class="body" style="font-size:12.5px">US / Japan / A-share strategy</text>
+<rect x="580" y="338" width="218" height="112" rx="12" class="card"/>
+<text x="593" y="377" class="skill" style="font-size:13.5px">us-stock-move-reason</text>
+<text x="593" y="414" class="body" style="font-size:12.5px">US stock / ETF move attribution</text>
+<rect x="810" y="338" width="218" height="112" rx="12" class="card"/>
+<text x="823" y="377" class="skill" style="font-size:13.5px">jp-stock-move-reason</text>
+<text x="823" y="414" class="body" style="font-size:12.5px">Japan stock move attribution</text>
+<rect x="1040" y="338" width="218" height="112" rx="12" class="card"/>
+<text x="1053" y="377" class="skill" style="font-size:13.5px">cn-stock-move-reason</text>
+<text x="1053" y="414" class="body" style="font-size:12.5px">A-share move attribution</text>
+<rect x="1270" y="338" width="218" height="112" rx="12" class="card"/>
+<text x="1283" y="377" class="skill" style="font-size:13.5px">cn-market-tape</text>
+<text x="1283" y="414" class="body" style="font-size:12.5px">A-share themes / ranks / flows</text>
+<rect x="1500" y="338" width="218" height="112" rx="12" class="tint"/>
+<text x="1513" y="377" class="skill" style="font-size:13.5px">market-calendar-google</text>
+<text x="1513" y="414" class="body" style="font-size:12.5px">Events → Google Calendar</text>
+<path d="M459 486H1541" stroke="#63948f" stroke-dasharray="5 5" fill="none"/>
+<path d="M459 450V486" stroke="#63948f" stroke-dasharray="5 5" fill="none"/>
+<path d="M689 450V486" stroke="#63948f" stroke-dasharray="5 5" fill="none"/>
+<path d="M919 450V486" stroke="#63948f" stroke-dasharray="5 5" fill="none"/>
+<path d="M1149 450V486" stroke="#63948f" stroke-dasharray="5 5" fill="none"/>
+<path d="M1379 450V486" stroke="#63948f" stroke-dasharray="5 5" fill="none"/>
+<path d="M513 486V565" class="optional" />
+<path d="M855 486V565" class="optional" />
+<path d="M1197 486V565" class="optional" />
+<path d="M1539 486V565" class="optional" />
+<path d="M1609 450V467H1774V752H1647.5V782" class="flow" />
+<text x="350" y="512" class="hint" >Dashed: optional calls; supporting skills also accept direct questions</text>
+<rect x="350" y="565" width="326" height="126" rx="12" class="tint"/>
+<text x="367" y="597" class="skill" >stock-technical-analysis</text>
+<text x="367" y="631" class="body" >Trend / support / resistance</text>
+<text x="367" y="656" class="body" >Volume / VWAP / candles</text>
+<rect x="692" y="565" width="326" height="126" rx="12" class="tint"/>
+<text x="709" y="597" class="skill" >stock-sentiment-analysis</text>
+<text x="709" y="631" class="body" >Emotion cycle / leaders / followers</text>
+<text x="709" y="656" class="body" >Expectation gaps / crowding</text>
+<rect x="1034" y="565" width="326" height="126" rx="12" class="tint"/>
+<text x="1051" y="597" class="skill" >us-stock-gamma-moomoo</text>
+<text x="1051" y="631" class="body" >GEX / flip / walls</text>
+<text x="1051" y="656" class="body" >Options positioning / scenarios</text>
+<rect x="1376" y="565" width="326" height="126" rx="12" class="tint"/>
+<text x="1393" y="597" class="skill" >macro-news-check</text>
+<text x="1393" y="631" class="body" >Rates / FX / commodities</text>
+<text x="1393" y="656" class="body" >Macro news / broad-market tape</text>
+<path d="M513 691V741" class="flow" marker-start="url(#arrow)"/>
+<path d="M855 691V741" class="flow" marker-start="url(#arrow)"/>
+<path d="M1197 691V741" class="flow" marker-start="url(#arrow)"/>
+<path d="M1539 691V741" class="flow" marker-start="url(#arrow)"/>
+<path d="M500 741H1615" stroke="#377e7b" stroke-width="1.5" fill="none"/>
+<text x="1750" y="727" class="hint" text-anchor="end" style="font-size:12px">Two-way: data request / returned evidence</text>
+<path d="M501 741V782" class="flow" />
+<rect x="350" y="782" width="302" height="267" rx="12" class="card"/>
+<text x="364" y="815" class="head" style="font-size:17px">DTM structured APIs</text>
+<text x="364" y="846" class="code" style="font-size:14px">/api/themes</text>
+<text x="364" y="864" class="code" style="font-size:14px">/api/ratings-us</text>
+<text x="364" y="882" class="code" style="font-size:14px">/api/ratings-jp</text>
+<text x="364" y="900" class="code" style="font-size:14px">/api/chinastock-anomaly</text>
+<text x="364" y="918" class="code" style="font-size:14px">/api/24hfeed/details</text>
+<text x="364" y="936" class="code" style="font-size:14px">/api/24hfeed/x-monitor</text>
+<text x="364" y="954" class="code" style="font-size:14px">/api/pts/model1–3</text>
+<text x="364" y="972" class="code" style="font-size:14px">/api/gamma/</text>
+<text x="364" y="990" class="code" style="font-size:14px">/api/camarilla/nikkei</text>
+<text x="364" y="1008" class="code" style="font-size:14px">/api/camarilla/sse</text>
+<path d="M775.5 741V782" class="flow" />
+<rect x="665" y="782" width="221" height="267" rx="12" class="card"/>
+<text x="679" y="815" class="head" style="font-size:17px">U.S. evidence</text>
+<text x="679" y="846" class="body" style="font-size:12px">Company IR / SEC</text>
+<text x="679" y="873" class="body" style="font-size:12px">Prices / trading volume</text>
+<text x="679" y="900" class="body" style="font-size:12px">Earnings / ratings / news</text>
+<text x="679" y="927" class="body" style="font-size:12px">moomoo news / digest</text>
+<text x="679" y="954" class="body" style="font-size:12px">Flow / options / technical scans</text>
+<text x="679" y="981" class="body" style="font-size:12px">OpenD / moomoo SDK</text>
+<text x="679" y="1008" class="body" style="font-size:12px">Community samples (optional)</text>
+<path d="M1009.5 741V782" class="flow" />
+<rect x="899" y="782" width="221" height="267" rx="12" class="card"/>
+<text x="913" y="815" class="head" style="font-size:17px">Japan evidence</text>
+<text x="913" y="846" class="body" style="font-size:12px">Yahoo Finance Japan</text>
+<text x="913" y="873" class="body" style="font-size:12px">Kabutan / Traders Web</text>
+<text x="913" y="900" class="body" style="font-size:12px">TDnet / company IR</text>
+<text x="913" y="927" class="body" style="font-size:12px">Yahoo message board</text>
+<text x="913" y="954" class="body" style="font-size:12px">Retail sentiment sample only</text>
+<path d="M1233 741V782" class="flow" />
+<rect x="1133" y="782" width="200" height="267" rx="12" class="card"/>
+<text x="1147" y="815" class="head" style="font-size:17px">A-share evidence</text>
+<text x="1147" y="846" class="body" style="font-size:12.5px">Eastmoney / Miaoxiang MX</text>
+<text x="1147" y="873" class="body" style="font-size:12.5px">Quotes / filings / news</text>
+<text x="1147" y="900" class="body" style="font-size:12.5px">Guba / theme constituents</text>
+<text x="1147" y="927" class="body" style="font-size:12.5px">Sohu indexes / sectors</text>
+<path d="M1446 741V782" class="flow" />
+<rect x="1346" y="782" width="200" height="267" rx="12" class="card"/>
+<text x="1360" y="815" class="head" style="font-size:17px">Macro &amp; cross-asset</text>
+<text x="1360" y="846" class="body" style="font-size:12.5px">Official releases / macro news</text>
+<text x="1360" y="873" class="body" style="font-size:12.5px">JPX indexes / sector breadth</text>
+<text x="1360" y="900" class="body" style="font-size:12.5px">U.S. / Japan bond yields</text>
+<text x="1360" y="927" class="body" style="font-size:12.5px">USDJPY / DXY</text>
+<text x="1360" y="954" class="body" style="font-size:12.5px">Oil / gold / commodities</text>
+<rect x="1559" y="782" width="177" height="267" rx="12" class="tint"/>
+<text x="1573" y="815" class="head" style="font-size:17px">External service</text>
+<text x="1573" y="846" class="body" style="font-size:12px">Google Calendar</text>
+<text x="1573" y="873" class="body" style="font-size:12px">Earnings / economic events</text>
+<text x="1573" y="900" class="body" style="font-size:12px">Time zones / deduplication</text>
+<text x="1573" y="927" class="body" style="font-size:12px">Explicit request required</text>
+<path d="M501 1090H1446" stroke="#377e7b" fill="none"/>
+<path d="M501 1049V1090" stroke="#377e7b" fill="none"/>
+<path d="M775.5 1049V1090" stroke="#377e7b" fill="none"/>
+<path d="M1009.5 1049V1090" stroke="#377e7b" fill="none"/>
+<path d="M1233 1049V1090" stroke="#377e7b" fill="none"/>
+<path d="M1446 1049V1090" stroke="#377e7b" fill="none"/>
+<path d="M1647.5 1049V1090H1539V1132" class="flow" />
+<path d="M513 1090V1132" class="flow" />
+<rect x="350" y="1132" width="326" height="98" rx="12" class="card"/>
+<text x="366" y="1159" class="head" style="font-size:18px">Move analysis</text>
+<text x="366" y="1182" class="body" style="font-size:12.5px">Main catalyst / drivers / community</text>
+<text x="366" y="1200" class="body" style="font-size:12.5px">Confidence / caveats</text>
+<text x="366" y="1218" class="body" style="font-size:12.5px">U.S.: options, flows, technical layer</text>
+<path d="M855 1090V1132" class="flow" />
+<rect x="692" y="1132" width="326" height="98" rx="12" class="card"/>
+<text x="708" y="1159" class="head" style="font-size:18px">Market strategy</text>
+<text x="708" y="1182" class="body" style="font-size:12.5px">Direction / key themes</text>
+<text x="708" y="1200" class="body" style="font-size:12.5px">Key risks / next checks</text>
+<text x="708" y="1218" class="body" style="font-size:12.5px">Validation and invalidation</text>
+<path d="M1197 1090V1132" class="flow" />
+<rect x="1034" y="1132" width="326" height="98" rx="12" class="card"/>
+<text x="1050" y="1159" class="head" style="font-size:18px">Specialized analysis</text>
+<text x="1050" y="1182" class="body" style="font-size:12.5px">Technical / sentiment</text>
+<text x="1050" y="1200" class="body" style="font-size:12.5px">Gamma positioning / macro impact</text>
+<text x="1050" y="1218" class="body" style="font-size:12.5px">Evidence and conditional conclusions</text>
+<rect x="1376" y="1132" width="326" height="98" rx="12" class="tint"/>
+<text x="1392" y="1159" class="head" style="font-size:18px">Calendar results</text>
+<text x="1392" y="1182" class="body" style="font-size:12.5px">Earnings / macro events / time zone</text>
+<text x="1392" y="1200" class="body" style="font-size:12.5px">Duplicate checks / action results</text>
+<text x="1392" y="1218" class="body" style="font-size:12.5px">Explicit authorization to write</text>
+<rect x="50" y="1260" width="1700" height="39" rx="11" fill="#153c46"/>
+<text x="72" y="1286" class="body" style="fill:#fff;font-size:17px;font-weight:600">Verify the move → Confirm catalysts → Test sector, macro and positioning → Deliver conditional conclusions</text>
+<text x="1750" y="1313" class="hint" text-anchor="end" style="font-size:12px">Conceptual architecture, not an execution trace. Dependencies, permissions and freshness govern availability.</text>
 </svg>
