@@ -1,6 +1,6 @@
 {
   "name": "codex-market-skills",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Market research workflows for China, Japan, and US equities, covering stock-move analysis, market tape, macro context, sentiment, technicals, gamma, strategy reports, and market calendars.",
   "author": {
     "name": "tsetsugekka",
@@ -20,7 +20,7 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Codex Market Skills",
+    "displayName": "DayTradingMonster Market Analyst｜DayTradingMonster 市场分析师",
     "shortDescription": "CN, JP, and US stock research workflows",
     "longDescription": "Analyze stock moves, A-share market tape, macro context, sentiment, technical structure, US options gamma, daily market strategies, and market calendars across China, Japan, and the United States. Data access depends on the host: full-chain gamma requires local OpenD, the moomoo SDK and moomooapi; some A-share workflows require separately installed MX skills; calendar writes require an authorized Google Calendar connection. These dependencies are not bundled.",
     "developerName": "tsetsugekka",

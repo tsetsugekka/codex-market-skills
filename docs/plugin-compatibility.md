@@ -1,4 +1,6 @@
-# Plugin compatibility and release status
+# DayTradingMonster Market Analyst — compatibility and release status
+
+Display name: **DayTradingMonster Market Analyst｜DayTradingMonster 市场分析师**. The stable package and marketplace identifier remains `codex-market-skills`.
 
 This repository contains one skills-only plugin with ten skills. `.codex-plugin/plugin.json` defines the package; `.agents/plugins/marketplace.json` makes the same package discoverable from the repository root. Neither file installs data providers.
 
@@ -17,3 +19,5 @@ This repository contains one skills-only plugin with ten skills. `.codex-plugin/
 Version 0.1.1 corrects gamma command paths and discloses its external helper dependency. Public directory submission and account installation are still pending. GitHub publication alone does not complete either step.
 
 Public submission uses the [OpenAI plugin submission portal](https://platform.openai.com/plugins) and requires a selected name, verified developer identity, listing assets and policy URLs, five positive and three negative test cases, and platform review. See the [official submission requirements](https://developers.openai.com/plugins/deploy/submission).
+
+Version 0.1.2 applies the selected DayTradingMonster display name. The repository URL and stable identifiers are unchanged.
