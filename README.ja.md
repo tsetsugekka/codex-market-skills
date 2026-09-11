@@ -1,4 +1,4 @@
-# Codex Market Skills
+<h1 align="center">Codex Market Skills</h1>
 
 <p align="center">
   <strong>取引、投資リサーチ、市場変動分析、市場カレンダー管理のための Codex Skill Suite。</strong>
@@ -39,10 +39,6 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 ## プラグイン構成図
 
 [![DayTrading.Monster プラグイン構成図：Skill、データソース、呼び出し関係、出力構成](assets/architecture.ja.svg)](assets/architecture.ja.svg)
-
-[中文图](assets/architecture.zh-CN.svg) · [English diagram](assets/architecture.en.svg) · [日本語の図](assets/architecture.ja.svg)
-
-この図は 10 個の Skill の論理的な連携を示すもので、個々のリクエストの実行履歴ではありません。補助機能は必要に応じて呼び出します。moomoo/OpenD、MX、Google Calendar は、別途の設定と必要な認可を伴う外部依存です。本プラグインは定時実行や自動売買を内蔵していません。
 
 ## Skill 一覧
 
