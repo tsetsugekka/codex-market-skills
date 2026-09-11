@@ -21,7 +21,7 @@ Use this when the user owns or asks about a specific short-dated option, especia
 Use `scripts/option_scenario_table.py`:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/option_scenario_table.py \
+python3 scripts/option_scenario_table.py \
   --kind C --strike 7370 --iv 16.8 \
   --asof 2026-05-13T02:30:00+09:00 --expiry 2026-05-13T05:00:00+09:00 \
   --spots 7350,7360,7370,7380,7390

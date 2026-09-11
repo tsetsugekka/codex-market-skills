@@ -55,7 +55,9 @@ For SPX/SPXW context, first reference the canonical `https://daytrading.monster/
 
 ## Environment Check
 
-This skill requires moomoo OpenD plus the Python SDK/skills environment.
+This skill requires moomoo OpenD, the `moomoo` Python SDK, and the separately installed `moomooapi` skill. The collectors import `common.py` from `~/.codex/skills/moomooapi/scripts/`; this plugin does not bundle that dependency. In a cloud environment without these local dependencies, do not run the collectors or claim locally calculated GEX. Use the documented DTM SPX reference when applicable, or request a user-provided option-chain snapshot and clearly limit the analysis.
+
+Run the commands below with the directory containing this SKILL.md as the working directory, resolved from the installed skill location. This supports both standalone skill and plugin-cache installations.
 
 - First check whether OpenD is running and the `moomoo` Python package imports. If not, guide the user to install or launch OpenD using the `install-moomoo-opend` skill.
 - Tell the user OpenD must stay running in the background while querying quotes/options. Login may be required for permissioned data.
@@ -78,14 +80,14 @@ Default to a concise chat/terminal text summary. Do not create files as part of 
 For ordinary US stocks/ETFs use `scripts/gamma_report.py` when the user asks for the ticker itself:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.BA
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/gamma_report.py US.MP
+python3 scripts/gamma_report.py US.BA
+python3 scripts/gamma_report.py US.MP
 ```
 
 For SPX/SPXW intraday index gamma use:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py
+python3 scripts/spx_intraday_latest.py
 ```
 
 For SPX answers, default to the detailed index-gamma format. The answer should be detailed enough to explain claims such as “still negative gamma, 7450 starts neutralizing, 7500 becomes stronger positive gamma” from data. Include:
@@ -99,13 +101,13 @@ For SPX answers, default to the detailed index-gamma format. The answer should b
 When the user asks about `未来几天 gamma`, `未来几日 gamma`, `后面几天 gamma`, `按日期看 gamma`, `哪天强哪天弱`, or shares a multi-expiry gamma chart and wants the forward read, use the per-expiry report mode:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py --by-expiry-report
+python3 scripts/spx_intraday_latest.py --by-expiry-report
 ```
 
 When comparing against an earlier same-day SPX/SPXW snapshot, pass the previous JSON and any specific battlefield strikes the user cares about:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/spx_intraday_latest.py \
+python3 scripts/spx_intraday_latest.py \
   --compare-json /path/to/previous_spx_gamma.json \
   --watch-strikes 7400,7425,7450
 ```
@@ -131,7 +133,7 @@ For Codex inline display, generate the fragment inside the thread-scoped visuali
 For Nikkei 225 proxy gamma using EWJ converted to a Nikkei CFD/index anchor use:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/proxy_index_gamma.py US.EWJ \
+python3 scripts/proxy_index_gamma.py US.EWJ \
   --index-name "日经225 / NKD-NIY proxy" \
   --bridge-anchor-at-proxy-time 59920 --bridge-current 60110 --final-anchor 60080
 ```
@@ -160,7 +162,7 @@ For SPX 0DTE or quick trading questions, chat/terminal text is the default. Stil
 For short-dated option value scenarios, use `scripts/option_scenario_table.py` after fetching live IV/spot from moomoo:
 
 ```bash
-python3 ~/.codex/skills/us-stock-gamma-moomoo/scripts/option_scenario_table.py \
+python3 scripts/option_scenario_table.py \
   --kind C --strike 7370 --iv 16.8 \
   --asof 2026-05-13T02:30:00+09:00 --expiry 2026-05-13T05:00:00+09:00 \
   --spots 7350,7360,7370,7380,7390
