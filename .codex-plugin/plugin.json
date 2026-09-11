@@ -20,7 +20,7 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Day Trading Monster",
+    "displayName": "DayTrading.Monster",
     "shortDescription": "Research CN, JP and US stocks",
     "longDescription": "Analyze stock moves, A-share market tape, macro context, sentiment, technical structure, US options gamma, daily market strategies, and market calendars across China, Japan, and the United States. Data access depends on the host: full-chain gamma requires local OpenD, the moomoo SDK and moomooapi; some A-share workflows require separately installed MX skills; calendar writes require an authorized Google Calendar connection. These dependencies are not bundled.",
     "developerName": "tsetsugekka",

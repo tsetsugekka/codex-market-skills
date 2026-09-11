@@ -1,6 +1,6 @@
-# Day Trading Monster — compatibility and release status
+# DayTrading.Monster — compatibility and release status
 
-Display name: **Day Trading Monster**. The stable package and marketplace identifier remains `codex-market-skills`.
+Display name: **DayTrading.Monster**. The stable package and marketplace identifier remains `codex-market-skills`.
 
 This repository contains one skills-only plugin with ten skills. `.codex-plugin/plugin.json` defines the package; `.agents/plugins/marketplace.json` makes the same package discoverable from the repository root. Neither file installs data providers.
 

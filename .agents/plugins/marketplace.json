@@ -1,7 +1,7 @@
 {
   "name": "codex-market-skills",
   "interface": {
-    "displayName": "Day Trading Monster"
+    "displayName": "DayTrading.Monster"
   },
   "plugins": [
     {

@@ -1,4 +1,4 @@
-# Day Trading Monster — submission test cases
+# DayTrading.Monster — submission test cases
 
 These are review scenarios and expected behavior, not records of completed live tests. Use a new ChatGPT session with the installed plugin. Record the date, host capabilities, sources and actual result when executing each case.
 
