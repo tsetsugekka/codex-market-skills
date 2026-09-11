@@ -1,4 +1,4 @@
-# DayTradingMonster Market Analyst — Privacy notice
+# Day Trading Monster — Privacy notice
 
 Effective: 2026-09-11. Scope: the skills-only plugin distributed from this repository.
 

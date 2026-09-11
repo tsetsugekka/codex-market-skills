@@ -1,4 +1,4 @@
-# DayTradingMonster Market Analyst — Usage terms
+# Day Trading Monster — Usage terms
 
 Effective: 2026-09-11. These terms describe use of the skills-only plugin distributed from this repository.
 
