@@ -21,3 +21,5 @@ Version 0.1.1 corrects gamma command paths and discloses its external helper dep
 Public submission uses the [OpenAI plugin submission portal](https://platform.openai.com/plugins) and requires a selected name, verified developer identity, listing assets and policy URLs, five positive and three negative test cases, and platform review. See the [official submission requirements](https://developers.openai.com/plugins/deploy/submission).
 
 Version 0.1.2 applies the selected DayTradingMonster display name. The repository URL and stable identifiers are unchanged.
+
+Version 0.1.3 adds square SVG icons and a brand color meeting the portal contrast requirement, and removes duplicated short-description metadata from six skills (their agents/openai.yaml interface copy remains authoritative). The gamma skill retains its standalone version metadata; the portal reports an informational interface warning for it. Required package validation checks passed on upload. This does not establish live workflow acceptance or public directory approval.

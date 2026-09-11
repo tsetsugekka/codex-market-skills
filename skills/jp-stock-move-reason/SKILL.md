@@ -1,8 +1,6 @@
 ---
 name: jp-stock-move-reason
 description: Use when analyzing why a Japanese stock moved sharply using Codex, without Gemini, from Yahoo Finance quote data, Yahoo 掲示板 comments, Yahoo/Kabutan/Traders news, and basic stock metrics such as current change, market cap, PER/PBR, dividend yield, and margin ratio.
-metadata:
-  short-description: Analyze Japanese stock move reasons from Yahoo掲示板, news, and metrics
 ---
 
 # JP Stock Move Reason

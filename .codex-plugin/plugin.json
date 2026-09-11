@@ -1,6 +1,6 @@
 {
   "name": "codex-market-skills",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Market research workflows for China, Japan, and US equities, covering stock-move analysis, market tape, macro context, sentiment, technicals, gamma, strategy reports, and market calendars.",
   "author": {
     "name": "tsetsugekka",
@@ -34,6 +34,9 @@
       "分析这只股票今天为什么异动，并区分确认催化、市场情绪和背景噪音。",
       "写一份当前市场的盘前策略或收盘复盘，给出关键验证点和风险。",
       "分析这只股票的技术结构、支撑压力、情绪和宏观背景。"
-    ]
+    ],
+    "composerIcon": "./assets/logo.svg",
+    "logo": "./assets/logo.svg",
+    "brandColor": "#23543B"
   }
 }

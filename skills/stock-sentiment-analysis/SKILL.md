@@ -1,8 +1,6 @@
 ---
 name: stock-sentiment-analysis
 description: Reusable public-safe sentiment and market-emotion framework for A-shares, Japanese stocks, US stocks, indexes, and sector themes. Use when a stock or market move needs emotion-cycle classification, main-line versus follower judgment, expectation-gap analysis, forum/news sentiment synthesis, risk-on/risk-off context, A-share sector/theme constituent mapping such as 哪些股票/相关股/概念股/龙头股, or when other stock skills need a shared sentiment layer. Supports optional user-specified private RAG folders without storing or publishing private materials.
-metadata:
-  short-description: Reusable stock sentiment and emotion-cycle framework
 ---
 
 # Stock Sentiment Analysis

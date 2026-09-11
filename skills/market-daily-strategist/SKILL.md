@@ -1,8 +1,6 @@
 ---
 name: market-daily-strategist
 description: Use when the user asks for daily market strategy, broad-market trading guidance, pre-market strategy, close recap, or daily/one-name long-term recommendation reports covering US stocks, Japanese stocks, or A-shares. Also use for natural current-session or next-session market questions such as "明天日股如何做", "今天日股怎么做", "日经明天怎么看", "美股今晚怎么做", "纳指今晚怎么看", "A股明天怎么操作", or "大盘今天怎么办" when the intent is market-level strategy. Applies to ad-hoc requests that need live market/news data, strict no-fabrication data discipline, price-confirmed catalysts, and decision-oriented trading guidance.
-metadata:
-  short-description: Daily market strategy and one-stock recommendation reports
 ---
 
 # Market Daily Strategist

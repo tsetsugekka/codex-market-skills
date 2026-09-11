@@ -1,8 +1,6 @@
 ---
 name: cn-stock-move-reason
 description: Use when analyzing why one A-share stock moved sharply using Codex, without Gemini, from Eastmoney quote data, announcements, Eastmoney 股吧/资讯 posts, Eastmoney Guba topic heat, Sohu index/sector context, and A-share breadth.
-metadata:
-  short-description: Analyze A-share move reasons from announcements, 股吧, index/sector context, and emotion cycle
 ---
 
 # CN Stock Move Reason

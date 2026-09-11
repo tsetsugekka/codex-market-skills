@@ -1,8 +1,6 @@
 ---
 name: us-stock-move-reason
 description: Use when analyzing why a U.S. stock or ETF moved sharply, including premarket/after-hours gaps, earnings reactions, guidance, ratings, company news, unusual options, capital-flow anomalies, short data, community sentiment, and technical confirmation. Coordinates official moomoo skills and local market skills into a Chinese evidence-based move-reason note.
-metadata:
-  short-description: Analyze U.S. stock move reasons from moomoo news, anomalies, sentiment, options, and technical context
 ---
 
 # US Stock Move Reason

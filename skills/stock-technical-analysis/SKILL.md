@@ -1,8 +1,6 @@
 ---
 name: stock-technical-analysis
 description: Use when the user asks for technical analysis or a technically grounded entry-stop-exit plan for an individual US, Japanese, or A-share stock, including intraday trend, pressure/support, whether it can reach a price, K-line structure, volume-price behavior, moving averages, KDJ/MACD/RSI, Vegas channels, moomoo/Yahoo chart reads, US-only dark-pool level confirmation, or whether a breakout/pullback is confirmed.
-metadata:
-  short-description: Technical analysis playbook for US, JP, and A-share stocks
 ---
 
 # Stock Technical Analysis
