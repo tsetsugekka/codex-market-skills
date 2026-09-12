@@ -1,7 +1,7 @@
 {
   "name": "codex-market-skills",
-  "version": "0.1.5",
-  "description": "Market research workflows for China, Japan, and US equities, covering stock-move analysis, market tape, macro context, sentiment, technicals, gamma, strategy reports, and market calendars.",
+  "version": "0.1.6",
+  "description": "Research stocks and market developments across China, Japan, and the United States using available public information. Explore stock moves, macro context, market sentiment, and technical structure, and prepare pre-market briefs or market recaps. Organize findings with source references, distinguish confirmed facts from interpretation, and identify information gaps.",
   "author": {
     "name": "tsetsugekka",
     "url": "https://github.com/tsetsugekka"
@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "DayTrading.Monster",
     "shortDescription": "Research CN, JP and US stocks",
-    "longDescription": "Analyze stock moves, A-share market tape, macro context, sentiment, technical structure, US options gamma, daily market strategies, and market calendars across China, Japan, and the United States. Data access depends on the host: full-chain gamma requires local OpenD, the moomoo SDK and moomooapi; some A-share workflows require separately installed MX skills; calendar writes require an authorized Google Calendar connection. These dependencies are not bundled.",
+    "longDescription": "Research stocks and market developments across China, Japan, and the United States using available public information. Explore stock moves, macro context, market sentiment, and technical structure, and prepare pre-market briefs or market recaps. Organize findings with source references, distinguish confirmed facts from interpretation, and identify information gaps.",
     "developerName": "tsetsugekka",
     "category": "Finance",
     "capabilities": [
