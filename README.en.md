@@ -34,11 +34,11 @@ It covers four major task areas:
 | Macro and structure | Macro headlines, broad-market tape, technical structure, support/resistance, gamma/GEX, and 0DTE scenario tables |
 | Calendar and reports | US/Japan earnings, macro events, central-bank events, market strategy reports, and closing reviews |
 
-## Plugin Architecture
+## How It Works
 
-[![DayTrading.Monster architecture: user entry, main skills, support skills, sources and outputs](assets/architecture.en.png)](assets/architecture.en.png)
+[![Codex Market Skills: ask a question, match research skills, check evidence, and get results](assets/how-it-works.en.svg)](assets/how-it-works.en.svg)
 
-Choose an entry by task and add support skills as needed; not every skill runs for every request. Click to view full size.
+Ask a question, match the research skills, check the evidence, and get analysis, strategy, reviews, or a market calendar. Click to view full size.
 
 ## Skill Overview
 

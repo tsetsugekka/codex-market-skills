@@ -34,11 +34,11 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 | 宏观与结构 | 宏观快讯、大盘 tape、技术结构、支撑压力、gamma/GEX、0DTE 情景表 |
 | 日历与报告 | 美股/日股财报、宏观事件、央行事件、市场策略报告、收盘复盘 |
 
-## 插件架构图
+## 工作原理
 
-[![DayTrading.Monster 插件架构：用户入口、主 Skill、支持 Skill、数据源与输出](assets/architecture.zh-CN.png)](assets/architecture.zh-CN.png)
+[![Codex Market Skills 工作原理：提出问题、匹配研究技能、核对数据证据、输出研究结果](assets/how-it-works.zh-CN.svg)](assets/how-it-works.zh-CN.svg)
 
-按问题选择入口，并按线索组合支持 Skill；不表示每次调用全部能力。点击图片查看大图。
+从一个问题开始，按需组合研究技能，核对证据，得到分析、策略、复盘或财经日历。点击图片查看大图。
 
 ## Skill 总览
 

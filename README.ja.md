@@ -34,11 +34,11 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 | マクロと構造 | マクロ速報、大局 tape、テクニカル構造、支持・抵抗、gamma/GEX、0DTE シナリオ表 |
 | カレンダーとレポート | 米国/日本株決算、マクロイベント、中央銀行イベント、市場戦略、引け後レビュー |
 
-## プラグイン構成図
+## 仕組み
 
-[![DayTrading.Monster：質問の入口、メイン Skill、サポート Skill、データソースと出力](assets/architecture.ja.png)](assets/architecture.ja.png)
+[![Codex Market Skills：質問からスキルの選択、データの確認、分析結果の作成まで](assets/how-it-works.ja.svg)](assets/how-it-works.ja.svg)
 
-質問に応じて入口を選び、必要なサポート Skill を組み合わせます。毎回すべてを呼び出すわけではありません。クリックで拡大。
+質問に合うスキルを選び、データを確かめて、分析・戦略・振り返り・経済カレンダーを作成します。クリックで拡大。
 
 ## Skill 一覧
 
