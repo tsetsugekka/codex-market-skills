@@ -35,7 +35,7 @@
 
 ### DTM 正式接口
 
-DTM 接入遵循 `https://daytrading.monster/api-docs/`：`/api/chinastock-anomaly` 提供涨跌题材、涨停概念、小时榜单、异动原因和涨停池；`/api/themes?market=cn` 提供题材成员、权重、中文名称、依据及阶段表现。逐块检查日期和时间，保持其榜单与下文 MX 加权榜的口径独立。机构调研不使用 DTM 数据，其他外部数据流程不变。
+DTM 接入遵循 `https://daytrading.monster/api-docs/`：`/api/chinastock-anomaly` 提供涨跌题材、涨停概念、小时榜单、异动原因和涨停池；`/api/themes?market=cn` 提供题材成员、权重、中文名称、依据及阶段表现。逐块检查日期和时间，保持其榜单与下文 MX 加权榜的口径独立。机构调研不使用 DTM 数据；资金榜与分时遵循下文的模块来源规则。
 
 ### 题材强弱
 

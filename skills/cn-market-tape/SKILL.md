@@ -23,7 +23,7 @@ description: Use when the user asks for A-share intraday or after-close market t
 DTM 数据优先使用 `https://daytrading.monster/api-docs/` 中的正式接口：
 
 - `https://daytrading.monster/api/chinastock-anomaly`：最新涨跌题材 Top10、涨停概念 Top8、当日小时榜单、完整异动原因和涨停池。逐块核对交易日和时间；该榜单与下文 MX 成分加权榜是不同口径，不能混合排名或当作同口径历史快照。
-- `https://daytrading.monster/api/themes?market=cn`：A 股题材成员、权重、中文名称与依据及阶段表现；阶段涨跌与 `price_dates` 不作为实时行情。映射缓存由此接口生成，现有 MX 行情、加权计算和资金流流程保持原样。
+- `https://daytrading.monster/api/themes?market=cn`：A 股题材成员、权重、中文名称与依据及阶段表现；阶段涨跌与 `price_dates` 不作为实时行情。此接口用于生成映射缓存；加权题材榜继续读取 MX 行情，资金榜与分时按 Module 2 的来源规则执行。
 
 接口正文是 JSON，即使 Content-Type 为 `text/plain`。不读取 DTM 机构调研数据；机构调研继续使用既有流程。
 
