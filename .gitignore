@@ -11,3 +11,6 @@ RAG_INDEX/
 skills/cn-market-tape/assets/themes/theme-data.json
 skills/cn-market-tape/assets/themes/theme-label-i18n.json
 skills/cn-market-tape/assets/themes/.last_refresh.json
+
+# Local handoff receipts, release packages and recovery history
+.local/

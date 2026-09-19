@@ -102,6 +102,14 @@
       background: var(--viz-series-5);
     }
 
+    .spx-gamma-heatmap .swatch.call-profile {
+      background: var(--viz-series-1);
+    }
+
+    .spx-gamma-heatmap .swatch.put-profile {
+      background: var(--viz-series-4);
+    }
+
     .spx-gamma-heatmap .line-key {
       width: 24px;
       height: 0;
@@ -184,20 +192,23 @@
       <div class="timestamp" data-role="timestamp"></div>
     </div>
     <div class="canvas-wrap">
-      <canvas class="gamma-canvas" aria-label="SPXW daily gamma heatmap with aggregate GEX bars, current SPX line, daily gamma flip line, and daily call and put walls">
+      <canvas class="gamma-canvas" aria-label="SPXW daily gamma heatmap with mirrored all-expiry Call and Put GEX profile, Net GEX line, current SPX line, daily gamma flip line, and daily call and put walls">
         SPXW daily gamma exposure heatmap.
       </canvas>
     </div>
     <div class="legend" aria-label="Heatmap legend">
       <span class="legend-item"><span class="swatch pos"></span>正 GEX</span>
       <span class="legend-item"><span class="swatch neg"></span>负 GEX</span>
+      <span class="legend-item"><span class="swatch call-profile"></span>All Call GEX（右）</span>
+      <span class="legend-item"><span class="swatch put-profile"></span>All Put GEX（左）</span>
+      <span class="legend-item"><span class="line-key"></span>All Net GEX（细线）</span>
       <span class="legend-item"><span class="line-key"></span>每日 Flip（实线，非价格预测）</span>
       <span class="legend-item"><span class="line-key spot"></span>当前 SPX（虚线）</span>
       <span class="legend-item"><span class="line-key call-wall"></span>每日 Call Wall（当日 Call GEX 最大）</span>
       <span class="legend-item"><span class="line-key put-wall"></span>每日 Put Wall（当日 Put GEX 最负）</span>
     </div>
     <div class="method-note">
-      每一列只使用该日期到期的期权链。色带仅沿行权价做视觉平滑，不跨日期混合；净 GEX、Flip、Call Wall 与 Put Wall 均保留原始值。Call/Put Wall 分别是该到期日 Call GEX 最大与 Put GEX 最负的行权价，都不是价格预测。
+      左侧 All GEX 使用同尺度镜像：Call GEX 向右、Put GEX 绝对值向左，细线是两者相加后的 Net GEX。每一列只使用该日期到期的期权链；色带仅沿行权价做视觉平滑，不跨日期混合；净 GEX、Flip、Call Wall 与 Put Wall 均保留原始值。Call/Put Wall 分别是该到期日 Call GEX 最大与 Put GEX 最负的行权价，都不是价格预测。
     </div>
     <table class="sr-only" data-role="accessible-table">
       <caption>SPX daily gamma levels</caption>
@@ -382,7 +393,7 @@
         const putWallColor = resolveColor("--viz-series-4");
 
         const left = compact ? 42 : 50;
-        const barWidth = compact ? 42 : 110;
+        const barWidth = compact ? 48 : 124;
         const gap = compact ? 7 : 15;
         const top = compact ? 64 : 96;
         const bottom = 28;
@@ -395,7 +406,8 @@
           0.985
         );
         const aggregateCap = Math.max(
-          ...payload.aggregate.map((value) => Math.abs(value)),
+          ...payload.aggregateCall.map((value) => Math.abs(value)),
+          ...payload.aggregatePut.map((value) => Math.abs(value)),
           1
         );
 
@@ -437,21 +449,65 @@
         context.lineTo(barCenter, top + plotHeight);
         context.stroke();
 
+        const profileHalfWidth = barWidth / 2 - 3;
         const rowHeight = plotHeight / payload.aggregate.length;
-        payload.aggregate.forEach((value, index) => {
-          const length = Math.min(1, Math.abs(value) / aggregateCap)
-            * (barWidth / 2 - 2);
-          context.globalAlpha = 0.16
-            + Math.pow(Math.abs(value) / aggregateCap, 0.55) * 0.84;
-          context.fillStyle = value >= 0 ? positive : negative;
+        payload.aggregate.forEach((_, index) => {
+          const callValue = Math.abs(payload.aggregateCall[index] || 0);
+          const putValue = Math.abs(payload.aggregatePut[index] || 0);
+          const callLength = Math.min(1, callValue / aggregateCap) * profileHalfWidth;
+          const putLength = Math.min(1, putValue / aggregateCap) * profileHalfWidth;
+          const y = top + (payload.aggregate.length - 1 - index) * rowHeight;
+          context.globalAlpha = 0.16 + Math.pow(callValue / aggregateCap, 0.55) * 0.84;
+          context.fillStyle = callWallColor;
           context.fillRect(
-            value >= 0 ? barCenter : barCenter - length,
-            top + (payload.aggregate.length - 1 - index) * rowHeight,
-            length,
+            barCenter,
+            y,
+            callLength,
             Math.max(1, rowHeight)
           );
+          context.globalAlpha = 0.16 + Math.pow(putValue / aggregateCap, 0.55) * 0.84;
+          context.fillStyle = putWallColor;
+          context.fillRect(barCenter - putLength, y, putLength, Math.max(1, rowHeight));
         });
         context.globalAlpha = 1;
+
+        const drawProfileNet = (color, width) => {
+          context.strokeStyle = color;
+          context.lineWidth = width;
+          context.setLineDash([]);
+          context.beginPath();
+          payload.aggregate.forEach((value, index) => {
+            const x = barCenter + value / aggregateCap * profileHalfWidth;
+            const y = top + (payload.aggregate.length - 1 - index + 0.5) * rowHeight;
+            if (index === 0) context.moveTo(x, y);
+            else context.lineTo(x, y);
+          });
+          context.stroke();
+        };
+        drawProfileNet(foreground, compact ? 2.8 : 3.6);
+        drawProfileNet("#ffffff", compact ? 1 : 1.35);
+
+        const drawProfileWall = (level, label, color, rightSide) => {
+          if (!Number.isFinite(level) || level < payload.minStrike || level > payload.maxStrike) return;
+          const y = yForLevel(level, top, plotHeight);
+          context.save();
+          context.strokeStyle = color;
+          context.fillStyle = color;
+          context.lineWidth = 1.2;
+          context.setLineDash([3, 3]);
+          context.beginPath();
+          context.moveTo(rightSide ? barCenter : barCenter - profileHalfWidth, y);
+          context.lineTo(rightSide ? barCenter + profileHalfWidth : barCenter, y);
+          context.stroke();
+          context.setLineDash([]);
+          context.textBaseline = "bottom";
+          context.textAlign = rightSide ? "right" : "left";
+          context.font = `700 ${compact ? 7 : 8}px ${fontFamily}`;
+          context.fillText(label, rightSide ? barCenter + profileHalfWidth : barCenter - profileHalfWidth, y - 2);
+          context.restore();
+        };
+        drawProfileWall(payload.allCallWall, "CW", callWallColor, true);
+        drawProfileWall(payload.allPutWall, "PW", putWallColor, false);
 
         context.font = `${compact ? 9 : 11}px ${fontFamily}`;
         context.textBaseline = "middle";
@@ -473,7 +529,7 @@
         context.textAlign = "center";
         context.fillStyle = foreground;
         context.font = `600 ${compact ? 9 : 11}px ${fontFamily}`;
-        context.fillText("All GEX", left + barWidth / 2, compact ? 14 : 17);
+        context.fillText("All C/P/N", left + barWidth / 2, compact ? 14 : 17);
         days.forEach((day, columnIndex) => {
           const x = heatLeft + (columnIndex + 0.5) * columnWidth;
           const shortDate = day.expiry.slice(5).replace("-", "/");

@@ -7,6 +7,7 @@
 - 判断 A 股七阶段情绪周期：冰点、修复/潜伏、启动、加速、高潮、高位分歧/分化、退潮。
 - 区分情绪票、趋势票和 hybrid。
 - 分析主线、跟随、旧龙反抽、防御轮动和噪声。
+- 用“强大盘 + 高成交 + 上涨家数多 + 完整产业链扩散 + 基本面持续验证 + 非末端加速”判断市场—板块—个股共振及爆发后的持续性，并区分逻辑持续性、盘面持续性和新开仓质量。
 - 做预期差分析：原来预期、实际落地、超预期/符合/不及预期。
 - 与 `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo` 协同。
 - 美股社区讨论可用 `moomoo-comment-sentiment` 辅助，但只代表 moomoo 社区样本，用于判断散户热度、分歧、追涨/恐慌，不替代新闻、财报、期权和价格行为。
@@ -24,7 +25,7 @@ DTM 数据优先复用上游结果；按需使用 `https://daytrading.monster/ap
 
 ## 【协同调用】
 
-- `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
+- `cn-stock-move-reason`、`jp-stock-move-reason`、`us-stock-move-reason`、`market-daily-strategist`、`stock-technical-analysis`、`us-stock-gamma-moomoo`。
 
 ## 私有 RAG
 

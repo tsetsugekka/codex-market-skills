@@ -7,7 +7,7 @@ Use this reference when the user asks for a chart similar to a multi-expiry gamm
 - Horizontal axis: real listed SPX/SPXW expiries returned by OpenD. Never invent a missing daily expiry.
 - Vertical axis: SPX strike levels, normally using the native 5-point spacing near spot.
 - Heatmap color: signed GEX by strike for each expiry at the current SPX pricing anchor.
-- Left bars: all-selected-expiry GEX aggregated at each strike.
+- Left profile: all-selected-expiry Call GEX mirrored right of zero and absolute Put GEX mirrored left of zero on a single shared scale. Overlay the raw Net GEX as a thin line. Do not render the Net GEX as a separate bar.
 - Solid line: each expiry's self-calculated gamma flip. This is a regime boundary, not a predicted SPX path.
 - Dashed line: current SPX pricing anchor.
 - Call-wall line: the `call_wall.level` calculated only from that expiry's contracts, meaning the strike with the largest call-side GEX at the current anchor.
@@ -84,3 +84,9 @@ Interpret `more negative net GEX` as stronger negative-gamma feedback, not stron
 - Confirm the fragment contains no `<html>`, `<head>`, or `<body>` wrapper when the host expects an inline visualization.
 - Confirm the root has a unique ID, `document.currentScript` is absent, and the final inline directive uses only the fragment file name.
 - Scan the output for credentials, personal paths, and source JSON paths. None should be embedded.
+
+## Side-specific input contract
+
+The mirrored profile requires `call_gex_by_strike` and `put_gex_by_strike`, supplied by the existing collector. Net-only historical JSON cannot reconstruct the two sides; collect a new snapshot or provide both arrays. The renderer reports the missing field rather than inventing values. An `All` bucket is used only when every supplied expiry is selected. For a subset, both side profiles and Net GEX are summed from the same selected expiries; full-universe aggregate walls and flip are omitted. Missing side data for any selected expiry fails explicitly.
+
+Offline check: `python3 -B -m unittest discover -s skills/us-stock-gamma-moomoo/scripts -p "test_*.py"` from the repository root.

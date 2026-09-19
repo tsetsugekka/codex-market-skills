@@ -1,6 +1,6 @@
 ---
 name: cn-market-tape
-description: Use when the user asks for A-share intraday or after-close market tape, theme strength TOP10/BOTTOM10, sector or board money-flow rankings, limit-up pool, institutional survey heat, or a combined read of these signals. Use MX as the primary A-share data layer, preserve the weighted local theme universe for formal theme rankings, and use aggregate fallback sources with rate-limit discipline when MX cannot provide a requested field.
+description: Use when the user asks for A-share intraday or after-close market tape, theme strength TOP10/BOTTOM10, theme/concept-board money-flow rankings, explicit industry-board rankings, limit-up pool, institutional survey heat, or a combined read of these signals. Treat an unqualified “板块” as a theme/concept board by default; use an industry board only when explicitly requested.
 ---
 
 # CN Market Tape
@@ -12,7 +12,7 @@ description: Use when the user asks for A-share intraday or after-close market t
 先判断用户要的是盘中快照、收盘数据还是历史数据，再选择模块：
 
 1. `题材强弱`、`题材 TOP10/BOTTOM10`：使用本 skill 的加权题材流程。
-2. `板块流入流出`、`主力净流入/净流出`：先尝试 `mx-data` 或等价 MX 查询；MX 不支持、字段为空、只返回“全部A股”市场合计、日期不匹配或接口不可用时，使用聚合的公开资金流备用源。
+2. `板块流入流出`、`主力净流入/净流出`：默认按题材/概念板块处理，并直接使用 `push2delay.eastmoney.com` 聚合公开接口；该接口失败后只切换一次到 `push2.eastmoney.com`。只有用户明确说“行业板块/行业”时才切换到行业板块口径。`mx-data` 仅用于用户明确要求 MX 或公开聚合接口缺少的补充字段，不再作为该模块的前置调用。
 3. `涨停池`：先尝试 MX 或已有的聚合涨停池接口；不要逐只股票抓取涨停状态。
 4. `机构调研`：当前/最近交易日优先运行本 skill 内置的机构调研聚合脚本或 MX 查询；历史请求优先使用公开历史调研热度数据，找不到对应日期或字段时明确声明不支持。
 
@@ -37,7 +37,7 @@ DTM 数据优先使用 `https://daytrading.monster/api-docs/` 中的正式接口
 
 其他模块：
 
-- `mx-data`：优先用于板块资金、涨停池、机构调研和指定字段的补充查询。
+- `mx-data`：用于涨停池、机构调研和指定字段的补充查询；板块资金榜及分时不再默认前置调用。
 - `visualize`：用户要求分钟级折线图时，用于渲染带零轴和拐点标注的分时资金图；不可用时退回分钟数据表并说明限制。
 - `scripts/institutional_survey_heat.py`：机构调研明细的低频抓取、去重和股票/行业/周度聚合。
 - `cn-stock-move-reason`：只有用户需要解释涨停池或个别板块异动时再调用。
@@ -84,11 +84,13 @@ theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
 
 默认只检查 TOP3 题材：每个题材选涨幅最高的代表股，结合股吧/讨论发现和 `mx-search` 资讯，区分确认消息、市场思惑、海外映射和个股独立逻辑，并给出“较高/中等/较低”确定度。
 
-## Module 2: Sector Money Flow
+## Module 2: Theme/Board Money Flow
 
 ### Source priority
 
-先用 MX 查询板块或行业的主力净流入/净流出及数据时间。只有返回结果同时包含目标板块/行业名称、板块级资金字段和目标交易日，才算有效板块结果；如果只返回“全部A股”市场合计、`dataTableDTOList` 为空、字段缺失、日期不匹配或调用失败，切换到一个聚合的公开资金流接口，默认优先使用 `push2.eastmoney.com` 的批量接口，`push2delay.eastmoney.com` 仅作为备用。不要逐板块、逐股票循环抓取。
+先确定板块命名空间：用户说“板块/题材/概念”时默认使用题材/概念板块；只有明确说“行业板块/行业”时才使用行业板块。随后直接请求 `push2delay.eastmoney.com` 聚合公开接口，并校验目标板块名称、板块级资金字段和目标交易日；默认接口失败后只切换一次到 `push2.eastmoney.com`。`mx-data` 仅用于用户明确要求 MX 或聚合接口缺少的补充字段。不要逐板块、逐股票循环抓取。
+
+公开备用接口的命名空间固定为：概念/题材板块 `m:90+t:3`；行业板块 `m:90+t:2`。每次输出必须注明“概念板块”或“行业板块”，不得把两个宇宙混在同一张榜或同一组快照比较中。
 
 备用源的字段、请求顺序、超时和错误处理见 `references/market-tape-source-routing.md`。排名榜必须分别获取净流入方向和净流出方向；不能只取按降序返回的第一页，再把末尾几行误称为净流出。若接口声明的总数超过本次返回条数，要记录分页/返回上限风险。金额原始值按元解析后再统一换算为亿元，并保留接口更新时间。同一 host 连续请求超过 3 次后必须加入 8-20 秒随机等待；已出现 HTTP 429/403/5xx、超时、DNS 失败或连接重置时，立即报告 host、endpoint family 和错误，停止继续增加该 host 的请求量。
 
@@ -100,10 +102,10 @@ theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
 数据时间：YYYY-MM-DD HH:MM；资金口径：主力净流入/净流出；来源：MX 或备用聚合源。
 
 主力净流入 Top10
-排名 | 板块 | 主力净流入
+排名 | 题材/概念板块 | 主力净流入
 
 主力净流出 Top10
-排名 | 板块 | 主力净流出
+排名 | 题材/概念板块 | 主力净流出
 ```
 
 金额必须带单位，优先统一为亿元；同时给出市场宽度或指数快照（如可得）。说明榜单是当前快照还是收盘值，且不要把两个榜单的金额相加：不同板块标签可能重叠，资金流也可能按不同板块口径重复统计。
@@ -115,10 +117,10 @@ theme_return = sum(theme_weight * stock_chg_pct) / sum(theme_weight)
 When the user asks for `分时流入流出`、`分钟级资金`、`资金折线图`、`资金曲线` or asks to see the intraday turning point of a named sector/theme, follow the full SOP in `references/intraday-flow-chart-sop.md`. The short version is:
 
 1. Disambiguate the object first. `融资融券` can mean the `融资融券` concept board or the market-wide margin-financing/margin-trading account statistics. The former can use minute-level board fund-flow data; the latter is generally an exchange daily summary and must not be presented as a minute chart.
-2. Resolve the exact industry/concept board code from an aggregate board list; use `m:90+t:2` for industries and `m:90+t:3` for concepts. Do not guess a code, and do not mistake a constituent-stock response for a board row. In the same run, accept a minute series only when its `data.name` exactly confirms the requested board.
-3. Query the current-day minute series from the default public host with `klt=1` and `lmt=240`. Preserve provider timestamps and trading-session gaps exactly; never interpolate the lunch break or missing points. Record the series' latest point separately from the ranking snapshot's update time because the minute endpoint may lag. If the default host returns an endpoint error, switch once to `push2delay.eastmoney.com` under the routing rules; do not keep retrying the failed host.
+2. Resolve the exact board code from an aggregate board list. For an unqualified `板块/题材/概念` request, use the concept universe `m:90+t:3`; use the industry universe `m:90+t:2` only for an explicit `行业/行业板块` request. Do not guess a code, and do not mistake a constituent-stock response for a board row. In the same run, accept a minute series only when its `data.name` exactly confirms the requested board and namespace.
+3. Query the current-day minute series from `push2delay.eastmoney.com` with `klt=1` and `lmt=240`. Preserve provider timestamps and trading-session gaps in the data; never interpolate the lunch break or missing points. For afternoon chart updates, compress the lunch interval on the display by default, draw morning and afternoon as separate paths, and add a clear 11:30/13:01 session divider. Record the series' latest point separately from the ranking snapshot's update time because the minute endpoint may lag. If the default host fails, switch once to `push2.eastmoney.com`; if both fail, report both host/endpoint results and stop increasing request volume.
 4. Interpret `f51` as timestamp, `f52` as cumulative main net inflow, `f53`/`f54` as small/medium-order net flow, and `f55`/`f56` as large/super-large-order net flow. Parse yuan first, then convert to亿元. Check that `f52` approximately reconciles to `f55 + f56` before charting.
-5. For one board, plot cumulative `f52` with a visible zero line, y-axis unit, date/time, source, cumulative label, lunch gap, low/high, zero crossings, and latest point. For multiple themes/boards, use one shared time axis; use 分面图 when scales differ and do not normalize away the yuan/亿元 meaning. The chart is supplemental to the latest snapshot table.
+5. For one board, plot cumulative `f52` with a visible zero line, y-axis unit, date/time, source, cumulative label, low/high, zero crossings, and latest point. When comparing “现在和上午收盘”, use only the exact 11:30 minute point as the morning close and show current, 11:30, and the difference. Do not call an earlier saved snapshot “morning close”. For multiple themes/boards, use one shared time axis; use 分面图 when scales differ and do not normalize away the yuan/亿元 meaning. The chart is supplemental to the latest snapshot table.
 6. Only when the user explicitly asks for “每分钟变化/增量” calculate adjacent-point differences of `f52`; render and label that series separately from the cumulative curve.
 
 The default chart read should state whether the tape is persistent outflow, early outflow then recovery, early inflow then distribution, or two-way high-level divergence. A positive latest point after a deep intraday drawdown is a recovery path, not automatically a full-day inflow trend. If the endpoint is empty, stale, non-JSON, rate-limited, timed out, or otherwise unstable, report the host/endpoint family and stop increasing request volume; return the validated snapshot table or state that the chart is unavailable.
@@ -127,7 +129,7 @@ The default chart read should state whether the tape is persistent outflow, earl
 
 同一交易日内再次查询资金流时，自动读取本次会话中的上一次结果；若会话中没有，则读取运行时快照缓存。缓存只保存聚合榜单、交易日、数据时间、来源、资金口径和单位，不保存原始响应或账户数据。默认缓存位置为用户级 Codex 运行时目录，不得写入本仓库。
 
-只有当交易日、资金口径、来源、单位、板块/行业宇宙和数据时间范围一致时才做数值比较。MX 切换到备用源、榜单口径变化或日期不一致时，仍输出当前表，但在表头写明“上次快照不可比”，不能把不同口径的数字相减。分时图比较优先使用相同时间点；只能取得各自最新点时，明确写出时间不一致和接口滞后。
+只有当交易日、资金口径、来源、单位、板块命名空间（概念/行业）、板块宇宙和数据时间范围一致时才做数值比较。MX 切换到备用源、榜单口径变化或日期不一致时，仍输出当前表，但在表头写明“上次快照不可比”，不能把不同口径的数字相减。分时图比较优先使用相同时间点；只能取得各自最新点时，明确写出时间不一致和接口滞后。
 
 首次查询时保存当前快照，并在表头写 `上次快照：无`。再次查询时，仍然只输出两张表，但列改为：
 
@@ -188,7 +190,7 @@ The default chart read should state whether the tape is persistent outflow, earl
 
 题材表默认列：`排名 | 题材 | 加权涨跌幅 | 主要贡献/拖累`。
 
-资金表默认列：`排名 | 板块 | 主力净流入/净流出`。
+资金表默认列：`排名 | 题材/概念板块 | 主力净流入/净流出`；用户明确要求行业时改为 `行业板块`。
 
 始终用中文回答。说明每个数字是实时、延迟、盘后还是历史数据。默认不写输出文件，不提交 API key、cookie、账户标识、完整自选股列表、原始响应或运行缓存。
 

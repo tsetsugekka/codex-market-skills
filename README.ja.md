@@ -150,11 +150,11 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 <details>
 <summary><code>cn-market-tape</code> - A 株マーケットテープ</summary>
 
-盤中/引け後の A 株について、テーマ強弱 TOP10/BOTTOM10、セクター主力資金、涨停池、機関調査の 4 モジュールをまとめて確認します。テーマはローカルマッピングと Eastmoney Miaoxiang の行情を重み付きで集計し、他のモジュールは Miaoxiang の集約データを優先します。項目が未対応または不完全な場合は、公開集約ソースへ切り替え、時刻・口径・ソース変更を明記します。
+盤中/引け後の A 株について、テーマ強弱 TOP10/BOTTOM10、セクター主力資金、涨停池、機関調査の 4 モジュールをまとめて確認します。テーマはローカルマッピングと Eastmoney Miaoxiang の行情を重み付きで集計し、板塊資金は公開集約 API を直接使います（標準はテーマ・概念、業種は明示指定時のみ）。涨停池と機関調査は Miaoxiang または内蔵集約処理を使い、時刻・口径・ソース変更を明記します。
 
 同じ取引日の資金流を再確認する場合、同じ口径の直前スナップショットと自動比較し、現在値・前回値・変化額・順位変化を表形式で返します。
 
-依存：テーマ強弱は `mx-zixuan`、`mx-xuangu`、`mx-search`；他モジュールは `mx-data` を優先；機関調査は内蔵集約スクリプトを使います。
+依存：テーマ強弱は `mx-zixuan`、`mx-xuangu`、`mx-search`；板塊資金は公開集約 API；涨停池・機関調査は `mx-data` または内蔵集約処理を使います。
 
 連携 skill：原因確認が必要な場合のみ `cn-stock-move-reason`、`macro-news-check`。
 
@@ -343,7 +343,7 @@ SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
 - `market-calendar-google` は、ユーザーが明示的に依頼した場合に Google Calendar コネクタで予定を作成・更新します。
 - `jp-stock-move-reason` は公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
 - `cn-stock-move-reason` は Eastmoney、Sohu 証券などの公開ページ/API だけを読み取り、token を読まず、外部サービスへ書き込まず、Gemini/OpenAI API も呼び出しません。
-- `cn-market-tape` はテーマ強弱に Eastmoney Miaoxiang `mx-zixuan` と `mx-xuangu` を使い、自選株は照会だけ行います。資金流、涨停池、機関調査は集約クエリを優先し、代替ソースは batch・低頻度・ランダム待機で扱います。`MX_APIKEY`、完全な自選株リスト、ローカルテーママッピングキャッシュ、原始 API 応答、実行キャッシュをコミットしません。
+- `cn-market-tape` はテーマ強弱に Eastmoney Miaoxiang `mx-zixuan` と `mx-xuangu` を使い、自選株は照会だけ行います。板塊資金フローは公開集約 API を直接使い、涨停池・機関調査は Miaoxiang または同梱の集約処理を使います。代替ソースは batch・低頻度・ランダム待機で扱います。`MX_APIKEY`、完全な自選株リスト、ローカルテーママッピングキャッシュ、原始 API 応答、実行キャッシュをコミットしません。
 - `stock-sentiment-analysis` は公開安全な汎用センチメント規則だけを保存します。private RAG、個人ラベル、原始ノート、スクリーンショット、取引ログはコミットしないでください。
 - `macro-news-check` は公開マクロ速報ページ/Feed/エンドポイントだけを読み取り、login cookie、token、口座データ、private research material を読みません。長いニュース本文をコピーしないでください。
 - `market-daily-strategist` はレポートのルーティングと統合層です。ローカル/私的行情ツールは任意の強化要素であり、個人ウォッチリスト、私的出力、ツールキャッシュを公開リポジトリに入れないでください。

@@ -47,7 +47,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 | [`market-calendar-google`](docs/market-calendar-google.md) | 整理财报、宏观数据、央行事件、拍卖和其他财经事件，并写入 Google Calendar | 必需：`google-calendar:google-calendar` |
 | [`jp-stock-move-reason`](docs/jp-stock-move-reason.md) | 分析日本股票异动，并按时段计算普通市场或 PTS 推定成交额涨跌 Top10 | 无 |
 | [`cn-stock-move-reason`](docs/cn-stock-move-reason.md) | 分析 A 股涨停、跌停、炸板、放量和市场/板块/个股共振 | 可选：`mx-data`、`mx-search`、`mx-xuangu`、`mx-zixuan` |
-| [`cn-market-tape`](docs/cn-market-tape.md) | 盘中/盘后计算题材强弱、板块资金流、涨停池和机构调研 | 题材必需：`mx-zixuan`、`mx-xuangu`、`mx-search`；其他模块优先：`mx-data` |
+| [`cn-market-tape`](docs/cn-market-tape.md) | 盘中/盘后计算题材强弱、题材/概念板块资金流、涨停池和机构调研 | 题材必需：`mx-zixuan`、`mx-xuangu`、`mx-search`；资金流：公开聚合接口；涨停/调研：`mx-data` |
 | [`stock-sentiment-analysis`](docs/stock-sentiment-analysis.md) | 给其他股票 skill 复用的公开安全情绪面分析框架 | 可选：东方财富妙想、moomoo 社区样本增强 |
 | [`macro-news-check`](docs/macro-news-check.md) | 在个股、指数、技术或 gamma 分析需要时检查宏观和大盘背景 | 无 |
 | [`market-daily-strategist`](docs/market-daily-strategist.md) | 输出美股、日股、A 股盘前策略、收盘复盘和长线推荐 | 可选：市场数据、异动、技术、情绪、gamma skill |
@@ -150,7 +150,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 <details>
 <summary><code>cn-market-tape</code> - A 股盘面数据</summary>
 
-统一处理 A 股盘中/盘后的题材强弱、板块主力资金流、涨停池和机构调研。题材模块读取本地题材映射和中文标签，用东方财富妙想行情按映射权重计算 TOP10/BOTTOM10；其他模块优先使用妙想聚合数据，字段不支持或不完整时切换到公开聚合备用源，并报告数据时间、口径和来源变化。板块资金流支持经过板块名称复核的当天分钟级累计净流入折线图，保留交易时段空档、标注零轴和资金拐点；多板块图使用共享时间轴并在量纲差异大时分面展示。
+统一处理 A 股盘中/盘后的题材强弱、题材/概念板块主力资金流、涨停池和机构调研；用户明确要求行业时才使用行业板块口径。题材模块读取本地题材映射和中文标签，用东方财富妙想行情按映射权重计算 TOP10/BOTTOM10；资金流直接使用公开聚合接口，涨停池与调研优先使用妙想或内置聚合脚本，并报告数据时间、口径和来源变化。板块资金流支持经过板块名称复核的当天分钟级累计净流入折线图，原始序列保留交易时段缺口，午后图压缩午休并分段绘制，标注零轴和资金拐点；多板块图使用共享时间轴并在量纲差异大时分面展示。
 
 日内重复查询资金流时，自动与上一次同口径快照比较，仍以当前值、上次值、变动额和排名变化的表格返回。
 
@@ -161,7 +161,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 适用场景：
 
 - 盘中/盘后输出题材强弱 TOP10/BOTTOM10。
-- 按“主力净流入 Top10 / 主力净流出 Top10”格式输出板块资金流。
+- 按“主力净流入 Top10 / 主力净流出 Top10”格式输出题材/概念板块资金流；用户明确要求时输出行业板块资金流。
 - 查看涨停数量、连板梯队、炸板和行业/题材分布。
 - 查看最近交易日或历史窗口的机构调研热度；没有对应历史数据时明确说明不支持。
 - 不默认写文件；备用接口遇到限流、封禁或不稳定时报告 host、接口类别和错误。
@@ -343,7 +343,7 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 - `market-calendar-google` 会在用户明确要求时使用 Google Calendar 连接器创建或更新日历事件。
 - `jp-stock-move-reason` 只读取公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
 - `cn-stock-move-reason` 只读取东方财富、搜狐证券等公开网页/API，不读取 token，不写入外部服务，不调用 Gemini/OpenAI API。
-- `cn-market-tape` 的题材强弱必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`；只查询自选股，不自动添加、删除或修改自选股。资金流、涨停池和机构调研优先使用妙想聚合查询，备用接口必须批量、低频、带随机等待，不提交 `MX_APIKEY`、完整自选股列表、题材映射本地缓存、原始 API 响应或运行缓存。
+- `cn-market-tape` 的题材强弱必须使用东方财富妙想 `mx-zixuan` 和 `mx-xuangu`；只查询自选股，不自动添加、删除或修改自选股。资金榜和分时优先使用公开聚合接口，涨停池和机构调研沿用妙想或内置聚合脚本，备用接口必须批量、低频、带随机等待，不提交 `MX_APIKEY`、完整自选股列表、题材映射本地缓存、原始 API 响应或运行缓存。
 - `stock-sentiment-analysis` 只保存公开安全的通用情绪框架；不应提交私人 RAG、个人标签、原始笔记、截图或交易日志。
 - `macro-news-check` 只读取公开宏观快讯页面/Feed/接口；不读取登录 cookie、token、账号数据或私有研究资料，不复制长篇新闻正文。
 - `market-daily-strategist` 是报告路由和综合层；本地/私有行情工具只作为可选增强，不应把个人关注列表、私有输出或工具缓存提交到公开仓库。

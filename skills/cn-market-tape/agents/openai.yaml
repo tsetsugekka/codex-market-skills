@@ -1,4 +1,4 @@
 interface:
   display_name: "CN Market Tape"
-  short_description: "Read A-share themes, sector flows, intraday board charts, limit-ups, and surveys."
-  default_prompt: "Use $cn-market-tape to read the current A-share tape, including theme TOP10/BOTTOM10, sector money-flow rankings, verified intraday board-flow charts, the limit-up pool, and institutional survey heat."
+  short_description: "A-share themes, concept flows, charts, limit-ups, and surveys."
+  default_prompt: "Use $cn-market-tape to read the current A-share tape, defaulting unqualified board-flow requests to theme/concept boards; use industry boards only when explicitly requested. Include theme TOP10/BOTTOM10, verified intraday board-flow charts, the limit-up pool, and institutional survey heat."

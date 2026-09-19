@@ -153,6 +153,22 @@ Use these interactions when a market looks contradictory:
 - `Funds without mainline`: produces rebounds, squeezes, or factor rotations, but weak durability.
 - `Mainline without funds`: produces watchlist names or relative strength, but may not sustain a bull leg until liquidity returns.
 
+## Market-Sector-Stock Resonance Interface
+
+When a daily strategy or close review asks whether a collective sector/theme surge can continue, load the installed or sibling `stock-sentiment-analysis` skill and use its `references/sentiment-framework.md` as the detailed shared method. The compact mnemonic is:
+
+`强大盘 + 高成交 + 上涨家数多 + 完整产业链扩散 + 基本面持续验证 + 非末端加速`
+
+This is not a mechanical score. A late-cycle climax can negate otherwise strong market, turnover, and breadth evidence. A sector can also become a new main line before the broad market is fully strong, but it then needs exceptional relative strength, repeated capital return, and peer follow-through.
+
+Translate the result into three separate judgments:
+
+- `Logic durability`: structural demand, policy, adoption, orders, earnings, revisions, or cash-flow evidence.
+- `Tape continuity`: broad-market support, liquidity, participation, sector-chain breadth, leaders/followers, and price acceptance.
+- `Entry quality`: recognition/emergence, healthy expansion or pullback, versus terminal acceleration and crowded chase.
+
+Finish at the correct hierarchy: `market -> sector/theme -> decisive stocks`. Do not call a sector durable because one index heavyweight rose, and do not call an individual stock attractive merely because its sector thesis is durable.
+
 ## Cross-Market Adaptation
 
 For A-shares:

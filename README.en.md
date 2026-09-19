@@ -150,11 +150,11 @@ Use it to:
 <details>
 <summary><code>cn-market-tape</code> - A-share market tape</summary>
 
-Combines four A-share intraday and after-close modules: weighted theme strength TOP10/BOTTOM10, sector or board main-money flows, the limit-up pool, and institutional survey heat. Theme rankings use local theme mappings plus Eastmoney Miaoxiang quotes; the other modules prefer Miaoxiang aggregate data and fall back to public aggregate sources when a field is unsupported or incomplete. Each result reports its timestamp, data scope, and source change.
+Combines four A-share intraday and after-close modules: weighted theme strength TOP10/BOTTOM10, sector or board main-money flows, the limit-up pool, and institutional survey heat. Theme rankings use local theme mappings plus Eastmoney Miaoxiang quotes; board flows use public aggregate endpoints directly (concept boards by default, industries only on explicit request), while limit-ups and surveys retain Miaoxiang or bundled collectors. Each result reports its timestamp, data scope, and source change.
 
 Repeated intraday money-flow queries automatically compare the latest same-scope snapshot and keep the result in table form with current value, previous value, change, and rank movement.
 
-Dependencies: theme ranking requires `mx-zixuan`, `mx-xuangu`, and `mx-search`; other modules prefer `mx-data`; institutional surveys use the bundled aggregation script.
+Dependencies: theme ranking requires `mx-zixuan`, `mx-xuangu`, and `mx-search`; board flows use public aggregate endpoints; limit-ups and surveys use `mx-data` or bundled collectors.
 
 Companion skills: `cn-stock-move-reason` and `macro-news-check` only when the user asks for drivers.
 
@@ -343,7 +343,7 @@ Analyze this stock's technical setup, support, and resistance right now.
 - `market-calendar-google` creates or updates Google Calendar events only when the user explicitly asks for calendar changes.
 - `jp-stock-move-reason` reads only public webpages/APIs, does not read tokens, does not write to external services, and does not call Gemini/OpenAI APIs.
 - `cn-stock-move-reason` reads only public webpages/APIs from Eastmoney, Sohu Securities, and similar public sources; it does not read tokens, write to external services, or call Gemini/OpenAI APIs.
-- `cn-market-tape` must use Eastmoney Miaoxiang `mx-zixuan` and `mx-xuangu` for theme strength and only query watchlists; it must not automatically add/delete/modify them. Money flows, limit-ups, and institutional surveys should prefer aggregate Miaoxiang queries; fallback sources must be batched, low-frequency, and randomly delayed. Never commit `MX_APIKEY`, full watchlists, local theme-mapping caches, raw API responses, or runtime caches.
+- `cn-market-tape` must use Eastmoney Miaoxiang `mx-zixuan` and `mx-xuangu` for theme strength and only query watchlists; it must not automatically add/delete/modify them. Board money flows use public aggregate endpoints directly; limit-ups and institutional surveys retain Miaoxiang or bundled aggregate collectors; fallback sources must be batched, low-frequency, and randomly delayed. Never commit `MX_APIKEY`, full watchlists, local theme-mapping caches, raw API responses, or runtime caches.
 - `stock-sentiment-analysis` stores only public-safe generalized sentiment rules; do not commit private RAG material, personal labels, raw notes, screenshots, or trade logs.
 - `macro-news-check` reads only public macro/news pages, feeds, or endpoints; it does not read login cookies, tokens, account data, or private research material, and it should not copy long news text.
 - `market-daily-strategist` is a report routing and synthesis layer; local/private market tools are optional enhancements and should not leak watchlists, private outputs, or tool caches into the public repository.

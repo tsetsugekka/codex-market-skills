@@ -22,9 +22,9 @@ def finite_number(value: Any) -> float | None:
     return number if math.isfinite(number) else None
 
 
-def strike_map(bucket: dict[str, Any]) -> dict[float, float]:
+def strike_map(bucket: dict[str, Any], field: str = "gex_by_strike") -> dict[float, float]:
     result: dict[float, float] = {}
-    for item in bucket.get("gex_by_strike", []):
+    for item in bucket.get(field, []):
         if not isinstance(item, (list, tuple)) or len(item) < 2:
             continue
         strike = finite_number(item[0])
@@ -33,6 +33,20 @@ def strike_map(bucket: dict[str, Any]) -> dict[float, float]:
             continue
         result[round(strike, 6)] = result.get(round(strike, 6), 0.0) + value
     return result
+
+
+def side_map_from_expiries(
+    per_expiry: dict[str, Any], expiries: list[str], field: str
+) -> dict[float, float]:
+    total: dict[float, float] = {}
+    for expiry in expiries:
+        bucket = per_expiry.get(expiry, {})
+        mapping = strike_map(bucket, field) if isinstance(bucket, dict) else {}
+        if not mapping:
+            raise ValueError(f"Selected expiry {expiry} requires side-specific {field} data")
+        for strike, value in mapping.items():
+            total[strike] = total.get(strike, 0.0) + value
+    return total
 
 
 def choose_flip(items: Any, spot: float) -> float | None:
@@ -112,7 +126,12 @@ def build_payload(
         )
 
     buckets = source.get("buckets")
-    all_bucket = buckets.get("All", {}) if isinstance(buckets, dict) else {}
+    # A provider's All bucket describes every supplied expiry, not a selected subset.
+    all_bucket = (
+        buckets.get("All", {})
+        if isinstance(buckets, dict) and set(expiries) == set(per_expiry_source)
+        else {}
+    )
     all_mapping = strike_map(all_bucket) if isinstance(all_bucket, dict) else {}
     if all_mapping:
         aggregate = [all_mapping.get(round(strike, 6), 0.0) for strike in grid]
@@ -120,6 +139,15 @@ def build_payload(
         aggregate = [
             sum(day["values"][index] for day in days) for index in range(len(grid))
         ]
+
+    all_call_mapping = strike_map(all_bucket, "call_gex_by_strike") if isinstance(all_bucket, dict) else {}
+    all_put_mapping = strike_map(all_bucket, "put_gex_by_strike") if isinstance(all_bucket, dict) else {}
+    if not all_call_mapping:
+        all_call_mapping = side_map_from_expiries(per_expiry_source, expiries, "call_gex_by_strike")
+    if not all_put_mapping:
+        all_put_mapping = side_map_from_expiries(per_expiry_source, expiries, "put_gex_by_strike")
+    if not all_call_mapping or not all_put_mapping:
+        raise ValueError("All GEX profile requires side-specific call_gex_by_strike and put_gex_by_strike data")
 
     all_net_gex = (
         finite_number(all_bucket.get("net_gex"))
@@ -144,6 +172,10 @@ def build_payload(
         "allNetGex": all_net_gex,
         "allFlip": all_flip,
         "aggregate": aggregate,
+        "aggregateCall": [all_call_mapping.get(round(strike, 6), 0.0) for strike in grid],
+        "aggregatePut": [all_put_mapping.get(round(strike, 6), 0.0) for strike in grid],
+        "allCallWall": normalize_wall(all_bucket.get("call_wall")) if isinstance(all_bucket, dict) else None,
+        "allPutWall": normalize_wall(all_bucket.get("put_wall")) if isinstance(all_bucket, dict) else None,
         "days": days,
     }
 

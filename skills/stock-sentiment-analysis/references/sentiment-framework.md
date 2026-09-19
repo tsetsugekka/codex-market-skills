@@ -58,7 +58,38 @@ A strong theme needs repeated capital return, breadth, and peer follow-through. 
 
 Do not pre-commit to a theme winner. Let price reaction, guidance surprise, peer confirmation, breadth, and expectation reset decide.
 
-## 6. Top And De-Risking Clues
+## 6. Market-Sector-Stock Resonance And Continuation
+
+When the user asks whether a collective sector surge can continue, or whether a stock is rising with a durable main line, use this six-factor mnemonic:
+
+`强大盘 + 高成交 + 上涨家数多 + 完整产业链扩散 + 基本面持续验证 + 非末端加速`
+
+Interpret the six factors as follows:
+
+1. `Broad-market support`: the relevant index/style and overall risk appetite support the move. A green index alone is insufficient; check breadth, intraday acceptance, volatility, and whether the matching growth/value/small-cap style is actually leading.
+2. `Liquidity and turnover`: absolute turnover is sufficient and, preferably, incremental turnover or identifiable fresh flow is entering. High turnover with little price progress can instead mean churn or distribution.
+3. `Broad participation`: market and sector advance/decline breadth, profit effect, limit-up/new-high participation, and follower quality confirm that the move is not carried by one or two leaders.
+4. `Industry-chain diffusion`: upstream, midstream, downstream, equipment, materials, applications, large caps, and smaller high-beta names participate where relevant. Cross-market or cross-asset peers provide stronger confirmation than a single local-market spike.
+5. `Continuing fundamental validation`: orders, earnings revisions, guidance, prices, supply-demand, capex, policy execution, adoption, or cash-flow evidence can be checked again after the first headline. A vague one-off slogan is weaker.
+6. `Lifecycle is not terminal acceleration`: locate the move before judging it. First repricing or a breakout after consolidation is healthier than a late limit-up wave, parabolic extension, one-sided certainty, or good news that no longer produces price progress.
+
+Do not convert this into a mechanical equal-weight score or a claimed probability. The factors interact, and late-cycle acceleration can override otherwise strong market, turnover, and breadth conditions. Conversely, a genuine new main line can begin against a mediocre broad market, but it then needs stronger relative strength, repeated capital return, and follow-through.
+
+Always separate three conclusions:
+
+- `Logic durability`: whether the industry, policy, earnings, order, or adoption thesis can persist.
+- `Tape continuity`: whether breadth, liquidity, leaders, followers, and price acceptance support another leg.
+- `Entry quality`: whether the current point is early/healthy enough for new risk, or mainly favorable to existing holders.
+
+Apply the same structure across markets, but translate the evidence:
+
+- A-shares: index/style, total turnover, advance/decline, limit-up and failed-board structure, board/industry-chain breadth, fund-flow concentration, policy/orders, and emotion-cycle phase.
+- U.S. stocks: index and equal-weight breadth, rates/dollar/volatility, cash and ETF/options flows, earnings-revision breadth, leader/peer confirmation, and whether the move is earnings-led or gamma/short-covering-led.
+- Japanese stocks: Nikkei/TOPIX and sector breadth, yen/JGB/foreign-flow context, turnover, exporters/domestic-demand or supply-chain confirmation, orders/guidance, and global-cycle positioning.
+
+For an individual stock, finish with a three-level resonance judgment: `market -> sector/theme -> stock`. A durable sector does not rescue a weak follower; require the stock to show leadership or at least acceptable relative strength, volume-price confirmation, and a stock-specific thesis that is not already exhausted.
+
+## 7. Top And De-Risking Clues
 
 Emotion-top clues:
 
@@ -77,7 +108,7 @@ Trend-top clues:
 - key moving average or box support breaks and cannot be reclaimed;
 - sector breadth rolls over before the leader.
 
-## 7. Cross-Market Sentiment
+## 8. Cross-Market Sentiment
 
 For US/Japan/Korea/Europe or index futures, emotion often transmits through rates, FX, volatility, and crowded positioning. Check:
 
@@ -87,7 +118,7 @@ For US/Japan/Korea/Europe or index futures, emotion often transmits through rate
 - options/gamma: walls, flip levels, and short-gamma regimes can amplify moves;
 - crowded AI/semiconductor/robotics themes: strong stories can still de-risk together.
 
-## 8. Technical Confirmation Interface
+## 9. Technical Confirmation Interface
 
 Sentiment analysis should call technical analysis when price location matters:
 
@@ -96,7 +127,7 @@ Sentiment analysis should call technical analysis when price location matters:
 - A support defense matters only if price reclaims short-term structure.
 - A theme can remain alive after first rejection if higher lows form and reclaimed support holds.
 
-## 9. Mainline, Funds, Game, Cycle Lens
+## 10. Mainline, Funds, Game, Cycle Lens
 
 Source lens: 招商证券策略研究《主线·资金·博弈·周期：A股投资的底层逻辑与系统奥义——A股投资启示录》, republished by 新浪财经, 2026-06-03.
 URL: https://finance.sina.com.cn/wm/2026-06-03/doc-iniaecsk0758056.shtml

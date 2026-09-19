@@ -33,6 +33,7 @@ When preparing a GitHub upload or public release, use the public version only an
    - If the answer uses **宏观** or **快讯** to explain the stock, sector, index, liquidity, policy, FX/rates, commodities, overseas spillover, or geopolitics, load `macro-news-check`. Do not replace this layer with ad hoc web search.
    - If the answer uses **技术面** such as support/resistance, trend confirmation, failed breakout, volume-price behavior, intraday timing, or "能不能上/下", load `stock-technical-analysis`.
    - If the answer uses **情绪面** such as main-line status, crowding, emotion cycle, leader/follower, risk-on/risk-off, expectation gap, or forum psychology, load `stock-sentiment-analysis`.
+   - If the user asks about **个股-板块-大盘共振**, a collective sector surge, or whether a sector/stock move can continue, load `stock-sentiment-analysis` and apply its `Market-Sector-Stock Resonance And Continuation` framework. Separate logic durability, tape continuity, and entry quality; do not infer a good entry from a good industry thesis.
    - Final answers should include a compact `融合口径` line when any supporting skill is used, e.g. `东财/公告/股吧证据 + macro-news-check tape + stock-technical-analysis 结构 + stock-sentiment-analysis 情绪周期`.
 
    Optional 东方财富妙想 enhancement: if the user has installed the `mx-*` A-share/financial skills in the current session or under the local skills directory, use them as a non-blocking data layer for A-share move reasons, sector mapping, valuation, financials, and current news checks. MX data supplements the existing know-how; it must not replace the normal Eastmoney/Guba/announcement collector, source hierarchy, A-share emotion-cycle framework, expectation-gap analysis, or technical/macro confirmation. If an `mx-*` skill is missing, unauthorized, over quota, or returns empty data, continue with the normal collector/web workflow and do not claim that 妙想 data was used. You may briefly suggest installing or configuring 东方财富妙想 skills only when the missing layer would materially improve the user's exact request, such as A-share sector constituents, self-selected-stock filtering, timely financial data, or official finance-data search.
@@ -114,7 +115,7 @@ Reply in Chinese unless the user asks otherwise. The answer can be detailed beca
 
 1. `最有力理由`: most likely catalyst, with source names and timing.
 2. `补助理由`: secondary drivers such as theme, sector rotation, liquidity, valuation, or positioning.
-3. `共振判断`: whether the stock is moving with the market, its sector/concept, or mostly on stock-specific news.
+3. `共振判断`: whether the stock is moving with the market, its sector/concept, or mostly on stock-specific news. When continuation matters, structure this as `market -> sector/theme -> stock` and apply the shared six-factor resonance framework from `stock-sentiment-analysis`.
 4. `情绪面/周期位置`: qualitative 股吧 emotion plus the seven-stage A-share emotion cycle.
 5. `确定度`: high / medium / low, with one sentence explaining why.
 6. `注意点`: what remains unconfirmed or what could invalidate the read.

@@ -20,6 +20,8 @@ When updating a skill that has public and private variants:
 5. Update both experience files when a reusable public-safe lesson affects both variants.
 6. Do not let the public version mention private labels, private paths, personal positions, raw notes, screenshots, account data, or API keys.
 
+Before reconciling an older local checkout, fetch the public branch and compare both commit history and uncommitted content. Separate changes already absorbed upstream from unique reusable changes and private-only material. Keep the latest public content, port only reviewed unique changes, and retain local recovery evidence outside the public file set. Do not use an indefinitely dirty public checkout as the storage mechanism for a private variant. A GitHub commit alone does not update a separately published plugin or marketplace package.
+
 ## GitHub Upload Rule
 
 When preparing anything for GitHub, use only the public version of the skill as the source of truth. Before staging or pushing, run a privacy check appropriate to the repository, including searches for:

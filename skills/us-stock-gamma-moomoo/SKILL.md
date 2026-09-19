@@ -2,7 +2,7 @@
 name: us-stock-gamma-moomoo
 description: Analyze US stock and ETF option gamma exposure with moomoo OpenD, plus .SPX/SPXW index-option structure using SPY/ES/CFD conversion when needed. Use when the user asks for gamma, GEX, gamma wall, gamma flip, SPX/SPY/ES intraday gamma, 0DTE option scenario value tables, option positioning, US-stock dark pool/off-exchange flow, borrow fee, FTD, short volume, or ChartExchange confirmation. Produces plain-language text conclusions from moomoo option chain, snapshots, Greeks, OI, IV, and pre-market/latest stock price; raw JSON is only for explicit export requests.
 metadata:
-  version: 0.1.13
+  version: 0.1.14
 ---
 
 # US Stock Gamma With moomoo
@@ -124,7 +124,7 @@ python3 scripts/render_spx_gamma_heatmap.py \
   --smooth-radius 5 --smooth-sigma 2.25
 ```
 
-Use only real listed expiries from the JSON. Each chart column, Flip, Call Wall, and Put Wall must use only contracts expiring on that column's date. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. Call Wall is the strike with the largest call-side GEX for that expiry; Put Wall is the strike with the most negative put-side GEX. Do not substitute maximum all-strike OI, which can select far-OTM legacy positions with little current gamma. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, Flip, and Call/Put Wall values. Read `references/gamma-heatmap-visualization.md` before changing the range, smoothing, or chart semantics.
+Use only real listed expiries from the JSON. Each chart column, Flip, Call Wall, and Put Wall must use only contracts expiring on that column's date. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. The left `All GEX` profile must mirror all selected-expiry Call-side GEX right of zero and absolute Put-side GEX left of zero on one shared scale; overlay the raw Net GEX as a thin line. The right heatmap remains Net GEX only. Call Wall is the strike with the largest call-side GEX for that expiry; Put Wall is the strike with the most negative put-side GEX. Do not substitute maximum all-strike OI, which can select far-OTM legacy positions with little current gamma. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, Flip, and Call/Put Wall values. Read `references/gamma-heatmap-visualization.md` before changing the range, smoothing, or chart semantics.
 
 When no axis range is explicitly requested, render SPX from `floor(spot / 100) * 100 - 300` through `ceil(spot / 100) * 100 + 300`. For example, an anchor of 7480 renders `7100–7800`. Explicit `--min-strike` and `--max-strike` remain available for a user-requested audit range.
 
