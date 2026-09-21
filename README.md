@@ -21,19 +21,6 @@
 
 > 面向交易、投资研究、市场异动解释和财经日历管理的 Codex Skill Suite。
 
-## Skill 与 Plugin，如何选择
-
-本仓库同时维护独立 Codex Skills 和以 **DayTrading.Monster** 展示的插件。它们来自同一研究体系，允许保留不同的入口与运行适配。数据服务与访问权限由当前环境提供。
-
-| 安装方式 | 适用场景 | 内容与要求 |
-| --- | --- | --- |
-| [DayTrading.Monster Plugin](plugin/README.md) | ChatGPT Web、ChatGPT 工作或 Codex 中组合研究 | 十项环境适配 Skill；按当轮实际可用的网页、连接、执行环境及扩展取证 |
-| 下方的独立 Skill 安装 | Codex 中选择单项工作流或使用配套本机脚本 | 根 skills/ 的原工作流；具体依赖见各 Skill |
-
-通常无需同时安装两种方式中的同名 Skill。插件按需发现已安装、已连接且有权限的 OpenD / moomoo、妙想、同花顺等 Skill 或工具；没有扩展时继续已有资料与公开来源流程，不凭产品名称推断能力。研究深度、计算输入要求与授权边界不因此降低。
-
-插件适配源码在 [plugin/](plugin/README.md)，共用研究参考保持单一来源；商店 ZIP 由构建器收集，不是直接压缩整个仓库。根插件清单仍描述独立 Codex 工作流，商店版本与源码对应关系见[兼容与发布状态](docs/plugin-compatibility.md)。
-
 ## 这是做什么的
 
 Codex Market Skills 是一组面向交易、投资研究和市场日程管理的 Codex skills。同一个 GitHub 项目中保存多个边界清晰、可单独安装和维护的市场工作流。
@@ -350,6 +337,19 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 ```text
 这个股票现在技术面怎么看，压力位和支撑位在哪里？
 ```
+
+## Skill 与 Plugin，如何选择
+
+本仓库同时维护独立 Codex Skills 和以 **DayTrading.Monster** 展示的插件。它们来自同一研究体系，允许保留不同的入口与运行适配。数据服务与访问权限由当前环境提供。
+
+| 安装方式 | 适用场景 | 内容与要求 |
+| --- | --- | --- |
+| [DayTrading.Monster Plugin](plugin/README.md) | ChatGPT Web、ChatGPT 工作或 Codex 中组合研究 | 十项环境适配 Skill；按当轮实际可用的网页、连接、执行环境及扩展取证 |
+| 上方的独立 Skill 安装 | Codex 中选择单项工作流或使用配套本机脚本 | 根 skills/ 的原工作流；具体依赖见各 Skill |
+
+通常无需同时安装两种方式中的同名 Skill。插件按需发现已安装、已连接且有权限的 OpenD / moomoo、妙想、同花顺等 Skill 或工具；没有扩展时继续已有资料与公开来源流程，不凭产品名称推断能力。研究深度、计算输入要求与授权边界不因此降低。
+
+插件适配源码在 [plugin/](plugin/README.md)，共用研究参考保持单一来源；商店 ZIP 由构建器收集，不是直接压缩整个仓库。根插件清单仍描述独立 Codex 工作流，商店版本与源码对应关系见[兼容与发布状态](docs/plugin-compatibility.md)。
 
 ## 安全边界
 
