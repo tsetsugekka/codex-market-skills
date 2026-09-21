@@ -21,6 +21,17 @@
 
 > A Codex Skill Suite for trading, investment research, market-move analysis, and market-calendar workflows.
 
+## Choose Skills or the Plugin
+
+This repository maintains standalone Codex skills and the **DayTrading.Monster** marketplace plugin. They share research methods but may use different entry points and runtime instructions.
+
+- [Install the plugin](plugin/README.md) for ten coordinated research skills across ChatGPT Web, ChatGPT work environments and Codex. It discovers the tools, connectors and execution capabilities actually available in the current session.
+- Use the standalone installation instructions below for individual Codex workflows and their optional local scripts. Each skill documents its requirements.
+
+You normally do not need both installations of the same skill. Available OpenD / moomoo, MX and Hithink skills or tools may supplement research; otherwise the plugin uses supplied evidence and accessible public sources. Product names alone never establish tool access or permissions.
+
+The marketplace source lives in [plugin/](plugin/README.md), reusing explicit shared references from the standalone source. Build its release ZIP rather than uploading the entire repository. The root manifest remains the standalone Codex variant. See [compatibility and release status](docs/plugin-compatibility.md) for source and marketplace versions.
+
 ## What This Is
 
 Codex Market Skills is a collection of Codex skills for trading, investment research, and market-calendar workflows. It is organized as a multi-skill repository with separate, clearly scoped market workflows.

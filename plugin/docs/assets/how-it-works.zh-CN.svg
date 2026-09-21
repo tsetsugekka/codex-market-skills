@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1720" height="1100" viewBox="0 0 1720 1100" role="img" aria-labelledby="title desc" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" fill="#172331" stroke-linecap="round" stroke-linejoin="round">
+<title id="title">DayTrading.Monster Plugin 工作原理</title><desc id="desc">用户在 ChatGPT 或 Codex 提出市场研究问题，按需组合研究方法，复用已有资料并从当前可用环境补充证据，交付分析、条件策略和财经日程。可用扩展包括已连接工具与本机 Skill；二维码指向插件商店。</desc>
+<defs><image id="dtm-fav2" width="192" height="192" href="data:image/png;base64,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"/></defs>
+<rect x="0" y="0" width="1720" height="1100" rx="0" fill="#FFFFFF"/>
+<use href="#dtm-fav2" transform="translate(60 49) scale(0.3333333333)"/>
+<text x="132" y="96" font-size="48" font-weight="700">DayTrading.Monster</text>
+<rect x="629" y="52" width="142" height="53" rx="14" fill="#F0EDFA" stroke="#E5DEF5"/>
+<text x="700" y="88" font-size="28" font-weight="600" fill="#6558A4" text-anchor="middle">Plugin</text>
+<text x="801" y="94" font-size="34" font-weight="500" fill="#5B6D80">工作原理</text>
+<text x="62" y="150" font-size="26" fill="#5B6D80">把一个市场问题，变成有依据的研究结论。</text>
+<rect x="1352" y="64" width="134" height="38" rx="19.0" fill="#F0F3F7"/>
+<text x="1419.0" y="89.84" font-size="19" font-weight="500" fill="#5B6D80" text-anchor="middle">ChatGPT</text>
+<rect x="1500" y="64" width="122" height="38" rx="19.0" fill="#F0F3F7"/>
+<text x="1561.0" y="89.84" font-size="19" font-weight="500" fill="#5B6D80" text-anchor="middle">Codex</text>
+<text x="1620" y="144" font-size="22" fill="#5B6D80" text-anchor="end">A 股 · 日股 · 美股 / ETF</text>
+<rect x="60" y="210" width="408" height="516" rx="25" fill="#EAF3FC"/>
+<rect x="532" y="210" width="656" height="516" rx="25" fill="#EDF6F1"/>
+<rect x="1252" y="210" width="408" height="516" rx="25" fill="#FCEFF1"/>
+<circle cx="101" cy="257" r="23" fill="#4F88B3"/>
+<text x="101" y="266" font-size="26" font-weight="600" fill="white" text-anchor="middle">1</text>
+<text x="145" y="268" font-size="29" font-weight="700">提出研究问题</text>
+<circle cx="574" cy="257" r="23" fill="#57927B"/>
+<text x="574" y="266" font-size="26" font-weight="600" fill="white" text-anchor="middle">2</text>
+<text x="620" y="268" font-size="29" font-weight="700">按需组合研究能力</text>
+<circle cx="1294" cy="257" r="23" fill="#CA7887"/>
+<text x="1294" y="266" font-size="26" font-weight="600" fill="white" text-anchor="middle">3</text>
+<text x="1338" y="268" font-size="29" font-weight="700">交付研究结果</text>
+<text x="86" y="315" font-size="23" fill="#5B6D80">说出股票、题材或研究任务</text>
+<text x="86" y="350" font-size="23" fill="#5B6D80">先明确市场与观察时段</text>
+<text x="558" y="315" font-size="23" fill="#5B6D80">选研究方法，复用资料，再核对证据</text>
+<text x="558" y="350" font-size="22" fill="#5B6D80">需要时补充宏观、情绪、技术与 Gamma 分析</text>
+<text x="1278" y="315" font-size="23" fill="#5B6D80">得到分析、条件策略与风险</text>
+<text x="1278" y="350" font-size="23" fill="#5B6D80">财经事件可整理成日程</text>
+<rect x="86" y="385" width="360" height="296" rx="18" fill="#172331" opacity="0.035"/>
+<rect x="84" y="380" width="360" height="296" rx="18" fill="#FFFFFF" stroke="#DFE6EB" stroke-width="1"/>
+<circle cx="104" cy="405" r="4" fill="#4F88B3"/>
+<text x="118" y="413" font-size="20" font-weight="600">你的问题</text>
+<circle cx="411" cy="405" r="1.4" fill="#B5C1CD"/>
+<circle cx="418" cy="405" r="1.4" fill="#B5C1CD"/>
+<circle cx="425" cy="405" r="1.4" fill="#B5C1CD"/>
+<path d="M84 428H444" fill="none" stroke="#E5EAF0" stroke-width="1"/>
+<rect x="99" y="444" width="330" height="53" rx="12" fill="#EDF5FD"/>
+<g transform="translate(110 457) scale(0.78125)" fill="none" stroke="#4F88B3" stroke-width="1.75">
+<path d="M8 4v24M16 3v24M24 7v22"/><rect x="5" y="10" width="6" height="10" rx="1" fill="white"/><rect x="13" y="6" width="6" height="9" rx="1" fill="white"/><rect x="21" y="15" width="6" height="9" rx="1" fill="white"/>
+</g>
+<text x="146" y="478" font-size="20">这只股票为什么异动？</text>
+<rect x="99" y="509" width="330" height="53" rx="12" fill="#EFF7F2"/>
+<g transform="translate(110 522) scale(0.78125)" fill="none" stroke="#57927B" stroke-width="1.75">
+<rect x="5" y="5" width="8" height="8" rx="1.5"/><rect x="19" y="5" width="8" height="8" rx="1.5"/><rect x="5" y="19" width="8" height="8" rx="1.5"/><rect x="19" y="19" width="8" height="8" rx="1.5"/>
+</g>
+<text x="146" y="543" font-size="20">今天哪些题材值得关注？</text>
+<rect x="99" y="574" width="330" height="53" rx="12" fill="#F4EFF9"/>
+<g transform="translate(110 587) scale(0.78125)" fill="none" stroke="#8D7AB2" stroke-width="1.75">
+<rect x="4" y="7" width="24" height="21" rx="3"/><path d="M10 4v6M22 4v6M4 14h24M10 19h3M19 19h3M10 23h3"/>
+</g>
+<text x="146" y="608" font-size="20">整理下周财报与重要事件</text>
+<rect x="99" y="641" width="330" height="22" rx="9" fill="#F7F9FC" stroke="#EDF0F4" stroke-width="1"/>
+<text x="112" y="656" font-size="13" fill="#8491A2">输入市场、代码与时间范围…</text>
+<circle cx="416" cy="652" r="7" fill="#4F88B3"/>
+<path d="M413 652l3-3 3 3M416 650v5" fill="none" stroke="white" stroke-width="1.2"/>
+<text x="264" y="707" font-size="18" fill="#4F88B3" text-anchor="middle">从一个具体问题开始</text>
+<rect x="558" y="385" width="608" height="235" rx="18" fill="#172331" opacity="0.035"/>
+<rect x="556" y="380" width="608" height="235" rx="18" fill="#FFFFFF" stroke="#DFE6EB" stroke-width="1"/>
+<g transform="translate(575 396) scale(0.84375)" fill="none" stroke="#57927B" stroke-width="1.75">
+<path d="M4 8h9l3 4h13v16H4zM4 8V5h9l4 5h10v2"/>
+</g>
+<text x="614" y="419" font-size="22" font-weight="600">研究工作台</text>
+<rect x="1042" y="393" width="99" height="30" rx="15.0" fill="#F0F7F3"/>
+<text x="1091.5" y="413.76" font-size="16" font-weight="500" fill="#57927B" text-anchor="middle">按需选用</text>
+<path d="M574 435H1146" fill="none" stroke="#E5EAF0" stroke-width="1"/>
+<rect x="576" y="449" width="272" height="68" rx="12" fill="#EDF4FB"/>
+<g transform="translate(588 468) scale(0.90625)" fill="none" stroke="#4F88B3" stroke-width="1.75">
+<path d="M8 4v24M16 3v24M24 7v22"/><rect x="5" y="10" width="6" height="10" rx="1" fill="white"/><rect x="13" y="6" width="6" height="9" rx="1" fill="white"/><rect x="21" y="15" width="6" height="9" rx="1" fill="white"/>
+</g>
+<text x="631" y="478" font-size="21" font-weight="600">个股异动</text>
+<text x="631" y="503" font-size="15" fill="#5B6D80">A 股 · 日股 · 美股</text>
+<rect x="867" y="449" width="272" height="68" rx="12" fill="#EEF7F2"/>
+<g transform="translate(879 468) scale(0.90625)" fill="none" stroke="#57927B" stroke-width="1.75">
+<rect x="5" y="5" width="8" height="8" rx="1.5"/><rect x="19" y="5" width="8" height="8" rx="1.5"/><rect x="5" y="19" width="8" height="8" rx="1.5"/><rect x="19" y="19" width="8" height="8" rx="1.5"/>
+</g>
+<text x="922" y="478" font-size="21" font-weight="600">题材盘面</text>
+<text x="922" y="503" font-size="15" fill="#5B6D80">主线 · 资金 · 涨停</text>
+<rect x="576" y="528" width="272" height="68" rx="12" fill="#FBF3E9"/>
+<g transform="translate(588 547) scale(0.90625)" fill="none" stroke="#C58E52" stroke-width="1.75">
+<path d="M7 3h12l6 6v20H7zM19 3v7h6M11 15h10M11 19h10M11 23h7"/>
+</g>
+<text x="631" y="557" font-size="21" font-weight="600">策略与复盘</text>
+<text x="631" y="582" font-size="15" fill="#5B6D80">盘前 · 盘中 · 收盘</text>
+<rect x="867" y="528" width="272" height="68" rx="12" fill="#F4EFF9"/>
+<g transform="translate(879 547) scale(0.90625)" fill="none" stroke="#8D7AB2" stroke-width="1.75">
+<rect x="4" y="7" width="24" height="21" rx="3"/><path d="M10 4v6M22 4v6M4 14h24M10 19h3M19 19h3M10 23h3"/>
+</g>
+<text x="922" y="557" font-size="21" font-weight="600">财经日历</text>
+<text x="922" y="582" font-size="15" fill="#5B6D80">财报 · 宏观事件</text>
+<rect x="556" y="634" width="608" height="67" rx="15" fill="#FAFCFB" stroke="#DCE8E0" stroke-width="1"/>
+<circle cx="582" cy="659" r="11" fill="#E3F0E7"/>
+<g transform="translate(572 649) scale(0.625)" fill="none" stroke="#57927B" stroke-width="1.75">
+<path d="M7 16l6 6L26 8"/>
+</g>
+<text x="602" y="667" font-size="20" font-weight="500">核对来源、时间与行情口径</text>
+<rect x="949" y="650" width="94" height="28" rx="14.0" fill="#E8F4EC"/>
+<text x="996.0" y="669.4" font-size="15" font-weight="500" fill="#57927B" text-anchor="middle">确认事实</text>
+<rect x="1052" y="650" width="94" height="28" rx="14.0" fill="#FCF2E5"/>
+<text x="1099.0" y="669.4" font-size="15" font-weight="500" fill="#C58E52" text-anchor="middle">区分猜测</text>
+<path d="M478 488H522m-11 -11 11 11-11 11" fill="none" stroke="#71889A" stroke-width="3.5"/>
+<path d="M1198 488H1242m-11 -11 11 11-11 11" fill="none" stroke="#71889A" stroke-width="3.5"/>
+<rect x="1278" y="385" width="360" height="219" rx="18" fill="#172331" opacity="0.035"/>
+<rect x="1276" y="380" width="360" height="219" rx="18" fill="#FFFFFF" stroke="#DFE6EB" stroke-width="1"/>
+<g transform="translate(1292 397) scale(0.875)" fill="none" stroke="#CA7887" stroke-width="1.75">
+<path d="M7 3h12l6 6v20H7zM19 3v7h6M11 15h10M11 19h10M11 23h7"/>
+</g>
+<text x="1333" y="420" font-size="23" font-weight="600">市场研究简报</text>
+<path d="M1293 439H1618" fill="none" stroke="#E5EAF0" stroke-width="1"/>
+<circle cx="1299" cy="460" r="3" fill="#CA7887"/>
+<text x="1313" y="465" font-size="19" fill="#5B6D80">核心判断</text>
+<path d="M1313 478H1533" fill="none" stroke="#E3E8EF" stroke-width="3"/>
+<circle cx="1299" cy="509" r="3" fill="#CA7887"/>
+<text x="1313" y="514" font-size="19" fill="#5B6D80">触发与失效</text>
+<path d="M1313 527H1493" fill="none" stroke="#E3E8EF" stroke-width="3"/>
+<circle cx="1299" cy="558" r="3" fill="#CA7887"/>
+<text x="1313" y="563" font-size="19" fill="#5B6D80">风险与后续验证</text>
+<path d="M1313 576H1468" fill="none" stroke="#E3E8EF" stroke-width="3"/>
+<rect x="1414" y="580" width="224" height="110" rx="13" fill="#172331" opacity="0.035"/>
+<rect x="1412" y="575" width="224" height="110" rx="13" fill="#FFFFFF" stroke="#DFE6EB" stroke-width="1"/>
+<rect x="1413" y="576" width="222" height="35" rx="12" fill="#EDF4FC"/>
+<rect x="1413" y="595" width="222" height="16" rx="0" fill="#EDF4FC"/>
+<g transform="translate(1426 581) scale(0.6875)" fill="none" stroke="#4F88B3" stroke-width="1.75">
+<rect x="4" y="7" width="24" height="21" rx="3"/><path d="M10 4v6M22 4v6M4 14h24M10 19h3M19 19h3M10 23h3"/>
+</g>
+<text x="1459" y="600" font-size="18" font-weight="600" fill="#4F88B3">财经日历</text>
+<rect x="1428" y="623" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1461" y="623" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1494" y="623" width="24" height="11" rx="3" fill="#DCECFB"/>
+<path d="M1499 628.5H1512" fill="none" stroke="#4F88B3" stroke-width="1.3"/>
+<rect x="1527" y="623" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1560" y="623" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1593" y="623" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1428" y="640" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1461" y="640" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1494" y="640" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1527" y="640" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1560" y="640" width="24" height="11" rx="3" fill="#DCECFB"/>
+<path d="M1565 645.5H1578" fill="none" stroke="#4F88B3" stroke-width="1.3"/>
+<rect x="1593" y="640" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1428" y="657" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1461" y="657" width="24" height="11" rx="3" fill="#DCECFB"/>
+<path d="M1466 662.5H1479" fill="none" stroke="#4F88B3" stroke-width="1.3"/>
+<rect x="1494" y="657" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1527" y="657" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1560" y="657" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<rect x="1593" y="657" width="24" height="11" rx="3" fill="#F0F3F6"/>
+<text x="1456" y="709" font-size="17" fill="#9A727D" text-anchor="middle">写入日历时确认连接与授权</text>
+<path d="M864 794V739" fill="none" stroke="#8D7AB2" stroke-width="2" stroke-dasharray="5 6"/>
+<path d="M857 747l7-8 7 8" fill="none" stroke="#8D7AB2" stroke-width="2"/>
+<text x="881" y="766" font-size="17" font-weight="500" fill="#8D7AB2">按需取材</text>
+<rect x="60" y="796" width="1128" height="222" rx="25" fill="#F3F0F9"/>
+<text x="84" y="836" font-size="26" font-weight="600">研究资料，按当前环境选用</text>
+<text x="1161" y="833" font-size="18" fill="#8D7AB2" text-anchor="end">先复用，再补充</text>
+<rect x="84" y="858" width="344" height="133" rx="15" fill="#FFFFFF"/>
+<g transform="translate(101 878) scale(0.96875)" fill="none" stroke="#4F88B3" stroke-width="1.75">
+<path d="M4 8h9l3 4h13v16H4zM4 8V5h9l4 5h10v2"/>
+</g>
+<text x="145" y="902" font-size="23" font-weight="600">已有资料</text>
+<text x="103" y="938" font-size="19" fill="#5B6D80">用户文件 · 任务数据包</text>
+<text x="103" y="969" font-size="15" fill="#8491A2">先用已经取得的相关证据</text>
+<rect x="444" y="858" width="344" height="133" rx="15" fill="#FFFFFF"/>
+<g transform="translate(461 878) scale(0.96875)" fill="none" stroke="#57927B" stroke-width="1.75">
+<circle cx="16" cy="16" r="12"/><ellipse cx="16" cy="16" rx="5" ry="12"/><path d="M4 16h24M7 9h18M7 23h18"/>
+</g>
+<text x="505" y="902" font-size="23" font-weight="600">公开信息</text>
+<text x="463" y="938" font-size="19" fill="#5B6D80">行情 · 公告 · 新闻</text>
+<text x="463" y="969" font-size="15" fill="#8491A2">再补充当前需要的公开来源</text>
+<rect x="804" y="858" width="344" height="133" rx="15" fill="#FFFFFF"/>
+<g transform="translate(821 878) scale(0.96875)" fill="none" stroke="#8D7AB2" stroke-width="1.75">
+<path d="M11 4v8M21 4v8M7 12h18v5a9 9 0 0 1-18 0zM16 26v4"/>
+</g>
+<text x="865" y="902" font-size="23" font-weight="600">可用扩展</text>
+<text x="823" y="938" font-size="19" fill="#5B6D80">已连接工具 · 本机 Skill</text>
+<text x="823" y="969" font-size="15" fill="#8491A2">OpenD / moomoo · 妙想 · 同花顺</text>
+<rect x="1252" y="796" width="408" height="222" rx="20" fill="#FFFFFF" stroke="#DCE3EB" stroke-width="1.5"/>
+<rect x="1270" y="816" width="184" height="184" rx="0" fill="white"/>
+<g transform="translate(1270 816) scale(4.088888888888889)" fill="#172331"><image width="45" height="45" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAACNUlEQVR42u2aQW5cMQxDyaL3v/LLQpLtANkU1QAtwGSSmYG5et+gKNlGf/DzS1FHHXXUUf8b6t+S5PqM5P6ThZEkc1dDcIe3iqxMAZfAQrLgrIbgntq2eldLEha2TH3t1RBcV2NJYDT72yH4MTVNvF7yMZMQ3PXvS5W2aiyVm7+rIfi3agEc1j//XmEIruzvxzM8EZAJhO9qCK6oPajdRRMsC1mWfQNKCC75dyVtLvuO4VbZePLgkro9oy3EF259OK/0l4u8K5Bg5HpTx2+qrT9dfgiuqEG4qAu3d0+txE4e/ES9BFWBLGexn43evhOCO/vbHUkqBxZeuqHvJ5B51e7+dhl3vzFVE/d2D8FFNeI0710he15oulbGT1bzSY0EG76fkXcfQ8S/d/d3oUc1TaGaTaYHGnsJwR219RylyXpPfPAdWoXgWn9ZJ5aeUomeoDh2EoJb+YQ5ID52LtlCbTDKvGq5n9f07pNQ+hmUl5N+ftNPPEDLSXw95LkMEYKL6nMgzxTJDuCTWZJPFv3khD7e+ey3rR2CK+p73lChcEbhM5sto8n8e1ltgALddjJH9DOmDcFNNU+bU8j7nyoYJg/u9jv3iycCzlPgEYXgin9P6Jv03VvdPndmc562Wi95Sma7td3XCJX+8gP10n5Ij2XjWcp5w4fUpm5pcv1kLoOH4Lra6izoioiaWSzxk+3+8qSQO43lmaSkXi7WS98hSl+nagfB3zJjCK7m7zCJOuqoo/5v1F/rIjzQ2IFbUgAAAABJRU5ErkJggg=="/></g>
+<text x="1460" y="868" font-size="21" fill="#5B6D80">扫码打开</text>
+<text x="1460" y="906" font-size="28" font-weight="600">插件商店</text>
+<text x="1460" y="950" font-size="16" font-weight="500" fill="#5B6D80">DayTrading.Monster</text>
+<use href="#dtm-fav2" transform="translate(62 1043) scale(0.1979166667)"/>
+<text x="108" y="1073" font-size="21" font-weight="500" fill="#5B6D80">DayTrading.Monster Plugin  ·  市场研究，有章可循</text>
+<text x="1658" y="1072" font-size="15" font-weight="500" fill="#8491A2" text-anchor="end">DTM  /  RESEARCH PLUGIN</text>
+</svg>

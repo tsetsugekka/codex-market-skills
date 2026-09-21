@@ -1,0 +1,44 @@
+{
+  "name": "codex-market-skills",
+  "version": "0.1.9",
+  "description": "Research stocks and market developments across China, Japan, and the United States using available public information. Explore stock moves, macro context, market sentiment, and technical structure, and prepare pre-market briefs or market recaps. Organize findings with source references, distinguish confirmed facts from interpretation, and identify information gaps.",
+  "author": {
+    "name": "tsetsugekka",
+    "url": "https://github.com/tsetsugekka"
+  },
+  "homepage": "https://github.com/tsetsugekka/codex-market-skills",
+  "repository": "https://github.com/tsetsugekka/codex-market-skills",
+  "keywords": [
+    "markets",
+    "stocks",
+    "trading",
+    "research",
+    "china",
+    "japan",
+    "us",
+    "gamma"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "DayTrading.Monster",
+    "shortDescription": "Research CN, JP and US stocks",
+    "longDescription": "Research stocks and market developments across China, Japan, and the United States using available public information. Explore stock moves, macro context, market sentiment, and technical structure, and prepare pre-market briefs or market recaps. Organize findings with source references, distinguish confirmed facts from interpretation, and identify information gaps.",
+    "developerName": "tsetsugekka",
+    "category": "Finance",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "websiteURL": "https://github.com/tsetsugekka/codex-market-skills",
+    "defaultPrompt": [
+      "分析这只股票今天为什么异动，并区分确认催化、市场情绪和背景噪音。",
+      "現在の市場の寄り付き前の戦略または大引け後の振り返りをまとめ、重要な確認ポイントとリスクを示してください。",
+      "Analyze this stock’s technical structure, support and resistance, sentiment, and macro context."
+    ],
+    "composerIcon": "./assets/logo.svg",
+    "logo": "./assets/logo.svg",
+    "brandColor": "#4945BE",
+    "privacyPolicyURL": "https://github.com/tsetsugekka/codex-market-skills/blob/main/docs/plugin-privacy.md",
+    "termsOfServiceURL": "https://github.com/tsetsugekka/codex-market-skills/blob/main/docs/plugin-terms.md"
+  }
+}

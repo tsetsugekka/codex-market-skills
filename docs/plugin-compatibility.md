@@ -1,27 +1,31 @@
 # DayTrading.Monster — compatibility and release status
 
-Display name: **DayTrading.Monster**. The stable package and marketplace identifier remains `codex-market-skills`.
+The display name is **DayTrading.Monster** and the stable package identifier is `codex-market-skills`. This repository maintains two delivery variants of the same research suite.
 
-This repository contains one skills-only plugin with ten skills. `.codex-plugin/plugin.json` defines the package; `.agents/plugins/marketplace.json` makes the same package discoverable from the repository root. Neither file installs data providers.
+| Variant | Authoritative source | Installation |
+| --- | --- | --- |
+| Standalone Codex workflows | Root `skills/` and root `.codex-plugin/` | Individual skills or the repository marketplace entry |
+| Environment-aware marketplace plugin | `plugin/skills/` and `plugin/.codex-plugin/` | DayTrading.Monster in the plugin store |
 
-## Runtime requirements
+The variants may differ in runtime instructions. The marketplace build includes the full shared research references listed in `plugin/shared-references.json`; it does not bundle external data-provider skills or require a user's local machine. Avoid installing duplicate same-name skills unless comparing variants deliberately.
 
-- Stock-move, macro, sentiment, technical and strategy workflows require fresh sources through the host's web/data tools. Optional third-party skills are not bundled.
-- Full-chain gamma requires local moomoo OpenD, the moomoo Python SDK and the separate moomooapi skill at the location documented in the gamma skill. Cloud-only ChatGPT cannot reach a user's local OpenD by installing this bundle. The documented DTM SPX reference supports limited SPX context, not arbitrary-ticker full-chain computation.
-- Some A-share theme workflows require MX skills and authorized data access. Missing providers must be reported; do not fabricate results.
-- Calendar writes require an authorized Google Calendar connection and an explicit user request. Calendar planning alone does not prove calendar write access.
-- Execute bundled scripts relative to their installed skill directory. Plugin caches do not use the standalone global-skill path.
+## Capability routing
 
-## Validation and publication
+ChatGPT Web, ChatGPT work environments and Codex can expose different tools. Discover actual tools, connectors, skills and execution capabilities for each session; do not decide availability from the product name. A connector can provide a useful capability without a same-name Skill.
 
-2026-09-11: the compatibility manifest and all ten skill frontmatters passed the bundled validators; all thirteen Python scripts passed syntax parsing. These are static checks, not live data or ChatGPT installation acceptance tests.
+- Reuse supplied evidence and accessible public sources first; query only missing material.
+- Use authorized OpenD/moomoo, MX, Hithink or equivalent tools when available. A cloud workspace is not automatically connected to a user's local OpenD.
+- Full-chain Gamma, Vanna, scenario tables and charts require suitable inputs and actual computation. The marketplace variant retains the methods and can use any available execution environment; the fixed DTM SPX feed alone cannot produce arbitrary-ticker full chains.
+- Calendar planning is available without calendar write access. Writes require the user's request, an authorized connection, duplicate checks and readback.
+- Scheduled Tasks loading is not established by successful use in an ordinary chat or Codex. Keep the task's output, archive and authorization contracts.
 
-Version 0.1.1 corrects gamma command paths and discloses its external helper dependency. Public directory submission and account installation are still pending. GitHub publication alone does not complete either step.
+## Release status
 
-Public submission uses the [OpenAI plugin submission portal](https://platform.openai.com/plugins) and requires a selected name, verified developer identity, listing assets and policy URLs, five positive and three negative test cases, and platform review. See the [official submission requirements](https://developers.openai.com/plugins/deploy/submission).
+As of 2026-09-21 (Japan time):
 
-Version 0.1.2 applies the selected DayTradingMonster display name. The repository URL and stable identifiers are unchanged.
+- Marketplace 0.1.8 is the previously recorded published version.
+- Marketplace source 0.1.9 restores research depth and capability routing in this repository. Its ten skill frontmatters, manifest, self-contained archive links, shared-reference fidelity and three packaging tests passed. Upload/review/publication are in progress; it is not yet claimed as published.
+- The root manifest remains the standalone Codex variant at 0.1.6. Its version does not describe the separate marketplace package.
+- Existing installations update through their host; source synchronization does not replace local caches.
 
-Version 0.1.3 adds square SVG icons and a brand color meeting the portal contrast requirement, and removes duplicated short-description metadata from six skills (their agents/openai.yaml interface copy remains authoritative). The gamma skill retains its standalone version metadata; the portal reports an informational interface warning for it. Required package validation checks passed on upload. This does not establish live workflow acceptance or public directory approval.
-
-Version 0.1.4 uses the final display name Day Trading Monster and a subtitle within the portal 30-character limit; policy links are included in the manifest.
+See [plugin maintenance](../plugin/docs/MAINTENANCE.md) for package boundaries, build commands and the method coverage matrix, and [review scenarios](plugin-submission-tests.md) for expected behavior. Static validation, platform scanning, marketplace publication and live runtime acceptance are separate checks.
