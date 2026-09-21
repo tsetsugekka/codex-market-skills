@@ -16,7 +16,9 @@ def package_files():
         for source in sorted((ROOT / folder).rglob('*')):
             if source.is_file():
                 files[source.relative_to(ROOT).as_posix()] = source.read_text()
-    for relative in json.loads((ROOT / 'shared-references.json').read_text()):
+    resources = json.loads((ROOT / 'shared-references.json').read_text())
+    resources += json.loads((ROOT / 'shared-scripts.json').read_text())
+    for relative in resources:
         source = REPO / 'skills' / relative
         assert source.resolve().is_relative_to(REPO / 'skills'), relative
         destination = 'skills/' + relative
@@ -25,8 +27,8 @@ def package_files():
     for path, content in list(files.items()):
         def resolve(match):
             target = match.group(1)
-            if target.startswith('../../../skills/'):
-                target = posixpath.relpath(target[len('../../../'):], posixpath.dirname(path))
+            if re.match(r'^(?:\.\./){3,}skills/', target):
+                target = posixpath.relpath(re.sub(r'^(?:\.\./)+', '', target), posixpath.dirname(path))
             return '](' + target + ')'
         files[path] = re.sub(r'\]\(([^)]+)\)', resolve, content)
     return files
@@ -37,13 +39,13 @@ def validate(files):
     skills = [p for p in files if p.endswith('/SKILL.md')]
     assert len(skills) == 10, 'Expected ten skills'
     for path, content in files.items():
-        assert Path(path).suffix in {'.md', '.json', '.svg'}, path
+        assert Path(path).suffix in {'.md', '.json', '.svg', '.py'}, path
         assert not re.search(r'/Users/|/private/tmp/|api_secrets\.env|BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY|sk-proj-[A-Za-z0-9_-]+', content), f'Private content: {path}'
         if path in skills:
             name = Path(path).parent.name
             assert re.search(r'^---\nname: ' + re.escape(name) + r'\n', content), path
             assert re.search(r'^description: .+', content, re.M), path
-        for target in re.findall(r'\]\(([^)]+)\)', content):
+        for target in re.findall(r'\]\(([^)]+)\)', content) if path.endswith('.md') else []:
             if '://' in target or target.startswith('#'):
                 continue
             resolved = posixpath.normpath(posixpath.join(posixpath.dirname(path), target.split('#')[0]))

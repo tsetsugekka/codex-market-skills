@@ -5,48 +5,167 @@ description: 核验宏观新闻与跨资产市场反应，适用于央行、数�
 
 # Macro News Check
 
-## 可用资料与边界
+## 跨环境执行
 
-使用本轮实际可用的网页、连接工具和用户资料；有本机执行能力时，也按需使用已安装且可用的研究 Skill。先读取所需页面正文，核对代码、市场日期、行情时间与交易阶段；只搜索到标题不算取得数据。价格、新闻、讨论各有用途，未知字段保持未知，单点行情不能证明持续承接或完整分钟路径。入口失败时说明具体缺口，换用可读的公开来源；遇限流或拒绝访问停止请求该来源，不尝试绕过。
+先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
 
-需要补充数据时先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现并使用相关 Skill，包括可用的 OpenD、MX 和同花顺；未加载或未调用成功就不要声称使用。插件本身不新增行情工具或权限。报告与交易执行分开，不凭研究结论声称下单。自动任务遵守自身 Prompt 的输出、归档与模拟账本合同，本插件不修改任务或自身规则。
+此包按各 Skill 入口附带可移植 Python 脚本；可读取文件不等于能执行，能执行不等于能联网。先确认能力，再按环境路由选择随包脚本、可用扩展或公开网页；仅有用户资料时执行相同筛选与计算，无执行能力时按文字流程研究并标出未计算项。外部供应商采集器只在已安装且可用时调用。访问失败、限流与权限处理遵循当前工具及环境规则，不复制机器专用沙箱设置。实际加载所用的同包 Skill 和参考，不只在回答中提名字。
 
+本插件用于研究，写日历、账户或交易需要对应授权。普通研究不自动访问私人自选或持仓，不修改自身、其他 Skill 或任务规则；自动任务保持自己的输出、归档和授权合同。用户指定的私人资料仅在本轮授权范围内使用，不写入插件。
 
-## 双流核验与传导链
+Use this skill only when the analysis genuinely needs current macro, broad-market, or cross-asset context. Do not run it for every single-stock question by default.
 
-先定义问题是利率、汇率、商品、政策、地缘、流动性还是指数 Beta，再同时读取事件流与价格流。事件流识别升级/缓和、收紧/宽松、供给冲击/缓解、通胀/通缩、增长担忧/韧性、信用压力/修复。价格流检查收益率曲线、外汇、商品、波动率、股指期货与相关广度。
+This skill is public-safe: it uses public pages or feeds and must not store credentials, cookies, account data, private research paths, or raw copyrighted news dumps. Summarize only the headlines and implications needed for the user's market question.
 
-先扫描与市场相关的综合快讯，再映射标的；不要只以 SPY、QQQ 或单个代码检索而漏掉油价、财政、航运、关税或央行事件。可用的 Jin10、Wallstreetcn、FinancialJuice 和 DTM 新闻/X 入口用于发现，决定性数据与政策优先回原央行、统计机关、政府或公司披露。页面标题、仪表盘外壳和静态 SEO 不是实时行情。
+## Trigger Conditions
 
-将关系明确归为：新闻确认价格；价格响应新冲击；坏消息不再跌；好消息不再涨；价格先动而新闻滞后解释；新闻已变但尚未重估。后三类提示需进一步核验，只有真实序列、关键位和结构同时支持时，才称背离或拐点。
+Call this skill when one or more of these are true:
 
-常用传导链：
-- 地缘/供给→油和商品→通胀预期→长端收益率→股票久期与利润率。
-- 央行重估→短端利率→汇率→出口/进口成本与估值。
-- 增长数据→周期品/商品→行业盈利与指数广度。
-- 财政/债务→长债供需→货币/波动率→风险资产折现率。
-- 中国需求/政策、美国科技/资本开支→日本及全球供应链→本地业绩与价格接受。
+- The user asks about 大盘, 宏观, 利率, 汇率, 美债, 日债, 央行, CPI/PCE/FOMC/BOJ/ECB, commodities, oil, gold, geopolitics, or market-wide risk sentiment.
+- A stock/index/ETF is moving with no clear stock-specific catalyst, or the move may be driven by rates, FX, futures, sector-wide risk, policy, or global headlines.
+- Technical analysis needs a broad-market confirmation, especially for index breaks, high-beta stocks, export-sensitive Japanese names, A-share market emotion, US premarket moves, or same-day trading judgments.
+- Gamma analysis would be unreliable without checking macro headlines, event risk, vol shock, index futures, yields, USD, or geopolitical tape risk.
+- U.S. stock-move or gamma workflows such as `us-stock-move-reason` and `us-stock-gamma-moomoo` involve Fed expectations, rates, USD, oil/gold, index futures, market-wide risk appetite, or geopolitical shocks.
+- A prior single-stock read may be missing a market-wide reason for a selloff or squeeze.
 
-同一冲击对不同资产可能相反；降息预期如果来自衰退并不自动利多股票，日元走弱也不对所有日股有利。分开主因、放大器和背景噪音，避免同一消息重复计权。
+Do not call this skill when the request is clearly only about static fundamentals, historical valuation, company filings, or a chart level that does not depend on current market tone.
 
-## 行情时效与市场结构
+## Source Order
 
-优先时效可确认的官方/可靠常规行情。替代品必须标明现货、期货、CFD、ETF 或链上/永续代理、时间和基差风险；代理不停盘不等于底层市场连续交易。检查 update_mode、时区、源时间及交易阶段，不能仅因网页可访问就称实时。日频中美利率表只能作日频背景，不能证实盘中收益率正在上行。
+Prefer sources in this order, adjusting for language and market:
 
-A 股需检查指数、行业/概念、涨跌广度与涨跌停，区分全市场压力、局部轮动和窄题材挤压。日本需对照 Nikkei/TOPIX 与 JPX 行业/规模/风格，判断银行、汽车、机械、电子、地产或成长谁在拖累；不能仅凭指数下跌归因汇率。美国检查等权/市值加权、成长/价值、大小盘与关键行业，避免把少数权重股代表整个风险偏好。
+1. `Jin10` (`https://www.jin10.com/`): preferred Chinese macro tape when accessible. Its data quality is generally strong for real-time Chinese-language macro, central-bank, commodity, FX, and geopolitical headlines. The homepage can expose server-rendered flash items; the underlying flash API or WebSocket may require frontend headers/cookies and can be more fragile.
+2. `Wallstreetcn` (`https://wallstreetcn.com/live/global`): useful Chinese backup and Asia/China market tape. If the page is a frontend shell, try its live JSON endpoint pattern:
+   `https://api-one-wscn.awtmt.com/apiv1/content/lives?channel=global-channel&client=pc&limit=10`
+3. `FinancialJuice` (`https://www.financialjuice.com/`): useful English global tape, especially US/EU macro, rates, FX, commodities, geopolitics, and market-moving headlines. Public RSS pattern:
+   `https://www.financialjuice.com/feed.ashx?xy=rss`
+   If a shell is actually available, an example request is:
+   `curl -L 'https://www.financialjuice.com/feed.ashx?xy=rss'`
+   Quote the URL in zsh or other shells where `?` can be treated as a glob pattern. The feed returns broad global headlines; fetch the full feed first, then filter by macro relevance.
+4. `DayTrading.monster 24H Feed` (`https://daytrading.monster/api-docs/`): usable as a public current-page social-media layer for global macro, AI, rates/bonds, US index/gamma, Japan, China, commodities, non-AI sectors, and crypto. For broad U.S. or Japan market context it is especially useful for theme discovery; for macro checks, use it as an auxiliary source to generate candidates that still need live tape and price confirmation. Use the canonical JSON interfaces documented there:
+   - `Market news index`: `https://daytrading.monster/api/24hfeed/details` exposes up to 100 entries from the latest 120 hours with title, URL, time, and category. It is sufficient for this workflow; read linked articles when their details matter, and do not expect narrative direction/status fields.
+   - `X account monitor`: `https://daytrading.monster/api/24hfeed/x-monitor` exposes grouped account posts within the eight-hour snapshot window; check the returned window bounds. Do not read `accounts.json`, per-account `days/*.json`, `narrative_history`, or legacy `market_recent.json` / `market_tweets.json` for market analysis.
+   Treat the frontend HTML and any `noscript`/static SEO blocks as page-shell context only, not current macro evidence. Parse these responses as JSON even though their Content-Type is `text/plain`; use these official interfaces for current 24H Feed checks; do not fetch archives, historical windows, or old feed backfills for normal macro work. Treat both monitors as social-media-derived screening, not final macro proof; verify important current items with live macro tape, original/source reporting when available, and market prices.
 
-## 输出
+Use more than one source when the headline is important, surprising, or likely to change the market read. Prefer original official sources when a live headline points to a specific data release, central-bank statement, government notice, or company disclosure.
 
-先给宏观状态，再列最能改变判断的事件及价格证据、对目标的传导路径、作用权重和下一确认点。资料冲突时保留冲突并说明要等什么证据。分析正文吸收信息而非流水账式复述快讯，关键数字/事件保留可追溯来源，不倾倒整批新闻或长段原文。
+Do not use ticker or ETF keywords such as `SPY`, `QQQ`, `ES`, or a single stock symbol as the first-pass macro-news filter. Important macro drivers often appear under geopolitics, oil, rates, FX, central banks, fiscal policy, sanctions, shipping, elections, or official comments without mentioning the target instrument. First ingest the general live tape from the preferred sources; only then map relevant headlines to the user's instrument and confirm with market prices.
 
+If a market report passes in pre-screened `/api/24hfeed/details` entries, or if you fetch the current DayTrading.monster 24H Feed snapshots directly, use them only as social-media-derived macro or theme candidates. Use only entries whose source/update time fits the active market window. Do not mine backfilled rows in the snapshot as historical evidence. Fresh entries may guide what to verify in live macro tape and market prices; stale entries must be ignored.
 
+Macro analysis must combine two live streams rather than treating either one as automatically superior:
 
-## 来源与流程
+- `News / event stream`: identify whether the market narrative or event state is changing. Focus on state changes, not isolated headlines: escalation vs de-escalation, tightening vs easing, supply shock vs supply relief, inflation impulse vs disinflation impulse, growth scare vs resilience, liquidity stress vs liquidity repair, and official confirmation vs rumor/trial balloon.
+- `Market data stream`: check whether assets confirm, fade, or contradict the news. Use live or near-live prices for yields, FX, commodities, volatility, index futures, and local breadth where relevant.
 
-先读广泛的当前宏观事件，再映射到股票/指数；不要只用目标代码检索而遗漏政策、利率、原油或地缘事件。优先原始统计发布、央行/政府公告，辅以可读的金十、华尔街见闻、FinancialJuice及正式报道。DTM `https://daytrading.monster/api/24hfeed/details` 与 `https://daytrading.monster/api/24hfeed/x-monitor` 可用于事件发现，按内容、原出处和时效判定证据，不将转载重复计数。
+Classify the relationship between the two streams before concluding:
 
-同时读两条证据链：事件状态如何变化（升级/缓和、紧缩/宽松、供需冲击/缓解、通胀/增长/流动性），以及收益率、汇率、商品、波动率、指数及市场宽度如何反应。区分新闻确认趋势、价格确认冲击、坏消息跌不动、好消息涨不动、价格先行和新闻尚未定价。
+- News confirms the price trend.
+- Prices confirm a new headline shock.
+- News is bad but prices refuse to fall.
+- News is good but prices refuse to rise.
+- Prices moved first and headlines are explaining the move late.
+- Headlines changed but prices have not yet repriced.
 
-报告来源时间和市场时间。优先可核验的现货/期货，延迟价格注明延迟，CFD/ETF/链上代理注明产品及基差，不冒充标的现货。DTM首页静态HTML或符号列表不能证明已读到实时图表价格。日度收益率表只能解释日度背景。
+Potential inflection points often appear when bad news no longer pushes risk assets lower, good news no longer lifts risk assets, yields stop rising despite inflationary headlines, oil stops rising despite supply-risk headlines, VIX stops expanding despite negative news, USD/JPY or DXY diverges from rates, high beta/Nasdaq leads while macro headlines remain scary, or defensive assets rise together with equities. This is only a candidate signal unless chart structure, recent price sequence, or intraday levels confirm it. Without enough chart/sequence context, describe it as news-price agreement or disagreement rather than a confirmed divergence or trend turn.
 
-通胀、利率、汇率和资源品通过具体行业/利润渠道解释，不用“大盘影响”替代公司事件。反常反应先称候选分歧，只有价格结构和序列确认才称拐点。结论包含主要驱动、价格验证、替代解释、下一事件与失效条件。
+For intraday macro judgments, do not rely on headlines alone and do not rely on prices alone. Use headlines to detect narrative/state changes, use market prices to confirm or challenge them, and explicitly mention meaningful conflicts:
+
+- Data-source priority for intraday macro prices:
+  1. Official non-delayed / streaming price.
+  2. Reputable non-official non-delayed price.
+  3. Crypto/tokenized/perpetual-swap non-delayed proxy, clearly labeled as `链上` / `on-chain` / `proxy`.
+  4. Official delayed price, with the delay stated.
+- `DayTrading.monster` (`https://daytrading.monster/`) is a useful dashboard wrapper around TradingView widgets. Its default macro symbols include US index CFDs/futures, VIX, USD/JPY, DXY, US 10Y/30Y yields, gold, oil, copper, Nikkei CFD, TOPIX, Hang Seng, HK Tech, Taiwan, and Europe. If a futures, index, macro indicator, CFD, FX, commodity, or bond-yield code is unknown, check DayTrading.monster first and reuse its TradingView symbol. Symbols without the `D` badge can be used; `D` marks delayed exchange-limited data and should be avoided when a non-`D` alternative exists. A `24h` badge means the symbol is valid for 24-hour macro monitoring. A `365d` badge means the symbol is valid year-round. Blockchain/tokenized/perpetual-swap symbols can be used when they are the best non-delayed source under the priority order above, but every output must label them clearly as `链上`, `on-chain`, or `proxy`, rather than official underlying prices. Prior source observation (not a current-session availability guarantee): a plain HTML fetch exposes the dashboard shell, static/noscript news summary, default TradingView symbols, and badge metadata, but not live widget prices; live prices require rendered widgets/browser use or a programmatic TradingView/scanner equivalent. Do not claim a dashboard price or current news read from static/noscript HTML alone.
+- TradingView scanner is the preferred programmatic fallback for live/near-live rates and cross-asset checks when accessible. Useful symbols include:
+  - US yields: `TVC:US02Y`, `TVC:US10Y`, `TVC:US30Y`
+  - Japan yields: `TVC:JP02Y`, `TVC:JP05Y`, `TVC:JP10Y`, `TVC:JP20Y`, `TVC:JP30Y`
+  - US index futures: `CME_MINI:ES1!`, `CME_MINI:NQ1!`, `CBOT_MINI:YM1!`, `CME_MINI:RTY1!`
+  - Vol, FX, commodities: `CBOE:VIX`, `TVC:DXY`, `OANDA:USDJPY`, `NYMEX:CL1!`, `ICEEUR:BRN1!`, `OANDA:XAUUSD`, `OANDA:XCUUSD`
+  - Always inspect the returned `update_mode`. Some symbols are delayed even when they are easy to fetch. For example, `CBOE:VIX` is often `delayed_streaming_900`, while `ICEEUR:BRN1!` and `NYMEX:CL1!` are often `delayed_streaming_600`.
+  - Prefer non-delayed official or conventional market symbols for intraday judgment. Tested examples: `TVC:VIX` is a streaming VIX indicator; `TVC:US10Y`, `TVC:US30Y`, and `TVC:JP30Y` are streaming yield indicators. For WTI/Brent, if no official or reputable non-official non-delayed source is available programmatically, use crypto/tokenized/perpetual-swap non-delayed proxies before official delayed reference prices, and label them clearly as `链上` / `on-chain` / `proxy`.
+  - Crypto/tokenized/perpetual-swap proxies: `MEXC:USOILUSDT.P`, `HTX:USOILUSDT.P`, `BTCC:USOILUSDT.P`, `MEXC:UKOILUSDT.P`, `KCEX:BZUSDT.P`, `BINANCE:SPYUSDT.P`, and `BINANCE:QQQUSDT.P` can provide 365-day proxy signals. Use them before official delayed symbols only when no official/reputable non-official non-delayed source is available, and label them as proxies.
+  - Not every DayTrading.monster TradingView widget symbol is available through scanner. If a preferred no-`D` dashboard symbol such as `CAPITALCOM:VIX` does not return through scanner, either read it visually from the dashboard or fall back to a scanner symbol and state its delay/proxy status.
+- Eastmoney public endpoints or Eastmoney-related skills can often replace AkShare for China macro, China-US daily yield tables, global index tables, and commodity/futures confirmation. Use Eastmoney when it is not delayed and the timestamp/fields confirm freshness. Prefer direct Eastmoney requests when the endpoint is known, because this avoids Python dependency drift and makes failures easier to debug. Eastmoney does not normally require an API key for these public endpoints, but URLs/tokens can change and requests can be blocked or disconnected.
+  - China-US Treasury daily yield table endpoint pattern used by AkShare:
+    `https://datacenter.eastmoney.com/api/data/get?type=RPTA_WEB_TREASURYYIELD&sty=ALL&st=SOLAR_DATE&sr=-1&token=894050c76af8597a853f5b408b759f5d&p=1&ps=500&pageNo=1&pageNum=1`
+  - Useful field mapping for that endpoint:
+    - `SOLAR_DATE`: date
+    - `EMM00588704`, `EMM00166462`, `EMM00166466`, `EMM00166469`: China 2Y, 5Y, 10Y, 30Y yields
+    - `EMM01276014`: China 10Y-2Y spread
+    - `EMG00001306`, `EMG00001308`, `EMG00001310`, `EMG00001312`: US 2Y, 5Y, 10Y, 30Y yields
+    - `EMG01339436`: US 10Y-2Y spread
+  - Treat Eastmoney daily yield tables as daily context, not intraday truth. Same-day US yield fields can lag or be blank before the source updates.
+- AkShare is optional when already available or explicitly installed in an isolated execution environment. Its `bond_zh_us_rate()`, `futures_global_spot_em()` and `index_global_spot_em()` can supplement daily context; do not install into the base environment or treat daily yields as intraday evidence.
+
+For A-share broad-market tape questions, use live headlines first, then use Sohu market data as an auxiliary confirmation layer:
+
+- `https://q.stock.sohu.com/cn/zs.shtml` and `https://q.stock.sohu.com/zs/zs-2.html`: index map and broad market level.
+- `https://q.stock.sohu.com/cn/bk.shtml`, plus board pages such as `https://q.stock.sohu.com/pl/pl-1631.html` for industries and `https://q.stock.sohu.com/pl/pl-1630.html` for concepts: sector/concept涨跌幅 and where funds are landing.
+- `https://q.stock.sohu.com/cn/zdt.shtml`: historical涨跌停/breadth reference when judging market emotion.
+
+Do not let Sohu board ranks replace the headline tape. Use快讯 to identify whether there is a policy, macro, liquidity, overseas, or sudden risk event; use搜狐板块涨跌幅 to validate whether the tape is actually being traded and whether the move is broad, narrow, or only a theme squeeze.
+
+For Japan broad-market tape questions, use live headlines first, then use JPX real-time index data as an auxiliary confirmation layer:
+
+- `https://www.jpx.co.jp/markets/indices/realvalues/index.html`: official JPX real-time index page; it updates listed index data about every minute during regular trading hours.
+- `https://www.jpx.co.jp/market/indices/indices_stock_price3.txt`: JSON data used by the JPX page, including major indexes, TOPIX New Index Series, size indexes, TOPIX 33 sectors, TOPIX-17, style indexes, and market-type indexes.
+- `https://www.jpx.co.jp/market/indices/indices_stock_price3.time.txt`: data timestamp in `YYYYMMDDHHMM`.
+
+Do not treat Nikkei/TOPIX weakness as a single cause without checking JPX sector/index composition. Use快讯 to identify JGB yield, USD/JPY, BOJ/MOF, overseas tech, China/Korea/Taiwan spillover, commodity, or geopolitical drivers; use JPX sector/index strength to confirm whether pressure is concentrated in autos, banks, machinery, electronics, real estate/REIT, exporters, growth, small caps, or broad beta.
+
+## Workflow
+
+1. Define the macro question before fetching:
+   - Is the issue rates, FX, index futures, commodities, geopolitics, policy, or broad risk appetite?
+   - Which market matters most: China/A-shares, Japan, US, Europe, global commodities, or cross-asset?
+2. Fetch the minimum needed recent items from both streams:
+   - Start with Jin10 for Chinese macro tape if accessible.
+   - Use Wallstreetcn's live endpoint for Chinese/Asia backup and market breadth context.
+   - Use FinancialJuice RSS for English global confirmation and US/EU tape. In shell, use `curl -L 'https://www.financialjuice.com/feed.ashx?xy=rss'`; do not omit the quotes around the `?xy=rss` URL in zsh.
+   - Use the current DayTrading.monster 24H Feed snapshots as an extra narrative pre-screen when the question is broad macro, cross-asset, pre-market, after-hours, or market-regime related. Prefer `/api/24hfeed/details` for the current news index and `/api/24hfeed/x-monitor` only when raw account context materially matters. Do not use `accounts.json`, daily shards, narrative history, legacy account files, HTML `noscript`, or static SEO text as current evidence. Do not use 24H Feed alone as final evidence. In final prose, describe this layer generically as `当前叙事预筛` or `当前主题线索`, not by site/feed/page name.
+   - Check actual market prices before concluding that macro is better or worse intraday: US index futures, VIX, US yields, JGB yields, USD/JPY, DXY, oil, gold, and any directly relevant local index/sector breadth.
+   - For rates-sensitive US or Japan market reads, prioritize live/near-live yield quotes (`TVC:US10Y`, `TVC:US30Y`, `TVC:JP05Y`, `TVC:JP10Y`, `TVC:JP20Y`, `TVC:JP30Y`) over stale article text. A headline that says yields are surging can be outdated if live yields have already pulled back.
+   - Use AkShare only as an auxiliary source for daily yield history, China macro, China/overseas index tables, and commodity/futures confirmation. Do not use AkShare alone to decide whether US/Japan yields are improving or worsening intraday.
+   - For A-share broad-market, sector rotation, "买什么方向", or "要不要入场" questions, also check Sohu indexes and industry/concept board涨跌幅 after the快讯 check.
+   - For Japan broad-market, Nikkei/TOPIX weakness, sector drag, or Japanese single-stock move with strong market pressure, also check JPX real-time indexes and TOPIX sector/TOPIX-17 strength after the快讯 check.
+3. Identify whether the active narrative has changed:
+   - Separate routine headlines from true state changes.
+   - Ask what the market was previously pricing, what changed, and which asset chain should transmit the change.
+   - Common transmission chains include: event risk -> oil/commodities -> inflation expectations -> long yields -> equity duration; central-bank repricing -> front-end yields -> FX -> equity multiples; growth data -> cyclicals/commodities -> index breadth; fiscal/debt concern -> long yields -> currency/volatility.
+4. Compare news and prices:
+   - If headlines and prices agree, classify it as trend confirmation.
+   - If headlines are stale and prices already moved, avoid double-counting the same information.
+   - If headlines changed but prices have not repriced, say whether the market may be ignoring the risk or waiting for confirmation.
+   - If prices reject the headline direction, treat that rejection as evidence to investigate, not as a standalone reversal signal. Only discuss divergence, exhaustion, or a turn when recent chart structure, intraday sequence, or key levels support it.
+5. Filter aggressively:
+   - Keep only headlines that can plausibly affect the instrument being analyzed.
+   - Prioritize timestamps, source type, affected asset class, and whether the item is data, policy, rumor, geopolitical, or routine noise.
+6. Classify the macro effect:
+   - `risk-on`: supports equities/high beta/cyclical trades.
+   - `risk-off`: pressures equities/high beta; supports bonds, USD, defensive assets, or safe havens depending on context.
+   - `rates-up pressure`: bad for long-duration growth, high valuation, weak balance sheets, bond proxies.
+   - `rates-down support`: can help duration/growth, but check whether rates are falling from recession fear.
+   - `FX-driven`: important for exporters, import-cost names, commodities, and ADR/local-market conversions.
+   - `commodity shock`: sector-specific tailwind/headwind.
+   - `policy/liquidity`: judge size, timing, credibility, and whether it is already expected.
+7. Connect the macro tape to the specific analysis:
+   - State whether macro is the main driver, a secondary amplifier, or only background noise.
+   - Separate stock-specific catalysts from market-wide pressure.
+   - Explain expectation gap: what the market likely expected, what the headline/data changed, and whether it was above, in line with, or below expectations.
+   - For A-share盘面, state whether搜狐板块涨跌幅 confirms the快讯 narrative, contradicts it, or shows only a narrow局部行情.
+   - For Japan盘面, state whether JPX sector/index strength confirms the快讯 narrative, contradicts it, or shows that the weakness is concentrated in a few heavyweight sectors.
+
+## Output Style
+
+Keep the macro section concise unless the user asks for a full macro brief. Use this structure when helpful:
+
+1. `宏观结论`: one sentence on whether the tape is risk-on, risk-off, rates/FX-driven, or neutral.
+2. `关键消息`: 2-5 relevant headlines with source and time when available.
+3. `对标的影响`: how those headlines affect the stock/index/option map being analyzed.
+4. `权重`: main driver / secondary amplifier / background only.
+5. `需要确认`: what would require a fresh check, original source, or later market reaction.
+
+When answering macro or broad-market tape questions, absorb the source material into analysis instead of mechanically narrating the data-gathering process. Do not mention aggregator, dashboard, widget, feed, page, or retransmission-site names such as DayTrading.monster, 24H Feed, Jin10, Wallstreetcn, FinancialJuice, Sohu, JPX, or TradingView in the final answer prose by default. Use neutral wording such as `当前叙事预筛`, `当前主题线索`, `快讯`, `实时指数`, `行业指数`, or `行情确认`. If a live item cites an original outlet, official source, company disclosure, or named primary reporter/source, it is acceptable to mention that original attribution when it improves credibility or explains confidence, e.g. Bloomberg, Reuters, The Information, Nikkei, Axios, WSJ, CNBC, an official ministry/central bank/company statement, or a company filing. Mention aggregator names, timestamps, or URLs only when the user asks for sources, a fact is disputed, freshness needs auditing, or attribution materially changes confidence. DayTrading.monster URLs may appear in a dedicated source list or audit trail when needed, but the analysis prose should not use site-specific "source shows" phrasing. Avoid repetitive phrasing such as "`快讯显示`", "`消息面显示`", "`数据确认`", or timestamp-led source narration as sentence starters. Lead with the inferred market structure: what is driving, what is dragging, what funds are buying/selling, whether the move is broad or narrow, and what that means for the user's decision.
+
+Do not paste long article text or bulk live-feed items. Paraphrase and cite only the short headline-level evidence needed for the analysis.

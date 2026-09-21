@@ -1,0 +1,100 @@
+# SPX Intraday Gamma Reference
+
+Use this only for `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmaps, or intraday index judgment.
+
+Use actual SPX/SPXW chain data and the methods below through any available computation environment. Generic ETF proxy calculations are fallback only when direct index chains are unavailable.
+
+## Analysis Order
+
+1. **Anchor**: current SPX cash when available from a live source. If moomoo rejects the SPX index snapshot but `US..SPX` 0DTE chains are available, infer the intraday anchor from liquid SPXW put-call parity (`spot/forward ~= strike + call_mid - put_mid`) using same-expiry PM-settled pairs near the market. Do not use delayed/static TradingView page text as the intraday anchor unless a live chart value is explicitly confirmed. SPY is only a sanity check or last-resort proxy.
+
+   After the U.S. options session ends, discard the just-expired SPXW expiry. Use the next listed unexpired SPXW expiry as the front bucket for parity, flip, walls, and range calculations. The implementation keeps the bucket key `0DTE` for compatibility with the live workflow, but output must identify it as a `next-expiry proxy after close`; it is not a live same-day 0DTE map.
+2. **0DTE structure**: net GEX, call/put volume balance, largest positive walls above, largest negative pits below, and gamma flip if meaningful.
+3. **Vanna structure**: compute vanna from SPXW spot/strike/IV/DTE, aggregate VEX by strike, and name the top positive/negative vanna pressure zones. This is required when the user asks for SPX/SP500 gamma unless speed is explicitly more important than completeness.
+4. **Window regime table**: always compare `0DTE`, `Next2`, `Fri2w`, and `All`: net GEX, net VEX, flip, top walls, top pits, and a one-line read. This prevents confusing same-day gamma with future-window gamma.
+5. **Key-strike cross-section**: for nearby decision levels and any user-mentioned levels, show 0DTE / Next2 / Fri2w / All GEX and All VEX. Use this to explain transitions such as "7400 still neutral/negative, 7450 locally positive, 7500 stronger positive gamma."
+6. **Opening context**: distinguish prior close, current price, and same-day open. If the user says the market gapped down, do not treat prior close as the open.
+7. **Index day-structure levels**: for SPX/index intraday work only, calculate prior-day pivot/CPR/Camarilla levels when prior high, low, and close are available. Use them as support/resistance confluence with gamma walls, flip, and pits; do not apply this requirement to ordinary single-stock gamma reports.
+8. **Key level map**: name nearby support/resistance as zones, not single magic points. Example: "7350 is the battlefield; 7330/7300 are the next downside risk levels; 7385-7415 is repair/sell-pressure."
+9. **Flow interpretation**: in negative gamma, breaks can accelerate and rebounds can be violent short-covering. Do not call a bottom merely because price is near a put wall.
+10. **Invalidation**: state what would disprove the scenario, e.g. "reclaiming 7370 and holding above it makes 7385-7390 likely; losing 7350 and failing to reclaim opens 7330/7300."
+
+## Required SPX Answer Depth
+
+For SPX, answer at the same granularity as an index-gamma desk note:
+
+- Start with a direct regime sentence: current anchor, whether 0DTE is positive/negative gamma, whether the all-window aggregate is positive/negative gamma, and the nearest flip.
+- Include a compact bucket table for `0DTE`, `Next2`, `Fri2w`, and `All` with net GEX, net VEX, flip, top walls, top pits, and read.
+- Include a key-strike cross-section table: `Strike | 0DTE GEX | Next2 GEX | Fri2w GEX | All GEX | All VEX | Read`.
+- If the user asks whether a vendor's or analyst's level logic can be reproduced, explicitly show the data at the named strikes. Example: if the claim says `7450` neutralizes and `7500` becomes stronger positive gamma, show 7400/7425/7450/7500/7600 across all buckets.
+- Separate aggregate and local conclusions: `All-window net GEX remains negative` is compatible with `7450/7500 are locally positive gamma walls`. Say this plainly instead of flattening it into a single bullish/bearish label.
+- End with scenario handling: downside acceleration zone, repair/neutralization threshold, stronger positive-gamma pinning wall, and invalidation.
+
+## Index Day-Structure Levels
+
+This section is for SPX/index intraday gamma only. Do not force these calculations into ordinary individual-stock gamma reports unless the user explicitly asks for technical pivots.
+
+When prior-session `High`, `Low`, and `Close` are available, calculate:
+
+- Classic pivot:
+  - `PP = (H + L + C) / 3`
+  - `R1 = 2 * PP - L`
+  - `S1 = 2 * PP - H`
+  - `R2 = PP + (H - L)`
+  - `S2 = PP - (H - L)`
+  - `R3 = PP + 2 * (H - L)`
+  - `S3 = PP - 2 * (H - L)`
+- CPR:
+  - `BC = (H + L) / 2`
+  - `TC = 2 * PP - BC`
+  - `CPR_range = abs(TC - BC)`
+- This reference uses the linear Camarilla variant below; other vendors may define H5/L5 differently. Name the formula and do not mix it with another variant. Camarilla levels using `Unit = 1.1 * (H - L) / 12`:
+  - `H3 = C + 3 * Unit`
+  - `H4 = C + 6 * Unit`
+  - `H5 = C + 12 * Unit`
+  - `L3 = C - 3 * Unit`
+  - `L4 = C - 6 * Unit`
+  - `L5 = C - 12 * Unit`
+- Optional range references:
+  - `H3L3 = H3 - L3`
+  - `ATR` if a reliable ATR series is available; if not, do not invent it.
+
+Interpretation rules:
+
+- Treat overlap between gamma levels and pivot/CPR/Camarilla levels as stronger zones. For example, if gamma flip aligns with `PP`, that zone is the intraday regime boundary; if a gamma pit aligns with `L5`, downside acceleration risk is higher after a break.
+- CPR location matters: above `max(BC, TC)` is stronger, below `min(BC, TC)` is weaker, and inside CPR is a battlefield. A narrow CPR can allow a trend day; a wide CPR more often marks chop unless gamma is negative and a boundary breaks.
+- Use these levels to refine scenario handling, not to override live option structure. Gamma walls/pits explain dealer hedging pressure; pivots/CPR/Camarilla provide widely watched technical decision zones.
+- In the final answer, only list the levels that are near current price or align with gamma/trigger levels. Avoid dumping every calculated level unless the user asks for the table.
+
+## Vanna Calculation
+
+- Moomoo may not expose `option_vanna`, but SPXW snapshots usually include the required inputs: spot anchor, strike, IV, DTE, OI, and contract size.
+- Use Black-Scholes vanna: `vanna = -normal_pdf(d1) * d2 / iv`, where `d2 = d1 - iv * sqrt(T)`. This is delta change per 1.00 vol unit; multiply by `0.01` for one IV point.
+- Aggregate signed VEX by strike as `sign * vanna * 0.01 * OI * 100 * spot`, using the same explicit convention as GEX (`Call = +`, `Put = -`) and labeling it as an assumption.
+- Interpret vanna together with IV direction: after an IV crush, large vanna zones can drive delta adjustments; during IV expansion, the pressure can reverse. Gamma still controls immediate pin/acceleration zones.
+
+## SPY/ES Conversion
+
+- Prefer `.SPX` option chains from moomoo as `US..SPX` when available. Moomoo can reject `get_market_snapshot(["US..SPX"])` with an unsupported-index error while still returning `get_option_expiration_date("US..SPX")` and `get_option_chain("US..SPX")`.
+- Treat `SPX`, `SP500`, `S&P 500`, and `标普500` gamma requests as direct SPX-index-option work first. Use SPX/SPXW strikes directly; use SPY/ES conversion only when the SPX option chain itself is unavailable or permission-blocked.
+- If `US..SPX` chains are available, skip SPY conversion entirely for gamma levels; SPY is only a proxy fallback, not the normal SPX workflow.
+- For 0DTE intraday gamma, prefer PM-settled `SPXW` contracts. If the same date includes AM-settled monthly `SPX` contracts, exclude those AM contracts from the intraday pin/gamma map unless the user explicitly asks about AM settlement.
+- Moomoo may return duplicate `strike_time` rows for the same SPX date, such as one `MONTH` row and one `WEEK` row on monthly-expiry Friday. De-duplicate expiry dates before looping over `get_option_chain`; otherwise the same SPXW PM chain can be fetched and counted twice. After a run, sanity-check that the expiry list has unique dates and that 0DTE row counts are not roughly doubled.
+- When live SPX cash is unavailable, estimate the anchor from liquid same-day SPXW pairs with put-call parity. Prefer multiple near-ATM strikes with tight bid/ask and meaningful volume/OI, then use a weighted median or trimmed weighted mean. State this as a parity-implied SPX/forward anchor.
+- Do not use cached or delayed TradingView page text as the intraday anchor. If TradingView is mentioned, assume it is stale unless the value is explicitly confirmed from a live chart/front-end tick.
+- If using SPY options as a proxy, compute the same-day conversion ratio from simultaneous prices: `SPX_equiv = SPY_strike * (current_SPX_or_ES_anchor / current_SPY_price)`.
+- If using ES, state the futures basis explicitly. Do not carry yesterday's ratio into today.
+- If moomoo cannot provide ES due to permissions, accept user-provided ES/CFD screenshots as the anchor and disclose that limitation.
+
+## SpotGamma/TRACE Heatmap Reading
+
+- A blue/projection line moving before price is a proprietary gamma/hedging contour, not the traded SPX price. It can warn that options structure deteriorated before spot moved, but do not try to reproduce it exactly.
+- `SG Implied 1d Move High/Low` is an implied statistical range, not a gap. "Filling a gap" and "touching implied low" are different ideas.
+- A `Call Wall` is usually resistance/pin unless reclaimed; a `Hedge Wall`/large downside put pit can attract price in negative gamma but may also create reflexive rebounds.
+
+## Practical Judgment
+
+- In negative gamma, do not over-trust a single support line. Require reclaim/hold behavior.
+- Strong relief rallies can happen after "not worse than feared" macro events when dealers and shorts are already leaning downside.
+- For gap-down days, separate "rebound to open" from "rebound to prior close"; these are different targets and probabilities.
+- Phrase conclusions probabilistically: "a bounce attempt is more likely than clean continuation if 7350 keeps holding," not "it must rebound."

@@ -1,0 +1,7 @@
+[
+  "jp-stock-move-reason/scripts/stock_move_sources.py",
+  "jp-stock-move-reason/scripts/pts_turnover_ranking.py",
+  "market-calendar-google/scripts/fetch_sbi_jp_earnings.py",
+  "market-daily-strategist/scripts/narrative_status.py",
+  "us-stock-gamma-moomoo/scripts/option_scenario_table.py"
+]

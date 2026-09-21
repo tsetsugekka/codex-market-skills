@@ -3,63 +3,147 @@ name: jp-stock-move-reason
 description: 分析日本股票上涨下跌、财报反应和PTS异动，核验公司披露、预期差、量价及市场背景。
 ---
 
-# Jp Stock Move Reason
+# JP Stock Move Reason
 
-## 可用资料与边界
+## 跨环境执行
 
-使用本轮实际可用的网页、连接工具和用户资料；有本机执行能力时，也按需使用已安装且可用的研究 Skill。先读取所需页面正文，核对代码、市场日期、行情时间与交易阶段；只搜索到标题不算取得数据。价格、新闻、讨论各有用途，未知字段保持未知，单点行情不能证明持续承接或完整分钟路径。入口失败时说明具体缺口，换用可读的公开来源；遇限流或拒绝访问停止请求该来源，不尝试绕过。
+先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
 
-需要补充数据时先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现并使用相关 Skill，包括可用的 OpenD、MX 和同花顺；未加载或未调用成功就不要声称使用。插件本身不新增行情工具或权限。报告与交易执行分开，不凭研究结论声称下单。自动任务遵守自身 Prompt 的输出、归档与模拟账本合同，本插件不修改任务或自身规则。
+此包按各 Skill 入口附带可移植 Python 脚本；可读取文件不等于能执行，能执行不等于能联网。先确认能力，再按环境路由选择随包脚本、可用扩展或公开网页；仅有用户资料时执行相同筛选与计算，无执行能力时按文字流程研究并标出未计算项。外部供应商采集器只在已安装且可用时调用。访问失败、限流与权限处理遵循当前工具及环境规则，不复制机器专用沙箱设置。实际加载所用的同包 Skill 和参考，不只在回答中提名字。
 
+本插件用于研究，写日历、账户或交易需要对应授权。普通研究不自动访问私人自选或持仓，不修改自身、其他 Skill 或任务规则；自动任务保持自己的输出、归档和授权合同。用户指定的私人资料仅在本轮授权范围内使用，不写入插件。
 
-## 公司事件、期待差与资本政策
+Use this skill to explain current single-stock moves from source evidence.
 
-先确认股票代码、市场、交易日和常规盘/PTS；优先公司 IR、TDnet/法定披露，再用 Yahoo、Kabutan、Traders 等发现和交叉核对。掲示板负责揭示市场在讨论什么，不证明消息为真。
+## Workflow
 
-财报应拆分本期成绩与全年指引、上修/下修、利润率、订单/积压订单、汇率假设、一次性收益、进度率和公司历史保守程度。对照市场此前期待，而不只对照去年或公司旧指引。财报“好”但未达到期待、兑现更慢或确定性下降，可能引发利好出尽。
+1. Read [experience](references/experience.md) before analysis, but only the `Active Playbook` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, 掲示板 sentiment, theme leadership, peer follow-through, and whether the stock is a leader, follower, defensive alternative, old-leader rebound, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.
 
-资本政策逐项核实：增配/特别股息、回购金额与期限及股数比例、拆股、增发、可转债、限售或大股东减持。拆股不创造企业价值，回购宣布不等于完成，融资要考虑稀释和实际资金用途。
+   Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references when available in this package or environment. Do not merely mention the other skill by name in the answer.
 
-将日经/TOPIX、对应 JPX 行业、同业、USD/JPY、JGB 收益率和海外同行作为对照。出口商、银行、成长、REIT 等受汇率/利率影响不同；先拆公司催化，再判断市场放大。海外题材传导需要业务映射和本地价格确认。
+   Required coordination: for Japanese stock analysis, use this skill as the evidence-gathering entry point, and add supporting skills based on clues found during analysis, not only on the user's wording. Yahoo 掲示板 itself is an evidence source, not an automatic trigger for sentiment analysis. If 掲示板/news reveals a concrete clue about theme leadership, peer follow-through, crowding, leader/follower position, defensive alternative, old-leader rebound, or risk-on/risk-off acceptance, load `stock-sentiment-analysis` to test that clue. If 掲示板/news discusses Nikkei/TOPIX, JPX sectors, Nikkei futures, JGB yields, USD/JPY, BOJ/MOF policy, US/China spillover, commodities, or geopolitics, load `macro-news-check` to verify the tape instead of accepting forum claims. If 掲示板/news or the price move points to support/resistance, failed breakout, trend damage, or catalyst acceptance/rejection, load `stock-technical-analysis` to verify the chart. When the original question is directly about an index/broad tape such as Nikkei 225, TOPIX, JPX sectors, Nikkei futures, or 日经大盘, load `macro-news-check` by default.
 
-掲示板只读取适度近期样本，去重并保留时间；过滤口号和无来源断言，挑有具体公司材料的讨论再核验。高赞与高频是情绪强度，不是事实置信度。报价是当前而帖子很旧时，不能将旧讨论解释为新催化。
+   Mandatory execution gate:
+   - If the answer uses **宏观** or **快讯** to explain the stock, sector, Nikkei/TOPIX, JGB yields, USD/JPY, BOJ/MOF policy, US/China spillover, commodities, or geopolitics, load `macro-news-check`. Do not replace this layer with ad hoc web search.
+   - If the answer uses **技术面** such as support/resistance, trend confirmation, failed breakout, volume-price behavior, intraday timing, or "能不能上/下", load `stock-technical-analysis`.
+   - If the answer uses **情绪面** such as theme leadership, crowding, leader/follower, defensive alternative, old-leader rebound, risk-on/risk-off, expectation gap, or 掲示板 psychology, load `stock-sentiment-analysis`.
+   - Final answers should include a compact `融合口径` line when any supporting skill is used, e.g. `Yahoo/Kabutan/Traders 证据 + macro-news-check tape + stock-technical-analysis 结构 + stock-sentiment-analysis 情绪/期待差`.
 
-## PTS 与涨跌榜的完整口径
+2. Collect current quote, news/disclosures and forum evidence with the tools available in this session. For Python collection or offline forum filtering, read [Python execution](references/python-execution.md). For a single stock, verify concrete catalysts against disclosures before treating forum discussion as evidence.
 
-使用 DTM 三个 PTS model 时，只分析它实际提供的时段、方向和排序；其上涨名单不能称完整涨跌 Top10。需要自建推定成交额排行时，按当前 JST 与交易日选择普通盘或 PTS：普通盘 09:00–11:30、12:30–15:30；盘前/午间/收盘后早段使用相应白天 PTS，其余使用对应夜间 PTS，并核对节假日和来源标记。
+### Mover Estimated Trading Value Ranking Sub-skill
 
-先在实际获得的候选中按用户范围筛选；原工作流默认绝对涨跌幅≥3%、成交量>2,000，再按现价×成交量（PTS 则 PTS 价×PTS 量）降序。某一方向不足五只时，仅该方向可扩至≥1%，明确放宽口径。涨、跌分别排名，成交量只是筛选项；用户明确要求成交量榜时尊重该排序。
+When the user asks for current Japanese-stock increase/decrease Top10 lists,
+PTS mover lists ranked by `推定成交额`, `売買代金推定`, `turnover estimate`, or
+says `不是成交量，是成交额`, use the mover-turnover sub-skill before running
+per-stock reason collection. Read
+[pts-turnover-ranking](references/pts-turnover-ranking.md) and [Python execution](references/python-execution.md), then collect the matching session.
 
-价格×成交量是推定成交额，不是逐笔成交累积。价格与量若延迟不同必须说明；无法取得完整候选时只称已取得样本排行。保留时段、价、涨跌幅、量、推定成交额及原因。除用户只要数字外，入选股票逐一解释催化；可复用任务包已有可追溯原因，不无差别逐股重抓。无材料时标未确认，不能根据行业标签编原因。
+Default to `--session auto` and evaluate routing in JST on trading days:
 
-## 估值与后续验证
+- `09:00-11:30` and `12:30-15:30`: use Yahoo Finance Japan's current regular
+  market rankings:
+  `https://finance.yahoo.co.jp/stocks/ranking/up?market=all` and
+  `https://finance.yahoo.co.jp/stocks/ranking/down?market=all`.
+- `08:00-09:00`, `11:30-12:30`, and `15:30-17:00`: use the PTS day-section
+  increase/decrease pages.
+- All other times, weekends, and known non-trading days: use the PTS night
+  section. The script handles weekends; force `--session night` on Japanese
+  exchange holidays that fall on weekdays.
 
-合理估值用指引 EPS×PE、ROE/PBR、现金流、净现金/债务、股东回报与同业作为情景锚；检查股数口径及可转债稀释。区分基本面公允价值、题材溢价和短期期待差。盈利上修与 PE 扩张可叠加，盈利下修与估值压缩也可叠加；不能只看历史低 PER。
+Always request 50 rows per page. First filter each side to `abs(涨跌幅) >= 3%`
+and `出来高 > 2000`, then rank by estimated trading value. If one side has
+fewer than five qualifying rows, re-fetch only that side to `abs(涨跌幅) >= 1%`
+and keep ranking by estimated trading value. Regular-session `推定成交额`
+(`売買代金推定`) is `当前价 * 出来高`; PTS `推定成交额` is
+`PTS株价 * PTS出来高`. It is not exchange-reported trading value calculated
+from each execution. Yahoo states that Tokyo Stock Exchange transaction prices
+are real time while all-market volume is delayed by at least 15 minutes, so
+regular-session output must disclose that mixed-timestamp limitation. Volume is
+only the eligibility filter. For a generic Top10 request, or when the user
+loosely says `成交量` within this workflow, still rank by `推定成交额`. Rank by
+raw volume only when the user explicitly requests a volume-ranked list.
 
-输出最有力理由、补助理由、量价与板块共振、期待差/情绪、确定度和反证。涉及买点或关键位时读取技术 Skill，涉及周期/领导地位时读取情绪 Skill，涉及大盘/汇率/利率时读取宏观 Skill。分别判断逻辑能否持续、盘面能否延续、当前位置能否执行。
+After ranking, final mover answers must include a `原因` column unless the
+user explicitly says they only want the raw list, only want numbers, or do not
+need reasons. For ranking requests, Yahoo 掲示板 is the first source for discovering explanation candidates, not the authority for confirming facts:
+deduplicate selected Top codes and request one forum page per code, caching at
+most the latest 100 comments each, using forum-only collection. For every
+individual stock and every selected Top10 name, use the same comment pipeline:
+count how many of those raw cached posts are within 24 hours; if fewer than 100,
+expand the candidate window to 72 hours using only the same cached posts. Never
+fetch post 101 or later. Apply the five-like minimum only after deciding the time
+window, then score by recency, likes, body length, and company-material keywords,
+deduplicate exact normalized-prefix signatures to a maximum 20-comment full-text
+shortlist, reorder it by time and likes, and pass only `recent_comments[:5]` to
+the assistant.
+Process codes sequentially;
+do not use Kabutan/Traders as the first-pass substitute for board discussion.
 
+Use this exact comment-quality contract. Hard-filter posts outside the selected
+window, unparseable timestamps, fewer than five likes, bodies shorter than ten
+characters, and pure calls such as `買い`, `売り`, `上がれ`, `S高確定`,
+`ストップ高`, `爆上げ`, `爆益`, `草`, or standalone `www`. Score surviving
+posts out of 18: recency `<=6h:5`, `<=24h:4`, `<=48h:2`, `>48h:1`; body length
+`30-300:3`, `>300:2`, `10-29:1`; likes `100+:4`, `50-99:3`, `20-49:2`,
+`5-19:1`; company-material keywords add one point each, capped at six. Relevant
+keywords include earnings, guidance revisions, dividends, buybacks, splits,
+alliances, orders, approvals, patents, IR, profitability, M&A, subsidies,
+adoption, launches, joint development, contracts, products/services, shareholder
+benefits, revenue, and profit metrics. Generic sector words such as AI,
+semiconductors, defense, or drones add no points. Sort by total score, timestamp,
+then likes; normalize lowercase text by removing spaces and common punctuation,
+deduplicate on the first 60 normalized characters, and keep at most 20. Finally,
+sort those 20 by timestamp and likes and pass `recent_comments[:5]` to the assistant.
+This is exact-signature deduplication, not semantic similarity: remove all
+whitespace and `、。！？ ! ? , . ・ … 「」 『』 （） () [] 【】`, then compare the
+first 60 normalized characters. The earlier comment in the score/timestamp/likes
+order wins. Matching prefixes collapse even when later text differs; any
+difference within the prefix survives. Do not apply Unicode width normalization
+or explicitly strip emoji, URLs, or usernames. Deduplicate only within the
+current stock's current collection.
 
+Use news or disclosures only to validate a concrete event claimed in the board,
+and distinguish verified facts from market discussion. Never fetch more than one
+forum page per code or repeat a forum fetch for the same code in the same turn.
+On HTTP 403/429, access-denied content, connection reset, or an empty/abnormal
+response, stop all Yahoo collection for the rest of the turn and report the
+block. ETF or ETN rows should be explained from their underlying index/strategy,
+and tiny-estimate jumps should be labeled low-confidence if no hard catalyst exists.
 
-## 查询与判断
+Return the synthesized `原因` in the ranking table. Do not quote or enumerate the
+raw five-comment input set unless the user explicitly asks to see it.
 
-确认代码、东京市场日期和交易阶段。已有Drive事件或异动原因时先复用，再补量价验证；只在原因不清、冲突或关键决策需要时补查披露。从本轮可读公开行情补查现价、涨跌幅和行情时点；日线不能替代实时分时，读取失败时只说明实际缺口。
+Space sequential Yahoo requests by 1–3 seconds; after 403/429 or access-control content, stop Yahoo requests for the turn. Preserve any cooldown enforced by the actual tool.
 
-可先读 Yahoo Japan 个股页 `https://finance.yahoo.co.jp/quote/7203.T`，按实际上市地替换代码与后缀。从页面带标签的株価詳細値读取现价、昨收、开高低、成交量额及各自时间，并查单元株数；区分东证与夜间PTS栏，财务指标另核对应期间。整页可读不代表有连续分时，掲示板及AI値動き解説也不等同公司披露。
+- DTM cross-market themes: read `https://daytrading.monster/api/themes` without a market filter. Compare Japanese, US, and Chinese theme members and completed-session performance to trace industry-chain and cross-market transmission; use `themes[]` with `theme_key`, `theme_name_zh`, `market`, and `constituents[]`, including `weight`, `reason_zh`, and `quote_available`. Check quote dates; these are not live intraday returns.
+- PTS context: prefer the canonical `https://daytrading.monster/api/pts/model1` (day session), `https://daytrading.monster/api/pts/model2` (after close), and `https://daytrading.monster/api/pts/model3` (night session) for a comprehensive overview of PTS risers, themes, and upward reasons. Use the session(s) relevant to the question and their update times; read all three when comparing sessions. They do not provide a complete falling-stock ranking. For diverse Japanese rankings, including PTS decliners and other screens, use `https://kabutan.jp/warning/` and `https://finance.yahoo.co.jp/stocks/ranking/up`, selecting the relevant ranking and its stated session. Keep the existing estimated-turnover Top10 procedure for that specific request.
 
-用公司IR、TDnet披露、决算说明资料、补充资料和Q&A解释业务变化，而不仅是财报标题。核验指引、订单兑现、利润率、现金流、融资稀释和客户集中度。
+### Evidence priority for individual stocks
 
-评级仅在精确代码与日期匹配时引用 `https://daytrading.monster/api/ratings-jp`，写明机构、评级/目标价变化及主催化或辅助作用；目标价不替代自主估值。主题映射读取 `https://daytrading.monster/api/themes` 并核对成分日期。
+Analyze the collected source material directly. Company disclosures and confirmed event reporting establish facts; quotes establish the move. Forum-first ranking discovery above does not override this factual priority:
 
-东京正常交易时优先现货；盘后可看 Kabutan 个股PTS块并注明延迟，或按对应日/盘后/夜间时段读取 `https://daytrading.monster/api/pts/model1`、`https://daytrading.monster/api/pts/model2`、`https://daytrading.monster/api/pts/model3`。这些是上涨发现来源，不称完整下跌榜。小成交的跳价低置信，不能当作次日成交价。
+- Current quote and basic metrics: establish whether there is a real price move and the stock's size/liquidity context.
+- Institution rating check: after reading current source evidence, read only the canonical `https://daytrading.monster/api/ratings-jp` JSON from `https://daytrading.monster/api-docs/`. Parse the `text/plain` body as JSON. Its `reports` cover Japan-local today and the preceding three calendar days; use the report date, not retrieval time. No additional rating-page files are needed.
+  Filter by exact normalized `stockCode` and use only reports present in the current snapshot. Mention the rating layer only when the stock has a current matching rating/target-price update that may explain or support the move. If there is no matching current update, omit the rating layer instead of writing negative filler. When the rating layer is mentioned, include broker, date, rating direction, target-price direction, and whether the update is likely a primary catalyst or secondary support. In final answer prose, do not name DayTrading.monster, the rating page, feed/page labels, or aggregator/source names by default; Cite material claims with the actual source URL and time.
+- PTS handling: during the regular Tokyo trading session, especially the opening and active intraday period, do not use PTS as an analysis layer; prioritize the live exchange quote, intraday price action, volume, news, and 掲示板 instead. For questions asked after the Tokyo close, check the Kabutan individual stock page (`https://kabutan.jp/stock/?code=CODE`) when available. Use the page's `PTS` block sourced from JapanNext via Kabutan for PTS current price, timestamp, open/high/low, volume, trading value, and VWAP, but remember Kabutan's PTS figures are delayed by about 15 minutes. Treat PTS as delayed early after-hours sentiment and liquidity evidence, not as a confirmed next-session price or real-time tape. If using DTM PTS to discover candidates, read the canonical model APIs above; do not use the HTML `noscript` SEO fallback because it can lag the live app. Do not use MONEY BOX PTS as a source because its PTS figures have proven unreliable; non-PTS MONEY BOX pages such as disclosure summaries may be used only as supplementary references and should be verified against primary disclosures/news.
+- Company disclosure and explanation materials: for earnings, guidance revisions, medium-term plans, business updates, buybacks, major orders, capital policy, or new businesses, look beyond headline numbers and 掲示板. Search TDnet/Kabutan PDFs, the company's IR site, 決算説明資料, 補足説明資料, 事業計画及び成長可能性に関する事項, 中期経営計画, 決算説明会資料/Q&A, press releases, product/project pages, and business-update materials. Use these to explain what changed in the business story, pipeline, certainty, timing, customer/project progress, capital needs, and dilution risk.
+- News: primary evidence for concrete catalysts.
+- Yahoo 掲示板: use only as a low-weight retail emotion/overheating check. Its buy/sell sentiment is delayed, reflects only past retail verbal mood, and should not be used as evidence for a price move, catalyst, conviction, or directional thesis. Never cite 掲示板 buy/sell ratios as support for an analysis. Use comments only to detect what retail is talking about, whether attention is crowded, or whether rumor risk needs verification against news/disclosures.
+- Peer and theme reactions: use them to judge whether the move is theme-wide leadership, same-theme follow-through, or only stock-specific sentiment.
+- Macro tape and Japan market breadth: call `macro-news-check` only when the move may be affected by Nikkei/TOPIX futures, JGB yields, USD/JPY, BOJ/MOF policy, global rates, China/US macro, commodities, geopolitical risk, or broad risk-on/risk-off headlines. For Japanese broad-market weakness/strength or a single-stock move under strong market pressure, use the JPX real-time index page/data (`https://www.jpx.co.jp/markets/indices/realvalues/index.html`, `indices_stock_price3.txt`, and `indices_stock_price3.time.txt`) as an auxiliary confirmation layer for TOPIX 33 sectors, TOPIX-17, size indexes, and market-type indexes. Use it as market context, not as a substitute for stock-specific evidence.
 
-需要估计成交额榜时仅在价格与成交量、单位和时间均可核验后计算并注明估计，实际成交额优先；不把单笔最新价×全日量当精确成交额。Yahoo掲示板只评估零售讨论热度与传闻风险，买卖情绪比例不证明催化或方向。公开页拒绝访问或限流即停止该来源。
+For earnings-related questions, do a disclosure-material pass even when the user did not explicitly ask for it. The core question is not only `数字好不好`, but `为什么这些数字或指引可信`, `哪些说明资料证明业务进入兑现阶段`, `哪些项目仍只是 pipeline`, and `现金流/融资/稀释/客户集中是否会削弱估值`. If no explanation material exists, say so and rely on the filing, company releases, and news.
 
-先完成披露和新闻核验，再按需加入宏观、情绪与技术确认。比较原预期、实际新增信息及价格接受/拒绝；新反馈出现时重新评估，不为维护旧结论忽略新证据。
+Prefer this skill as the first pass for Japanese stocks. When using `stock-sentiment-analysis`, `macro-news-check`, or `stock-technical-analysis`, first finish the news/disclosure/theme/rating read and use 掲示板 only as a retail heat check, then use the supporting skill to verify sentiment structure, broad-market pressure/support, or price confirmation. Do not replace company disclosures, concrete news, or fresh rating updates with macro, sentiment, chart evidence, or 掲示板 chatter.
+
+In multi-turn discussions about the same stock, treat user follow-ups as possible new evidence or feedback. If the user adds information, challenges the reasoning, asks for reconsideration, or the conversation reveals that the prior answer missed/misweighted something, re-evaluate the stock with the new context before defending the earlier answer.
 
 ## Output Style
 
+Reply in Chinese unless the user asks otherwise. The answer can be detailed when the evidence supports it: start from at least 3-4 lines, and when evidence is rich, write up to the length of a short market news note. Stay evidence-based.
 
-For every stock analyzed, always use these five numbered sections in this exact order:
+For an individual-stock explanation, use these five sections unless the user or Task supplies a different format. For a ranking, use the table format above:
 
 1. `最有力理由`: the most likely catalyst, with source names and timing.
 2. `补助理由`: secondary drivers such as theme buying, short-term speculation, or market-cap/liquidity context.
@@ -67,7 +151,7 @@ For every stock analyzed, always use these five numbered sections in this exact 
 4. `确定度`: high / medium / low, with one sentence explaining why.
 5. `注意点`: what remains unconfirmed or what could invalidate the read.
 
-When the user gives multiple stocks, write the five numbered sections separately for each stock first. After all individual stock sections, add a final comparison section such as `两只对比` or `多只对比`, covering common drivers, differences in catalyst quality, sentiment heat, and relative risk. You may add extra sections when useful, but the five required sections and the final comparison for multi-stock requests must remain present.
+When the user gives multiple stocks, write the five numbered sections separately for each stock first. After all individual stock sections, add a final comparison section such as `两只对比` or `多只对比`, covering common drivers, differences in catalyst quality, sentiment heat, and relative risk. You may add extra sections when useful, while preserving the same evidence, uncertainty and comparison content.
 
 If the evidence is weak, say so plainly and use wording like `思惑`, `期待`, `传闻`, or `确认待ち`. Do not invent catalysts absent from the collected news/comments.
 
@@ -78,6 +162,7 @@ When explaining a catalyst, always check the expectation gap: `市场原来预�
 When the user asks for `合理估值`, `目标价`, `估值`, `贵不贵`, `空间`, `fair value`, or similar:
 
 - Still collect current quote/news materials first, then add financial guidance, EPS/share-count, capital policy, and peer/sector context when available.
+- Use the `Reasonable Valuation Framework` from [experience](references/experience.md).
 - Provide scenario ranges rather than one exact target: conservative / base / bull.
 - State the anchors used, such as forward EPS/PER, operating or recurring profit, ROE/PBR, EV/EBITDA, orders/backlog, buyback/CB dilution, and peer multiples.
 - When using EPS/PER, explicitly decompose price into `EPS x PER`: judge whether the setup is a Davis double play (`EPS upgrades + PER expansion` from better growth/certainty/theme premium) or Davis double kill (`EPS downgrades + PER contraction` from weaker guidance/cycle reversal/expectation miss). Do not call a stock cheap from PER alone if EPS or the deserved multiple is falling.

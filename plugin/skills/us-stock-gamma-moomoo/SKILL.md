@@ -3,53 +3,336 @@ name: us-stock-gamma-moomoo
 description: 分析SPX/SPXW、股票与ETF期权Gamma结构，按可用公开资料、用户数据或本机行情能力核验关键位与数据限制。
 ---
 
-# Us Stock Gamma Moomoo
+# US Stock Gamma With moomoo
 
-## 可用资料与边界
+## 跨环境执行
 
-使用本轮实际可用的网页、连接工具和用户资料；有本机执行能力时，也按需使用已安装且可用的研究 Skill。先读取所需页面正文，核对代码、市场日期、行情时间与交易阶段；只搜索到标题不算取得数据。价格、新闻、讨论各有用途，未知字段保持未知，单点行情不能证明持续承接或完整分钟路径。入口失败时说明具体缺口，换用可读的公开来源；遇限流或拒绝访问停止请求该来源，不尝试绕过。
+先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
 
-需要补充数据时先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现并使用相关 Skill，包括可用的 OpenD、MX 和同花顺；未加载或未调用成功就不要声称使用。插件本身不新增行情工具或权限。报告与交易执行分开，不凭研究结论声称下单。自动任务遵守自身 Prompt 的输出、归档与模拟账本合同，本插件不修改任务或自身规则。
+此包按各 Skill 入口附带可移植 Python 脚本；可读取文件不等于能执行，能执行不等于能联网。先确认能力，再按环境路由选择随包脚本、可用扩展或公开网页；仅有用户资料时执行相同筛选与计算，无执行能力时按文字流程研究并标出未计算项。外部供应商采集器只在已安装且可用时调用。访问失败、限流与权限处理遵循当前工具及环境规则，不复制机器专用沙箱设置。实际加载所用的同包 Skill 和参考，不只在回答中提名字。
 
+本插件用于研究，写日历、账户或交易需要对应授权。普通研究不自动访问私人自选或持仓，不修改自身、其他 Skill 或任务规则；自动任务保持自己的输出、归档和授权合同。用户指定的私人资料仅在本轮授权范围内使用，不写入插件。
 
-## 深度分析与计算入口
+Use this skill to turn moomoo OpenD option data into an actionable gamma map and a plain-language trading note.
 
-需要完整 Gamma、分期限、Vanna、情景表或热力图时，先读[Gamma 研究与计算细则](references/gamma-research.md)。这份方法适用于用户提供的期权链、可用网页数据、ChatGPT 工作执行环境或 Codex 本机工具；不以产品名称判断能否计算。
+This public-safe skill is self-contained. Do not commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub. It may use a user-specified private RAG folder during a session, but it must not store private source paths, personal positions, original strategy names, private person names/handles, proprietary labels, or private document titles. Generic market concepts such as gamma, GEX, dealer hedging, FVG, KDJ, MACD, RSI, VWAP, and Vegas may be retained.
 
-通过环境能力路由发现真实可用的数据和执行工具。moomooapi 等负责取得数据，本 Skill 负责定义计算、验证和解释；无需重复安装同名独立 Skill。拿到完整且口径一致的输入时应实际计算，不因当前是插件版就退回只能读 SPX 摘要。拿不到则明确当前分析层级，不凭能力名称声称已经完成。
+## Experience
 
-## 必须保留的判断层次
+Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references when available in this package or environment. Do not merely mention the other skill by name in the answer.
 
-同时报告现价锚、Gamma 符号/规模和方向状态；正 Gamma 可以对应偏空防守，负 Gamma 可以出现强反弹。方向取决于现价相对 flip/trigger、墙与负 Gamma 谷，以及新闻、IV 和价格接受，不把 Gamma 正负翻译成涨跌预测。
+Required coordination: for US option/gamma analysis, use this skill as the positioning and option-structure entry point, and add supporting skills based on the analysis workflow, not only on the user's wording. If the analysis is about SPX, SPXW, SPY, QQQ, Nasdaq, Dow, Russell, VIX, Nikkei proxy gamma, or any broad index/ETF gamma map, load `macro-news-check` because index gamma cannot be read well without current macro and broad-market tape. If the analysis discusses news acceptance, theme crowding, risk-on/risk-off tone, forum/social sentiment, or leader/follower context, load `stock-sentiment-analysis`. If the final view depends on support/resistance, intraday timing, trend confirmation, failed breakout, or price-action validation, load `stock-technical-analysis`. Gamma is the positioning map; macro, sentiment, and chart structure decide whether the map is being accepted or rejected.
 
-关键字段解释：vol trigger 是波动状态分界；gamma wall 是较强正 Gamma 集中处；call wall 先看上方压力/钉扎，突破站稳后才是更高目标；put wall 守住时是潜在支持，失守后可能加速。OI 集中、Gamma 集中与供应商墙的定义可能不同，必须标清。
+When official moomoo anomaly skills are installed, use them as an auxiliary scan layer, not as a replacement for the self-calculated gamma map. For user requests involving `异动`, `大单`, `IV`, `PCR`, `聪明钱`, unusual options activity, option sentiment, or volatility anomaly, call `moomoo-derivatives-anomaly` alongside this skill by default. For U.S. stocks, do not request Hong Kong-only warrant / CBBC dimensions; use only U.S.-applicable option dimensions such as `option_unusual`, `option_volatility`, `option_volume_price`, `option_sentiment`, and `option_comprehensive`. A full scan can fail if it includes Hong Kong-only dimensions, so narrow the dimensions explicitly when needed.
 
-每次判断按现价相对分界→近端期限与总量→墙/谷→OI与成交→IV偏斜/Vanna→价格确认的顺序。多腿异常成交不默认有方向，暗池不揭示买卖方。未核验新闻不能靠期权数据编催化；涉及宏观、情绪或技术时实际读取对应同包方法。
+If the analysis uses 1-minute K-line confirmation from moomoo OpenD, coordinate with `stock-technical-analysis`: let this skill fetch or compute the option/gamma map, then use the technical skill's framework to judge whether price action accepts, rejects, or only probes a wall, pit, or flip. If the user asks why a U.S. stock moved, whether earnings/guidance/news were accepted, or what explains a price move, route the evidence-gathering entry point to `us-stock-move-reason` first, then use this skill only for the option-positioning layer.
 
-未来几天逐实际到期日给出 Gamma 符号、flip、上方压力、下方风险、修复门槛及反证，再给基准/偏空/修复情景。不能用 All 总量代替每一天，也不能把 next-expiry 称作当天 0DTE。
+For ordinary U.S. stock move analysis, ChartExchange-style off-exchange/dark-pool data can be a secondary confirmation layer when price action or option positioning leaves an open question. Use it after confirmed news, macro/sector tape, price/volume, and option/gamma evidence. It is most useful for hidden-liquidity context around unusual volume, unexplained moves, failed news reactions, squeeze candidates, or repeated support/resistance at specific prices.
 
-多标的表至少包含代码、现价锚、Gamma状态、方向判断、关键区、flip、上方墙、下方风险和改变判断的条件。篇幅不足先压缩文字，不省掉解释价位所需的锚和期限。
+## Mandatory Execution Gate
 
-## 同日复核与图形解释
+Before running scripts or writing the final answer, classify the request and load required sibling skills:
 
-只有已有同日可比较快照时，才比较现价、GEX、VEX、flip、墙/谷与关键 strike 的符号和强度迁移。现价跌得更快时，flip 降低并不代表改善；活跃支撑 strike 从正转负是支持降级/加速风险候选，从负转正是反馈缓和候选，均需价格确认。
+- **Broad index / ETF gamma** (`SPX`, `SPXW`, `SPY`, `QQQ`, `Nasdaq`, `Dow`, `Russell`, `VIX`, `Nikkei`): load `macro-news-check` first or in parallel, then explicitly merge the macro tape with the gamma map. Do not answer index gamma from gamma data alone.
+- **宏观 / 快讯 / rates / FX / commodities / geopolitics / Fed / yields**: load `macro-news-check`. Do not substitute ad hoc web search for this layer.
+- **技术面 / intraday execution / "now" / support-resistance / "can it get through" / price action**: load `stock-technical-analysis` unless the user asks for a pure option-positioning dump. Use price action to decide whether a wall/pit is accepted, rejected, or only a battlefield.
+- **官方 moomoo 期权异动 / 大单 / IV / PCR / 聪明钱**: when `moomoo-derivatives-anomaly` is available, run it as a parallel anomaly scan using U.S.-applicable option dimensions only; do not include Hong Kong warrant / CBBC dimensions for U.S. stocks.
+- **情绪面 / news acceptance / crowding / risk-on or risk-off psychology / expectation gap**: load `stock-sentiment-analysis` when sentiment or expectation gap changes the interpretation.
+- **新闻接受度 / 财报 / 指引 / 股价为何涨跌**: use `us-stock-move-reason` as the upstream catalyst workflow, then merge its evidence with this skill's gamma map.
+- **Dark pool / off-exchange / borrow / FTD / short-volume checks for U.S. stocks**: use ChartExchange or the original FINRA/borrow-data source only as a secondary positioning layer. Do not use dark-pool prints or off-exchange share alone as a bullish/bearish signal.
+- If a required sibling skill is unavailable, say so and provide a limited gamma-only read. If it is available but not needed, state the reason briefly.
 
-图上投影线不是已成交价格，隐含波动区间不是跳空缺口，供应商专有结构不能宣称完全复刻。热力图用真实日期和原始 strike 数据，图形平滑不能改变计算出的墙、flip 和结论。
+Final answers for index gamma should include a compact `融合口径` line naming the layers used, for example: `自算 SPXW gamma + macro-news-check tape + stock-technical-analysis price action + stock-sentiment-analysis emotion/expectation gap`. This makes skipped or missing skill fusion visible.
 
+## DTM SPX Reference
 
+For SPX/SPXW context, first reference the canonical `https://daytrading.monster/api/gamma/` interface documented in `https://daytrading.monster/api-docs/gamma`. Parse its `text/plain` body as JSON and check its session/update time. It provides current SPX structure, expiry summaries, selected strike levels, Camarilla, and 0DTE five-minute samples. Use `price_trajectory.points` (`timestamp`, `index_value`) to read all available SPX source prices in the returned session; these are price-only points, not interpolated or guaranteed tick-complete. It is a fixed SPX/SPXW reference, not a full strike grid or an arbitrary-ticker endpoint. Keep the existing moomoo collection and computation workflow for full-chain calculations, requested scenario/heatmap detail, and other stocks or ETFs; do not present a DTM snapshot as a local calculation. Reuse an applicable upstream snapshot instead of requesting it twice.
 
-## 资料范围与解读
+## 数据与计算能力
 
-SPX/SPXW先读 `https://daytrading.monster/api/gamma/`，接口说明为 `https://daytrading.monster/api-docs/gamma`。解析实际返回JSON，核对交易日、更新时点、到期日与现价锚；可用内容包括结构摘要、关键执行价、Camarilla及已返回价格轨迹。此固定SPX来源不能用于任意股票，也不是完整执行价网格。
+完整链需要真实的报价、OI、IV、Greeks、到期与乘数，以及实际计算环境。按环境能力路由使用可用供应商或用户数据；读取 [计算合同](references/gamma-research.md)。若使用已安装独立版采集器，按该工具现行入口运行；以下研究要求同样适用于其他计算环境。SPX快照失败不等于链不可用；研究不需要解锁交易。
 
-其他股票/ETF或更细期权请求，可使用本轮可读公开数据、用户提供的期权链/图表，或按环境能力路由调用已安装且可用的 `moomooapi`。核对期权链、到期日、OI、Greeks与标的现价的实际覆盖及时间；有必要输入和实际计算工具时才计算并公开模型假设。数据不足时明确缺口，不声称计算过完整GEX、VEX、翻转点或热力图。名称不意味着已经建立数据连接。
+## Default Output
 
-结论分别列出现价锚、净Gamma符号/规模（可得时）、方向状态、最近flip/vol trigger、call/put wall、钉扎区、修复门槛和失效条件。正Gamma不自动看多，负Gamma不自动看空；价格处于何处及宏观/技术确认决定条件判断。
+Route the request before choosing a script:
 
-正Gamma常对应均值回归，负Gamma可能放大趋势；wall是候选支撑压力，不能保证守住。OI不是即时交易商净持仓，GEX符号是模型约定。Vanna与IV变化有关，缺少输入不虚构VEX。场外/暗池成交无买卖方向；短成交量不等于空头持仓。
+- **Ordinary US stocks/ETFs**: use the installed standalone `gamma_report.py` collector, if available, or a complete chain from another authorized tool, then interpret the output with the `Single-Stock Directional Framework` below before giving a bullish/bearish view.
+- **SPX / SPXW / SP500 / 标普500 / S&P 500 index gamma**: do not use `gamma_report.py` as the final workflow. Use a current SPX/SPXW chain (the external `spx_intraday_latest.py` collector is one optional route) and [spx-intraday](references/spx-intraday.md): query `US..SPX`, keep SPX/SPXW strikes directly, infer the spot anchor from SPXW 0DTE put-call parity when the SPX index snapshot is unavailable, and treat SPY only as a sanity check or fallback.
 
-未来几天按实际到期日分别给结构和关键位；已到期合约不进入前瞻图。下一到期日不是当日0DTE。SPX和SPXW结算差异须辨明，AM合约不能混作PM日内钉扎。没有完整分期限数据时不由总量猜测各到期日。
+After the U.S. options session closes, never retain an expired same-day SPXW chain in a forward chart or memo. Start from the next listed unexpired expiry; the script uses that front expiry in the existing `0DTE` calculation bucket so its Flip, walls, range, and comparison logic remain front-expiry based. Label it as a `next-expiry proxy after close`, not as live 0DTE.
+- **Nikkei / 日经 / 日経 / NKY / Nikkei 225 index gamma**: do not present raw EWJ ETF strikes as index levels, and do not use a current Nikkei anchor against a stale EWJ close. Use EWJ only as a proxy option book, then convert with a time-aligned bridge: EWJ quote-time value -> `NKDmain`/Nikkei futures at that same time -> current `NIYmain`/Nikkei CFD or the user's current index anchor. The external `proxy_index_gamma.py` collector is optional; reproduce the bridge only from actual time-aligned inputs. The report must state every anchor, ratio, timestamp, and limitation.
 
-SPY转SPX需同一时点的SPX/SPY或注明基差的期货锚，不固定乘10。EWJ只作日本ETF代理，需EWJ报价时点的日经期货桥接到当前指数；时间不齐不换算，不保留旧固定比例。分别注明原执行价、换算比例、锚与时间。
+Default to a concise chat/terminal text summary. Do not create files as part of this skill unless the user explicitly requests raw JSON export.
 
-用基准、偏空、修复情景连接关键价位和日期，说明什么会改变结论；期权图是风险地图，入场仍需真实价格确认。
+For SPX answers, default to the detailed index-gamma format. The answer should be detailed enough to explain claims such as “still negative gamma, 7450 starts neutralizing, 7500 becomes stronger positive gamma” from data. Include:
+
+- SPX anchor and anchor method.
+- 0DTE, Next2, Fri2w, and All-window net GEX, net VEX, flip, top walls, and top pits.
+- A key-strike cross-section showing 0DTE / Next2 / Fri2w / All GEX and All VEX at nearby decision levels, especially current rounded strikes, major walls, major pits, and user-mentioned levels.
+- A distinction between aggregate regime and local strike regime: `All still negative` can coexist with `7450/7500 locally positive`.
+- A conclusion that says whether each level is downside acceleration, neutralization/repair threshold, or stronger positive-gamma pinning wall.
+
+多日期、同日比较与热力图请求须实际计算逐到期日结构，并读取对应参考；比较只使用实际取得的旧快照。
+
+Use only real listed expiries from the JSON. Each chart column, Flip, Call Wall, and Put Wall must use only contracts expiring on that column's date. The solid foreground/black line is each expiry's gamma flip, not a price forecast; the dashed line is the current SPX anchor. The left `All GEX` profile must mirror all selected-expiry Call-side GEX right of zero and absolute Put-side GEX left of zero on one shared scale; overlay the raw Net GEX as a thin line. The right heatmap remains Net GEX only. Call Wall is the strike with the largest call-side GEX for that expiry; Put Wall is the strike with the most negative put-side GEX. Do not substitute maximum all-strike OI, which can select far-OTM legacy positions with little current gamma. The heatmap may smooth the visual layer along strikes, but must preserve the raw GEX calculations, Flip, and Call/Put Wall values. Read [gamma-heatmap-visualization](references/gamma-heatmap-visualization.md) before changing the range, smoothing, or chart semantics.
+
+When no axis range is explicitly requested, render SPX from `floor(spot / 100) * 100 - 300` through `ceil(spot / 100) * 100 + 300`. For example, an anchor of 7480 renders `7100–7800`. Explicit `--min-strike` and `--max-strike` remain available for a user-requested audit range.
+
+For Codex inline display, generate the fragment inside the thread-scoped visualization directory and emit `::codex-inline-vis{file="basename.html"}` using only the file name. The fragment must use its generated unique root ID with `document.getElementById`, never `document.currentScript`. Show desktop CW and PW values on separate rows so adjacent expiry columns remain readable. Do not create or publish a website unless the user explicitly asks for one.
+
+完整计算流程：
+- reads stock snapshot, option expirations, option chain, option snapshots, and daily K lines from moomoo OpenD;
+- throttles `get_option_chain` calls and retries once after OpenD frequency-limit errors, because moomoo can reject more than about 10 option-chain requests in 30 seconds;
+- chooses the pricing anchor by U.S. session: regular `last_price`, after-hours `after_price`, overnight `overnight_price`, pre-market `pre_price`, then bid/ask midpoint or regular last as fallback; label it as a pricing anchor, not guaranteed live tradable price;
+- gathers option `OI`, `IV`, `delta`, `gamma`, `theta`, `vega`, bid/ask, volume;
+- calculates Black-Scholes vanna from live/anchor spot, strike, IV, and DTE because moomoo snapshots may not provide `option_vanna`;
+- selects option expiries by default as: all weeklies within the next 2 calendar weeks when available, plus monthly expiries for the current month and next 2 months; for high-frequency option names also include the next 2 trading-day/daily expiries when listed;
+- calculates signed GEX with the common assumption `Call = +`, `Put = -`;
+- calculates signed VEX with the same directional convention, expressed as spot-equivalent delta-dollar change per 1 vol point IV move;
+- calculates option delta exposure (`DEX`) and approximate charm exposure by strike, plus call/put OI shelves and front-expiry IV smile/skew;
+- prints a complete OpenD gamma data group by default: pricing anchor, VT/flip, gamma wall, call wall, put wall, distance to VT/CW/PW, net GEX, net VEX, net DEX, charm/day, gamma pits, vanna zones, DEX zones, charm zones, OI shelves, IV smile/skew, and a conclusion that explicitly combines these dimensions;
+- recomputes gamma across a spot-price grid to estimate gamma wall, gamma trough, and gamma flip;
+- when JSON output is requested, includes per-strike `gex_by_strike` and `vex_by_strike` for each bucket so later runs can detect same-strike support/risk migration instead of only comparing top walls and pits;
+- includes a `per_expiry` section in JSON for each selected expiration date, so future-days gamma reads can say which exact date is weaker or stronger instead of only using `Next2` / `Fri2w` aggregate buckets;
+- includes per-expiry `call_wall` and `put_wall` from side-specific GEX within that expiry; preserve `null` when no valid level exists;
+- with `--by-expiry-report`, prints a per-date forward gamma memo that names each selected expiry date, net GEX, flip, main downside risk zone, upper pressure/pinning zone, and a baseline/bearish/repair scenario; use this mode for single stocks too when the user shares or asks about multi-expiry vol-trigger/gamma-wall tables;
+- with `--compare-json`, compares the new snapshot with a prior JSON snapshot and highlights material strike-level changes, including positive-to-negative GEX flips where a prior support/wall has disappeared and become a pit or acceleration risk;
+- prints a readable text memo by default; JSON export flags should be used only when the user explicitly asks for raw data.
+
+For SPX 0DTE or quick trading questions, chat/terminal text is the default. Still compute or fetch the chain first when possible.
+
+Read extra references only when the request needs them:
+
+- For `.SPX`, `SPXW`, `SPY`, `ES`, SpotGamma/TRACE heatmap, or intraday index judgment, read [spx-intraday](references/spx-intraday.md).
+- For a continuous multi-expiry SPX gamma heatmap, visual smoothing, or same-session chart comparison, read [gamma-heatmap-visualization](references/gamma-heatmap-visualization.md).
+- For short-dated option value tables, account-recovery option targets, or “what is this call/put worth if price reaches X by time Y”, read [option-scenario-tables](references/option-scenario-tables.md).
+- For U.S. single-stock dark-pool/off-exchange, borrow-fee, short-volume, FTD, or ChartExchange confirmation, use the `Dark Pool / Short Data Layer` section below.
+
+## Single-Stock Directional Framework
+
+For ordinary U.S. stocks and ETFs, the default job is not only to calculate gamma; it is to convert option structure into a directional trading read. Use this framework whenever the user asks `看多还是看空`, `bullish or bearish`, `能不能追`, `支撑压力`, `未来几天 gamma`, or shares third-party gamma screenshots/tables.
+
+Start with the shortest useful answer:
+
+1. State a direct bias: `偏多`, `偏空`, `中性偏多修复`, `中性偏空防守`, or `高波动战场`.
+2. Name the current spot and the one or two levels that decide the bias.
+3. Say what changes the conclusion: reclaim/hold above an upper trigger, or lose a lower support/put wall.
+
+Directional labels are incomplete without levels. Whenever using labels such as `中性偏多修复`, `偏多钉扎`, `中性钉扎`, `偏空/高波动`, or `高波动战场`, immediately attach the price zone that makes the label actionable:
+
+- **Current spot / pricing anchor**: state the current spot or pricing anchor before the directional label or in the same table row. A level is only actionable relative to spot; say whether spot is below, inside, or above the key zone. Example: `现价 198.18，偏多钉扎，钉扎区 200 附近`.
+- **Pinning zone**: name the exact strike or tight range being pinned, usually the nearest dominant `GW`, `CW`, `PW`, or confirmed OI shelf near spot. Example: `偏多钉扎，钉扎区 200 附近`.
+- **Repair / confirmation level**: for repair labels, name the level that must be reclaimed or held, usually `VT/flip` first, then the nearest `GW/CW`. Example: `中性偏多修复，站稳 295，突破 297.5 才打开上沿`.
+- **Invalidation / downside risk**: name the put wall, flip, or gamma pit whose loss invalidates the bullish/neutral read. Example: `跌破 290/284.6 则修复失败`.
+- **Battlefield range**: for mixed or high-volatility labels, give the actual range between the nearest support and pressure levels. Example: `高波动战场，260-350 是主战场，跌破 205 扩大下行`.
+
+Do not output a direction-only label when current spot, `VT`, `GW`, `CW`, `PW`, gamma pits, or OI shelves are available. If current spot or precise levels are unavailable, say `现价/关键点位不足` and lower confidence instead of presenting a clean directional label.
+
+Always build the read from these layers, in this order:
+
+1. **Spot vs vol trigger**: treat the nearest major `vol trigger` or gamma flip as the regime divider. Spot below the trigger means higher-volatility/negative-gamma risk unless price reclaims it. Spot above the trigger allows repair but still needs confirmation above the nearest wall.
+2. **Spot vs gamma wall**: gamma wall above spot is pressure, pinning, or a repair target; gamma wall below spot is support or a recapture zone. If spot is trapped between a put wall and a call wall, call it a battlefield instead of forcing a strong directional view.
+3. **Call wall / put wall distance**: nearest call wall is the first upside pressure or pinning reference; nearest put wall is the first downside support. A wide gap between walls allows trend movement; a tight gap implies chop/pinning.
+4. **Per-expiry net GEX**: identify which expiry actually dominates. Near-dated negative GEX can overpower longer-dated support and create squeeze/crash-style movement. Mixed positive and negative expiries mean conditional bias, not a clean all-in view.
+5. **Open interest shelves**: use absolute OI to confirm where real option interest clusters. Treat large OI shelves above as pressure/pinning references and below as support/risk zones; do not assume OI alone reveals buyer direction.
+6. **IV smile and skew**: high IV and steep downside skew strengthen the warning that the structure is defensive or volatility-seeking. A large vol smile with both call and put blocks often means long-vol/straddle/strangle positioning, not simple bullishness.
+7. **Unusual option flow**: classify prints as directional only when they are clean single-leg buys/sells and the bid/ask side is visible. Treat multi-leg, condor, butterfly, straddle, strangle, or paired call/put prints as volatility/range trades unless price action proves direction.
+8. **Delta hedging exposure**: use net delta-hedging pressure as a secondary force map. It can confirm where dealer hedging may add buying/selling, but it should not override spot vs trigger/wall structure.
+
+Use the following directional rules:
+
+- **Bullish repair**: spot is above the nearest vol trigger or reclaims it, holds above the nearest put wall/support, and has room to the next call wall. Wording: `站上 X 才算修复，第一目标 Y，突破 Y 才看 Z`.
+- **Bearish pressure**: spot is below the nearest vol trigger/gamma flip, near-dated net GEX is negative, and losing the nearest put wall opens a lower put wall or gamma trough. Wording: `跌破 X 转空，下一层看 Y/Z`.
+- **Neutral battlefield**: spot sits between a nearby put wall and call wall, or per-expiry GEX is mixed. Wording: `X-Y 是战场，不追单边；等站上 Y 或跌破 X`.
+- **High-volatility warning**: spot is below trigger with negative GEX, IV is high, and option flow shows large puts or long-vol structures. Wording: `不是单纯看空，是波动放大；方向等关键位确认`.
+- **False bullish signal**: do not call it bullish only because call wall is far above spot. A far call wall is potential upside/pinning only after spot reclaims trigger and nearby resistance.
+- **False bearish signal**: do not call it bearish only because put OI is large. Put wall below spot can be support until it breaks; after it breaks, it becomes acceleration risk.
+
+For third-party trigger/wall table interpretation, map fields this way:
+
+| Field | Read |
+|---|---|
+| `VOL TRIGGER` | regime divider / volatility trigger |
+| `GAMMA WALL` | main gamma pinning, pressure, or support |
+| `CALL WALL` | upside pressure, pinning, or breakout target |
+| `PUT WALL` | downside support while held, acceleration risk after break |
+| `NET GEX` | dealer hedging regime; negative amplifies trend, positive favors chop |
+| `ABS OPEN INTEREST` | where open option interest is actually concentrated |
+| `IV SMILE` | whether the market is pricing elevated tail/volatility risk |
+| unusual flow table | directional only if single-leg and bid/ask context is clear |
+
+For a complete OpenD-generated gamma memo, include these dimensions when the data is available:
+
+| Dimension | What to report | How to use in conclusion |
+|---|---|---|
+| `VT / Vol Trigger` | self-calculated gamma flip / volatility-regime divider | Above = repair or pinning possible; below = high-volatility or defensive unless reclaimed |
+| `GW / Gamma Wall` | strongest positive GEX / pinning or pressure level | Wall above = first pressure/target; wall below = recapture/support zone |
+| `CW / Call Wall` | largest call-side GEX/OI concentration | Upside pressure, pinning, or breakout target |
+| `PW / Put Wall` | largest put-side GEX/OI concentration | Downside support while held; acceleration risk after break |
+| `距VT / 距CW / 距PW` | percent distance from pricing anchor | Shows whether the next decision point is close enough to matter |
+| `Net GEX` | aggregate signed gamma exposure | Positive favors chop/pinning; negative favors trend amplification |
+| `Gamma pits` | strongest negative GEX strikes | Potential fast-move / failed-support zones |
+| `Net DEX` | option delta exposure map using option delta sign | Secondary hedge-pressure map; dealer hedge may be opposite under customer-long assumptions |
+| `VEX / Vanna zones` | vanna exposure by strike | Interprets IV crush/expansion pressure; never standalone bullish/bearish |
+| `Charm zones` | approximate delta decay exposure by strike | Useful near expiry, especially 0DTE/weekly windows |
+| `OI shelves` | largest call/put open-interest strikes | Confirms where interest clusters; not direction by itself |
+| `IV smile/skew` | ATM IV, downside-wing IV, upside-wing IV, skew | Defensive skew or elevated wings warns of tail/volatility positioning |
+| `Per-expiry rows` | each expiry's VT/GW/CW/PW, GEX, VEX, DEX, Charm | The dominant near-dated expiry can override the all-expiry aggregate |
+
+When the user asks only "看多还是空", answer in this compact structure:
+
+1. `结论`: one line, e.g. `中性偏多修复，但不是确认多头`.
+2. `关键位`: `上方确认 X/Y`, `下方失守 A/B`.
+3. `为什么`: three bullets maximum, using vol trigger, walls, and per-expiry GEX/flow.
+4. `交易口径`: one sentence such as `不追，等站上 X；跌破 A 则按偏空处理`.
+
+## Text Level Map And Session Memory
+
+For SPX/SPXW and other index-style intraday gamma answers, expose the level work as text: short bullets, compact Markdown tables, and a direct bias line. Do not rely on visual-only interpretation.
+
+For forward-looking requests such as `未来几天 gamma`, `未来几日 gamma`, `后面几天 gamma`, `哪天强哪天弱`, or a screenshot showing several expiry dates, do not answer only with `0DTE / Next2 / Fri2w` tables. Compute `per_expiry` from the available complete chain. If the corresponding external collector is installed, SPX/SPXW can use `spx_intraday_latest.py --by-expiry-report` and ordinary stocks can use `gamma_report.py --by-expiry-report`; these collectors are not bundled. Then answer in this structure:
+
+1. Start with one sentence: `从“未来几天 gamma”角度看：...` and say whether the next 1-3 days are repaired, weak, high-volatility, or pressure-first. Name the key repair zone.
+2. Add `按具体到期日看：` and one short paragraph per expiry date, e.g. `2026-06-09 周二，当天到期`, `2026-06-10 周三`, `2026-06-11 周四`, `2026-06-12 周五`. For each date, state: weak/strong label, net GEX direction and rough size, flip, main downside put-gamma risk zones, upper call-gamma pressure/pinning zones, and what price must reclaim to improve.
+3. Add `我的推演：` with exactly three scenario bullets: `基准情形`, `偏空情形`, and `修复情形`. These scenarios should use dates and levels, not generic statements.
+4. End with a plain conclusion such as: `所以按日期结论是：周二最弱，周三/周四仍偏压制，周五有修复窗口但门槛在 7450。`
+
+For this mode, avoid dumping every strike or table row. The user wants the trading meaning: which date is structurally weak, where risk migrates, where repair starts, and what would invalidate the weak/strong read.
+
+Key calculated levels:
+
+- Prior-session pivot map: use the prior regular-session high/low/close when available. `PP = (H + L + C) / 3`, `BC = (H + L) / 2`, `TC = 2 * PP - BC`, `R1 = 2 * PP - L`, `S1 = 2 * PP - H`, `R2 = PP + (H - L)`, `S2 = PP - (H - L)`. For Camarilla, use `unit = 1.1 * (H - L) / 12`, then `H3 = C + 3 * unit`, H4/H5/L4/L5 follow the explicitly selected vendor/formula convention; do not mix variants.
+- CPR interpretation: narrow `abs(TC-BC)` means a larger directional expansion is easier; wide CPR means more chop/mean reversion. Spot above `max(TC,BC)` is constructive, between the two boundaries is a balance zone, and below `min(TC,BC)` is weaker unless reclaimed.
+- Gamma map: wall above spot is pressure or pinning; wall below spot is support or a recapture zone; negative pit below spot is acceleration risk; flip or vol trigger is the regime divider. Say whether the current spot is above/below flip/trigger and whether GEX is strengthening or weakening.
+- Vanna map: combine top positive/negative VEX zones with IV direction, spot versus flip, and price action. Do not describe VEX alone as bullish or bearish.
+When the user runs this skill multiple times during the same trading day in the same conversation, use earlier same-day results as optional but important context. Compare the new result with the earlier answer when migration could change the judgment, when the user asks "now/again", or when spot is near a wall, pit, flip, or trigger: spot, net GEX, net VEX, flip, nearest wall, nearest pit, and CPR relationship. State what migrated and what strengthened/weakened. If a prior JSON snapshot exists or the user provides one, compare the same fields and contract coverage. An installed external collector may support `spx_intraday_latest.py --compare-json ...` and `--watch-strikes`; otherwise compare through the available computation tool. Include any user-specified level such as `7400支撑还在吗`. Always check whether the same strike's GEX sign or magnitude changed materially across `0DTE`, `Next2`, `Fri2w`, and `All` buckets, but do not mechanically dump same-strike change rows in the final answer. Translate the comparison into what it means and what it may foreshadow: support quality deteriorating or recovering, risk center migrating lower/higher, upper pinning weakening, reflexive selling/buying risk rising, or chop/pinning returning. Treat positive-to-negative GEX migration at an active battlefield strike as `支撑跑路/降级为加速风险`, not merely as a lower wall ranking. Treat negative-to-positive migration as `支撑恢复/加速风险缓和`, but still require price action to confirm. If no earlier same-day result exists in the conversation or user-provided notes, do not imply there is an internal time series.
+
+## Dark Pool / Short Data Layer
+
+Use this layer only for U.S.-listed stocks and ETFs. Do not apply it to A-shares, Japanese stocks, or non-U.S. local listings.
+
+When using ChartExchange, build the URL from both listing venue and ticker. The path shape is:
+
+```text
+https://chartexchange.com/symbol/{exchange-lowercase}-{ticker-lowercase}/exchange-volume/dark-pool-levels/
+```
+
+Examples: `nyse-anet`, `nasdaq-nvda`, `nyse-spy`. SPY is a common exception where ChartExchange uses `nyse-spy`, so search the ticker on ChartExchange or a quote source first when the venue is uncertain, then use the matching venue in the URL. Do not reuse an ANET URL for other tickers without changing both ticker and venue.
+
+Interpretation rules:
+
+- `Off Exchange & Dark Pool %`: compare today's share with the ticker's own average. A high off-exchange share is common in U.S. equities and is not bullish or bearish by itself.
+- `Dark Pool Levels`: treat high-volume price levels as hidden-liquidity reference zones. They become support/resistance only if later price action confirms acceptance, rejection, or repeated defense.
+- `Dark Pool Prints`: large prints near VWAP, gaps, prior highs/lows, or post-news levels are notable, but the data does not reveal whether the initiating side was accumulation, distribution, internalization, or a cross.
+- `Short Volume`: daily short-sale volume is not short interest and often includes market-maker activity. Use it for flow pressure only, not for outstanding short exposure.
+- `Short Interest`, `Borrow Fee`, `Shares Available`, and `FTD`: use these for squeeze risk. Stronger squeeze evidence is rising borrow fee, shrinking availability, elevated short interest/FTD, and price refusing to break down after heavy short/dark flow.
+- Always combine this layer with news acceptance, live price/VWAP, volume, and option/gamma structure. If the conclusion depends on a dark-pool level becoming support/resistance, load `stock-technical-analysis` and require price confirmation.
+
+## Required Interpretation Style
+
+Write like a pre-market trading memo:
+
+1. **结论**: direct bias first: bullish, bearish, neutral battlefield, or high-volatility watch. Do not bury the answer behind tables.
+2. **关键位**: current spot, nearest vol trigger/flip, first call wall, first put wall, and the level that changes the view.
+3. **我会怎么做**: concrete scenario handling, e.g. “do not chase until it holds X”, “treat X-Y as chop”, “above Z opens next target”.
+4. **什么情况说明我错了**: exact invalidation levels.
+5. **怎么和技术确认配合**: use gamma as the map, then confirm entries/exits with `stock-technical-analysis` concepts such as KDJ, MACD, MA144/Vegas, FVG, volume, and price action.
+
+Avoid only dumping tables. The user wants judgment, assumptions, and a clear action framework.
+
+### Multi-Stock Gamma Output Contract
+
+When answering a batch request with multiple stocks, ETFs, or mixed tickers, every row must include both:
+
+- **Current spot / pricing anchor**: the latest usable spot or anchor price used for option calculations, with the source/session caveat when relevant. Do not make the reader infer where price is relative to the levels.
+- **Gamma sign / regime**: positive, negative, or mixed, with `Net GEX` when available. This is the dealer-hedging/volatility map.
+- **Directional state / bias**: `偏多修复`, `中性钉扎`, `中性偏空防守`, `高波动战场`, or another explicit long/short/neutral state derived from spot vs flip/walls/pits. This is the trading interpretation.
+- **Actionable key levels / zone**: the exact pinning area, battlefield range, repair trigger, upside pressure, and/or downside invalidation that justifies the directional state. At minimum, include the nearest `VT/flip`, `GW/CW` pressure or pinning reference, and `PW`/pit support or risk when those fields are available.
+
+Do not let one replace the other. A stock can be `净 GEX 为正` but still `中性偏空/高波动` if spot is below the volatility trigger or trapped under a nearby wall; a stock can be locally positive gamma but still a poor long setup if it has not reclaimed the trigger. In tables, prefer columns like:
+
+`Ticker | Spot anchor | Gamma sign / Net GEX | Directional state | Key zone / pinning area | Flip/VT | Upside wall | Downside risk | What changes the view`
+
+For batch summaries, group names after the table by directional state, but keep the per-row spot, gamma sign, and key levels visible. If space is limited, abbreviate commentary first; do not omit the spot/anchor, gamma regime, direction, or actionable price zone.
+
+For multi-expiry batch reports, each expiry row must show the date-specific levels, not only the all-expiry levels. Use the expiry's own `VT`, `GW`, `CW`, `PW`, net GEX, and pits when available. If describing `本周` and `下周`, give both periods' gamma sign, directional state, and actionable zone separately because the same ticker can pin this week and become high-volatility next week.
+
+When news or broad risk sentiment is driving the underlying or index, call `macro-news-check` only when current macro tape can plausibly change the gamma read, such as CPI/PCE/FOMC/central-bank events, Treasury yield shocks, USD moves, oil/gold/geopolitical headlines, index futures breaks, or sudden risk-on/risk-off tape. Use `stock-sentiment-analysis` if deeper emotion-cycle framing is needed, and add an expectation-gap check before relying on the gamma map: `prior market expectation` -> `actual news` -> `above expectation / in line or merely landed / below expectation`. Apply this to numeric headlines such as orders, CPI/FOMC data, earnings, guidance, and ETF flows, and to qualitative headlines such as regulatory wording, geopolitical tone, management confidence, timing, certainty, and whether the news solves the market's real concern. Gamma explains likely hedging pressure after price moves; it does not by itself explain whether the headline was accepted or rejected.
+
+## Gamma Reading Rules
+
+- `gamma wall`: a price where positive GEX is concentrated; price often slows, pins, or rejects there.
+- `gamma flip`: estimated transition between positive and negative gamma regimes.
+- `vol trigger`: treat as the practical gamma/volatility regime divider. Below it, expect more reflexive/high-volatility behavior; above it, expect repair or pinning if price also holds support.
+- `call wall`: upside pressure/pinning zone first, breakout target second. Do not treat a distant call wall as bullish confirmation until spot reclaims the nearest trigger/resistance.
+- `put wall`: downside support first, acceleration risk after it breaks. Do not treat large put OI as automatically bearish while spot is holding above the wall.
+- `vanna`: estimated change in option delta as IV changes. Moomoo usually provides enough inputs to compute it even when it does not provide a direct `option_vanna` field.
+- `VEX`: aggregate vanna exposure by strike. Use it to identify where IV crush/IV expansion can force meaningful delta adjustment; do not treat it as a standalone direction signal.
+- Positive gamma: more chop/pinning/mean-reversion; avoid chasing into walls without confirmation.
+- Negative gamma: more trend amplification; be quicker with stops and avoid casual dip-buying.
+- Low-gamma trough: path of least resistance; price may move faster through it.
+- Vanna pressure matters most around macro/news vol crushes, 0DTE IV resets, and strong spot moves that also reprice IV. Report the top positive and negative vanna zones alongside gamma walls.
+
+## SPX, SPY, And ES Point Conversion
+
+When analyzing SPX with proxy instruments, never hard-code a fixed 10x conversion:
+
+- Prefer `.SPX` option chains from moomoo as `US..SPX` when available. Moomoo may reject the SPX index snapshot while still allowing SPX/SPXW option expiries and chains.
+- Do not assume OpenD can provide `US..SPX` real-time 1-minute K-lines. Some OpenD environments can return `暂不支持美股指数` for `US..SPX` `SubType.K_1M` / `get_cur_kline`. For SPX intraday price-action confirmation, use `US.SPY` 1-minute K-lines as the chart proxy: reuse the existing `US.SPY` `SubType.K_1M` subscription when it is still valid; if K-line retrieval says subscription is missing or stale, subscribe/re-subscribe and retry once. Then convert the relevant SPY prices to SPX-equivalent levels with the freshest SPX/SPXW parity anchor or live ES/SPX anchor. State that SPY is the K-line source.
+- Treat user requests for `SPX`, `SP500`, `S&P 500`, or `标普500` gamma as SPX-index-option requests by default. Query `US..SPX` expiries/chains first and use the returned SPX/SPXW strikes directly; do not default to SPY options just because the SPX index snapshot is unavailable.
+- When `US..SPX` chains are available, do not use SPY conversion for SPX/SP500 gamma. SPY/ES/CFD conversion is only a fallback when the SPX/SPXW chain is unavailable, permission-blocked, or user-provided data is explicitly proxy-based.
+- For same-day intraday/0DTE gamma, prefer PM-settled `SPXW` contracts from the `US..SPX` chain. On dates that also list AM-settled monthly `SPX` contracts, exclude the AM-settled series from the intraday pin/gamma map unless the user specifically asks about AM settlement.
+- Use live SPX/ES/CFD price as the spot anchor for index levels, then use SPX option strikes directly whenever possible.
+- If using SPY options as a proxy, compute the same-day conversion ratio from simultaneous prices: `SPX_equiv = SPY_strike * (current_SPX_or_ES_anchor / current_SPY_price)`.
+- If using ES as the price anchor, remember ES can trade at a futures basis versus SPX cash. State the anchor and basis explicitly, e.g. “SPY 734 with ES/SPX anchor 7355 implies ratio about 10.02 today.”
+- If live SPX/ES is unavailable, an external SPX/SPY ratio such as prior close from Yahoo Finance, Investing.com, Barchart, or another current quote source can be used as an approximate fallback. Clearly state the source/time and that it is not a live simultaneous conversion.
+- Recompute the ratio every session and after large moves; do not carry yesterday's ratio into today's levels.
+
+## Nikkei / EWJ Proxy Conversion
+
+- Treat `Nikkei`, `日经`, `日経`, `NKY`, `Nikkei 225`, and `日经225` gamma requests as index-proxy work, not a plain EWJ ETF gamma request.
+- Use `US.EWJ` options as the proxy book only because moomoo may not provide the domestic Nikkei option chain. The conversion must be time-aligned:
+  `Nikkei_equiv = EWJ_strike * (NKD_at_EWJ_quote_time / EWJ_quote_spot) * (current_NIY_or_CFD_anchor / current_NKD)`.
+- After the US regular/options session has closed, exclude EWJ contracts that expired on that US trading date from any forward-looking Japan-session gamma map. Use only still-open expiries, normally the next listed weekly/monthly expiry such as `2026-05-29` and later. Same-day expired EWJ contracts are useful only for analyzing that US session before expiry, not for the next Japan session.
+- Prefer `NKDmain` as the bridge because it is the USD Nikkei futures line closer to the US/EWJ session. Use `NIYmain` or the user's Nikkei CFD/index quote as the final current anchor when available.
+- If EWJ has already closed, do not pair its closing price with the current Nikkei CFD directly. Use the Nikkei futures/CFD value at EWJ's quote timestamp to form the EWJ-to-NKD ratio, then bridge from current NKD to current NIY/CFD.
+- If using Japan cash close as the anchor, pair it only with an EWJ overnight/24h quote from the same timestamp. If no real EWJ quote exists at Japan close, do not mix Japan cash close with the later US regular-session EWJ close.
+- Moomoo may recognize `US.NKDmain` and `US.NIYmain` but return permission errors. If that happens, ask the user for: `NKD at EWJ close/update time`, `current NKD`, and `current NIY or Nikkei CFD`.
+- If time-aligned anchors are unavailable, report the missing inputs and do not convert with a stored fixed ratio.
+- Do not carry a prior EWJ/Nikkei ratio into a new session. Recompute after large FX, futures, or EWJ moves.
+- In the writeup, list both the converted Nikkei levels and the source EWJ strikes for auditability.
+- State the limitation: EWJ options capture US-listed Japan ETF positioning, USD/JPY and ETF-flow effects; they are not the full domestic Nikkei options dealer book.
+
+## Option Expiry Selection
+
+Use a broader but still relevant option window instead of blindly taking the first few expiries. Keep horizons clean instead of mixing daily, weekly, and monthly expiries:
+
+- **0DTE / expiry day**: when the user asks about an expiry-day gamma pin, analyze the same-day expiry as its own bucket.
+- **After the U.S. options close**: remove the expired same-day contracts from all forward-looking reports and charts. Start at the next listed unexpired expiry. For SPX/SPXW, use that front expiry as the `0DTE` calculation proxy and label it clearly as such; for ordinary stocks/ETFs, omit the expired date entirely.
+- **Next 2 trading days**: for high-frequency option tickers, include the next 2 listed trading-day/daily expiries after today. Do not include today in this bucket when 0DTE is already shown separately.
+- **Future 2 weeks weekly options**: include only Friday expiries after today within the next 14 calendar days. Do not mix Monday-Thursday daily expiries into this weekly bucket.
+- **Future monthly options**: include only standard monthly expiries for the current month and next 2 months, and only include the current month if it has not passed and is not already being handled as the same-day 0DTE bucket.
+- **High-frequency option tickers**: examples include broad index ETFs and very liquid single names such as `SPY`, `QQQ`, `IWM`, `DIA`, `TSLA`, `NVDA`, `AMD`, `AAPL`, `MSFT`, `AMZN`, `META`, `GOOGL`, `PLTR`.
+- In the writeup, mention when the ticker only has monthly expiries or when the near-term weekly/daily window is unavailable.
+
+## Moomoo Data Caveats
+
+- Respect the active provider's option-chain rate limits and the installed collector's throttling. Follow the tool's retry contract; do not alter its implementation or bypass provider limits during research.
+- During US pre-market, stock fields such as `pre_price`, `pre_high_price`, `pre_low_price`, and `pre_volume` may update, but listed options usually do not trade continuously. Greeks/IV/OI may still reflect the prior option session.
+- Open interest is not real-time intraday dealer inventory. `option_net_open_interest` may be empty.
+- GEX sign is a market convention, not proof of actual market-maker net positions.
+- Re-run after the regular session opens if option volume or the stock price moves materially.
+
+## Data Safety
+
+- This is analysis, not a trade instruction.
+- Do not place trades unless the user explicitly asks and confirms.
+- Never call SDK trade unlock APIs. If trading unlock is needed, the user must do it manually in the OpenD GUI.
+
+## When Chat-Only Is Enough
+
+If the user asks for a quick look, use the available data and computation route and answer directly. Attach a report only when requested; cite material evidence in the answer.
+
+## Bundled scenario calculation
+
+When Python and the input IV, strike, expiry, as-of time and spot scenarios are available, use [option_scenario_table.py](../../../skills/us-stock-gamma-moomoo/scripts/option_scenario_table.py). Run its `--help` for inputs and read [scenario methodology](references/option-scenario-tables.md) first. It computes a Black–Scholes scenario table offline, not live GEX or a price forecast; state the assumed IV/rate and time convention. Full-chain OpenD collectors are external and are not included.

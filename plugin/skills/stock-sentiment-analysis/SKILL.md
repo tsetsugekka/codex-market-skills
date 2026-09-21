@@ -5,50 +5,49 @@ description: 从催化、预期差、市场宽度、领导股和价格反应分�
 
 # Stock Sentiment Analysis
 
-## 可用资料与边界
+## 跨环境执行
 
-使用本轮实际可用的网页、连接工具和用户资料；有本机执行能力时，也按需使用已安装且可用的研究 Skill。先读取所需页面正文，核对代码、市场日期、行情时间与交易阶段；只搜索到标题不算取得数据。价格、新闻、讨论各有用途，未知字段保持未知，单点行情不能证明持续承接或完整分钟路径。入口失败时说明具体缺口，换用可读的公开来源；遇限流或拒绝访问停止请求该来源，不尝试绕过。
+先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
 
-需要补充数据时先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现并使用相关 Skill，包括可用的 OpenD、MX 和同花顺；未加载或未调用成功就不要声称使用。插件本身不新增行情工具或权限。报告与交易执行分开，不凭研究结论声称下单。自动任务遵守自身 Prompt 的输出、归档与模拟账本合同，本插件不修改任务或自身规则。
+此包按各 Skill 入口附带可移植 Python 脚本；可读取文件不等于能执行，能执行不等于能联网。先确认能力，再按环境路由选择随包脚本、可用扩展或公开网页；仅有用户资料时执行相同筛选与计算，无执行能力时按文字流程研究并标出未计算项。外部供应商采集器只在已安装且可用时调用。访问失败、限流与权限处理遵循当前工具及环境规则，不复制机器专用沙箱设置。实际加载所用的同包 Skill 和参考，不只在回答中提名字。
 
+本插件用于研究，写日历、账户或交易需要对应授权。普通研究不自动访问私人自选或持仓，不修改自身、其他 Skill 或任务规则；自动任务保持自己的输出、归档和授权合同。用户指定的私人资料仅在本轮授权范围内使用，不写入插件。
 
-## 必读的研究深度
+Use this skill as the shared sentiment layer for market skills. It does not fetch data by itself; it tells Codex how to interpret evidence gathered by `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, `us-stock-gamma-moomoo`, public news, forums, breadth, and user-provided screenshots or notes.
 
-涉及主线、拥挤、期待差、板块共振或持续性时，实际读取[完整情绪框架](../../../skills/stock-sentiment-analysis/references/sentiment-framework.md)相关章节与邻近约束；大盘或复杂跨市场问题读完整框架。需要主线与资金周期综合判断时，加读[主线、资金、博弈与周期](../../../skills/market-daily-strategist/references/global-mainline-funds-game-cycle.md)。不能把附录存在当成已经应用。
+This public-safe skill must not contain personal information, API keys, account data, private paths, raw screenshots, full copied notes, ticker-specific personal trade logs, or proprietary labels from a private RAG corpus. It must remain usable without any private RAG folder.
 
-## 市场—板块—个股六因素
+## Reference Reading Rule
 
-1. 大盘支持：指数/广度、宏观流动性和风险偏好是否支持该方向，还是逆势防御或窄抱团。
-2. 换手与流动性：量能是否足以容纳参与，资金能否多次回流，是否只有一次脉冲或杠杆挤压。
-3. 参与广度：龙头、次龙、后排及上涨比例是否同步；龙头独强与行业共同走强不同。
-4. 产业链扩散：上下游、设备材料、客户和跨市场同行是否有合理业务传导，还是低相关概念补涨。
-5. 基本面续验：订单、价格、渗透率、利润、政策执行等是否持续兑现，不能只重播旧消息。
-6. 生命周期：启动/加速中的首次健康分歧，与高潮后的高位分化/退潮反抽分别处理。
+When this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans.
 
-不给六项机械等权分数掩盖证据缺口。分别回答逻辑持续、盘面延续和当前入场三个问题；好行业不自动意味着当前买点好。
+## Workflow
 
-## 预期、参与者与反证
+1. Read the relevant areas of [experience](references/experience.md) before deep analysis; read the full file when the task is broad or the active playbook may affect the answer.
+2. During decomposition, actively expand stock, index, and theme questions into emotion-cycle, main-line/follower, expectation-gap, crowding, cross-market sentiment, or mainline/funds/game/cycle checks when these lenses can change the conclusion, even if the user did not explicitly request them. For collective sector surges, continuation questions, and market-sector-stock resonance, apply `Market-Sector-Stock Resonance And Continuation` from [sentiment-framework](../../../skills/stock-sentiment-analysis/references/sentiment-framework.md); separate logic durability, tape continuity, and entry quality instead of treating a strong narrative as an automatic buy point. Read the relevant areas of [sentiment-framework](../../../skills/stock-sentiment-analysis/references/sentiment-framework.md).
+3. Gather or receive evidence from the market-specific skill first:
+   - A-shares: prefer `cn-stock-move-reason` for quote, announcements, 股吧, board ranks, breadth, and A-share emotion cycle.
+   - Japanese stocks: prefer `jp-stock-move-reason` for quote, news, Yahoo 掲示板, metrics, and theme/peer context.
+   - US stocks/indexes: prefer `us-stock-move-reason` for why-up/why-down/mover questions, choose `us-stock-gamma-moomoo` for option/gamma questions, and choose `stock-technical-analysis` for chart/trend questions; use them together when catalyst, positioning, and price action all matter.
+   - For U.S. community discussion evidence, `moomoo-comment-sentiment` can be used when installed. Treat it as a moomoo community sample that helps measure retail heat, disagreement, chasing, and panic; it is not a full-market sentiment survey and must not replace news, filings, earnings, option positioning, or price behavior.
+   - Pre-screened narrative-status entries from market reports can be used as social-media-derived clues for current themes, mainline candidates, and crowding/expectation-gap questions. Account/source quality can be assumed acceptable for screening, but timeliness is mandatory: stale source/update times are background only, not current sentiment evidence.
+4. For A-share evidence, optional 东方财富妙想 skills can supplement the market-specific workflow when installed. MX data is an evidence and screening layer, not a replacement for the existing know-how: still apply source hierarchy, emotion-cycle staging, main-line/follower judgment, expectation-gap analysis, forum/news psychology, breadth, sector rotation, macro, and technical confirmation when relevant. Use `mx-data` for quote/financial/fund-flow/sector data, `mx-search` for news/announcements/research/policy, and `mx-xuangu` for sector constituents, concept stocks, peer screens, and natural-language condition screens. For A-share questions such as `这个板块有哪些股票`, `相关股`, `概念股`, `龙头股`, `板块成分`, or `同题材还有谁`, try `mx-xuangu` first when available; then use `mx-data`/`mx-search` selectively to classify purity, heat, and catalysts. If 妙想 is unavailable, continue with public sources or state the limitation. You may briefly suggest installing/configuring 妙想 only when it would materially improve the exact request; never make it a dependency.
+5. Do not use account-touching 妙想 skills automatically. Use `mx-zixuan` only when the user explicitly asks to query/add/delete/filter 东方财富 self-selected stocks; for `自选股里哪些符合条件`, first try `mx-xuangu` constrained to self-selected stocks, and if unsupported, combine `mx-zixuan` self-selected results with `mx-xuangu` screening locally. Use `mx-moni` only for explicit simulated-portfolio queries or simulated trades.
+6. Classify the move through three lenses: `confirmed catalyst`, `emotion/positioning`, and `technical confirmation`. When resonance matters, finish the hierarchy `market -> sector/theme -> stock` and test broad-market support, turnover/liquidity, participation breadth, industry-chain diffusion, continuing fundamental validation, and lifecycle position. Do not let forum heat replace confirmed news.
 
-每个关键事件比较原预期、实际结果与价格反应。确实超预期但不涨，可能是拥挤/利好出尽，也可能是市场 Beta 压制，需相对强弱验证；坏消息不跌可能是预期已消化，不能直接宣布反转。
+## DTM Context
 
-分类领导股、助攻、补涨、防御替代、旧龙反抽和噪音。比较回撤时承接、反弹时谁先回、后排是否扩散与资金回归频率。机构趋势与游资接力、低流动性挤压、事件套利需要不同观察窗口。
+Prefer data already obtained by the upstream market-specific skill. When the relevant context is missing, use the canonical JSON interfaces in `https://daytrading.monster/api-docs/`: `https://daytrading.monster/api/themes` for cross-market theme members and completed-session participation/relative strength; `https://daytrading.monster/api/chinastock-anomaly` for A-share theme rotation, limit-up structure, and move reasons; and `https://daytrading.monster/api/24hfeed/x-monitor` for discussion within the returned eight-hour snapshot window. Read `themes[]` and `constituents[]`, including coverage and quote dates; do not infer live flows from daily returns or whole-market sentiment from an account sample. Parse the `text/plain` bodies as JSON. Fetch only the layers needed for the question, retaining the existing source hierarchy and interpretation rules.
 
-论坛/社区样本要说明平台、窗口、去重与覆盖；高赞和高频不是全市场投票，少数账号的观点不代表机构共识。热点提供研究线索，再用披露、量价、同行与宏观检验。
+## Output Style
 
-以明确反证结束：龙头破位且无回收、同行广度坍缩、增量证据失效、资金不再回流、关键事件低于预期。高热度不是唯一顶部信号，低热度也不是价值洼地证明。多轮新增证据必须更新权重，不把原结论当作要维护的立场。
+When used directly, answer in Chinese unless the user asks otherwise. Use this compact structure when useful:
 
+1. `情绪结论`: risk-on/risk-off, early-cycle/late-cycle, panic, rotation, or crowded long.
+2. `证据`: confirmed news, forum/post heat, breadth, sector peers, option/gamma positioning, and chart behavior.
+3. `周期位置`: A-share seven-stage cycle when relevant; otherwise describe low-vol accumulation, early breakout, acceleration, distribution, or de-risking.
+4. `主线判断`: leader/follower/defensive alternative/old-leader rebound/noise.
+5. `验证条件`: what confirms continuation.
+6. `失效条件`: what shows emotion has turned.
 
-
-## 分析流程
-
-先收集目标市场的具体新闻和量价，再解释情绪。拆分确认催化、原先预期、实际落地及价格接受/拒绝；区分情绪票和基本面趋势票。讨论热度、点赞、资金标签均不是直接成交证据。
-
-检查主线/防御轮动、领导股和跟随、回流频率、广度、赚钱/亏钱效应，以及新领导或老龙反抽。A股周期使用冰点→修复→启动→加速→高潮→高位分化→退潮；健康分歧与高潮后破位的含义不同，不把周期当机械计时器。
-
-同一利好可能已定价，利空后拒绝下跌也可能是修复线索，必须有量价/时间序列支持才称反转。把个股独立事件与全市场情绪分开；样本论坛不能代表全体投资者。分别给事实、解释、反证、确定度及改变判断所需条件。
-
-优先复用本轮已读资料。必要时读取 `https://daytrading.monster/api/themes` 的完成日题材、`https://daytrading.monster/api/chinastock-anomaly` 的当日异动、`https://daytrading.monster/api/24hfeed/x-monitor` 的返回窗口；不由日涨幅推实时资金流，不由账号样本推出全市场情绪。
-
-
-
-需要深入应用此方法时读取 [研究细则](../../../skills/stock-sentiment-analysis/references/sentiment-framework.md)。
+Do not give direct trading instructions. Give conditional conclusions and clearly label uncertain forum narratives as `思惑` or `未确认`.

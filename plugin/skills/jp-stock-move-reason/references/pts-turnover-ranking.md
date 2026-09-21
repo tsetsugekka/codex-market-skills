@@ -1,0 +1,256 @@
+# Japanese Stock Mover Estimated Trading Value Ranking Sub-skill
+
+Use this sub-skill when the user asks for current Japanese-stock mover Top10
+lists or Kabutan PTS mover lists ranked by estimated trading value, especially
+phrases such as:
+
+- `当前日股涨跌Top10`
+- `现在的涨跌榜`
+- `PTS夜间涨跌榜推定成交额Top10`
+- `涨跌幅1%以上的推定成交额top10`
+- `不是成交量，是成交额`
+
+## Core Rule
+
+The ranking pages provide current price and volume, but the workflow does not
+have every execution price. Compute an estimate:
+
+```text
+regular session: estimated_trading_value = 当前价 * 出来高
+PTS session:     estimated_trading_value = PTS株価 * PTS出来高
+```
+
+Default screening is applied independently to the increase and decrease sides:
+
+```text
+abs(騰落率) >= 3%
+出来高 > 2000
+```
+
+If one side has fewer than five qualified rows, re-fetch only that side using
+`abs(騰落率) >= 1%` while retaining `出来高 > 2000`. Always rank by estimated
+trading value. Report the effective threshold and the side-specific fallback in
+the final output.
+
+Call this `推定成交额` in Chinese and `売買代金推定` in Japanese. Do not call
+it actual `成交额` / `売買代金`, because actual trading value is the sum of
+each execution price times each execution quantity. Rank by the estimate, not
+by page order and not by volume alone.
+
+`出来高` is an eligibility filter, not the default ranking key. For generic
+requests such as `看看当前涨跌Top10`, `再跑一下PTS`, or colloquial mentions of
+`成交量` within this established workflow, preserve `推定成交额` ranking. Do
+not silently sort by raw volume. Use raw-volume ranking only when the user
+explicitly asks for `按出来高排序` or an equivalent unambiguous instruction.
+
+## Sources
+
+Use the current Yahoo Finance Japan regular rankings during cash-market hours
+and the current Kabutan PTS warning pages in PTS windows. Read 50 rows per page.
+Kabutan uses the `shared_perpage=50` cookie:
+
+- Regular increase: `https://finance.yahoo.co.jp/stocks/ranking/up?market=all`
+- Regular decrease: `https://finance.yahoo.co.jp/stocks/ranking/down?market=all`
+- Night increase: `https://kabutan.jp/warning/pts_night_price_increase`
+- Night decrease: `https://kabutan.jp/warning/pts_night_price_decrease`
+- Day increase: `https://kabutan.jp/warning/pts_day_price_increase`
+- Day decrease: `https://kabutan.jp/warning/pts_day_price_decrease`
+
+## Section Selection
+
+Select by JST clock and the verified exchange trading calendar:
+
+- `09:00-11:30`: use Yahoo regular increase/decrease pages.
+- `11:30-12:30`: use PTS day-section pages.
+- `12:30-15:30`: use Yahoo regular increase/decrease pages.
+- `15:30-17:00`: use PTS day-section pages.
+- `08:00-09:00`: use PTS day-section pages.
+- All other times, weekends, and known non-trading days: use PTS night-section
+  pages.
+
+Check exchange holidays as well as weekends; on non-trading days use the night section and label its actual source date.
+
+Equivalent routing logic, always evaluated in JST:
+
+```text
+if non_trading_day:
+    section = pts_night
+elif 09:00 <= JST < 11:30 or 12:30 <= JST < 15:30:
+    section = regular
+elif 08:00 <= JST < 09:00 or 11:30 <= JST < 12:30 or 15:30 <= JST < 17:00:
+    section = pts_day
+else:
+    section = pts_night
+```
+
+Treat each boundary as start-inclusive and end-exclusive. For example, `11:30`
+switches to PTS day, `12:30` switches back to the regular pages, and `15:30`
+switches to PTS day.
+
+For Yahoo regular pages, the percentage change is against the prior regular
+close. Yahoo states that Tokyo Stock Exchange transaction prices are real time,
+but all-market volume and reported trading value are delayed by at least 15
+minutes. Since this workflow multiplies the displayed current price by displayed
+volume, regular-session `推定成交额` can combine a real-time price with delayed
+volume. Report that limitation instead of describing the estimate as tick-level
+or exchange-reported trading value.
+For day-session PTS, remember Kabutan compares pre-close prints against the
+previous regular-session close and after-close prints against the same-day
+regular-session close.
+
+For night-session PTS, compare against the same-day regular-session close.
+
+## Pagination Stop Rule
+
+Yahoo regular rankings and Kabutan PTS rankings are sorted by percentage
+change. Fetch 50-row pages until the last row crosses the requested threshold:
+
+- Increase pages: stop after the last row is below `+min_abs_pct`.
+- Decrease pages: stop after the last row is above `-min_abs_pct`.
+- Stop earlier if a page is empty.
+
+Do not assume page 1 is enough unless its final row already crosses the
+threshold. Day-session decrease lists can be many pages during broad selloffs.
+The volume filter is applied after parsing rows; it does not change the
+percentage-based pagination stop rule.
+
+## Fetch Discipline
+
+- During regular cash-market hours, request Yahoo's current ranking pages and
+  parse the structured `window.__PRELOADED_STATE__` ranking data. Do not depend
+  on brittle visual table positions. Report the displayed
+  `YYYY/MM/DD HH:MM` update time.
+- For PTS, request current Kabutan warning pages with the
+  `shared_perpage=50` cookie. Add a cache-busting timestamp, parse the displayed
+  `YYYY年MM月DD日 HH:MM現在` stamp, and report it. Kabutan PTS data is normally
+  about 15 minutes delayed, so do not describe it as tick-level real time.
+- Yahoo says Tokyo Stock Exchange transaction prices are real time, while
+  all-market volume is delayed by at least 15 minutes. State this regular-session
+  mixed-timestamp limitation wherever the estimate is presented.
+- Fetch the complete percentage-qualified range before applying the volume
+  filter and `推定成交额` sort. Never take the first page or page order as the
+  Top10 unless the threshold stop condition proves that it is enough.
+- Yahoo's live ranking can reorder while consecutive pages are being fetched,
+  so deduplicate across pages by ticker before ranking. If the same ticker
+  appears more than once, keep the row with the larger cumulative volume as the
+  newer observation.
+- Stop on an empty page and keep a finite page cap. If the host returns rate
+  limits, DNS errors, timeouts, resets, or repeated empty responses, report the
+  observed failure and stop increasing request frequency.
+- Add moderate randomized waits after more than three consecutive requests to
+  the same host. Do not parallel-burst Kabutan, Yahoo, or message-board pages.
+- Refresh the ranking once before the final answer. If reason collection took
+  long enough for membership to change, collect only newly entered codes and
+  reuse already verified same-turn reasons for unchanged names.
+
+## Cause Analysis Workflow
+
+After ranking:
+
+1. Deduplicate the selected codes across increase/decrease lists.
+2. Unless the user explicitly asks for a raw list only or says reasons are not
+   needed, final mover answers must include reasons. Do not stop at a bare
+   ranking table.
+3. Collect reasons from Yahoo 掲示板 first for the selected `推定成交额` Top
+   names in one sequential loop. Fetch one page per code only and cache at most
+   the latest 100 comments per code. Count raw comments within 24 hours before
+   applying the likes filter. If fewer than 100 are within 24 hours, expand the
+   candidate window to 72 hours using only that same cache; never fetch comment
+   101 or later. Discard posts with fewer than five likes, score by recency,
+   likes, full body length, and company-material keywords, deduplicate exact
+   normalized-prefix signatures to a maximum 20-comment full-text shortlist,
+   reorder it by time and likes, and pass only `recent_comments[:5]` to Codex for
+   reason judgment. Do not
+   use Kabutan/Traders as the first-pass substitute for the board discussion.
+   The score is capped at 18: recency contributes 5/4/2/1 for `<=6h`, `<=24h`,
+   `<=48h`, and `>48h`; length contributes 3/2/1 for 30-300, over 300, and
+   10-29 characters; likes contribute 4/3/2/1 for 100+, 50-99, 20-49, and
+   5-19; company-material keyword hits contribute at most six. AI,
+   semiconductors, defense, drones, and other generic sector words do not score.
+   Sort by score, timestamp, and likes before 60-character normalized-signature
+   deduplication. After taking 20, re-sort by timestamp and likes before `[:5]`.
+   The signature is lowercase text with all whitespace and
+   `、。！？ ! ? , . ・ … 「」 『』 （） () [] 【】` removed, truncated to its first
+   60 characters. This is exact matching, not semantic similarity. Keep the
+   earlier item in score/timestamp/likes order. Equal prefixes collapse even if
+   later text differs; small prefix differences survive. Do not Unicode-normalize
+   widths or explicitly remove emoji, URLs, or usernames. Scope deduplication to
+   one stock's current collection.
+
+   
+
+5. Never fetch more than one forum page for the same code or repeat a Yahoo
+   forum fetch for a code in the same turn. The `--forum-only` mode avoids
+   quote, news, Kabutan, and Traders requests.
+6. Treat the board as the primary explanation layer for ranking requests.
+   Use concrete news, disclosures, earnings, guidance, ratings, orders,
+   buybacks, lawsuits, capital actions, or shareholder benefits only to verify
+   an event asserted in board discussion; do not replace the board with them.
+   Wait a randomized 1-3 seconds between Yahoo requests.
+   On HTTP 403/429, access-denied content, reset, or abnormal empty output, stop
+   all Yahoo requests for the rest of the turn; do not retry immediately.
+   The collector additionally enforces a shared cross-process randomized 1-3 second Yahoo
+   host gap and a 30-minute cooldown after 403/429 or access-control content.
+   Never delete or bypass the cooldown for a ranking request.
+7. For ETF/ETN rows, explain them by the underlying index or strategy instead
+   of forcing single-stock news. Examples:
+   - Nikkei inverse ETFs rise when Nikkei falls.
+   - Nikkei leveraged ETFs fall when Nikkei falls.
+   - S&P 500 income/covered-call ETFs may move on the underlying index, FX, and
+     thin PTS prints.
+8. For rows with very small `推定成交额`, explicitly mark the reason as
+   low-confidence if no concrete news/disclosure exists. Thin prints can jump
+   several percent with little actual capital committed.
+
+## Final Answer Pattern
+
+Report the timestamp, source, effective threshold, and method before the tables. During the regular
+cash session use:
+
+```text
+口径：Yahoo即时涨跌幅榜，YYYY-MM-DD HH:MM JST；
+先筛 abs(涨跌幅) >= 3% 且 出来高 > 2,000；单侧不足5只时仅该侧回退到1%，
+再按 当前价 × 出来高 算推定成交额取Top10。
+东证取引值实时，但Yahoo出来高最低延迟15分钟。
+```
+
+During a PTS session use:
+
+```text
+口径：Kabutan 夜间PTS，YYYY-MM-DD HH:MM JST；
+先筛 abs(PTS涨跌幅) >= 3% 且 出来高 > 2,000；单侧不足5只时仅该侧回退到1%，
+再按 PTS价格 × PTS出来高 算推定成交额取Top10。
+```
+
+Use compact tables. During the regular cash session:
+
+```text
+上涨 Top10（涨幅大于3%/成交量大于2000/推定成交额排序）
+| 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 推定成交额 | 原因 |
+
+下跌 Top10（跌幅大于3%/成交量大于2000/推定成交额排序）
+| 排名 | 代码 | 名称 | 涨跌幅 | 出来高 | 推定成交额 | 原因 |
+```
+
+During PTS sessions:
+
+```text
+PTS上涨 Top10（涨幅大于3%/成交量大于2000/推定成交额排序）
+| 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 推定成交额 | 原因 |
+
+PTS下跌 Top10（跌幅大于3%/成交量大于2000/推定成交额排序）
+| 排名 | 代码 | 名称 | PTS涨跌幅 | 出来高 | 推定成交额 | 原因 |
+```
+
+Use these headings exactly. Report `日中` or `夜间` in the timestamp/method line
+below the heading rather than changing the heading text.
+
+Never omit the `原因` column in the final answer unless the user explicitly asks
+for numbers only.
+
+End with a quality note:
+
+- Which names have hard catalysts such as earnings, guidance, buyback, large
+  order, lawsuit, capital action, or shareholder benefits.
+- Which names are likely thin PTS jumps because `推定成交额` is tiny.
+- Whether ETF/ETN rows were included or excluded.

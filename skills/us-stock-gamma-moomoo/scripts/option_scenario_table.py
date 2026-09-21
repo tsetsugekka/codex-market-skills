@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build a short-dated option value scenario table.
 
-This is intentionally data-provider agnostic. Fetch live option IV/bid/ask/spot
-with moomoo first, then pass the current IV, strike, expiry, and spot grid here.
+This is intentionally data-provider agnostic. Obtain option IV/bid/ask/spot
+from an available authorized source, then pass IV, strike, expiry, and spot grid.
 """
 
 from __future__ import annotations
@@ -69,12 +69,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Create a markdown scenario table for a short-dated option.")
     parser.add_argument("--kind", choices=["C", "P"], required=True, help="Option type: C or P.")
     parser.add_argument("--strike", type=float, required=True)
-    parser.add_argument("--iv", type=float, required=True, help="Annualized IV. Accepts 0.16 or 16 for 16%.")
+    parser.add_argument("--iv", type=float, required=True, help="Annualized IV. Accepts 0.16 or 16 for 16%%.")
     parser.add_argument("--expiry", required=True, help="ISO datetime. Naive values are interpreted in --timezone.")
     parser.add_argument("--asof", help="ISO datetime. Defaults to now in --timezone.")
     parser.add_argument("--timezone", default="Asia/Tokyo")
     parser.add_argument("--interval-min", type=int, default=30)
-    parser.add_argument("--rate", type=float, default=0.04, help="Annual risk-free rate. Accepts 0.04 or 4 for 4%.")
+    parser.add_argument("--rate", type=float, default=0.04, help="Annual risk-free rate. Accepts 0.04 or 4 for 4%%.")
     parser.add_argument("--spots", help="Comma-separated underlying prices.")
     parser.add_argument("--spot-min", type=float)
     parser.add_argument("--spot-max", type=float)

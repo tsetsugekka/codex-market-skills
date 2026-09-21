@@ -1,0 +1,75 @@
+# JP Stock Analysis Experience
+
+Purpose: keep reusable lessons for Japanese stock analysis without forcing the model to read a growing archive every time.
+
+## Active Playbook
+
+Read this section before using the JP stock skill. Keep it compact and current.
+
+### Earnings Reaction Framework
+
+- Predict with `probability x expectation gap x price setup`, not with a single yes/no call.
+- For every sharp move, explicitly compare `prior market expectation` versus `actual news`: what investors expected, what actually landed, whether it is above expectation, merely landed/in line, or below expectation. Use both numeric signals such as guidance, profit, orders, dividends, and buybacks, and qualitative signals such as wording strength, timing, certainty, management confidence, regulatory tone, and whether the news solves the market's real concern.
+- For earnings analysis, do not stop at the headline financial numbers or 掲示板 reaction. Read company disclosure and explanation materials such as 決算説明資料, 補足説明資料, 事業計画及び成長可能性に関する事項, 中期経営計画, business updates, project/product releases, and IR Q&A when available. Use them to judge whether the result proves business-model progress, project conversion, pipeline certainty, customer demand, timing, capex/funding burden, dilution, and cash-collection risk.
+- Set numeric surprise thresholds before the release. Use company guidance, consensus, prior-quarter progress, and peer reactions to define the "strong pass" line before seeing the result.
+- For earnings trades, next-period guidance usually matters more than the just-finished period. A clean positive reaction often needs: prior period beat, next year strong guidance, and preferably dividend hike or buyback.
+- Low expectations can be powerful. If the market fears "good results still get sold", a merely solid result plus strong guidance/shareholder return can flip the narrative.
+- High valuation is not automatically bearish in an accepted megatrend. When a stock sits in a scarce, institutionally accepted theme, strong forward operating/recurring profit guidance can outweigh near-term valuation anxiety.
+- Separate `clean beat` from `theme beat with blemishes`. A clean beat clears results, guidance, consensus, and shareholder return. A theme beat may have valuation, net-profit, or consensus blemishes but still work if the future growth story is strengthened.
+- Yahoo 掲示板 is useful for reading the expectation gap. If many posts fear "good results still get sold" or "consensus is too high", then a result that clears those exact worries can trigger stronger positive feedback.
+- In strong market regimes, the market may reward "strong theme + strong guidance" more than conventional valuation discipline. Adjust the weight of valuation after observing same-day reactions in comparable stocks.
+
+### Cross-Market Theme And Reaction Structure
+
+- Before a catalyst, classify the stock as core theme leader, same-theme follower, defensive/cyclical alternative, old leader rebound, or noise. A good result in a non-core bucket may react less than a merely solid result in the current core theme.
+- Theme strength is confirmed by repeated capital return, sector breadth, and peer follow-through, not by one strong stock alone. If only one famous name rises while peers do not follow, treat it as stock-specific or short-term sentiment until proven otherwise.
+- After a strong theme run, prepare for both continuation and profit-taking. The question is whether the result extends the next 6-18 month narrative enough to keep money in the theme.
+- For long-duration qualitative catalysts such as strategic partnerships, platform/ecosystem participation, large theme adoption, or new market-entry narratives, separate `true strategic value` from `short-term investability`. A real catalyst can still become a sell-the-news event if the stock already priced it through a large spike, valuation is high, and price cannot hold the event-day close.
+- When the market is strong, broad liquidity can hide weak details; when liquidity cools, guidance quality, order/backlog durability, and valuation discipline matter more.
+- Do not pre-commit to the next theme winner. Keep candidates equal until one shows stronger price reaction, guidance surprise, peer confirmation, and 掲示板 expectation reset.
+- Old leader rebounds after a new leader weakens can be a warning: it may mean residual positioning and exit liquidity rather than a fresh leadership cycle.
+- When JPX sector/style data shows the relevant sector is holding better than the stock, do not over-attribute weakness to Nikkei/TOPIX or macro. Treat it as stock-specific event premium, crowding, or positioning until the stock reclaims its key level.
+- When a Japanese-stock answer uses macro/flash-news, technical, or sentiment reasoning, call the corresponding sibling skill instead of folding that layer into this skill ad hoc: `macro-news-check` for 宏观/快讯, `stock-technical-analysis` for 技术面, and `stock-sentiment-analysis` for 情绪面/期待差. State the fusion layers in the final answer when they materially affect the conclusion.
+
+### Practical Checklist Before A Japanese Earnings Release
+
+1. Identify the stock's accepted theme: e.g. EUV/photoresist, AI package substrate, HBM backend, transformer/data-center power, AI semiconductor distribution.
+2. Record the current price move, PER/PBR, recent run-up, and 掲示板 heat.
+3. From the latest quarter and company forecast, compute the implied remaining-period hurdle.
+4. Set a "must beat" line for the release: current-period profit, next-year guidance, orders/backlog, and shareholder returns.
+6. State both probabilities: `earnings beat probability` and `positive stock reaction probability`.
+7. After the release, classify the result as:
+   - `clean positive surprise`
+   - `positive but already priced`
+   - `mixed but theme strong`
+   - `guidance miss`
+   - `bad print`
+
+### Reusable Lessons From Recent Cases
+
+- For Kabutan article bodies, use an actually available retrieval tool and verify the article body; a tool name alone does not prove successful retrieval. Use cookie-free HTTP for this path. Verify the target title and article body rather than treating HTTP 200 or a news-list entry as successful body extraction; exclude navigation, login prompts, and access-control pages. Report HTTP rejection, tool safety refusal, and parsing failure separately. A failed direct request does not establish browser inaccessibility or absence of news; on blocking, stop and follow the applicable retry policy.
+- If the current period beats but forward guidance is weak, expect "good result, bad reaction" risk.
+- If forward guidance beats consensus/market publications and shareholder return improves, the market can re-rate even after a pre-release run-up.
+- If sentiment is skeptical before release and the result clears the feared issue, the reaction can be stronger than the absolute numbers suggest.
+- If a stock is a core theme asset, investors may focus on operating profit, recurring profit, order/backlog, capacity contribution, or EBITDA instead of near-term net income.
+- If the result is already fully expected, even a good print can produce profit-taking. Look for whether the result changes the next 6-18 month narrative.
+- 掲示板 confidence after a theme catalyst is crowding/expectation evidence, not support. Claims such as inevitable round-number targets, future peer read-through, or "large buyers are in" need price confirmation through reclaiming the broken level.
+
+### Reasonable Valuation Framework
+
+Use this section when the user asks whether a stock is cheap/expensive, asks for fair value, target range, upside/downside, or valuation after earnings.
+
+- First classify the valuation identity: cyclical resource, semiconductor material, equipment, distributor, power infrastructure, consumer/entertainment, financial, or mixed business. Do not apply one PER range to every company.
+- Build at least three anchors: `earnings anchor` such as forward EPS/PER, `quality anchor` such as margin/ROE/FCF/order durability, and `market anchor` such as peer multiples and current theme premium.
+- Treat equity valuation as `price = EPS x PER` when using earnings multiples. A Davis double play needs both EPS upgrades and PER expansion, usually because earnings visibility, growth duration, industry cycle, or shareholder return improved. A Davis double kill means EPS cuts and PER compression arrive together; downside can be much larger than the profit downgrade alone.
+- In each scenario, state both the EPS assumption and the deserved PER assumption. Explain whether the market is paying for near-term EPS, future EPS upgrades, multiple expansion, or a combination.
+- Before calling a low PER stock cheap, reconcile operating profit, recurring profit, net income, and EPS. If net income is lifted by asset sales, securities gains, tax effects, or impairment reversals, value the stock on normalized operating/recurring profit and show the gap versus headline PER.
+- For low PBR or low PER small caps, test for a value trap separately from business improvement. Strong earnings can still deserve a low multiple when liquidity is thin, payout is very low, governance is passive, or management gives no buyback/dividend/capital-efficiency signal.
+- For PTS, stop-high, and sharp-move valuation, map the catalyst into `confirmed earnings/order`, `capital policy`, `theme premium`, or `forum speculation`; use a lower deserved PER for speculation-only moves and require explicit execution milestones before moving from base to bull scenarios.
+- Set the valuation map before comparing it with the current price, and do not move the fair-value range just because the stock price moves. A lower price is not automatically the new fair value; revise the range only when EPS, dilution, balance-sheet risk, growth visibility, or the deserved multiple changes. When correcting a prior estimate, explicitly identify which assumption changed versus which assumption was previously overweighted.
+- Adjust EPS for capital actions when material: buybacks, tender offers, treasury shares, CB dilution, secondary offerings, splits, parent-company stake reductions, and dividend policy changes.
+- Do not count a buyback as purely positive if it is funded by CB or other dilution. Estimate the net effect on share count, EPS, balance sheet, and future dilution risk.
+- Separate operating quality from accounting noise. For core-theme stocks, operating profit, recurring profit, orders/backlog, capacity contribution, and EBITDA may matter more than one-year net income; for cyclical stocks, commodity price and FX sensitivity may deserve a lower multiple.
+- Use scenario valuation instead of a single point: conservative, base, and bull. State the key assumptions that move the stock from one scenario to another.
+- After setting the fair range, compare current price to the range and explain whether the market is pricing current fundamentals, future upgrades, capital policy, or pure sentiment.
+- Valuation output should end with a "what must happen to justify upside" test and a "what invalidates the valuation" test.

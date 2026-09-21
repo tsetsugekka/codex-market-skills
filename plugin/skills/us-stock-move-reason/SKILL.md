@@ -3,48 +3,72 @@ name: us-stock-move-reason
 description: 分析美股和ETF异动，核验财报指引、公司事件、行业联动及期权或情绪背景。
 ---
 
-# Us Stock Move Reason
+# US Stock Move Reason
 
-## 可用资料与边界
+## 跨环境执行
 
-使用本轮实际可用的网页、连接工具和用户资料；有本机执行能力时，也按需使用已安装且可用的研究 Skill。先读取所需页面正文，核对代码、市场日期、行情时间与交易阶段；只搜索到标题不算取得数据。价格、新闻、讨论各有用途，未知字段保持未知，单点行情不能证明持续承接或完整分钟路径。入口失败时说明具体缺口，换用可读的公开来源；遇限流或拒绝访问停止请求该来源，不尝试绕过。
+先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
 
-需要补充数据时先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现并使用相关 Skill，包括可用的 OpenD、MX 和同花顺；未加载或未调用成功就不要声称使用。插件本身不新增行情工具或权限。报告与交易执行分开，不凭研究结论声称下单。自动任务遵守自身 Prompt 的输出、归档与模拟账本合同，本插件不修改任务或自身规则。
+此包按各 Skill 入口附带可移植 Python 脚本；可读取文件不等于能执行，能执行不等于能联网。先确认能力，再按环境路由选择随包脚本、可用扩展或公开网页；仅有用户资料时执行相同筛选与计算，无执行能力时按文字流程研究并标出未计算项。外部供应商采集器只在已安装且可用时调用。访问失败、限流与权限处理遵循当前工具及环境规则，不复制机器专用沙箱设置。实际加载所用的同包 Skill 和参考，不只在回答中提名字。
 
+本插件用于研究，写日历、账户或交易需要对应授权。普通研究不自动访问私人自选或持仓，不修改自身、其他 Skill 或任务规则；自动任务保持自己的输出、归档和授权合同。用户指定的私人资料仅在本轮授权范围内使用，不写入插件。
 
-## 完整异动研究流程
+Use this skill as the U.S. stock counterpart to `jp-stock-move-reason` and `cn-stock-move-reason`. It is an evidence-gathering and synthesis workflow, not a trading bot.
 
-1. 确认上市地、代码、普通股/ADR/ETF、交易阶段及基准价格。分开常规盘、盘前与盘后涨跌；核对量、额、开盘缺口与 K 线时间，不能用昨收替代盘后报价。ETF 先检查指数/行业、主要成分与宏观，再解释期权层。
-2. 事件时间线：先查公司 IR、SEC 披露、财报、指引、订单、监管、并购、回购或融资；媒体与券商解释用于补充。明确消息首次出现、价格开始变化、随后确认的先后关系，避免把重复转载当新催化。
-3. 预期差：市场此前预期什么→实际结果/指引/电话会说了什么→超预期、仅落地或不及预期。拆分收入、盈利质量、毛利率、订单、交付节奏、资本开支与前瞻指引；好业绩不自动意味着超预期。
-4. 对照同业和行业 ETF：股价独涨/独跌还是 Beta 共振？同行领先是否已提前定价？检查利率、美元、商品或地缘变化是否是主因、放大器或背景。涉及这些判断时实际加载 macro-news-check。
-5. 价格接受：消息后是否守住事件价、VWAP、开盘区间与前高低；量增无价格进展、连续更低高点或利好后相对弱势，提示事件溢价回吐。涉及买点/支撑判断时加载技术 Skill。
-6. 资金、期权与社区只补足未解释问题。可用时按环境路由调用 moomoo 新闻、摘要、资金、衍生品、技术与社区能力；“无异常”是已检查后的有效结果，未调用不能写无异常。美股衍生品只选期权维度，不混入港股窝轮/牛熊证。
-7. 期权流只有在单腿、成交方向与 bid/ask 条件清晰时才支持方向推断。多腿、跨式、宽跨、蝶式可能是波动或区间交易。社区是局部样本，热度不等于全市场观点。
-8. 同一股票多轮讨论时，复核新增证据是否改变原权重，不机械维护第一次判断。
+This public-safe skill must not store account data, OpenD logs, API keys, cookies, private RAG paths, personal positions, screenshots, raw private notes, or proprietary labels. It may call official moomoo skills when installed, but those skills remain external data/anomaly providers.
 
-## 估值、融券与场外成交
+## DTM API Context
 
-涉及合理价值时，用保守/基准/乐观情景，明确收入利润、现金流、净债务、摊薄股数、估值倍数、利率和同业锚。拆开 EPS 变化与 PE 重估：盈利上修叠加溢价扩张，和盈利下修叠加倍数压缩是不同路径。给出当前价格已计入的假设及反证，不能用券商目标价代替估值。
+Use the canonical JSON interfaces in `https://daytrading.monster/api-docs/` for DTM reads. `https://daytrading.monster/api/ratings-us` supplies recent analyst reports (US-local today and the preceding three calendar days); match the target symbol and report date. Use `https://daytrading.monster/api/themes` without a market filter to trace cross-market industry-chain and theme transmission across US, Japan, and China. Read `themes[]` and `constituents[]` for members, `weight`, `reason_zh`, coverage, and completed-session returns; check dates instead of treating them as live moves. Parse the `text/plain` response bodies as JSON.
 
-ChartExchange/FINRA 等场外成交数据仅限美股/ETF，并核对上市地与代码。场外成交比例和大宗价位不揭示买卖方；只有随后价格接受/拒绝才形成技术意义。short volume 不等于 short interest；借券费、可借数量、空头余额和 FTD 的日期/口径必须分开。逼空判断仍需价格抗跌及催化确认，不能用单一指标保证挤空。
+## Workflow
 
-## 输出与协同
+1. Normalize the target into a U.S. market symbol such as `US.NVDA`, `US.DELL`, `US.SPY`, or `US.TSLA`. If the user gives only a name and the listing is ambiguous, ask one concise question. Treat broad index questions (`SPX`, `SPY`, `QQQ`, `NQ`) as U.S. index/ETF workflows and consider `macro-news-check` by default.
 
-按问题深度给出：最有力理由及预期差、次要驱动、量价接受/拒绝、相关期权/资金证据、社区与样本限制、确定度及反证。重要数字和决定性事件给来源与时间。未取得的层不编造，也不每次展开空章节。
+2. Establish whether the move is real:
+   - Use `moomooapi` when available for snapshot, premarket/after-hours fields, daily or 1-minute K-line context, volume, turnover, market state, and basic stock information.
+   - If OpenD or permissions fail, use public quote sources only as fallback and state the limitation.
+   - For SPX, moomoo may reject `US..SPX` index snapshots while still allowing SPX/SPXW option chains. Use `SPY`, ES/CFD, or user-provided SPX anchors when needed and state the anchor.
 
-当 Gamma、技术或情绪实质影响结论时，实际读取对应同包 Skill；将它们的结论融入因果判断，避免并列粘贴四份小报告。
+3. Gather confirmed catalysts first:
+   - Use `moomoo-news-search` or `moomoo-stock-digest` for current company news, earnings, guidance, ratings, orders, regulatory events, M&A, capital actions, analyst notes, and sector read-through.
+   - When earnings are involved, apply expectation gap explicitly: `prior market expectation` -> `actual result / guidance / commentary` -> `above expectation`, `in line or merely landed`, or `below expectation`.
+   - Do not let social posts, option prints, or technical signals replace confirmed filings/news.
 
+4. Scan official moomoo anomaly layers when they are installed and relevant:
+   - `moomoo-capital-anomaly`: use for capital-flow, broker, short-sale, or funds-flow anomaly requests. A `无异常` response is a usable result.
+   - `moomoo-derivatives-anomaly`: use for U.S.-applicable option dimensions only: `option_unusual`, `option_volatility`, `option_volume_price`, `option_sentiment`, and `option_comprehensive`. Do not request Hong Kong warrant / CBBC dimensions for U.S. stocks. If a full scan returns an opaque backend error, retry with explicit U.S. option dimensions before concluding the skill is unavailable.
+   - `moomoo-technical-anomaly`: use as a first-pass technical anomaly scanner, then verify with `stock-technical-analysis`.
+   - `moomoo-comment-sentiment`: use for moomoo community heat, disagreement, chasing, panic, and representative viewpoints. Label it as a moomoo community sample, not a full-market sentiment survey.
 
+5. Add supporting skills based on what the evidence shows:
+   - Use `us-stock-gamma-moomoo` when options positioning, gamma walls, 0DTE, IV, SPX/SPY/QQQ, or dealer hedging can change the interpretation.
+   - Use `stock-technical-analysis` when support/resistance, trend confirmation, failed breakout, VWAP, 1-minute K-lines, or intraday timing matter.
+   - Use `stock-sentiment-analysis` when crowding, leader/follower status, risk-on/risk-off psychology, expectation reset, or social/community emotion changes the conclusion.
+   - Use `macro-news-check` when Fed, rates, yields, USD, oil/gold, index futures, economic data, geopolitics, or broad market tape may be the main driver or amplifier.
 
-## 查询与判断
+6. Evidence priority:
+   - Confirmed company news, filings, earnings, guidance, ratings, and direct disclosures.
+   - Current quote, volume, gap, market state, and price acceptance/rejection.
+   - Sector/peer and broad market context.
+   - Option, capital-flow, short, and technical anomaly scans.
+   - Community sentiment and social posts as secondary psychology evidence only.
 
-确认上市地、代码、市场日期，区分盘前、正常交易、盘后与隔夜价格，写出行情时点、涨跌幅和成交背景。先读公司IR、SEC文件、财报/电话会指引及正式新闻；ETF解释底层资产、行业和产品机制。
+## Output Style
 
-报价可尝试 Yahoo Finance 个股页（如 `https://finance.yahoo.com/quote/AAPL/`）或腾讯美股入口（如 `https://qt.gtimg.cn/q=usAAPL`）；只有实际读到代码、价格及时间后才引用。腾讯美股字段不能套用A股字段表，未核实的字段及交易阶段不用。yfinance 是调用 Yahoo 数据的 Python 库，仅在本轮确有可联网执行的 Python 环境时使用其 Ticker/history；不能仅凭网页工具声称运行了 yfinance，也不要求自动任务安装依赖。上述入口不是保证可用的行情工具，失败按本节共同边界处理。
+Reply in Chinese unless the user asks otherwise. For every stock analyzed, use these six numbered sections in this exact order:
 
-先判断已确认催化、预期差及价格是否接受，再核对同行、指数与宏观。需要评级时读 `https://daytrading.monster/api/ratings-us` 的匹配代码与报告日期；评级变化是参考，不代替自主估值。可用 `https://daytrading.monster/api/24hfeed/details` 和 `https://daytrading.monster/api/24hfeed/x-monitor` 发现及时事件，但核对原出处与窗口。
+1. `最有力理由`: the most likely catalyst, source type, and expectation gap.
+2. `补助理由`: sector/peer, macro, positioning, valuation, short/flow, or liquidity drivers.
+3. `期权/资金/技术异动`: summarize only relevant moomoo anomaly and gamma/technical evidence; say `无异常` when a checked layer returns no anomaly.
+4. `社区情绪`: moomoo community or other forum/social heat, representative views, and sample limitations.
+5. `确定度`: high / medium / low, with one sentence explaining why.
+6. `注意点`: what is unconfirmed, what could invalidate the read, and what needs a fresh check.
 
-期权、成交、技术或空头数据仅在实际取得且相关时加入。未取得数据写未知，不能写“无异常”。社区讨论只作样本情绪，不证明机构行为。按需用同包宏观、技术、情绪或Gamma方法解释证据，不能由异常标签直接推出买卖方向。
+When evidence is thin, say so. Use `思惑`, `未确认`, or `确认待ち` for claims that appear only in community posts or option-flow interpretation. Do not give direct trading instructions; give conditional conclusions and validation levels when useful.
 
-逐股输出：最有力理由、辅助驱动、量价/期权证据、社区情绪（有相关样本时）、确定度、反证及失效条件。保留来源和时间，不机械堆叠未取得的层。
+If supporting skills materially affect the conclusion, end with a compact `融合口径` line, for example:
+
+```text
+融合口径：moomoo news/digest + moomoo option/capital/technical anomaly + us-stock-gamma-moomoo gamma + stock-technical-analysis price action + macro-news-check tape.
+```

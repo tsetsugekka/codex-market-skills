@@ -5,56 +5,78 @@ description: 综合中国、日本和美国市场的盘前、盘中、收盘及�
 
 # Market Daily Strategist
 
-## 可用资料与边界
+## 跨环境执行
 
-使用本轮实际可用的网页、连接工具和用户资料；有本机执行能力时，也按需使用已安装且可用的研究 Skill。先读取所需页面正文，核对代码、市场日期、行情时间与交易阶段；只搜索到标题不算取得数据。价格、新闻、讨论各有用途，未知字段保持未知，单点行情不能证明持续承接或完整分钟路径。入口失败时说明具体缺口，换用可读的公开来源；遇限流或拒绝访问停止请求该来源，不尝试绕过。
+先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
 
-需要补充数据时先按[环境能力路由](references/runtime-capabilities.md)发现并使用相关 Skill，包括可用的 OpenD、MX 和同花顺；未加载或未调用成功就不要声称使用。插件本身不新增行情工具或权限。报告与交易执行分开，不凭研究结论声称下单。自动任务遵守自身 Prompt 的输出、归档与模拟账本合同，本插件不修改任务或自身规则。
+此包按各 Skill 入口附带可移植 Python 脚本；可读取文件不等于能执行，能执行不等于能联网。先确认能力，再按环境路由选择随包脚本、可用扩展或公开网页；仅有用户资料时执行相同筛选与计算，无执行能力时按文字流程研究并标出未计算项。外部供应商采集器只在已安装且可用时调用。访问失败、限流与权限处理遵循当前工具及环境规则，不复制机器专用沙箱设置。实际加载所用的同包 Skill 和参考，不只在回答中提名字。
 
+本插件用于研究，写日历、账户或交易需要对应授权。普通研究不自动访问私人自选或持仓，不修改自身、其他 Skill 或任务规则；自动任务保持自己的输出、归档和授权合同。用户指定的私人资料仅在本轮授权范围内使用，不写入插件。
 
-## 深度研究路由
+Use this skill for the user's market reports. This is not a scheduler; ignore any clock-trigger wording from the original prompts. Route by user intent:
 
-市场策略须先读[分市场研究细则](references/market-playbooks.md)。涉及推荐、入场或退出计划时，另读[策略类型与计划一致性](../../../skills/market-daily-strategist/references/strategy-archetypes.md)；主线能否持续、资金轮动或跨市场传导影响结论时，读[主线、资金、博弈与周期](../../../skills/market-daily-strategist/references/global-mainline-funds-game-cycle.md)。参考不是装饰：实际读取相关章节及相邻约束后再应用，不能只凭标题声称已使用。
+- 美股盘前、开盘前、pre-market、盘前策略、美股今晚怎么做、美股明天如何做、今天美股怎么看、纳指今晚怎么看、标普明天怎么看、美国市场怎么做、美股大盘策略: read [us-pre-market](references/us-pre-market.md).
+- 美股收盘、昨晚美股、复盘、close recap: read [us-close-briefing](references/us-close-briefing.md).
+- 日股盘前、日经盘前、日本开盘前、明天日股如何做、今天日股怎么做、日经明天怎么看、日本市场怎么做、日股大盘策略: read [jp-pre-market](references/jp-pre-market.md).
+- 日股收盘、今天日股复盘、日本市场复盘: read [jp-close-briefing](references/jp-close-briefing.md).
+- A股盘前、A股早盘、开盘前策略、明天A股如何做、今天A股怎么做、A股明天怎么操作、大盘今天怎么办、沪指明天怎么看、创业板明天怎么看、科创板今天怎么做、A股大盘策略: read [cn-pre-market](references/cn-pre-market.md).
+- A股收盘、A股复盘、今天A股市场回顾: read [cn-close-briefing](references/cn-close-briefing.md).
+- 美股长线推荐、每日美股荐股、推荐一只美股: read [us-long-term](references/us-long-term.md).
+- 日股长线推荐、每日日股荐股、推荐一只日股: read [jp-long-term](references/jp-long-term.md).
+- A股长线推荐、每日A股荐股、推荐一只A股/ETF/LOF: read [cn-long-term](references/cn-long-term.md).
 
-### 研究漏斗与机会判断
+If the user asks a broad current-session or next-session question such as `明天/今天/今晚 + 市场/大盘/美股/纳指/标普/日股/日经/TOPIX/A股/沪指/创业板/科创板 + 如何做/怎么做/怎么看/怎么操作/怎么办`, treat it as a pre-market, current-session, or next-session strategy request for the named market, not as a generic macro question. If the market is named by an index, map it to the corresponding market reference above. If the user says only `盘前信息`, `收盘复盘`, `大盘怎么做`, or `推荐一只股票`, infer the market from the conversation. If unclear, ask one concise question for the market: 美股、日股、还是A股.
 
-1. 时间与范围：明确交易所、交易日、当前阶段、用户所问阶段和下一有效交易日。休市时可给前瞻与风险，但不伪造当日盘面。盘中采用已发生的价格路径，不提前写收盘。
-2. 先复用本轮资料：任务包中的原因、新闻、报价、历史基线按日期和字段分别判断；已有可追溯材料可用于候选筛选，决定性事件再核对原披露。不能把缺一项报价变成全盘重搜或没有机会。
-3. 宏观与 Beta：识别利率、汇率、商品、流动性、事件风险和指数广度的主导变量。新闻变化与价格接受度分开判断，必要时实际读取同包 macro-news-check。
-4. 行业与主线：从完整相关新闻面寻找候选，再检查产业链传导、成分覆盖、龙头与跟随、资金回流及基本面兑现。跨市场 Themes 不加单市场筛选；成分权重及完成交易日涨幅不能冒充实时热度。本策略入口不调用两项评级 API；需要个股评级时交对应个股 Skill 按其规则核对。
-5. 个股：精选会改变结论的关键标的，核实事件、量价、预期差、估值与板块相对强弱。用对应中、美、日异动 Skill 深挖，不逐个股票重复跑全套。
-6. 计划：把候选分成主线、备选、回避；每个保留方向写“为什么、何时确认、何时失效、风险与下次验证”。研究优先级不等于立即买入。流动性、成交可行性或事件窗口不合格时可无交易，但应给出已核实的具体原因。
+Always read [shared](references/shared.md) first, then only the one task-specific reference that matches the user request.
 
-### 主线 × 资金 × 博弈 × 周期
+For any daily or one-name recommendation, also read [strategy-archetypes](../../../skills/market-daily-strategist/references/strategy-archetypes.md). Assign one primary strategy archetype before choosing entry, invalidation/stop, holding period, and exit. Do not combine an event-trade entry with a value-investing stop, or a swing entry with an indefinite long-term exit.
 
-主线区分新增需求驱动与存量行业重估；从产品/成本/订单、产业链利润迁移、宏观制度三层核对。检验“叙事被认识→订单/盈利证据→价格和资金接受”的链条，区分事实兑现与单日话题热度。
+Reference reading rule: when this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans.
 
-资金区分边际流入、存量换手与杠杆挤压；成交放大不直接等于净流入。博弈检查参与者结构、拥挤、空头回补、政策预期和一致预期反转。周期定位启动、扩散、加速、分化与退潮，判断是否是健康换手、旧龙反抽或新主线。
+During question decomposition, actively expand broad market, sector, theme, and long-term stock questions into `mainline x funds x game x cycle` when that lens can change the conclusion, even if the user did not explicitly ask for it. In those cases, read the relevant sections of [global-mainline-funds-game-cycle](../../../skills/market-daily-strategist/references/global-mainline-funds-game-cycle.md). When the conclusion depends on whether a collective sector/theme surge can continue, load `stock-sentiment-analysis` and apply its market-sector-stock resonance framework across A-shares, U.S. stocks, or Japanese stocks.
 
-结束原因分开写：自然成熟、基本逻辑失效、流动性收缩。行业逻辑仍成立并不能抵消当前买点过远、参与广度收缩或短期资金撤离。需要连续性判断时，调用情绪 Skill 的市场—板块—个股六因素框架。
+## Core Workflow
 
-### 六类策略与一致的退出合同
+1. Identify the report type and market.
+2. Confirm current date/time in Japan time and whether the relevant next or current session is open. If the market is closed, follow the task-specific closed-market rule instead of forcing a normal report.
+3. Gather latest data from reliable live sources. Use market-specific primary sources listed in the task reference.
+4. For U.S. and Japan market reports, treat the current DayTrading.monster news-details index as the most important public theme-discovery source before synthesis. Use its linked news details and the X account monitor when they materially fit the question. These layers guide what to verify; they do not replace live market news, price/sector confirmation, filings, or official disclosures. Follow the DTM API routing in [shared](references/shared.md), including unfiltered Themes for cross-market transmission; this skill does not request the two DTM ratings APIs.
+5. 通过当前可用网页/连接读取新闻索引，按市场与类别预筛；Python 与联网可用时，也可使用随包的 [narrative_status.py](../../../skills/market-daily-strategist/scripts/narrative_status.py)，从本 Skill 目录运行 `python3 scripts/narrative_status.py --market us --format json`（按需更换市场）。The source is `https://daytrading.monster/api/24hfeed/details`, grouping news titles, URLs and times by category. Account quality is assumed acceptable for screening; check API `generated_at`/`reviewed_at` and each entry's `time` against the report window. If it returns `stale_feed`, errors, or stale entries, skip or downgrade that layer rather than forcing it into the report. Open relevant detail URLs for the news content; the index has no direction or full narrative fields. Verify decisive items with live news, original/source reporting when available, and prices. Do not fetch historical/archive feeds or use static SEO text as current evidence.
+   Use `https://daytrading.monster/api/24hfeed/x-monitor` for raw X context, checking its explicit eight-hour snapshot window. Treat this as social-media-derived source context, not verified news.
+   For overall Japan PTS rising-mover discovery, prefer the three documented model APIs routed in [shared](references/shared.md); inspect the relevant session's `source_updated_at` before citing movers.
+   For broad macro price context, DayTrading.monster home (`https://daytrading.monster/`) is useful for discovering TradingView symbols and whether a symbol is `D`, `24h`, or `365d`, but the latest widget prices and runtime news state are not visible in plain HTML/noscript fetches. Use a rendered browser/widget view or a programmatic TradingView/scanner equivalent before citing live prices from that dashboard.
+   In the final report prose, do not name DayTrading.monster, 24H Feed, dashboard/widget names, page names, or other aggregator/source names by default. Describe the evidence generically as `当前叙事预筛`, `当前价格代理`, `PTS异动`, `评级线索`, or `行情确认`. Cite material claims with the actual source URL and time; source names need not dominate the prose.
+6. Never invent prices, index levels, futures, percentage moves, gamma/options levels, flows, valuation, financials, or news. If unavailable, say `暂无具体数值` or `初步`.
+7. Apply `shared.md` market-news and local-data discipline: scan enough current news before finalizing, avoid broad local-data sweeps, and prioritize items confirmed by price action, volume, flows, earnings, ratings, policy catalysts, or direct trading relevance.
+8. Use simplified Chinese unless requested otherwise; use the task reference report structure, honoring the current user or Task format.
 
-按收益来源选择一个主策略：危机 Beta 修复、优质核心波段、分红复利、事件重估、优质价值回归、成长与可选性。次标签只有会改变取证时才加，不以多个标签掩盖不清楚的逻辑。
+## Supporting Skills
 
-每个计划保持同一条链：收益来源→当前入场证据→执行失效→投资逻辑失效→时间止损→退出。事件交易不能失败后改成无限期价值持有，波段止损不能用长期故事取消，成本价不是继续持有的理由。基本面合理价值、市场愿意给的溢价及当前可执行买点分别论证。
+This skill is a report router and synthesis layer. Use other market skills when they materially improve the report, but keep calls selective.
 
-### 复盘与多轮接续
+- Use `macro-news-check` when the report depends on current macro tape: rates, FX, oil, gold, commodities, central banks, economic data, geopolitics, broad risk sentiment, or live futures confirmation.
+- For U.S. reports, use official moomoo skills as selective evidence helpers when installed: `moomoo-news-search` and `moomoo-stock-digest` for timely company/news context, `moomoo-comment-sentiment` for community heat, `moomoo-capital-anomaly` for capital-flow anomalies, `moomoo-derivatives-anomaly` for U.S.-applicable option anomaly dimensions, and `moomoo-technical-anomaly` for a first-pass technical anomaly scan. These are data and anomaly layers; keep this skill responsible for strategy synthesis.
+- Use `us-stock-move-reason` for 1-3 important U.S. movers when the catalyst, earnings/guidance acceptance, news interpretation, option/flow anomaly, or community reaction needs a dedicated move-reason pass.
+- Use `us-stock-gamma-moomoo` for US index/ETF option structure when SPX/SPY/QQQ/NQ gamma, GEX, 0DTE, dealer positioning, option walls, or intraday conversion levels could change the strategy.
+- Use `stock-technical-analysis` for selected index/ETF/stock levels when the answer needs support/resistance, trend confirmation, intraday execution timing, breakout/pullback validation, or stop levels.
+- Use `jp-stock-move-reason` or `cn-stock-move-reason` for 1-3 genuinely important Japanese/A-share movers when the catalyst is unclear or the stock drives the day's theme. Do not run move-reason analysis on every mover.
+- Use `stock-sentiment-analysis` when crowding, leader/follower status, emotion cycle, old-leader rebound, theme acceptance/rejection, market-sector-stock resonance, or post-surge continuation affects the trading conclusion. Apply the six-factor matrix—broad-market support, turnover/liquidity, participation breadth, industry-chain diffusion, continuing fundamental validation, and non-terminal lifecycle—then separate logic durability, tape continuity, and entry quality.
+- Use the narrative-status helper only as a theme-discovery and sentiment pre-screen. It can suggest which narratives to test, but it must not replace macro-news confirmation, market prices, filings/news, PTS/pre-market movers, sector breadth, gamma/options checks, or technical confirmation.
+- Use 东方财富妙想 skills for A-share reports and sector questions when available, as supplemental data/search/screening only. They do not replace the report's existing market-news discipline, price-confirmed catalyst checks, emotion-cycle and leader/follower judgment, macro/technical confirmation, or source hierarchy. Use `mx-data` for quote, valuation, fund-flow, financials, index/sector data; `mx-search` for timely news, announcements, research, policy, and event explanations; `mx-xuangu` for sector/concept constituents, related-stock lists, condition screens, and peer comparisons. For questions like `A股某板块有哪些股票`, `相关股`, `概念股`, `龙头股`, or `板块成分`, try `mx-xuangu` first when available. Use `mx-zixuan` only when the user explicitly asks about 东方财富 self-selected stocks, and `mx-moni` only for explicit simulated-trading tasks.
 
-对照先前方案逐项检查：触发且验证、触发后失效、尚未到窗口、资料不足。记录盘中实际可成交条件、先后顺序与剩余空间，不以事后最低买入最高卖出计算收益。若用户补充证据或指出遗漏，先重估原结论和权重，再解释变化。
+Cross-skill calls are operational: actually load the supporting skill's `SKILL.md` and required references when using it. Keep supporting-skill output compressed into the final report instead of pasting separate mini-reports.
 
-只使用当前对话或明确提供的历史记录，不暗示已读取私人日志或自动维护记忆。Task 的标题、输出、归档、模拟账本合同优先于本 Skill 的默认报告结构；默认交付结论、证据、方向、触发/失效和下一步，不强制所有用户使用私人报告格式。
+## Style
 
+- Professional, concise, strategy-first.
+- Start with a concise conclusion; task-reference titles are examples, not a universal length requirement.
+- Prioritize actionable conclusions: 追高、等回踩、低吸、减仓、观察、避开财报风险、仓位与止损.
+- Attribute important live figures and news to sources.
+- When internal/current-page helper data is used, do not name DayTrading.monster, 24H Feed, dashboard/widget names, page names, or other aggregator/source names in the report prose by default; source URLs may appear in a separate source list when needed.
+- For recommendation reports, clearly state that the output is not financial advice.
 
+## Guardrails
 
-## 研究流程
-
-确定市场、交易日、实际时间和用户所需阶段；普通对话按问题研究，定时任务以其自身交易日、SKIP、调度和输出合同为准。盘前只能用已发生信息，盘后用真实收盘，不提前写未来时点。
-
-按宏观/Beta→行业题材→个股→技术确认→条件执行研究。核验确认催化、预期差、情绪周期、价格接受和反证；分开逻辑持续性、盘面连续性与当前买点。新闻用 `https://daytrading.monster/api/24hfeed/details`，跨市场映射用 `https://daytrading.monster/api/themes`，按返回日期和覆盖使用。A股重点异动按 cn-stock-move-reason 补具体量价/催化，不能止于大涨大跌。
-
-盘前形成主线、备选和回避及开盘条件；盘中核对早先方案、广度、龙头跟随、承接/分化；盘后逐项区分已验证、失效、未到窗和证据不足，再建立下个有效交易日基线。盘中低开修复或回撤反弹须分析剩余空间、可成交条件与失败风险，不能以事后最低点衡量收益。
-
-长线以主营/竞争力、收入利润兑现、现金流、估值、融资稀释和催化为基础，区分长期逻辑与当前入场质量。用情景范围与明确假设，不以目标价或短期异动代替估值。
-
-输出核心结论、具体方向、触发/失效、风险与后续验证；可无交易，但说明本轮已核实为何不合格。按市场与品种核实交易单位和交易限制；A股股票日内新买仓不能假设当日卖出。复用相关同包个股、宏观、情绪、技术和Gamma方法，避免重复抓取。
+- Read the public `/api/themes` for cross-market research; inspecting or modifying the DTM Themes project itself requires an explicit project task.
+- For long-term recommendation reports, follow the requested count; for a one-name request select one target and avoid recently recommended names when that history is available in the conversation, logs, or user-provided context.
+- For executable entry plans compare with the latest price, slippage and trading window; distinguish a current entry from a conditional pullback order. Apply a fixed distance cap only when requested.

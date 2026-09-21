@@ -210,6 +210,8 @@ Yahoo同主机请求随机间隔1至3秒；403/429或封控页面会触发共享
 取标准化后的前60个字符作为签名，完全相同的签名只保留一条，最多保留20条完整正文。
 这20条再按发布时间、点赞数降序排列，最终只把`recent_comments[:5]`交给 Codex 判断原因。
 
+联网采集与插件离线输入复用 `select_yahoo_comments`。原始缓存只在进程内用于热度计算；JSON 输出保留计数、热度和最多五条选中评论，不附带100条原文。插件离线输入方法见[执行说明](../plugin/skills/jp-stock-move-reason/references/python-execution.md)。
+
 ## 需要的权限和来源
 
 - 只读取公开网页或公开 API。

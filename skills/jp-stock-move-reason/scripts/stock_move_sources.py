@@ -249,10 +249,10 @@ def fetch_url(url: str, referer: str | None = None, timeout: int = 20, pause: bo
     return text
 
 
-def parse_jst_datetime(date_str: str) -> dt.datetime | None:
+def parse_jst_datetime(date_str: str, current: dt.datetime | None = None) -> dt.datetime | None:
     clean = re.sub(r"\([^)]+\)", "", str(date_str or ""))
     clean = re.sub(r"\s+", " ", clean).strip()
-    current = now_jst()
+    current = current or now_jst()
     patterns = [
         (r"^(\d{4})/(\d{1,2})/(\d{1,2})\s+(\d{1,2}):(\d{1,2})", True),
         (r"^(\d{2})/(\d{1,2})/(\d{1,2})\s+(\d{1,2}):(\d{1,2})", True),
@@ -812,15 +812,16 @@ def is_low_value_summary_comment(text: str) -> bool:
     return any(re.match(pattern, clean, re.IGNORECASE) for pattern in hype_patterns)
 
 
-def score_comment(comment: dict[str, Any]) -> int | None:
+def score_comment(comment: dict[str, Any], current: dt.datetime | None = None) -> int | None:
     text = str(comment.get("text") or "")
     likes = int(comment.get("likes") or 0)
     if likes < YAHOO_BBS_MIN_LIKES or is_low_value_summary_comment(text):
         return None
-    parsed = parse_jst_datetime(comment.get("date", ""))
+    current = current or now_jst()
+    parsed = parse_jst_datetime(comment.get("date", ""), current)
     if not parsed:
         return None
-    age_hours = (now_jst() - parsed).total_seconds() / 3600
+    age_hours = (current - parsed).total_seconds() / 3600
     age_hours = max(0.0, age_hours)
     recency = 5 if age_hours <= 6 else 4 if age_hours <= 24 else 2 if age_hours <= 48 else 1
     length = 3 if 30 <= len(text) <= 300 else 2 if len(text) > 300 else 1
@@ -843,12 +844,74 @@ def dedupe_comments(comments: list[dict[str, Any]], limit: int) -> list[dict[str
     return selected
 
 
-def comment_within_hours(comment: dict[str, Any], hours: int) -> bool:
-    parsed = parse_jst_datetime(comment.get("date", ""))
+def comment_within_hours(comment: dict[str, Any], hours: int, current: dt.datetime | None = None) -> bool:
+    current = current or now_jst()
+    parsed = parse_jst_datetime(comment.get("date", ""), current)
     if not parsed:
         return False
-    current = now_jst()
     return current - dt.timedelta(hours=hours) <= parsed <= current + dt.timedelta(minutes=5)
+
+
+def select_yahoo_comments(
+    comments: list[dict[str, Any]], limit: int = 100, current: dt.datetime | None = None,
+) -> dict[str, Any]:
+    """Select forum evidence from one supplied page/cache; performs no I/O."""
+    if not 0 <= limit <= YAHOO_BBS_MAX_FETCH:
+        raise ValueError("comment limit must be between zero and 100")
+    current = current or now_jst()
+    # Keep only the latest 100 raw posts from one page. Quality and likes
+    # must not affect this cache boundary.
+    cached_comments = sorted(
+        comments,
+        key=lambda comment: parse_jst_datetime(comment.get("date", ""), current) or dt.datetime(1970, 1, 1),
+        reverse=True,
+    )[: min(limit, YAHOO_BBS_MAX_FETCH)]
+    recent_24h = [
+        comment
+        for comment in cached_comments
+        if comment_within_hours(comment, YAHOO_BBS_RECENT_HOURS, current)
+    ]
+    # The fallback decision uses the raw time-filtered count before the
+    # likes threshold, quality scoring, or deduplication.
+    comment_window_hours = (
+        YAHOO_BBS_RECENT_HOURS
+        if len(recent_24h) >= YAHOO_BBS_MAX_FETCH
+        else YAHOO_BBS_FALLBACK_HOURS
+    )
+    candidates: list[tuple[int, dt.datetime, int, dict[str, Any]]] = []
+    for comment in cached_comments:
+        if not comment_within_hours(comment, comment_window_hours, current):
+            continue
+        score = score_comment(comment, current)
+        parsed = parse_jst_datetime(comment.get("date", ""), current)
+        if score is None or not parsed:
+            continue
+        candidates.append((score, parsed, int(comment.get("likes") or 0), comment))
+    candidates.sort(key=lambda item: (item[0], item[1], item[2]), reverse=True)
+    shortlisted_comments = dedupe_comments(
+        [comment for _, _, _, comment in candidates],
+        YAHOO_BBS_SHORTLIST_LIMIT,
+    )
+    recent_comments = sorted(
+        shortlisted_comments,
+        key=lambda comment: (
+            parse_jst_datetime(comment.get("date", ""), current) or dt.datetime(1970, 1, 1),
+            int(comment.get("likes") or 0),
+        ),
+        reverse=True,
+    )
+    ai_input_comments = recent_comments[:YAHOO_BBS_AI_INPUT_LIMIT]
+    return {
+        "comments": ai_input_comments,
+        "cached_comments": cached_comments,
+        "count": len(cached_comments),
+        "recent_24h_raw_count": len(recent_24h),
+        "comment_window_hours": comment_window_hours,
+        "eligible_comment_count": len(candidates),
+        "shortlist_count": len(shortlisted_comments),
+        "ai_input_count": len(ai_input_comments),
+        "source": "Yahoo掲示板",
+    }
 
 
 def fetch_yahoo_bbs(symbol: str, hours: int, limit: int) -> dict[str, Any]:
@@ -857,60 +920,7 @@ def fetch_yahoo_bbs(symbol: str, hours: int, limit: int) -> dict[str, Any]:
         page_html = fetch_url(url)
         parser = YahooBBSParser()
         parser.feed(page_html)
-        # Keep only the latest 100 raw posts from one page. Quality and likes
-        # must not affect this cache boundary.
-        cached_comments = sorted(
-            parser.comments,
-            key=lambda comment: parse_jst_datetime(comment.get("date", "")) or dt.datetime(1970, 1, 1),
-            reverse=True,
-        )[: min(limit, YAHOO_BBS_MAX_FETCH)]
-        recent_24h = [
-            comment
-            for comment in cached_comments
-            if comment_within_hours(comment, YAHOO_BBS_RECENT_HOURS)
-        ]
-        # The fallback decision uses the raw time-filtered count before the
-        # likes threshold, quality scoring, or deduplication.
-        comment_window_hours = (
-            YAHOO_BBS_RECENT_HOURS
-            if len(recent_24h) >= YAHOO_BBS_MAX_FETCH
-            else YAHOO_BBS_FALLBACK_HOURS
-        )
-        candidates: list[tuple[int, dt.datetime, int, dict[str, Any]]] = []
-        for comment in cached_comments:
-            if not comment_within_hours(comment, comment_window_hours):
-                continue
-            score = score_comment(comment)
-            parsed = parse_jst_datetime(comment.get("date", ""))
-            if score is None or not parsed:
-                continue
-            candidates.append((score, parsed, int(comment.get("likes") or 0), comment))
-        candidates.sort(key=lambda item: (item[0], item[1], item[2]), reverse=True)
-        shortlisted_comments = dedupe_comments(
-            [comment for _, _, _, comment in candidates],
-            YAHOO_BBS_SHORTLIST_LIMIT,
-        )
-        recent_comments = sorted(
-            shortlisted_comments,
-            key=lambda comment: (
-                parse_jst_datetime(comment.get("date", "")) or dt.datetime(1970, 1, 1),
-                int(comment.get("likes") or 0),
-            ),
-            reverse=True,
-        )
-        ai_input_comments = recent_comments[:YAHOO_BBS_AI_INPUT_LIMIT]
-        return {
-            "url": url,
-            "comments": ai_input_comments,
-            "cached_comments": cached_comments,
-            "count": len(cached_comments),
-            "recent_24h_raw_count": len(recent_24h),
-            "comment_window_hours": comment_window_hours,
-            "eligible_comment_count": len(candidates),
-            "shortlist_count": len(shortlisted_comments),
-            "ai_input_count": len(ai_input_comments),
-            "source": "Yahoo掲示板",
-        }
+        return {"url": url, **select_yahoo_comments(parser.comments, limit)}
     except Exception as exc:
         return {"url": url, "comments": [], "count": 0, "source": "Yahoo掲示板", "error": str(exc)}
 
@@ -1078,6 +1088,8 @@ def collect_sources(args: argparse.Namespace) -> dict[str, Any]:
     else:
         bbs = fetch_yahoo_bbs(symbol, args.hours, args.comments)
     bbs["heat"] = calculate_bbs_heat(bbs.get("cached_comments", bbs.get("comments", [])))
+    # Raw posts are only needed for heat calculation; expose the selected five.
+    bbs.pop("cached_comments", None)
 
     pts: dict[str, Any] = {}
     if (
