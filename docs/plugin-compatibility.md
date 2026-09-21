@@ -24,7 +24,7 @@ ChatGPT Web, ChatGPT work environments and Codex can expose different tools. Dis
 As of 2026-09-21 (Japan time):
 
 - Marketplace 0.1.8 is the previously recorded published version.
-- Marketplace source 0.1.9 restores research depth and capability routing in this repository. Its ten skill frontmatters, manifest, self-contained archive links, shared-reference fidelity and three packaging tests passed. Upload/review/publication are in progress; it is not yet claimed as published.
+- Marketplace source 0.1.9 restores research depth and capability routing in this repository. Its ten skill frontmatters, manifest, self-contained archive links, shared-reference fidelity and three packaging tests passed. The final archive was uploaded and all ten platform scans passed. Legal declarations, submission and publication are pending; it is not yet claimed as published.
 - The root manifest remains the standalone Codex variant at 0.1.6. Its version does not describe the separate marketplace package.
 - Existing installations update through their host; source synchronization does not replace local caches.
 
