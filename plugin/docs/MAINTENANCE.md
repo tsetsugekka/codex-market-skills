@@ -33,7 +33,7 @@
 在仓库根执行，输出到仓库外的临时或指定发布目录：
 
 ```bash
-python3 plugin/build.py /tmp/daytrading-monster-0.1.10.zip
+python3 plugin/build.py /tmp/daytrading-monster-0.1.11.zip
 python3 -m unittest discover -s plugin/tests -p 'test_*.py'
 ```
 
@@ -42,6 +42,10 @@ python3 -m unittest discover -s plugin/tests -p 'test_*.py'
 包测试覆盖可重复构建、共享内容一致性、脚本语法与包内链接；掲示板测试覆盖原始条数先于点赞过滤、24/72小时、评分/去重/最新五条、跨年时间、采集结果不暴露100条原文，以及禁网子进程中的离线命令。对实际包的六个脚本逐个执行 `--help`，另验证离线期权表的到期内在价值。
 
 发布前运行[场景检查](../../docs/plugin-submission-tests.md)，记录实际环境、取得资料与结果；未执行的场景标未验证。上传完成后核对版本、附件与平台扫描；正式提交涉及的法律声明按平台要求由维护者确认。只有看到 Published 才更新[发布状态](../../docs/plugin-compatibility.md)。不手动覆盖宿主缓存，也不根据普通对话推定 Scheduled Tasks 已加载。
+
+## 0.1.11 变更（2026-09-25，日本时间）
+
+市场策略与技术分析改用 `/api/range/nikkei`、`/api/range/sse` 及对应 HTML 合同；明确完整源价格轨迹与五分钟指标轨迹的区别、日期/状态/延迟检查、盘前空轨迹和无期权字段边界。独立 Skill 同步更新；商店发布状态单独维护。
 
 ## 0.1.10 变更（2026-09-21，日本时间）
 

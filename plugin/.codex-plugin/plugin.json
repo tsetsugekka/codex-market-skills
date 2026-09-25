@@ -1,6 +1,6 @@
 {
   "name": "codex-market-skills",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Research stocks and market developments across China, Japan, and the United States using available public information. Explore stock moves, macro context, market sentiment, and technical structure, and prepare pre-market briefs or market recaps. Organize findings with source references, distinguish confirmed facts from interpretation, and identify information gaps.",
   "author": {
     "name": "tsetsugekka",

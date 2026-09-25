@@ -22,7 +22,9 @@ ChatGPT Web, ChatGPT work environments and Codex can expose different tools. Dis
 
 ## Release status
 
-As of 2026-09-21 (Japan time):
+As of 2026-09-25 (Japan time):
+
+- Source version 0.1.11 updates strategy and technical analysis to the index-trajectory `/api/range/nikkei` and `/api/range/sse` contracts. It has not been submitted to the marketplace; the published version remains 0.1.10.
 
 - Marketplace 0.1.10 is published. The developer portal shows Published and the public plugin directory displays version 0.1.10; it replaces 0.1.9.
 - Version 0.1.10 restores the full ten entries, source order/links, market report profiles and detailed research references. Its 47-file archive includes six Python scripts and shared live/offline forum filtering. Ten automated tests, ten Skill validators and the plugin manifest validator passed locally. The platform accepted the Python attachments, passed all ten Skill scans, approved the submission and published it after the maintainer confirmed the four required declarations.

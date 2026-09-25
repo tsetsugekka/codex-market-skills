@@ -22,7 +22,7 @@ class PackageTests(unittest.TestCase):
             self.assertEqual(archives[0].read_bytes(), archives[1].read_bytes())
             with zipfile.ZipFile(archives[0]) as archive:
                 files = {name.removeprefix('codex-market-skills/'): archive.read(name).decode() for name in archive.namelist()}
-            self.assertEqual(build.validate(files)['version'], '0.1.10')
+            self.assertEqual(build.validate(files)['version'], '0.1.11')
             for relative in json.loads((ROOT / 'shared-references.json').read_text()):
                 self.assertEqual(files['skills/' + relative], (ROOT.parent / 'skills' / relative).read_text())
             scripts = json.loads((ROOT / 'shared-scripts.json').read_text())
