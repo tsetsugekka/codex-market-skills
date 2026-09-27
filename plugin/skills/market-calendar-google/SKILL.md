@@ -182,25 +182,36 @@ Description:
 
 ## Macro/Event Workflow
 
-### 1. Build The Weekly List
+### 1. Discover Before Filtering
 
-- Cover China, US, and Japan events that can move equity, rates, FX, commodities, crypto, or the user's watched stocks.
-- Treat the candidate list as research input, not a calendar to copy. A market calendar should answer: "What could change a trading decision before the next session?" rather than attempt exhaustive news coverage.
-- Prioritize the markets specified by the user; do not infer a personal Japan preference. Include Japan events that can realistically move JGB yields, USDJPY/JPY crosses, Japanese banks, exporters, growth stocks, real estate, semiconductors, or broad TOPIX/Nikkei risk appetite.
-- Do not turn this into a generic economic calendar. If there are too many candidates, keep only the events that are tied to the current market theme and have a plausible trading impact.
-- Always identify the current market theme before ranking events. Examples:
-  - Japan inflation acceleration, BOJ hiking risk, and super-long JGB yield pressure.
-  - US inflation/Fed repricing driving USDJPY and global growth stocks.
-  - China policy or demand affecting Japan exporters, commodities, and Hong Kong/China equities.
-- Raise the priority of events that match the current theme; lower or exclude events that are normally important but not relevant to the current trading narrative.
-- Exclude categories the user already says they are handling separately, such as earnings or Treasury auctions.
-- Include only events with enough confidence in date/time. Treat unconfirmed diplomacy or political headlines as an observation item unless there is recent official confirmation.
-- When a user provides an article, image, or screenshot, inspect the complete article and every embedded image, table, caption, and calendar panel before deciding what is incremental. Do not infer that the visible headline or first image contains the whole weekly list.
-- For current or future event calendars, browse current sources. Build candidates from a mix of comprehensive economic calendars, Chinese market-weekly calendars, and official calendars:
-  - Use comprehensive calendars such as ActionForex, Investing.com, Trading Economics, Myfxbook, ForexFactory, and similar sources to collect cross-country data releases, forecast/consensus, and prior values.
-  - Use Chinese market-calendar and market-weekly sources such as Jin10 (`https://www.jin10.com/` / `https://xnews.jin10.com/`) and Wallstreetcn Calendar (`https://wallstreetcn.com/calendar`) to catch China/HK-market framing, geopolitics, oil/gold/inflation narratives, and events that may not surface clearly in official data calendars.
-  - Prefer official release calendars for final confirmation of high-importance US/Japan/China event dates and times: Fed, US Treasury, BLS/BEA/Census, BOJ, Japan MOF, Japan Statistics Bureau, Cabinet Office, China NBS, PBOC/LPR, customs, and finance ministry sources when available.
-  - Treat Jin10 and Wallstreetcn as candidate discovery and market-narrative inputs, not as the sole authority for critical times. Cross-check `★★★★` and `★★★★★` events against official or another high-quality calendar before writing to Google Calendar whenever possible.
+Build the candidate set before assigning stars. A short final calendar requires broad discovery; it is not evidence of complete research by itself. Search the whole requested week, including weekend decisions and releases that cross local midnight.
+
+Cover the requested China, US and Japan markets, prioritizing Japan when that is the user's trading focus. Identify the user's markets and active themes from current evidence. Use them to prioritize, not to exclude contrary catalysts or events that could change the theme. Respect categories the user explicitly handles separately.
+
+Cover these complementary source roles in the first pass, without waiting for the user to supply a weekly article:
+
+| Role | Starting sources | What to capture |
+| --- | --- | --- |
+| Scheduled macro baseline | A comprehensive calendar such as Investing.com, Trading Economics, ActionForex or ForexFactory | Data, central banks, auctions, prior values and dated consensus |
+| Weekly catalyst discovery | The target week's Wallstreetcn “下周重磅日程” or Jin10 weekly outlook; a Japanese weekly outlook/calendar such as public Nikkei, Kabutan or a major Japanese broker | Policy deadlines, industry events, product launches, monthly operating data, holidays and market structure |
+| Authoritative confirmation | Relevant agency, central bank, exchange, company IR, organizer or producer-group schedule | Event identity, status, date, timezone, release versus conference-call time |
+
+Use independent coverage, not multiple mirrors of one article. Official calendars confirm known events well but do not discover all cross-industry catalysts. Search company/organizer schedules for the active themes that broad calendars do not cover. If a source is unavailable, use an accessible equivalent and record the resulting gap; do not silently treat an inaccessible article as reviewed.
+
+Confirm material candidates against the relevant official schedule or another high-quality independent source before insertion. Use Fed/Treasury/BLS/BEA for US releases, BOJ/MOF/Statistics Bureau for Japan, and NBS/PBOC/customs for China; use company IR, organizers, exchanges and OPEC for their respective events. Unconfirmed policy or political claims remain observation items.
+
+Read complete weekly articles, every embedded calendar image/table and captions, whether discovered independently or supplied by the user. A headline, search snippet or text-only extract is insufficient when images contain additional events. Follow source-access and rate-limit rules of the current environment.
+
+Check all four event classes below across the relevant transmission paths:
+
+- Rates, FX and liquidity: policy communication, debt supply, reserve/liquidity operations, including foreign central banks when they affect the user's currencies or assets.
+- Demand and earnings chain: China demand, trade and industrial profits; semiconductor exports, monthly revenue or production updates that inform watched suppliers/customers.
+- Industry and company catalysts: AI/semiconductor, energy, automotive or other active themes; conferences, product availability and investor days with a concrete decision variable.
+- Policy and market structure: implementation dates, tariff/export-control deadlines, index/expiry flows, ex-dividend dates, holidays and cross-border trading availability; include energy supply meetings and weekend decisions when material.
+
+These are coverage checks, not mandatory calendar entries. For each relevant class, record candidates found or that a suitable source was checked with no material candidate; “not searched” is different from “none found.”
+
+Maintain a compact working candidate ledger: event; discovery/confirmation source and as-of date; source-local date/time and timezone; affected assets and causal path; importance and confirmation status; include / already present / exclude with reason / unresolved. Keep account identifiers and private watchlists out of public artifacts. Use the ledger to compare the full candidate set against the existing calendar before writing.
 
 ### 2. Classify Before Ranking
 
@@ -217,9 +228,11 @@ Exclude vague commentary, routine sector events, one-off company items without a
 
 - Assign importance stars from `★` to `★★★★★`.
 - For Calendar writing, if the user asks for "四星以上", include only `★★★★` and `★★★★★`.
-- Even when the user says "四星以上", do not add every `★★★★` event automatically. Add `★★★★` only when it is connected to the current market theme and has a clear impact path. Add all `★★★★★` unless there is no concrete time or the event is unconfirmed.
-- Default to a smaller, higher-signal calendar. The goal is not coverage; the goal is to prevent noise while preserving events that can change trading decisions.
-- Score each candidate across five practical checks before assigning stars: (1) likely intraday price impact, (2) ability to change the next days/weeks market narrative, (3) direct connection to the user's markets, watchlist, or active themes, (4) scope for a meaningful surprise versus consensus, and (5) confidence in the date, time, and event itself.
+- Even when the user says "四星以上", do not add every `★★★★` event automatically. Add `★★★★` only when it is connected to the current market theme and has a clear impact path. Include confirmed `★★★★★` under the timing rules below; keep unresolved events visible in the working ledger.
+- Keep the written calendar selective after coverage is checked. Do not use a target event count or “avoid noise” as a reason to skip candidate discovery.
+- Assess materiality from price impact, scope to change the next days/weeks outlook, connection to the user's assets, and surprise potential. Assess event confirmation and time precision separately: an important event with an unknown hour belongs in unresolved/eligible date-marker handling, not automatically in the low-importance bucket.
+- For a four-star theme event, name the actual new information expected and the asset or supply-chain exposure it could reprice. A generic “AI benefits semiconductors” sentence does not establish materiality. Apply the same test to follow-up additions; the user's article and a larger addition count are not ground truth.
+- An event's country, organizer size, lack of a conventional economic-calendar star, or absence from the personal stock list is not by itself a reason to reject a macro/industry catalyst. Show the read-through before deciding; preserve the user's separate earnings watchlist filter and disclose material excluded bellwethers when relevant.
 - A `★★★★` entry needs both a clear transmission path and a current-theme connection. `★★★★★` is reserved for systemic catalysts or unusually sensitive Japan rates/JPY events. A headline's own star label is a discovery hint, not the final rating.
 - Treat Japan inflation, BOJ communication, and JGB supply/demand events as high priority only when Japan rates/JPY are an active market driver. Examples include national CPI, Tokyo CPI, CGPI, BOJ decision/outlook/report, Summary of Opinions, BOJ minutes, Governor/deputy governor speeches, and 10y/20y/30y/40y JGB auctions.
 - Require a concrete time for normal Calendar insertion. For a confirmed, high-signal conference, product launch, or policy meeting with no public time, use a transparent 0-minute `08:00` local-time marker only when the user's established preference permits it; state that the precise time is unannounced. For multi-day events, create one marker on the first day and include the date span in the title.
@@ -237,7 +250,7 @@ For each event, collect or estimate:
 - Make impacts concrete where possible: USD, JPY, CNH, yields, Nasdaq/growth stocks, value/cyclicals, gold, crypto, commodities, China/HK equities, Japanese banks/exporters.
 - For Japan-relevant events, explicitly state the likely direction for JGB yields, JPY, and affected Japanese equity groups when applicable: banks, exporters, growth stocks, real estate, semiconductors, domestic demand, or commodities.
 - For confirmed non-numeric events, replace forced forecast fields with the decision variables that matter: for example production guidance and commercialisation for a product launch, policy language and export controls for a government meeting, or supply guidance for OPEC+.
-- When a fresher credible source revises a consensus or prior value, update the existing Calendar description rather than create a duplicate event. Do not retain stale estimates merely because they appeared in an earlier weekly source.
+- Before replacing a forecast, match the indicator, period, units and survey timestamp, and distinguish market consensus from an institution's estimate. Newer publication alone is not stronger evidence. Resolve text/image conflicts with the underlying source where possible; otherwise label the disagreement and do not promote it to a single consensus or an invented consensus range. Update the existing event only when the revised value is supported; use the official release for prior/revised actuals.
 
 ### 5. Calendar Format
 
@@ -292,9 +305,13 @@ If a macro or market-event item overlaps with an earnings event, keep the macro/
 
 ## Verification
 
+Before writing, compare the candidate ledger with the proposed calendar by event class and source role. Revisit excluded high-impact candidates and unresolved timing, and check whether a Japanese trader's rates/FX, demand, industry and market-structure exposures have a blind spot. If relevant coverage remains unavailable, report the specific gap instead of claiming full coverage. Do not create marginal entries to fill an empty class.
+
 After writing:
 
 - Search the target week for the created/updated title prefix or keyword.
 - Confirm count, titles, dates/times, and color for 5-star items.
 - Confirm the date conversion for events sourced outside the user's timezone and the `08:00` placeholder convention for confirmed undated events.
 - Summarize only what changed and mention anything intentionally excluded, such as unconfirmed events, weak read-through, or no concrete time.
+
+For a later supplement, distinguish a first-pass omission, genuinely new announcement, forecast/time revision and a change in user scope. Calendar entry counts differ from underlying event counts because of grouping; use the reviewed candidate ledger, not raw additions, to assess first-pass misses. Verification of successful writes does not establish research completeness.
