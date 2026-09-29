@@ -24,7 +24,7 @@ ChatGPT Web, ChatGPT work environments and Codex can expose different tools. Dis
 
 As of 2026-09-29 (Japan time):
 
-- Marketplace source 0.1.12 adds a shared public + private reference contract, private-source packaging guards, and explicit target-calendar routing. Build validation and marketplace publication are tracked separately; the source version alone is not a published version.
+- Marketplace version 0.1.12 is Approved in the developer portal after maintainer submission; it is not yet verified as Published. The approved submission matches the final validated 48-file package. It adds a shared public + private reference contract, private-source packaging guards, and explicit target-calendar routing. Sixteen local tests, twenty source/package Skill validations, and the packaged manifest validation passed. The portal still lists 0.1.11 as Published.
 
 - Marketplace version 0.1.11 is Published in the developer portal. It updates strategy and technical analysis to the index-trajectory `/api/range/nikkei` and `/api/range/sse` contracts. The 47-file package passed all ten platform Skill scans, was submitted after the maintainer confirmed the six required declarations, and was approved and published. The public directory still displayed 0.1.10 on the immediate post-publication readback; propagation to that page remains unverified.
 
