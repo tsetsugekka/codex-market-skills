@@ -5,6 +5,8 @@ description: Use when the user asks for daily market strategy, broad-market trad
 
 # Market Daily Strategist
 
+开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 Use this skill for the user's market reports. This is not a scheduler; ignore any clock-trigger wording from the original prompts. Route by user intent:
 
 - 美股盘前、开盘前、pre-market、盘前策略、美股今晚怎么做、美股明天如何做、今天美股怎么看、纳指今晚怎么看、标普明天怎么看、美国市场怎么做、美股大盘策略: read `references/us-pre-market.md`.

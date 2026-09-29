@@ -5,6 +5,8 @@ description: 分析股票与指数的趋势、支撑压力、量价动能、突�
 
 # Stock Technical Analysis
 
+开始分析前，按[公共与私密 Reference 双读契约](../../../skills/market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 ## 跨环境执行
 
 先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
@@ -43,7 +45,7 @@ Never answer only by following the latest tick. Use the sequence:
 
 For A-share technical reads, optionally use 东方财富妙想 skills when they are already installed, but keep them as a supplemental data layer rather than a replacement for the existing price-action workflow. Continue to judge trend, support/resistance, volume-price confirmation, sector/broad-market context, sentiment, and macro when relevant. `mx-data` can supplement current quote,涨跌幅,成交额/量,主力资金, historical prices, index/sector context, and valuation fields; `mx-search` can supplement current event/news context when a technical break may be news-driven; `mx-xuangu` can help build peer or board constituent comparisons and can run natural-language technical screens such as consecutive moving-average alignment plus price-above/below-MA conditions. If the user asks which A-shares belong to a sector/theme or asks for `相关股`, `概念股`, `龙头股`, or `板块成分`, use `mx-xuangu` first when available. Do not block the analysis if these skills are unavailable or fail; you may briefly suggest installing/configuring 妙想 only when that layer would materially improve the exact A-share request. Use `mx-zixuan` and `mx-moni` only when the user explicitly asks for self-selected-stock management/filtering or simulated portfolio/trade operations.
 
-Do not read local research folders or indicator files by default. If the user explicitly provides a file or asks to learn from a specific document, extract only reusable public-safe rules. Do not store local file paths, proprietary indicator names, personal slogans, private strategy names, private person names/handles, or original document labels in this skill. Generic public concepts such as Vegas channels, KDJ, MACD, RSI, VWAP, and support/resistance may be retained.
+Do not scan local research folders or indicator files wholesale. Read only task-relevant references mapped by an authorized private index or a file explicitly provided by the user. Do not store local file paths, proprietary indicator names, personal slogans, private strategy names, private person names/handles, or original document labels in this skill. Generic public concepts such as Vegas channels, KDJ, MACD, RSI, VWAP, and support/resistance may be retained.
 
 ## DTM Index And Theme Context
 

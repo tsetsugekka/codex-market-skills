@@ -22,14 +22,16 @@ ChatGPT Web, ChatGPT work environments and Codex can expose different tools. Dis
 
 ## Release status
 
-As of 2026-09-25 (Japan time):
+As of 2026-09-29 (Japan time):
+
+- Marketplace source 0.1.12 adds a shared public + private reference contract, private-source packaging guards, and explicit target-calendar routing. Build validation and marketplace publication are tracked separately; the source version alone is not a published version.
 
 - Marketplace version 0.1.11 is Published in the developer portal. It updates strategy and technical analysis to the index-trajectory `/api/range/nikkei` and `/api/range/sse` contracts. The 47-file package passed all ten platform Skill scans, was submitted after the maintainer confirmed the six required declarations, and was approved and published. The public directory still displayed 0.1.10 on the immediate post-publication readback; propagation to that page remains unverified.
 
 - Marketplace 0.1.10 was the previously published version; the developer portal now lists it as Approved.
 - Version 0.1.10 restores the full ten entries, source order/links, market report profiles and detailed research references. Its 47-file archive includes six Python scripts and shared live/offline forum filtering. Ten automated tests, ten Skill validators and the plugin manifest validator passed locally. The platform accepted the Python attachments, passed all ten Skill scans, approved the submission and published it after the maintainer confirmed the four required declarations.
 - Live execution in ChatGPT Web/Work and loading by Scheduled Tasks remain unverified. Successful Python attachment ingestion does not establish execution or network access in those hosts; use the capabilities actually exposed in each session.
-- The root manifest remains the standalone Codex variant at 0.1.6. Its version does not describe the separate marketplace package.
+- The root manifest is the standalone Codex variant at 0.1.7, including public + local private reference loading. Its version does not describe the separate marketplace package. Use one installation route per host to avoid duplicate skills; local private references do not require another Skill installation.
 - Existing installations update through their host; source synchronization does not replace local caches.
 
 See [plugin maintenance](../plugin/docs/MAINTENANCE.md) for package boundaries, build commands and the method coverage matrix, and [review scenarios](plugin-submission-tests.md) for expected behavior. Static validation, platform scanning, marketplace publication and live runtime acceptance are separate checks.

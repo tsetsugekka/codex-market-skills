@@ -5,6 +5,8 @@ description: 从催化、预期差、市场宽度、领导股和价格反应分�
 
 # Stock Sentiment Analysis
 
+开始分析前，按[公共与私密 Reference 双读契约](../../../skills/market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 ## 跨环境执行
 
 先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。

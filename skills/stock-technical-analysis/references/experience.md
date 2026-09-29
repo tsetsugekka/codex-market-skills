@@ -34,11 +34,11 @@ Read this section before using the stock technical analysis skill.
 
 ### Learning Trigger
 
-- In long multi-turn analysis of one stock, update experience only when the discussion reveals a reusable rule: execution feasibility, level confirmation, pressure-zone behavior, timeframe conflict, indicator weighting, or a repeated analytical failure/success.
+- In long multi-turn analysis of one stock, update this public experience only when the user explicitly authorizes public Skill maintenance, the lesson passes privacy review, and the discussion reveals a reusable rule: execution feasibility, level confirmation, pressure-zone behavior, timeframe conflict, indicator weighting, or a repeated analytical failure/success.
 - Convert the lesson into a general rule. Do not preserve private position details, exact personal trade plans, or ticker-specific play-by-play as active knowledge.
 
 
-- For reusable sentiment lessons that apply across markets, update `stock-sentiment-analysis/references/experience.md` as the shared layer, then keep only market-specific details here.
+- When the user explicitly authorizes a public Skill update and the lesson passes privacy review, put reusable cross-market sentiment lessons in `stock-sentiment-analysis/references/experience.md` and keep only market-specific details here.
 
 ## Compression Protocol
 

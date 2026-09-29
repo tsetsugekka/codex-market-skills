@@ -5,16 +5,14 @@ description: Use when the user asks for technical analysis or a technically grou
 
 # Stock Technical Analysis
 
+开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 Use this skill when the user asks about price action, technical setup, intraday odds, support/resistance, trend continuation, pullback risk, or chart-based timing for US stocks, Japanese stocks, or A-shares.
 
 This public-safe skill is self-contained and contains only generalized technical-analysis methods. Do not commit personal information, API keys, account data, private RAG files, or private research materials to GitHub. It must not store personal positions, private research paths, proprietary indicator names, private person names/handles, or private strategy labels. It may use a user-specified private RAG folder during a session, but the skill must remain usable without it.
 
 
-## Public And Private Versions
-
-If both public and private versions of this skill exist, prefer the private version for local analysis when the user permits it. The private version may use local RAG indexes and user-specific study material.
-
-When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
+## Public Release
 
 When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
@@ -44,9 +42,9 @@ Never answer only by following the latest tick. Use the sequence:
 
 For A-share technical reads, optionally use 东方财富妙想 skills when they are already installed, but keep them as a supplemental data layer rather than a replacement for the existing price-action workflow. Continue to judge trend, support/resistance, volume-price confirmation, sector/broad-market context, sentiment, and macro when relevant. `mx-data` can supplement current quote,涨跌幅,成交额/量,主力资金, historical prices, index/sector context, and valuation fields; `mx-search` can supplement current event/news context when a technical break may be news-driven; `mx-xuangu` can help build peer or board constituent comparisons and can run natural-language technical screens such as consecutive moving-average alignment plus price-above/below-MA conditions. If the user asks which A-shares belong to a sector/theme or asks for `相关股`, `概念股`, `龙头股`, or `板块成分`, use `mx-xuangu` first when available. Do not block the analysis if these skills are unavailable or fail; you may briefly suggest installing/configuring 妙想 only when that layer would materially improve the exact A-share request. Use `mx-zixuan` and `mx-moni` only when the user explicitly asks for self-selected-stock management/filtering or simulated portfolio/trade operations.
 
-If a long multi-turn discussion about one stock produces a verified reusable lesson, update `references/experience.md` after answering. Generalize the lesson; do not store ticker-specific notes as the main content.
+If a long multi-turn discussion about one stock produces a verified reusable lesson, apply it to the current answer. Update public `references/experience.md` only when the user explicitly requests a public Skill update; generalize the lesson and do not store ticker-specific notes as the main content.
 
-Do not read local research folders or indicator files by default. If the user explicitly provides a file or asks to learn from a specific document, extract only reusable public-safe rules. Do not store local file paths, proprietary indicator names, personal slogans, private strategy names, private person names/handles, or original document labels in this skill. Generic public concepts such as Vegas channels, KDJ, MACD, RSI, VWAP, and support/resistance may be retained.
+Do not scan local research folders or indicator files wholesale. Read only task-relevant references mapped by an authorized private index or a file explicitly provided by the user. Do not store local file paths, proprietary indicator names, personal slogans, private strategy names, private person names/handles, or original document labels in this skill. Generic public concepts such as Vegas channels, KDJ, MACD, RSI, VWAP, and support/resistance may be retained.
 
 ## DTM Index And Theme Context
 
@@ -54,7 +52,7 @@ For DTM data, use the canonical JSON interfaces in `https://daytrading.monster/a
 
 ## Optional User Knowledge Base
 
-If a user wants to use their own study materials, ask them to specify a private RAG or index folder outside this public repository. Raw PDFs, screenshots, indicators, notes, and private labels should stay private. Offer to create or update a lightweight local index for repeated use, with only user-approved aliases, topics, page/slide ranges, keywords, and public-safe summaries. Only distilled, generic rules should be copied into `references/experience.md` or `references/technical-analysis-playbook.md`, and only when the user explicitly asks to update the skill. Do not write the private path, private labels, or raw source text into public files. The skill must remain usable without that private corpus.
+If a user wants to use their own study materials, use their explicit private index or the available standard local index from the shared reference contract; if neither is accessible, ask for a location outside this public repository. Raw PDFs, screenshots, indicators, notes, and private labels should stay private. Offer to create or update a lightweight local index for repeated use, with only user-approved aliases, topics, page/slide ranges, keywords, and public-safe summaries. Only independently reviewed, generic rules should be copied into `references/experience.md` or `references/technical-analysis-playbook.md`, and only when the user explicitly asks to update the public skill. Do not write the private path, private labels, or raw source text into public files. The skill must remain usable without that private corpus.
 
 ## When To Load The Reference
 
@@ -69,7 +67,7 @@ For any of the following, read `references/technical-analysis-playbook.md` first
 - You are using moomoo, Yahoo chart, or screenshots to read the chart.
 - The user asks to use moomoo or another charting/trading app, or the chart is already visible and current.
 
-If the user asks for a post-mortem, review, or lesson update after the stock moves as discussed, read and update `references/experience.md` first, then edit references only if a core checklist needs to change.
+If the user asks for a post-mortem, review, or lesson update after the stock moves as discussed, read `references/experience.md` first. Update it only when the user explicitly requests a public Skill update, then edit other public references only if a core checklist needs to change.
 
 For chart-app workflows, read the `Chart App Visual Workflow` section in `references/technical-analysis-playbook.md`.
 

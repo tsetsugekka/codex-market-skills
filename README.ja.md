@@ -42,6 +42,8 @@ Codex Market Skills は、取引、投資リサーチ、市場カレンダー管
 
 ## Skill 一覧
 
+一つの Skill から公開 Reference と許可されたローカルの非公開 Reference を併読できる。[読み込みルール](skills/market-daily-strategist/references/reference-layers.md)に従い、非公開の本文と索引はリポジトリと配布パッケージの外に保存する。同名の非公開 Skill を別途インストールする必要はない。重複を避けるため、各環境では独立 Skills とストア Plugin のどちらかを選ぶ。
+
 | Skill | 用途 | 主な依存 |
 | --- | --- | --- |
 | [`market-calendar-google`](docs/market-calendar-google.md) | 決算、マクロ指標、中央銀行イベント、入札などを整理し Google Calendar に追加 | 必須：`google-calendar:google-calendar` |

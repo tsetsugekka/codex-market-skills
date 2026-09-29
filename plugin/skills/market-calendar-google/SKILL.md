@@ -5,6 +5,8 @@ description: 整理一周美日财报及中美日宏观事件日历，核验时�
 
 # Market Calendar Google
 
+开始分析前，按[公共与私密 Reference 双读契约](../../../skills/market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 ## 跨环境执行
 
 先按[环境能力路由](../market-daily-strategist/references/runtime-capabilities.md)发现当前会话已安装、已连接且有权限的 Skill、工具、网页和计算能力。OpenD/moomoo、妙想、同花顺等是可选数据能力；不能由 ChatGPT Web、工作环境或 Codex 的名称推定可用性。优先复用已取得且仍有效的资料。研究来源顺序、字段与计算方法不因环境不同而省略；缺能力时说明具体缺口，不宣称已采集或已计算。
@@ -35,6 +37,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
   - Preserve the prepared event payloads and duplicate-check results in the response so the user can retry without reconstructing the calendar work.
   - Never claim events were written unless a follow-up bounded search verifies the created or updated events.
 - Use Google Calendar tools. Search the target week first to avoid duplicates before creating or updating events.
+- If the user specifies an existing calendar, call `list_calendars` (or the environment's equivalent) and resolve exactly one `calendar_id`; if it cannot be listed or is missing or ambiguous, ask before writing. If no calendar is specified, use `primary`. Use that same `calendar_id` for the target-week duplicate search, every write, and the bounded post-write verification. Do not hard-code a private calendar ID or assume calendar create/move capabilities.
 - Preserve existing user-created calendar details unless the user asks to overwrite them.
 - Put a country flag at the start of titles when the event has a clear country:
   - US: `🇺🇸`

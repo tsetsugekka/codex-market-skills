@@ -55,8 +55,8 @@
 
 ## Conversation Learning Protocol
 
-- Update this file only when a multi-turn correction reveals a reusable gamma lesson: expiry selection, stale Greeks, SPX/SPY/ES conversion, news/gamma interaction, or chart confirmation.
-- If the lesson is mostly sentiment-related, update `stock-sentiment-analysis/references/experience.md` instead or as well.
+- Update this public file only when the user explicitly authorizes public Skill maintenance, the lesson passes privacy review, and a multi-turn correction reveals a reusable gamma lesson: expiry selection, stale Greeks, SPX/SPY/ES conversion, news/gamma interaction, or chart confirmation.
+- For an authorized, privacy-reviewed public update, if the lesson is mostly sentiment-related, update `stock-sentiment-analysis/references/experience.md` instead or as well.
 
 ## Archive
 

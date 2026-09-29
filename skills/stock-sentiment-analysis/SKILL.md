@@ -5,15 +5,13 @@ description: Reusable public-safe sentiment and market-emotion framework for A-s
 
 # Stock Sentiment Analysis
 
+开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 Use this skill as the shared sentiment layer for market skills. It does not fetch data by itself; it tells Codex how to interpret evidence gathered by `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, `us-stock-gamma-moomoo`, public news, forums, breadth, and user-provided screenshots or notes.
 
 This public-safe skill must not contain personal information, API keys, account data, private paths, raw screenshots, full copied notes, ticker-specific personal trade logs, or proprietary labels from a private RAG corpus. It must remain usable without any private RAG folder.
 
-## Public And Private Versions
-
-If both public and private versions of a market skill exist, prefer the private version for local analysis when the user permits it. Use this public skill as the public-safe shared framework and as the release checklist source.
-
-When updating a paired private/public skill, write public-safe generalized lessons to both versions, but keep private paths, private labels, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
+## Public Release
 
 When preparing a GitHub upload or public release, use only the public version and read the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md` first. Run a privacy check for private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
 
@@ -24,7 +22,7 @@ When this skill selects a reference file, first scan the file structure, then re
 ## Workflow
 
 1. Read the relevant areas of `references/experience.md` before deep analysis; read the full file when the task is broad or the active playbook may affect the answer.
-2. During decomposition, actively expand stock, index, and theme questions into emotion-cycle, main-line/follower, expectation-gap, crowding, cross-market sentiment, or mainline/funds/game/cycle checks when these lenses can change the conclusion, even if the user did not explicitly request them. For collective sector surges, continuation questions, and market-sector-stock resonance, apply `Market-Sector-Stock Resonance And Continuation` from `references/sentiment-framework.md`; separate logic durability, tape continuity, and entry quality instead of treating a strong narrative as an automatic buy point. Read the relevant areas of `references/sentiment-framework.md`. Read the repo-level `shared/references/release-and-privacy.md` before publishing, syncing public/private versions, or preparing a GitHub upload.
+2. During decomposition, actively expand stock, index, and theme questions into emotion-cycle, main-line/follower, expectation-gap, crowding, cross-market sentiment, or mainline/funds/game/cycle checks when these lenses can change the conclusion, even if the user did not explicitly request them. For collective sector surges, continuation questions, and market-sector-stock resonance, apply `Market-Sector-Stock Resonance And Continuation` from `references/sentiment-framework.md`; separate logic durability, tape continuity, and entry quality instead of treating a strong narrative as an automatic buy point. Read the relevant areas of `references/sentiment-framework.md`. Read the repo-level `shared/references/release-and-privacy.md` before publishing or preparing a GitHub upload.
 3. Gather or receive evidence from the market-specific skill first:
    - A-shares: prefer `cn-stock-move-reason` for quote, announcements, 股吧, board ranks, breadth, and A-share emotion cycle.
    - Japanese stocks: prefer `jp-stock-move-reason` for quote, news, Yahoo 掲示板, metrics, and theme/peer context.
@@ -34,7 +32,7 @@ When this skill selects a reference file, first scan the file structure, then re
 4. For A-share evidence, optional 东方财富妙想 skills can supplement the market-specific workflow when installed. MX data is an evidence and screening layer, not a replacement for the existing know-how: still apply source hierarchy, emotion-cycle staging, main-line/follower judgment, expectation-gap analysis, forum/news psychology, breadth, sector rotation, macro, and technical confirmation when relevant. Use `mx-data` for quote/financial/fund-flow/sector data, `mx-search` for news/announcements/research/policy, and `mx-xuangu` for sector constituents, concept stocks, peer screens, and natural-language condition screens. For A-share questions such as `这个板块有哪些股票`, `相关股`, `概念股`, `龙头股`, `板块成分`, or `同题材还有谁`, try `mx-xuangu` first when available; then use `mx-data`/`mx-search` selectively to classify purity, heat, and catalysts. If 妙想 is unavailable, continue with public sources or state the limitation. You may briefly suggest installing/configuring 妙想 only when it would materially improve the exact request; never make it a dependency.
 5. Do not use account-touching 妙想 skills automatically. Use `mx-zixuan` only when the user explicitly asks to query/add/delete/filter 东方财富 self-selected stocks; for `自选股里哪些符合条件`, first try `mx-xuangu` constrained to self-selected stocks, and if unsupported, combine `mx-zixuan` self-selected results with `mx-xuangu` screening locally. Use `mx-moni` only for explicit simulated-portfolio queries or simulated trades.
 6. Classify the move through three lenses: `confirmed catalyst`, `emotion/positioning`, and `technical confirmation`. When resonance matters, finish the hierarchy `market -> sector/theme -> stock` and test broad-market support, turnover/liquidity, participation breadth, industry-chain diffusion, continuing fundamental validation, and lifecycle position. Do not let forum heat replace confirmed news.
-7. If a multi-turn correction reveals a reusable lesson, update `references/experience.md` after answering. Generalize the lesson; remove ticker-specific personal details and private labels.
+7. If a multi-turn correction reveals a reusable lesson, apply it to the current answer. Update public `references/experience.md` only when the user explicitly requests a public Skill update; generalize the lesson and remove ticker-specific personal details and private labels.
 
 ## DTM Context
 
@@ -42,7 +40,7 @@ Prefer data already obtained by the upstream market-specific skill. When the rel
 
 ## Optional Private RAG
 
-If the user wants to use private study materials, ask them to specify a local RAG or index folder. Do not assume a default private path. Use it only for extracting reusable rules relevant to the current task.
+If the user wants to use private study materials, use the explicitly provided index or the available standard local index defined in the shared reference contract. If neither is accessible, ask for a location. Read only the task-relevant mapped material.
 
 Rules for private RAG:
 
@@ -75,7 +73,7 @@ Each index entry should be compact:
   Public-safe: yes/no
 ```
 
-Use the index to find relevant private material efficiently, then answer from public-safe distilled rules.
+Use the index to find relevant private material efficiently, then answer from verified public and applicable private rules without copying private source text.
 
 ## Output Style
 

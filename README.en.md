@@ -42,6 +42,8 @@ Ask a question, match the research skills, check the evidence, and get analysis,
 
 ## Skill Overview
 
+One Skill can read both its public references and authorized local private references through the [shared reference contract](skills/market-daily-strategist/references/reference-layers.md). Keep private content and its index outside the repository and release package; do not install a second same-name private Skill. Choose either standalone Skills or the marketplace plugin on each host to avoid duplicate entries.
+
 | Skill | Purpose | Key Dependencies |
 | --- | --- | --- |
 | [`market-calendar-google`](docs/market-calendar-google.md) | Organizes earnings, macro data, central-bank events, auctions, and other market events, then writes them to Google Calendar | Required: `google-calendar:google-calendar` |

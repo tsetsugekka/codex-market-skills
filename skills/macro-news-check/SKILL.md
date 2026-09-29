@@ -5,6 +5,8 @@ description: Use when stock, index, gamma, or market analysis needs current macr
 
 # Macro News Check
 
+开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 Use this skill only when the analysis genuinely needs current macro, broad-market, or cross-asset context. Do not run it for every single-stock question by default.
 
 This skill is public-safe: it uses public pages or feeds and must not store credentials, cookies, account data, private research paths, or raw copyrighted news dumps. Summarize only the headlines and implications needed for the user's market question.

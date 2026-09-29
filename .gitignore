@@ -7,6 +7,9 @@ __pycache__/
 private-rag/
 private_rag/
 RAG_INDEX/
+private-references/
+private_references/
+private-references.md
 *.ftindex
 skills/cn-market-tape/assets/themes/theme-data.json
 skills/cn-market-tape/assets/themes/theme-label-i18n.json

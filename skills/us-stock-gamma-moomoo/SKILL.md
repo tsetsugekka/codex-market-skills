@@ -7,22 +7,20 @@ metadata:
 
 # US Stock Gamma With moomoo
 
+开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 Use this skill to turn moomoo OpenD option data into an actionable gamma map and a plain-language trading note.
 
 This public-safe skill is self-contained. Do not commit personal information, API keys, account data, private RAG files, or any `Stocks` folder contents to GitHub. It may use a user-specified private RAG folder during a session, but it must not store private source paths, personal positions, original strategy names, private person names/handles, proprietary labels, or private document titles. Generic market concepts such as gamma, GEX, dealer hedging, FVG, KDJ, MACD, RSI, VWAP, and Vegas may be retained.
 
 
-## Public And Private Versions
-
-If both public and private versions of this skill exist, prefer the private version for local analysis when the user permits it. The private version may use local RAG indexes and user-specific study material.
-
-When updating the skill, keep public and private versions in sync: write public-safe, generalized lessons to the public version; keep private labels, private paths, raw notes, screenshots, account data, and personal trade context only in the private version or private RAG index.
+## Public Release
 
 When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Experience
 
-Before deep analysis, read `references/experience.md` if it exists, but only `Active Playbook` and `Compression Protocol` unless the user explicitly asks for historical lessons. If a multi-turn correction produces a durable reusable lesson about gamma interpretation, option scenario handling, news/gamma interaction, or chart confirmation, update that file after answering. Generalize the lesson and strip private details.
+Before deep analysis, read `references/experience.md` if it exists, but only `Active Playbook` and `Compression Protocol` unless the user explicitly asks for historical lessons. If a multi-turn correction produces a durable reusable lesson about gamma interpretation, option scenario handling, news/gamma interaction, or chart confirmation, apply it to the current answer. Update public experience only when the user explicitly requests a public Skill update; generalize the lesson and strip private details.
 
 Cross-skill calls are operational. When this workflow says to use another market skill, actually load that skill's `SKILL.md` and required references if the skill is installed or available as a sibling in this repository. Do not merely mention the other skill by name in the answer.
 
@@ -297,7 +295,7 @@ Interpretation rules:
 
 ## Optional User Knowledge Base
 
-Do not read local research folders by default. If a user wants to incorporate their own study materials, ask them to specify a private RAG or index folder outside this public repository:
+Do not scan local research folders wholesale. For private study materials, use task-relevant references from the user's explicit index or the available standard local index in the shared contract; if neither is accessible, ask for a location outside this public repository:
 
 - keep raw PDFs, screenshots, notes, and proprietary indicators in a private local folder or private vector store;
 - offer to create or update a lightweight local index for repeated use, with only user-approved aliases, topics, page/slide ranges, keywords, and public-safe summaries;

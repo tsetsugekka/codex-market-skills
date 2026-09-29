@@ -42,6 +42,10 @@ Codex Market Skills 是一组面向交易、投资研究和市场日程管理的
 
 ## Skill 总览
 
+### 公共方法与本地私密增补
+
+一个 Skill 入口可以同时使用公共 Reference 和已授权的本地私密 Reference，不需要再安装同名私密 Skill。公共方法随仓库发布；私密正文及定位索引保存在仓库外，不进入 GitHub 或插件包。读取顺序、适用范围、修订冲突和缺失处理见[双读契约](skills/market-daily-strategist/references/reference-layers.md)。安装独立 Skills 或商店插件时择一，避免重复注册。
+
 | Skill | 用途 | 关键依赖 |
 | --- | --- | --- |
 | [`market-calendar-google`](docs/market-calendar-google.md) | 整理财报、宏观数据、央行事件、拍卖和其他财经事件，并写入 Google Calendar | 必需：`google-calendar:google-calendar` |

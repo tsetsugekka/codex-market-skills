@@ -32,9 +32,9 @@
 
 ## Conversation Learning Protocol
 
-- Update this file only when a multi-turn correction reveals a reusable rule: missed sentiment phase, wrong source priority, bad expectation-gap framing, overconfidence in forum heat, or poor chart/news integration.
+- Update this public file only when the user explicitly authorizes public Skill maintenance, the lesson passes privacy review, and a multi-turn correction reveals a reusable rule: missed sentiment phase, wrong source priority, bad expectation-gap framing, overconfidence in forum heat, or poor chart/news integration.
 - Generalize the lesson before writing. Ticker names are allowed only as compact public examples in `Archive` when necessary.
-- If the lesson is market-specific, also consider updating the relevant skill's `references/experience.md`.
+- For an authorized, privacy-reviewed public update, if the lesson is market-specific, also consider updating the relevant skill's `references/experience.md`.
 
 ## Archive
 

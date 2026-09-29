@@ -54,7 +54,7 @@ Use this section when the user asks whether a stock is cheap/expensive, asks for
 - Valuation output should end with a "what must happen to justify upside" test and a "what invalidates the valuation" test.
 
 
-- For reusable sentiment lessons that apply across markets, update `stock-sentiment-analysis/references/experience.md` as the shared layer, then keep only market-specific details here.
+- When the user explicitly authorizes a public Skill update and the lesson passes privacy review, put reusable cross-market sentiment lessons in `stock-sentiment-analysis/references/experience.md` and keep only market-specific details here.
 
 ## Compression Protocol
 
@@ -71,7 +71,7 @@ Keep this file readable by compressing before it becomes too large.
 
 Use this protocol after multi-turn discussion about the same stock.
 
-- Auto-update experience only when the follow-up reveals a reusable lesson, such as a missed catalyst type, wrong source priority, poor sector共振 framing, bad emotion-cycle judgment, overconfidence, or a recurring output weakness.
+- Update this public experience file only when the user explicitly authorizes public Skill maintenance, the lesson passes privacy review, and the follow-up reveals a reusable lesson, such as a missed catalyst type, wrong source priority, poor sector共振 framing, bad emotion-cycle judgment, overconfidence, or a recurring output weakness.
 - Decide scope before writing: if the lesson applies to both A-shares and Japanese stocks, update both stock-skill `references/experience.md` files; if it relies on A-share-specific sources, rules, or market structure, update only this file.
 - Do not update for one-off ticker facts, ordinary user preferences, speculative claims without support, or information that is only useful for the current stock.
 - Convert the correction into a general rule before writing it. Prefer one concise bullet in `Active Playbook`; use `Archive` only for distinct dated examples that still teach the rule. The ticker may appear only as a compact example in `Archive`, never as the center of the active rule.

@@ -1,30 +1,18 @@
 # Release And Privacy Policy
 
-This reference is public-safe and applies when a skill has both a public version and a private/local version, and when private RAG materials support sentiment, technical analysis, gamma analysis, or other market workflows.
+This reference governs public source maintenance and release privacy. Runtime use of public and local private research follows the [public + private reference contract](../../skills/market-daily-strategist/references/reference-layers.md).
 
-## Version Priority
+## Reference Layers And Updates
 
-- Treat the installed local skill directory as the private/local working version when the user has one, and treat the GitHub repository copy as the public release version.
-- For local analysis, if a valid private version of the same skill is available and the user permits using it, prefer the private version because it may contain local RAG indexes, personal workflow defaults, and user-specific study material.
-- If no private version is available, use the public version plus any user-specified private RAG/index folder.
-- Never assume or hard-code a private path in public files. Discover private materials from the user's explicit instruction, local install metadata, or a local-only index outside the Git repository.
-
-## Keeping Versions In Sync
-
-When updating a skill that has public and private variants:
-
-1. Make the functional change in the version that the current task actually needs.
-2. Decide whether the lesson is public-safe.
-3. If public-safe, port the generalized rule to the public version too.
-4. If private-only, keep it only in the private version or private RAG index.
-5. Update both experience files when a reusable public-safe lesson affects both variants.
-6. Do not let the public version mention private labels, private paths, personal positions, raw notes, screenshots, account data, or API keys.
+- The tracked Skill and its public references remain the public source. A local private index adds task-scoped references; it does not replace the public Skill or grant permissions.
+- Keep private indexes and content outside this repository and plugin package. Do not automatically copy a local lesson into public experience files. Update public material only when the user explicitly requests it and the proposed text is independently checked for privacy, evidence, and scope.
+- Public rules and local private revisions may each change with evidence. Record the local revision's public section, scope, reason, and date in the private index; report unresolved conflicts instead of silently choosing one layer.
 
 Before reconciling an older checkout, fetch the public history and compare the common baseline A, local edits B, and later upstream changes C by topic and intent. A different local patch or conflict-free merge does not prove that B is still valid: C may replace or withdraw it. Use dated commits and relevant release records to classify each difference as already absorbed, superseded, complementary, or unresolved; file timestamps and channel version numbers alone do not establish precedence. Preserve C when it supersedes B, merge only compatible useful changes, and keep uncertain/private material in local recovery evidence until resolved. Verify the combined behavior and contracts, including changes across different files. Do not maintain private variants as an indefinitely dirty public checkout. A GitHub commit alone does not update a separately published plugin or marketplace package.
 
 ## GitHub Upload Rule
 
-When preparing anything for GitHub, use only the public version of the skill as the source of truth. Before staging or pushing, run a privacy check appropriate to the repository, including searches for:
+When preparing anything for GitHub, use only the tracked public source as the release input. Before staging or pushing, run a privacy check appropriate to the repository, including searches for:
 
 - personal paths such as `/Users/...`;
 - API keys, tokens, `.env`, credentials, account numbers, cookies;
@@ -44,4 +32,4 @@ Also confirm `.gitignore` excludes private folders such as `private-rag/`, `RAG_
 
 ## Local RAG Index Rule
 
-It is public-safe to teach the technique of building a local private RAG/index. Private RAG can support sentiment analysis, technical patterns, gamma/option structure, market calendar heuristics, and other user study materials. The public skill may say how to create an index with aliases, topics, page/slide ranges, keywords, categories such as `sentiment`, `technical`, `gamma`, and short public-safe summaries. The index content itself stays outside the public repository unless it has been stripped to public-safe generalized rules.
+It is public-safe to teach the technique of building a local private RAG/index. Private RAG can support sentiment analysis, technical patterns, gamma/option structure, market calendar heuristics, and other user study materials. The public skill may say how to create an index with aliases, topics, page/slide ranges, keywords, categories such as `sentiment`, `technical`, `gamma`, and short public-safe summaries. The index content stays outside the public repository; a generalized public rule is written only when the user explicitly requests a public Skill update and the text passes privacy review.

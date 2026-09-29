@@ -5,6 +5,8 @@ description: Organize a selected week of US earnings calendars or China/US/Japan
 
 # Market Calendar Google
 
+开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 ## Overview
 
 Use this skill to turn weekly market calendars into concise Google Calendar events for the user. Support three workflows:
@@ -27,6 +29,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
   - Preserve the prepared event payloads and duplicate-check results in the response so the user can retry without reconstructing the calendar work.
   - Never claim events were written unless a follow-up bounded search verifies the created or updated events.
 - Use Google Calendar tools. Search the target week first to avoid duplicates before creating or updating events.
+- If the user specifies an existing calendar, call `list_calendars` and resolve exactly one `calendar_id`; if the name is missing or ambiguous, ask before writing. If no calendar is specified, use `primary`. Use that same `calendar_id` for the target-week duplicate search, every write, and the bounded post-write verification. Do not hard-code a private calendar ID or assume calendar create/move capabilities.
 - Preserve existing user-created calendar details unless the user asks to overwrite them.
 - Put a country flag at the start of titles when the event has a clear country:
   - US: `🇺🇸`

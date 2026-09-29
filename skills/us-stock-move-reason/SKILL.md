@@ -5,6 +5,8 @@ description: Use when analyzing why a U.S. stock or ETF moved sharply, including
 
 # US Stock Move Reason
 
+开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+
 Use this skill as the U.S. stock counterpart to `jp-stock-move-reason` and `cn-stock-move-reason`. It is an evidence-gathering and synthesis workflow, not a trading bot.
 
 This public-safe skill must not store account data, OpenD logs, API keys, cookies, private RAG paths, personal positions, screenshots, raw private notes, or proprietary labels. It may call official moomoo skills when installed, but those skills remain external data/anomaly providers.

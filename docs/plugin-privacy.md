@@ -10,6 +10,8 @@ The plugin bundles instructions, reference files and scripts for market research
 
 The host (such as ChatGPT or Codex) processes prompts, attachments and any files the user allows it to access under the host's own terms and privacy controls. A workflow may read user-supplied price tables, option chains or research material, and may save requested reports or local working files in the user's environment. Their retention depends on the host and the user's storage settings.
 
+An authorized local reference index can map a workflow to private research files outside this repository. Relevant public and private references are read together; private files and their index are not bundled or published, and are not uploaded as payloads to other data tools. Reading them in the host still uses the host's processing and privacy controls. A local index does not grant access to accounts or authorize transactions or other external actions.
+
 The host's browsing/data tools and the bundled scripts may contact market-data and news services, including DayTrading.monster, or locally installed data providers. Those services may receive requested symbols, query parameters and normal connection information. Requests and any provider-side logging are subject to the respective provider's terms and privacy practices. This notice does not promise zero logging or a fixed retention period for third-party services.
 
 Optional Google Calendar actions use a separately authorized connection and may send event details when the user requests calendar creation or updates. OpenD and MX dependencies run only where separately available and authorized. The package does not require credentials to be posted in a chat or public issue.
