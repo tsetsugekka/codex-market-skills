@@ -126,6 +126,7 @@ Do not include redundant blocks such as "美股时段", repeated timezone labels
 - Query one selected date at a time; the JSONP response contains the full day's body and the website pagination is only front-end display. Do not scrape page-by-page if the JSONP endpoint is available.
 - Use `selectedDate=YYYYMMDD` for each trading day in the requested week.
 - A helper script is available at `scripts/fetch_sbi_jp_earnings.py`. Prefer it for direct SBI retrieval; it dynamically discovers the current API URL and hash/type parameter from the ETGate page.
+- Use its JSON output to retain both `time` and `order_time`. [SBI's schedule notes](https://www.sbisec.co.jp/ETGate/?_ActionID=DefaultAID&_ControlID=WPLETmgR001Control&_DataStoreID=DSWPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&burl=iris_economicCalendar&cat1=market&cat2=economicCalender&dir=tl1-cal%7Ctl2-schedule%7Ctl3-stock%7Ctl4-calsel&file=index.html&getFlg=on) say its displayed earnings `HH:MM` generally references the prior-year same-period TDNet release time, with exceptions such as newly listed stocks; it is not confirmation of this period's official release time. When an exchange release date is unavailable, SBI may also use the prior-year same-period date mapped into the current year's calendar; treat that current-period date as expected.
 - If the ETGate URL changes or the helper cannot extract the JavaScript variables, recover the current entry page by searching the web for `sbi 決算発表スケジュール` or `site:sbisec.co.jp 決算発表スケジュール 国内株式`, then use the discovered URL as the helper's `--entry-url`.
 - If SBI is unavailable after dynamic discovery, use Traders Web `https://www.traders.co.jp/market_jp/earnings_calendar` as fallback. It is easy to parse but may require pagination.
 
@@ -140,10 +141,13 @@ Do not include redundant blocks such as "美股时段", repeated timezone labels
 
 ### 3. Calendar Grouping
 
-- Use the published Japan event time as the source time, then convert it to the user's local timezone before writing Calendar events.
+- Use the current period's expected release date in the selected week. A historical reference date must not replace that date; keep the date's expected/confirmed status separate from the time's status.
+- Choose the time in this order: an explicit release time from this period's official company IR schedule; otherwise SBI's available historical reference `HH:MM`; otherwise the `08:00` fallback below. Preserve an available SBI reference time even though it is not officially confirmed for this period.
+- Extract `HH:MM` from values such as `15:40 (予定)` or `15:40:00`; retain the reference/expected status in the description.
+- Combine the current period's release date with the chosen source time in `Asia/Tokyo`, then convert the date and time to the user's local timezone before grouping or writing Calendar events.
 - Group events by 30-minute bucket: `:00-:29` and `:30-:59`.
 - Create one 0-minute event per bucket.
-- If a stock has no concrete time, place it at `08:00` in the user's local timezone on that day, unless the user specifies another default.
+- Only when neither an official current-period time nor a usable SBI reference time is available, place the stock at `08:00` in the user's local timezone on the current period's expected release date, unless the user specifies another default; label it as a time-unannounced placeholder.
 - Disable reminders explicitly with `reminders: { use_default: false, overrides: [] }`.
 - Prefer transparent events.
 
@@ -162,9 +166,9 @@ Title:
 Description:
 
 ```text
-具体时刻：
-・会社名（コード，HH:MM）
-・会社名（コード，HH:MM）
+排程时刻：
+・会社名（コード，HH:MM；本期官方IR时刻）
+・会社名（コード，HH:MM；SBI参考时刻，基于历史，非本期官方确认）
 
 重点看点：
 ・会社名：一句话写业务/交易看点和财报重点。
@@ -172,6 +176,7 @@ Description:
 ```
 
 - Do not write redundant blocks like "时间分区", "标题重点", "本分区全部财报", or generic source disclaimers.
+- Label each stock's time as official, SBI historical reference, or time-unannounced placeholder, including mixed buckets. This time-status label is required, not generic source boilerplate; add the actual historical reference period only when verified.
 - Do not mechanically list `本決算`, forecast, or consensus for every stock. Mention estimates/consensus only when they are directly useful to the market note.
 - The note should explain why the stock matters: business line, sector read-through, orders, margins, guidance, shareholder returns, FX sensitivity, AI/semiconductor exposure, bank net interest margin, defense orders, commodity price exposure, or similar.
 
@@ -307,6 +312,7 @@ After writing:
 - Search the target week for the created/updated title prefix or keyword.
 - Confirm count, titles, dates/times, and color for 5-star items.
 - Confirm the date conversion for events sourced outside the user's timezone and the `08:00` placeholder convention for confirmed undated events.
-- Summarize only what changed and mention anything intentionally excluded, such as unconfirmed events, weak read-through, or no concrete time.
+- For Japan earnings, verify the current-period release date, official IR / SBI reference / placeholder time status, timezone conversion and 30-minute grouping; an available SBI historical reference time must not become `08:00` merely because it is not officially confirmed.
+- Summarize only what changed and mention anything intentionally excluded, such as unconfirmed events, weak read-through, or unresolved timing under the relevant workflow. Japan earnings with usable SBI reference times remain eligible under their scheduling rule.
 
 For a later supplement, distinguish a first-pass omission, genuinely new announcement, forecast/time revision and a change in user scope. Calendar entry counts differ from underlying event counts because of grouping; use the reviewed candidate ledger, not raw additions, to assess first-pass misses. Verification of successful writes does not establish research completeness.
