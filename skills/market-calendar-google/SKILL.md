@@ -1,6 +1,6 @@
 ---
 name: market-calendar-google
-description: Organize a selected week of US earnings calendars or China/US/Japan macro and market-event calendars, prioritize what matters to the user, and add the resulting events to Google Calendar. Use when the user asks to handle this week's or next week's earnings, Earnings Whispers images, US stock ticker earnings, Treasury auctions, central-bank/data releases, or China/US/Japan financial events and wants them written to Google Calendar.
+description: Organize a selected week of US earnings calendars or China/US/Japan macro and market-event calendars, prioritize what matters to the user, and add the resulting events to Google Calendar. Use when the user asks to handle this week's or next week's earnings, Earnings Whispers images, US stock ticker earnings, Treasury auctions, central-bank/data releases, or China/US/Japan financial events and wants them written to Google Calendar. Also use to view, save, revise, or remove local calendar preferences, including event-summary style.
 ---
 
 # Market Calendar Google
@@ -16,6 +16,16 @@ Use this skill to turn weekly market calendars into concise Google Calendar even
 3. Japan stock earnings calendar for a week, usually from SBI Securities settlement announcement data.
 
 Default to the user's local timezone from the runtime environment. Use the current date and timezone from the environment to resolve "this week" and "next week". If the user's timezone is unavailable, ask for the target timezone before writing Calendar events.
+
+## Local Preference Reference
+
+- Keep two layers: public references contain shared calendar methods and ship with the Skill; a separate private reference contains each user's own preferences and stays on that user's machine. Maintain both; do not turn the public references into a personal preference file.
+- When the user asks to remember a preference for future calendars, or to view, revise or remove one, use this local-reference workflow. Preference-only requests need filesystem access, not Google Calendar access. A one-off instruction applies to the current task without becoming a saved default.
+- Read the private index through the reference contract above and reuse the calendar preference document it maps. If no mapping exists, create `calendar-preferences.md` beside that index and register it under `market-calendar-google`; when no index exists, initialize it at the contract's default location. Keep both outside the public repository and installed Skill/plugin directories. If local files are unavailable, provide the proposed text and report that it was not saved.
+- Save only the user's stated preference, its scope and update date; name the public section it overrides when applicable. Supported preferences include summary length/structure, content to emphasize or omit, language, title style, event selection, destination calendar and reminders. Do not invent values for unspecified preferences or store temporary market forecasts as preferences.
+- Update the matching entry in place, preserving unrelated preferences. A clear new permanent choice replaces its prior value; a temporary override leaves the saved default intact. Remove only the requested preference. Ask only when the intended scope or replacement is unclear.
+- On calendar tasks, apply the current request first, then applicable saved preferences, then public defaults, subject to the reference contract's truthfulness and permission boundaries. Saving preferences does not itself create, migrate or rewrite Calendar events.
+- Read back the changed entry and index mapping, then briefly confirm what was saved, revised or removed. Local preference content and private identifiers stay out of public Skill source, GitHub and release packages.
 
 ## Shared Rules
 
