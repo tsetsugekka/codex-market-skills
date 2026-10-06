@@ -20,7 +20,7 @@ The skill accepts one stock at a time. It may also collect broad market context 
 
 ## Public Release
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in this Skill at `references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 
 1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.

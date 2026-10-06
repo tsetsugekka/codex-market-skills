@@ -18,7 +18,7 @@ The bundled script is safe to keep in a public repository: it uses only public w
 
 ## Public Release
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in this Skill at `references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 
 1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when setting expectations, especially around earnings, guidance, valuation, 掲示板 sentiment, theme leadership, peer follow-through, and whether the stock is a leader, follower, defensive alternative, old-leader rebound, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.

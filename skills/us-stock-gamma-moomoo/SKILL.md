@@ -18,7 +18,7 @@ This public-safe skill is self-contained. Do not commit personal information, AP
 
 ## Public Release
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the release/privacy check in this Skill at `references/release-and-privacy.md`. Never upload `Stocks/`, private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Experience
 
