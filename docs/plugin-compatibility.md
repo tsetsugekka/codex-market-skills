@@ -1,37 +1,13 @@
-# DayTrading.Monster — compatibility and release status
+# Plugin compatibility and release status
 
-The display name is **DayTrading.Monster** and the stable package identifier is `codex-market-skills`. This repository maintains two delivery variants of the same research suite.
+DayTrading.Monster uses stable package ID `codex-market-skills`.
 
-| Variant | Authoritative source | Installation |
-| --- | --- | --- |
-| Standalone Codex workflows | Root `skills/` and root `.codex-plugin/` | Individual skills or the repository marketplace entry |
-| Environment-aware marketplace plugin | `plugin/skills/` and `plugin/.codex-plugin/` | DayTrading.Monster in the plugin store |
+## Current source: 0.2.0
 
-The variants may differ in runtime instructions. The marketplace build includes the full shared research references listed in `plugin/shared-references.json` and portable Python in `plugin/shared-scripts.json`, plus the offline forum entry point. It does not bundle external data-provider skills or require a user's local machine. Avoid installing duplicate same-name skills unless comparing variants deliberately.
+Standalone installation and plugin distribution use the same root `skills/` files. `plugin/` contains only documentation. The root manifest and `build_plugin.py` package the complete public workflows, references and scripts without a second adapted skill tree.
 
-## Capability routing
+Runtime capability depends on available tools, dependencies, network and user authorization; it is not restricted by ChatGPT or Codex branding. Private references remain outside the repository and archive. See [maintenance](plugin-maintenance.md).
 
-ChatGPT Web, ChatGPT work environments and Codex can expose different tools. Discover actual tools, connectors, skills and execution capabilities for each session; do not decide availability from the product name. A connector can provide a useful capability without a same-name Skill.
+## Publication boundary
 
-- Reuse supplied evidence and accessible public sources first; query only missing material.
-- Use authorized OpenD/moomoo, MX, Hithink or equivalent tools when available. A cloud workspace is not automatically connected to a user's local OpenD.
-- Full-chain Gamma, Vanna, scenario tables and charts require suitable inputs and actual computation. The marketplace variant retains the methods and can use any available execution environment; the fixed DTM SPX feed alone cannot produce arbitrary-ticker full chains.
-- Calendar planning is available without calendar write access. Writes require the user's request, an authorized connection, duplicate checks and readback.
-- Six bundled scripts use Python 3.10+ and the standard library. Forum filtering and option scenario tables work offline with supplied inputs; quote/ranking/calendar/news collection also needs network access. Package upload, file access, Python execution and network access are separate acceptance checks. See the [runtime contract](../plugin/skills/market-daily-strategist/references/runtime-capabilities.md).
-- Scheduled Tasks loading is not established by successful use in an ordinary chat or Codex. Keep the task's output, archive and authorization contracts.
-
-## Release status
-
-As of 2026-09-29 (Japan time):
-
-- Marketplace version 0.1.12 is Approved in the developer portal after maintainer submission; it is not yet verified as Published. The approved submission matches the final validated 48-file package. It adds a shared public + private reference contract, private-source packaging guards, and explicit target-calendar routing. Sixteen local tests, twenty source/package Skill validations, and the packaged manifest validation passed. The portal still lists 0.1.11 as Published.
-
-- Marketplace version 0.1.11 is Published in the developer portal. It updates strategy and technical analysis to the index-trajectory `/api/range/nikkei` and `/api/range/sse` contracts. The 47-file package passed all ten platform Skill scans, was submitted after the maintainer confirmed the six required declarations, and was approved and published. The public directory still displayed 0.1.10 on the immediate post-publication readback; propagation to that page remains unverified.
-
-- Marketplace 0.1.10 was the previously published version; the developer portal now lists it as Approved.
-- Version 0.1.10 restores the full ten entries, source order/links, market report profiles and detailed research references. Its 47-file archive includes six Python scripts and shared live/offline forum filtering. Ten automated tests, ten Skill validators and the plugin manifest validator passed locally. The platform accepted the Python attachments, passed all ten Skill scans, approved the submission and published it after the maintainer confirmed the four required declarations.
-- Live execution in ChatGPT Web/Work and loading by Scheduled Tasks remain unverified. Successful Python attachment ingestion does not establish execution or network access in those hosts; use the capabilities actually exposed in each session.
-- The root manifest is the standalone Codex variant at 0.1.7, including public + local private reference loading. Its version does not describe the separate marketplace package. Use one installation route per host to avoid duplicate skills; local private references do not require another Skill installation.
-- Existing installations update through their host; source synchronization does not replace local caches.
-
-See [plugin maintenance](../plugin/docs/MAINTENANCE.md) for package boundaries, build commands and the method coverage matrix, and [review scenarios](plugin-submission-tests.md) for expected behavior. Static validation, platform scanning, marketplace publication and live runtime acceptance are separate checks.
+0.2.0 is the unified-source update. Local package validation does not imply marketplace approval or publication. The last verified public version was 0.1.11; 0.1.12 was approved, and 0.1.13 was a metadata-only draft. Neither is replaced on the marketplace merely by pushing this source update. Current submission receipts are maintained outside public artifacts.

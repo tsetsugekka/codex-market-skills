@@ -1,13 +1,15 @@
 ---
 name: cn-stock-move-reason
-description: Use when analyzing why one A-share stock moved sharply using Codex, without Gemini, from Eastmoney quote data, announcements, Eastmoney 股吧/资讯 posts, Eastmoney Guba topic heat, Sohu index/sector context, and A-share breadth.
+description: Use when analyzing why one A-share stock moved sharply from Eastmoney quote data, announcements, Eastmoney 股吧/资讯 posts, Eastmoney Guba topic heat, Sohu index/sector context, and A-share breadth.
 ---
 
 # CN Stock Move Reason
 
+先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+
 开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
-Use this skill when the user asks why one A-share stock is rising, falling, 涨停, 跌停, 炸板, 异动, or moving unusually, and wants Codex to analyze it instead of Gemini.
+Use this skill when the user asks why one A-share stock is rising, falling, 涨停, 跌停, 炸板, 异动, or moving unusually.
 
 The bundled script is safe for a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service. Never commit personal information, API keys, account data, private RAG files, or private research materials to GitHub.
 
@@ -58,7 +60,7 @@ Useful options:
 - `--announcements 10`: maximum announcements to include.
 - `--skip-market-context`: skip indexes, sector/concept boards, and advance/decline counts when the user wants only single-stock materials.
 
-3. If network access fails in Codex, rerun the same command with sandbox escalation according to the normal approval policy. In this local environment, the collector may fail inside the sandbox with DNS-style errors such as `nodename nor servname provided, or not known`, `urlopen error`, or repeated empty Eastmoney/Sohu results. Treat those as sandbox/network failures, not as evidence that there is no announcement, 股吧 discussion, or market-context data. Escalate and rerun before concluding that sources are empty.
+3. On collection failure, report the actual error and follow the current host permission policy. Respect access denials and rate limits; use available sources without interpreting a failed request as absence of evidence.
 
 4. Analyze the script output directly. Do not call Gemini. Treat sources with this priority:
 

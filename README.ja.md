@@ -342,14 +342,9 @@ SPXW 0DTE 7370C を、時間と SPX 水準ごとに理論価格表にして。
 
 ## Skill と Plugin の選び方
 
-このリポジトリは、単体の Codex Skill と、**DayTrading.Monster** として配布するプラグインを管理します。研究手法を共有しつつ、入口と実行環境への対応はそれぞれ調整します。
+ルート `skills/` が唯一のソースです。単体インストールと [DayTrading.Monster Plugin](plugin/README.md) は、同じ手順・公開 Reference・スクリプトを使います。機能を削った別版は維持せず、実際に利用できるツールと権限に応じて実行します。私密 Reference はリポジトリと配布パッケージの外に保存します。
 
-- [プラグイン](plugin/README.md)：ChatGPT Web、ChatGPT の作業環境、Codex で十種類の研究手法を組み合わせて使う場合。
-- 上記の単体インストール：Codex で特定の Skill や付属のローカルスクリプトを使う場合。必要条件は各 Skill に記載しています。
-
-同名 Skill を両方から重複インストールする必要は通常ありません。プラグインは、そのセッションで実際に利用でき、接続と権限が確認された OpenD / moomoo、妙想、同花順などの Skill・ツールを必要に応じて使います。利用できなければ、提供資料と公開情報で研究を進めます。製品名だけで能力や権限を判断しません。
-
-商店向けソースは [plugin/](plugin/README.md) にあり、研究資料は同じリポジトリの共通ソースから取り込みます。リポジトリ全体ではなく、ビルドした ZIP を公開します。ルートのプラグイン定義は単体 Codex 版を維持します。ソースと商店のバージョンは[互換性・公開状況](docs/plugin-compatibility.md)をご覧ください。
+`plugin/` は説明と Skill リンクのみです。ルート `.codex-plugin/plugin.json` と `build_plugin.py` で配布します。重複表示を避けるため、通常は一つのインストール経路を選びます。[公開状況](docs/plugin-compatibility.md)を参照してください。
 
 ## セキュリティ境界
 

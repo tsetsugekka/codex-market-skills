@@ -1,6 +1,6 @@
 {
   "name": "codex-market-skills",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Research stocks and market developments across China, Japan, and the United States using available public information. Explore stock moves, macro context, market sentiment, and technical structure, and prepare pre-market briefs or market recaps. Organize findings with source references, distinguish confirmed facts from interpretation, and identify information gaps.",
   "author": {
     "name": "tsetsugekka",
@@ -23,13 +23,13 @@
     "displayName": "DayTrading.Monster",
     "shortDescription": "Research CN, JP and US stocks",
     "longDescription": "Research stocks and market developments across China, Japan, and the United States using available public information. Explore stock moves, macro context, market sentiment, and technical structure, and prepare pre-market briefs or market recaps. Organize findings with source references, distinguish confirmed facts from interpretation, and identify information gaps.",
-    "developerName": "tsetsugekka",
+    "developerName": "Lafolia",
     "category": "Finance",
     "capabilities": [
       "Interactive",
       "Read"
     ],
-    "websiteURL": "https://github.com/tsetsugekka/codex-market-skills",
+    "websiteURL": "https://daytrading.monster/",
     "defaultPrompt": [
       "分析这只股票今天为什么异动，并区分确认催化、市场情绪和背景噪音。",
       "現在の市場の寄り付き前の戦略または大引け後の振り返りをまとめ、重要な確認ポイントとリスクを示してください。",

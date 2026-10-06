@@ -1,13 +1,15 @@
 ---
 name: jp-stock-move-reason
-description: Use when analyzing why a Japanese stock moved sharply using Codex, without Gemini, from Yahoo Finance quote data, Yahoo 掲示板 comments, Yahoo/Kabutan/Traders news, and basic stock metrics such as current change, market cap, PER/PBR, dividend yield, and margin ratio.
+description: Use when analyzing why a Japanese stock moved sharply from Yahoo Finance quote data, Yahoo 掲示板 comments, Yahoo/Kabutan/Traders news, and basic stock metrics such as current change, market cap, PER/PBR, dividend yield, and margin ratio.
 ---
 
 # JP Stock Move Reason
 
+先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+
 开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
-Use this skill from the DTM repo root when the user asks why a specific Japanese stock is rising, falling, 急騰, 急落, 異動, or otherwise moving, and wants Codex to analyze it instead of Gemini.
+Use this skill from the installed package root when the user asks why a specific Japanese stock is rising, falling, 急騰, 急落, 異動, or otherwise moving.
 
 The bundled script is safe to keep in a public repository: it uses only public web pages/APIs, does not read credentials, and does not call any LLM service. Never commit personal information, API keys, account data, private RAG files, or private research materials to GitHub.
 
@@ -31,16 +33,7 @@ When preparing a GitHub upload or public release, use the public version only an
    - If the answer uses **情绪面** such as theme leadership, crowding, leader/follower, defensive alternative, old-leader rebound, risk-on/risk-off, expectation gap, or 掲示板 psychology, load `stock-sentiment-analysis`.
    - Final answers should include a compact `融合口径` line when any supporting skill is used, e.g. `Yahoo/Kabutan/Traders 证据 + macro-news-check tape + stock-technical-analysis 结构 + stock-sentiment-analysis 情绪/期待差`.
 
-2. Run the collector script from the repo root. In this local Codex desktop
-   environment, network DNS frequently fails inside the default sandbox. For
-   this skill, skip the first sandboxed collector attempt and run the collector
-   directly with `sandbox_permissions: "require_escalated"` when the current
-   task needs live Yahoo/Kabutan/Traders/Yahoo 掲示板 data. Use the same command
-   and include a concise approval question such as `需要联网抓取 CODE 的最新行情、
-   新闻和 Yahoo 掲示板；是否允许本次联网采集？`. Do not tell the user "sandbox
-   DNS failed" before making this escalated collector call. If escalation is
-   rejected, then state that live collection was blocked and fall back to cached
-   or non-live evidence.
+2. Run the collector from the installed package root when Python and network access are available. Follow the host permission policy; do not assume sandbox failures or request escalation before an actual need.
 
 ```bash
 python3 skills/jp-stock-move-reason/scripts/stock_move_sources.py 7203 --format markdown
@@ -145,14 +138,7 @@ The collector enforces a cross-process randomized 1-3 second Yahoo host gap. HTT
 403/429 or access-control content activates a shared 30-minute local cooldown.
 Do not delete or bypass that cooldown to finish a ranking request.
 
-3. If a sandboxed collector call was already attempted by mistake and network
-   access fails in Codex, rerun the same command with sandbox escalation
-   according to the normal approval policy. In this local environment, the
-   collector often fails inside the sandbox with DNS-style errors such as
-   `nodename nor servname provided, or not known`, `urlopen error`, or repeated
-   empty Yahoo/Kabutan/Traders results. Treat those as sandbox/network failures,
-   not as evidence that there is no news or no Yahoo 掲示板 activity. Escalate and
-   rerun before concluding that sources are empty.
+3. Report actual collection failures and available evidence. Respect access denials and rate limits; use another authorized source or existing data rather than treating a failed request as no news.
 
 - DTM cross-market themes: read `https://daytrading.monster/api/themes` without a market filter. Compare Japanese, US, and Chinese theme members and completed-session performance to trace industry-chain and cross-market transmission; use `themes[]` with `theme_key`, `theme_name_zh`, `market`, and `constituents[]`, including `weight`, `reason_zh`, and `quote_available`. Check quote dates; these are not live intraday returns.
 - PTS context: prefer the canonical `https://daytrading.monster/api/pts/model1` (day session), `https://daytrading.monster/api/pts/model2` (after close), and `https://daytrading.monster/api/pts/model3` (night session) for a comprehensive overview of PTS risers, themes, and upward reasons. Use the session(s) relevant to the question and their update times; read all three when comparing sessions. They do not provide a complete falling-stock ranking. For diverse Japanese rankings, including PTS decliners and other screens, use `https://kabutan.jp/warning/` and `https://finance.yahoo.co.jp/stocks/ranking/up`, selecting the relevant ranking and its stated session. Keep the existing estimated-turnover Top10 procedure for that specific request.

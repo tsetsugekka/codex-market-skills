@@ -342,14 +342,9 @@ Analyze this stock's technical setup, support, and resistance right now.
 
 ## Choose Skills or the Plugin
 
-This repository maintains standalone Codex skills and the **DayTrading.Monster** marketplace plugin. They share research methods but may use different entry points and runtime instructions.
+Root `skills/` is the single source for standalone installation and the [DayTrading.Monster Plugin](plugin/README.md). Both use identical instructions, public references and scripts, with no reduced-capability variant. Use the tools and permissions actually available in the current environment. Private references stay outside the repository and package.
 
-- [Install the plugin](plugin/README.md) for ten coordinated research skills across ChatGPT Web, ChatGPT work environments and Codex. It discovers the tools, connectors and execution capabilities actually available in the current session.
-- Use the standalone installation instructions above for individual Codex workflows and their optional local scripts. Each skill documents its requirements.
-
-You normally do not need both installations of the same skill. Available OpenD / moomoo, MX and Hithink skills or tools may supplement research; otherwise the plugin uses supplied evidence and accessible public sources. Product names alone never establish tool access or permissions.
-
-The marketplace source lives in [plugin/](plugin/README.md), reusing explicit shared references from the standalone source. Build its release ZIP rather than uploading the entire repository. The root manifest remains the standalone Codex variant. See [compatibility and release status](docs/plugin-compatibility.md) for source and marketplace versions.
+`plugin/` contains documentation only. The root `.codex-plugin/plugin.json` defines the release; `build_plugin.py` packages tracked canonical skills. Normally choose one installation route to avoid duplicate entries. See [release status](docs/plugin-compatibility.md).
 
 ## Safety Boundaries
 

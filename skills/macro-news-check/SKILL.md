@@ -5,6 +5,8 @@ description: Use when stock, index, gamma, or market analysis needs current macr
 
 # Macro News Check
 
+先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+
 开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
 Use this skill only when the analysis genuinely needs current macro, broad-market, or cross-asset context. Do not run it for every single-stock question by default.
@@ -91,9 +93,9 @@ For intraday macro judgments, do not rely on headlines alone and do not rely on 
     - `EMG01339436`: US 10Y-2Y spread
   - Treat Eastmoney daily yield tables as daily context, not intraday truth. Same-day US yield fields can lag or be blank before the source updates.
 - `AkShare` is optional and should not be the default. It is a useful no-API-key wrapper when direct endpoints are inconvenient, but it can introduce heavy Python dependencies and environment conflicts. If it is used, install it in an isolated temporary environment, never into the base Anaconda/Python environment:
-  `python3 -m pip install --target /private/tmp/akshare_test akshare "numpy<2"`
+  `python3 -m pip install --target /tmp/akshare_test akshare "numpy<2"`
   then run with:
-  `PYTHONPATH=/private/tmp/akshare_test PYTHONNOUSERSITE=1 python3 -c "import akshare as ak; ..."`
+  `PYTHONPATH=/tmp/akshare_test PYTHONNOUSERSITE=1 python3 -c "import akshare as ak; ..."`
   Tested but secondary interfaces: `ak.bond_zh_us_rate()`, `ak.futures_global_spot_em()`, `ak.index_global_spot_em()`.
 
 For A-share broad-market tape questions, use live headlines first, then use Sohu market data as an auxiliary confirmation layer:

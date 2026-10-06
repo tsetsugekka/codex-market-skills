@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 source = ROOT / 'skills/jp-stock-move-reason/scripts/stock_move_sources.py'
 spec = importlib.util.spec_from_file_location('forum_source', source)
 forum = importlib.util.module_from_spec(spec)
@@ -64,8 +64,8 @@ class ForumFilterTests(unittest.TestCase):
         self.assertNotIn('cached_comments', data['bbs'])
 
     def test_packaged_offline_command_runs_without_network(self):
-        sys.path.insert(0, str(ROOT / 'plugin'))
-        import build
+        sys.path.insert(0, str(ROOT))
+        import build_plugin as build
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             files = build.package_files()

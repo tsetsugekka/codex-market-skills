@@ -2,11 +2,11 @@
 
 ## 目录职责与版本边界
 
-- 仓库根目录 `skills/` 是本仓库的独立 Skills，非 Plugin；`plugin/` 是 Plugin 的唯一维护入口，`plugin/skills/` 保存其适配内容。
-- 独立 Skills 与 Plugin 允许存在运行适配差异；共享研究资料按现有构建流程复用，不因目录区分而删减内容或强行合并。
-- 不得用插件清单版本代表独立 Skills 版本，不得将根目录独立 Skills 自动视为插件内容。版本号或同名显示名称不能作为判定目录职责的依据。
-- 本地私密增补不再维护第二套同名 Skill；公共入口按 `skills/market-daily-strategist/references/reference-layers.md` 同时读取相关公共 Reference 与已授权的仓库外私密 Reference。私密正文和定位索引均不发布，也不由公开经验自动吸收。
-- 发现清单、marketplace 或发布配置与上述职责冲突时，明确报告配置冲突；不得据配置重新解释目录职责，也不得未经对应任务授权改变安装入口。
+- 根 `skills/` 是独立安装和 Plugin 共用的唯一 Skill 源码；不得在 `plugin/` 维护副本或能力缩减版。
+- `plugin/` 仅放说明和根 Skill 链接；根 `.codex-plugin/plugin.json`、`assets/logo.svg`、`build_plugin.py` 负责插件分发。
+- 按运行时实际能力和授权选择工具，不按 ChatGPT/Codex 名称限制方法。
+- Private Reference 正文和索引保存在仓库外，按公共双读契约读取，不发布或打包。
+- 独立安装与插件安装会提供同名 Skill；不得为清理重复入口擅自卸载整个插件。
 
 ## Maintenance
 
