@@ -6,6 +6,7 @@
 - `plugin/` 仅放说明和根 Skill 链接；根 `.codex-plugin/plugin.json`、`assets/logo.svg`、`build_plugin.py` 负责插件分发。
 - 按运行时实际能力和授权选择工具，不按 ChatGPT/Codex 名称限制方法。
 - Private Reference 正文和索引保存在仓库外，按公共双读契约读取，不发布或打包。
+- 每个独立 Skill 的必读公共 Reference 必须包含在自身目录，不能靠另一个 Skill 或仓库根目录补齐。公共契约唯一底稿在 `shared/references/`；运行 `python3 sync_skill_references.py` 同步各 Skill 内的普通文件，提交前用 `--check` 核验。实际私人正文仍在仓库外。
 - 独立安装与插件安装会提供同名 Skill；不得为清理重复入口擅自卸载整个插件。
 
 ## Maintenance

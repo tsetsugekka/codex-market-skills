@@ -5,9 +5,9 @@ description: Use when the user asks for technical analysis or a technically grou
 
 # Stock Technical Analysis
 
-先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+先按[运行环境能力](references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
 
-开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+开始分析前，按[公共与私密 Reference 双读契约](references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
 Use this skill when the user asks about price action, technical setup, intraday odds, support/resistance, trend continuation, pullback risk, or chart-based timing for US stocks, Japanese stocks, or A-shares.
 
@@ -16,7 +16,7 @@ This public-safe skill is self-contained and contains only generalized technical
 
 ## Public Release
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 ## Core Rule
 

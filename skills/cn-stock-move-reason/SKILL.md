@@ -5,9 +5,9 @@ description: Use when analyzing why one A-share stock moved sharply from Eastmon
 
 # CN Stock Move Reason
 
-先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+先按[运行环境能力](references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
 
-开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+开始分析前，按[公共与私密 Reference 双读契约](references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
 Use this skill when the user asks why one A-share stock is rising, falling, 涨停, 跌停, 炸板, 异动, or moving unusually.
 
@@ -20,7 +20,7 @@ The skill accepts one stock at a time. It may also collect broad market context 
 
 ## Public Release
 
-When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
+When preparing a GitHub upload or public release, use the public version only and run the repo-level release/privacy check from the repository root at `references/release-and-privacy.md`. Never upload private RAG folders, `.ftindex` files, credentials, `.env`, personal data, screenshots, raw PDFs/PPTs, or private strategy labels.
 
 
 1. Read `references/experience.md` before analysis, but only the `Active Playbook` and `Compression Protocol` sections unless the user explicitly asks for historical lessons. Apply those lessons when judging catalysts, sector共振, 股吧 emotion, A-share emotion-cycle position, and the stock's place in the market structure: 主线、助攻、补涨、防御、老龙反抽, or noise. When the request needs a deeper or reusable sentiment framework, also use `stock-sentiment-analysis` and its `references/sentiment-framework.md`.

@@ -1,4 +1,6 @@
 import importlib.util
+import posixpath
+import re
 import subprocess
 import tempfile
 import unittest
@@ -55,6 +57,21 @@ class PackageTests(unittest.TestCase):
         files = build.package_files()
         del files['skills/market-daily-strategist/references/reference-layers.md']
         with self.assertRaisesRegex(ValueError, 'Unbundled reference'):build.validate(files)
+
+    def test_each_skill_can_be_installed_without_sibling_files(self):
+        subprocess.run(['python3', str(ROOT / 'sync_skill_references.py'), '--check'], check=True)
+        files = build.package_files()
+        for skill in (ROOT / 'skills').glob('*/SKILL.md'):
+            prefix = skill.parent.relative_to(ROOT).as_posix() + '/'
+            for path, content in files.items():
+                if not path.startswith(prefix) or not path.endswith('.md'):
+                    continue
+                for target in re.findall(r'\]\(([^)]+)\)', content):
+                    if '://' in target or target.startswith('#'):
+                        continue
+                    resolved = posixpath.normpath(posixpath.join(posixpath.dirname(path), target.split('#')[0]))
+                    self.assertTrue(resolved.startswith(prefix), f'{path} requires a sibling: {target}')
+                    self.assertIn(resolved, files)
 
 
 if __name__ == '__main__':

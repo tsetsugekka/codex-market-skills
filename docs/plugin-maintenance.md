@@ -8,6 +8,8 @@
 - `build_plugin.py`：只读取 Git 已跟踪的上述发布文件；新增文件先纳入 Git 审查范围。排除测试，拒绝私密目录、索引、符号链接和敏感内容模式。原文字节进入 ZIP，不裁剪能力、不重写链接。
 - `tests/`：包一致性、隐私边界和离线评论筛选验证。
 
+每项 Skill 单独下载时也须完整。公共双读契约、运行能力及发布隐私规则以 `shared/references/` 为底稿，由 `python3 sync_skill_references.py` 同步到十项 Skill 的 `references/`；修改底稿后先同步，再运行 `python3 sync_skill_references.py --check`。各 Skill 的必读文件链接只指向自身目录，不能依赖相邻 Skill。跨 Skill 的可选调用仍要求对应 Skill 已安装且可用；实际私人索引和正文不在同步范围。
+
 输出放仓库外：`python3 build_plugin.py /tmp/daytrading-monster-0.2.0.zip`。验证：`python3 -m unittest discover -s tests`。
 
 Private Reference 位于仓库外，不能打包；只有公共读取规则进入包。发布前检查实际 ZIP 的文件列表、内容和相对链接。外部 SDK、账户权限和联网能力由宿主提供，完整脚本随包不代表所有宿主均可执行。

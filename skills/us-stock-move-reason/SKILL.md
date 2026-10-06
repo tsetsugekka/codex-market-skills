@@ -5,9 +5,9 @@ description: Use when analyzing why a U.S. stock or ETF moved sharply, including
 
 # US Stock Move Reason
 
-先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+先按[运行环境能力](references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
 
-开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+开始分析前，按[公共与私密 Reference 双读契约](references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
 Use this skill as the U.S. stock counterpart to `jp-stock-move-reason` and `cn-stock-move-reason`. It is an evidence-gathering and synthesis workflow, not a trading bot.
 

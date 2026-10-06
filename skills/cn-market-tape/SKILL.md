@@ -5,9 +5,9 @@ description: Use when the user asks for A-share intraday or after-close market t
 
 # CN Market Tape
 
-先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+先按[运行环境能力](references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
 
-开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+开始分析前，按[公共与私密 Reference 双读契约](references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
 统一处理 A 股盘中和盘后盘面数据。默认只抓用户请求的模块，不读取或修改用户自选股之外的账户数据，不把一日榜单、资金流和机构调研混成一个结论。
 

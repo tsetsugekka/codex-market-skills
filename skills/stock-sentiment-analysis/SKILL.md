@@ -5,9 +5,9 @@ description: Reusable public-safe sentiment and market-emotion framework for A-s
 
 # Stock Sentiment Analysis
 
-先按[运行环境能力](../market-daily-strategist/references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
+先按[运行环境能力](references/runtime-capabilities.md)确认当前可用工具；下文工具与脚本流程在能力和授权具备时执行，不按宿主名称删减研究方法。
 
-开始分析前，按[公共与私密 Reference 双读契约](../market-daily-strategist/references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
+开始分析前，按[公共与私密 Reference 双读契约](references/reference-layers.md)读取本任务相关的公共与已获授权的私密 reference；两层均适用时都要读。
 
 Use this skill as the shared sentiment layer for market skills. It does not fetch data by itself; it tells Codex how to interpret evidence gathered by `cn-stock-move-reason`, `jp-stock-move-reason`, `stock-technical-analysis`, `us-stock-gamma-moomoo`, public news, forums, breadth, and user-provided screenshots or notes.
 
@@ -15,16 +15,16 @@ This public-safe skill must not contain personal information, API keys, account 
 
 ## Public Release
 
-When preparing a GitHub upload or public release, use only the public version and read the repo-level release/privacy check from the repository root at `shared/references/release-and-privacy.md` first. Run a privacy check for private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
+When preparing a GitHub upload or public release, use only the public version and read the repo-level release/privacy check from the repository root at `references/release-and-privacy.md` first. Run a privacy check for private RAG folders, `.ftindex`, `.env`, credentials, personal paths, raw source files, screenshots, and private labels.
 
 ## Reference Reading Rule
 
-When this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans. For publishing, still read the repo-level `shared/references/release-and-privacy.md` carefully enough to complete the checklist.
+When this skill selects a reference file, first scan the file structure, then read the sections and nearby guardrails relevant to the current task. Read the complete file when it is short, when the task is broad or strategic, or when partial reading could miss constraints. Do not rely on stale memory or heading-only scans. For publishing, still read the repo-level `references/release-and-privacy.md` carefully enough to complete the checklist.
 
 ## Workflow
 
 1. Read the relevant areas of `references/experience.md` before deep analysis; read the full file when the task is broad or the active playbook may affect the answer.
-2. During decomposition, actively expand stock, index, and theme questions into emotion-cycle, main-line/follower, expectation-gap, crowding, cross-market sentiment, or mainline/funds/game/cycle checks when these lenses can change the conclusion, even if the user did not explicitly request them. For collective sector surges, continuation questions, and market-sector-stock resonance, apply `Market-Sector-Stock Resonance And Continuation` from `references/sentiment-framework.md`; separate logic durability, tape continuity, and entry quality instead of treating a strong narrative as an automatic buy point. Read the relevant areas of `references/sentiment-framework.md`. Read the repo-level `shared/references/release-and-privacy.md` before publishing or preparing a GitHub upload.
+2. During decomposition, actively expand stock, index, and theme questions into emotion-cycle, main-line/follower, expectation-gap, crowding, cross-market sentiment, or mainline/funds/game/cycle checks when these lenses can change the conclusion, even if the user did not explicitly request them. For collective sector surges, continuation questions, and market-sector-stock resonance, apply `Market-Sector-Stock Resonance And Continuation` from `references/sentiment-framework.md`; separate logic durability, tape continuity, and entry quality instead of treating a strong narrative as an automatic buy point. Read the relevant areas of `references/sentiment-framework.md`. Read the repo-level `references/release-and-privacy.md` before publishing or preparing a GitHub upload.
 3. Gather or receive evidence from the market-specific skill first:
    - A-shares: prefer `cn-stock-move-reason` for quote, announcements, 股吧, board ranks, breadth, and A-share emotion cycle.
    - Japanese stocks: prefer `jp-stock-move-reason` for quote, news, Yahoo 掲示板, metrics, and theme/peer context.
