@@ -86,7 +86,9 @@ Default to the user's local timezone from the runtime environment. Use the curre
   - US before open
   - US after close
 - Watch for OCR mistakes on small labels. Verify suspicious ticker labels against the user's watchlist CSV or a reliable ticker source. Example: Circle is `CRCL`, not `CRCI`.
-- Map US session timing from `America/New_York` to the user's local timezone and account for US daylight saving time:
+- Resolve each company's release time before grouping: current-period official release time first; otherwise a dated, reliable earnings source's specific time; otherwise the session anchors below. Keep earnings release and investor call separate. An overseas issuer/ADR may release on its home-market clock; a US listing does not make its release a US-session event.
+- Convert the dated source time with its IANA timezone and daylight-saving rules. If a timezone abbreviation conflicts with the local seasonal offset, cross-check a second timezone/UTC equivalent or a dated schedule and record the resolution; unresolved conflicting times remain unresolved, not an invented `08:00` placeholder.
+- Only when the source gives a session without a specific release time, use these planning anchors from `America/New_York`, labelled as session anchors rather than confirmed release times:
   - US before open -> `08:30 America/New_York`, duration 30 minutes, converted to the user's local timezone.
   - US after close -> `16:00 America/New_York`, duration 30 minutes, converted to the user's local timezone.
   - Do not hard-code JST examples unless the user's local timezone is Japan; show the converted local time only when useful.
@@ -102,7 +104,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
 - If a slot has no watchlist matches, do not create a Calendar event for that slot unless the user explicitly asks for every slot to be represented.
 - When skipping a no-match slot, mention it in the final report with the session and the main tickers that were skipped, so the user can audit what was intentionally left out.
 - Use a short fallback title with the most liquid/market-relevant names only when the user has no usable watchlist or explicitly wants a title for every slot.
-- Keep all extracted tickers in the description.
+- Keep all extracted tickers for each represented source slot in the description; distinguish title/watchlist priorities from other names. Do not move another company to a priority company’s precise release time merely because both were in the same source session.
 - If an earnings slot overlaps with a macro or market-event calendar item, keep the earnings event separate instead of merging titles or descriptions.
 
 ### 4. Calendar Format
@@ -316,6 +318,10 @@ If a macro or market-event item overlaps with an earnings event, keep the macro/
 - Do not add duplicate flags. If a title already begins with the correct flag, leave it.
 
 ## Verification
+
+For earnings, reconcile unique company codes as well as grouped Calendar events. Record the week/source coverage, selected-list overlap, included codes and intentional exclusions; a small event count alone does not prove missing companies. Compare every included company's source date/time, time status (official / secondary schedule / SBI reference / session anchor / unknown), source timezone, converted time and bucket against the proposed event. Inspect every `08:00` placeholder for an available source time. After writing, read back actual event starts and company details against this ledger, not merely the write response or total count.
+
+When correcting a recurring error, identify the Skill source/revision actually loaded and compare the relevant rule with the maintained source. Verify an authorized rule update at the next-run read entrypoint; changing this week's events or a GitHub file alone does not establish that another runtime loaded the update. Keep deployment receipts and personal cases private.
 
 Before writing, compare the candidate ledger with the proposed calendar by event class and source role. Revisit excluded high-impact candidates and unresolved timing, and check whether a Japanese trader's rates/FX, demand, industry and market-structure exposures have a blind spot. If relevant coverage remains unavailable, report the specific gap instead of claiming full coverage. Do not create marginal entries to fill an empty class.
 
