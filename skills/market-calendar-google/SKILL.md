@@ -156,12 +156,12 @@ Do not include redundant blocks such as "美股时段", repeated timezone labels
 ### 3. Calendar Grouping
 
 - Use the current period's expected release date in the selected week. A historical reference date must not replace that date; keep the date's expected/confirmed status separate from the time's status.
-- Choose the time in this order: an explicit release time from this period's official company IR schedule; otherwise SBI's available historical reference `HH:MM`; otherwise the `08:00` fallback below. Preserve an available SBI reference time even though it is not officially confirmed for this period.
+- Use SBI's selected-week date and available `HH:MM` directly as the expected schedule. Do not research each company's official IR time first: historical reference times are sufficient for this calendar's planning purpose. Consult official IR only for a user-requested check or a concrete conflicting schedule already found; record any resulting override.
 - Extract `HH:MM` from values such as `15:40 (予定)` or `15:40:00`; retain the reference/expected status in the description.
 - Combine the current period's release date with the chosen source time in `Asia/Tokyo`, then convert the date and time to the user's local timezone before grouping or writing Calendar events.
 - Group events by 30-minute bucket: `:00-:29` and `:30-:59`.
 - Create one 0-minute event per bucket.
-- Only when neither an official current-period time nor a usable SBI reference time is available, place the stock at `08:00` in the user's local timezone on the current period's expected release date, unless the user specifies another default; label it as a time-unannounced placeholder.
+- When SBI has no usable time, use an already-established override if available; otherwise place the stock at `08:00` in the user's local timezone on the current period's expected release date, unless the user specifies another default; label it as a time-unannounced placeholder.
 - Disable reminders explicitly with `reminders: { use_default: false, overrides: [] }`.
 - Prefer transparent events.
 
@@ -181,8 +181,7 @@ Description:
 
 ```text
 排程时刻：
-・会社名（コード，HH:MM；本期官方IR时刻）
-・会社名（コード，HH:MM；SBI参考时刻，基于历史，非本期官方确认）
+・会社名（コード，HH:MM；SBI参考／预计）
 
 重点看点：
 ・会社名：一句话写业务/交易看点和财报重点。
@@ -190,7 +189,7 @@ Description:
 ```
 
 - Do not write redundant blocks like "时间分区", "标题重点", "本分区全部财报", or generic source disclaimers.
-- Label each stock's time as official, SBI historical reference, or time-unannounced placeholder, including mixed buckets. This time-status label is required, not generic source boilerplate; add the actual historical reference period only when verified.
+- Briefly label each stock’s time as `SBI参考／预计`, an explicitly verified override, or a time-unannounced placeholder. No repeated official-confirmation disclaimer or historical-period research is needed.
 - Do not mechanically list `本決算`, forecast, or consensus for every stock. Mention estimates/consensus only when they are directly useful to the market note.
 - The note should explain why the stock matters: business line, sector read-through, orders, margins, guidance, shareholder returns, FX sensitivity, AI/semiconductor exposure, bank net interest margin, defense orders, commodity price exposure, or similar.
 
@@ -321,7 +320,7 @@ If a macro or market-event item overlaps with an earnings event, keep the macro/
 
 For earnings, reconcile unique company codes as well as grouped Calendar events. Record the week/source coverage, selected-list overlap, included codes and intentional exclusions; a small event count alone does not prove missing companies. Compare every included company's source date/time, time status (official / secondary schedule / SBI reference / session anchor / unknown), source timezone, converted time and bucket against the proposed event. Inspect every `08:00` placeholder for an available source time. After writing, read back actual event starts and company details against this ledger, not merely the write response or total count.
 
-When correcting a recurring error, identify the Skill source/revision actually loaded and compare the relevant rule with the maintained source. Verify an authorized rule update at the next-run read entrypoint; changing this week's events or a GitHub file alone does not establish that another runtime loaded the update. Keep deployment receipts and personal cases private.
+When correcting a recurring error, identify the Skill source/revision actually loaded and compare the relevant rule with the maintained source. For recurring runs, inspect the actual scheduled-task prompt as well as its Skill/read entrypoint for obsolete or conflicting rules, and verify authorized updates by reading both back; changing this week's events or a GitHub file alone does not establish that another runtime loaded the update. Keep deployment receipts and personal cases private.
 
 Before writing, compare the candidate ledger with the proposed calendar by event class and source role. Revisit excluded high-impact candidates and unresolved timing, and check whether a Japanese trader's rates/FX, demand, industry and market-structure exposures have a blind spot. If relevant coverage remains unavailable, report the specific gap instead of claiming full coverage. Do not create marginal entries to fill an empty class.
 
