@@ -1,6 +1,6 @@
 ---
 name: market-calendar-google
-description: Organize a selected week of US earnings calendars or China/US/Japan macro and market-event calendars, prioritize what matters to the user, and add the resulting events to Google Calendar. Use when the user asks to handle this week's or next week's earnings, Earnings Whispers images, US stock ticker earnings, Treasury auctions, central-bank/data releases, or China/US/Japan financial events and wants them written to Google Calendar. Also use to view, save, revise, or remove local calendar preferences, including event-summary style.
+description: Organize a selected week of US earnings calendars or China/US/Japan macro and market-event calendars, prioritize what matters to the user, and add the resulting events to Google Calendar. Use when the user asks to handle this week's or next week's earnings, Earnings Whispers images, US stock ticker earnings, Treasury auctions, central-bank/data releases, or China/US/Japan financial events and wants them written to Google Calendar. Also use for rolling monthly expiry, settlement and Japan SQ calendar maintenance, and to view, save, revise, or remove local calendar preferences, including event-summary style.
 ---
 
 # Market Calendar Google
@@ -11,11 +11,12 @@ description: Organize a selected week of US earnings calendars or China/US/Japan
 
 ## Overview
 
-Use this skill to turn weekly market calendars into concise Google Calendar events for the user. Support three workflows:
+Use this skill to turn weekly market calendars into concise Google Calendar events for the user. Support four workflows:
 
 1. US earnings calendar for a week, usually from the Earnings Whispers "Most Anticipated Earnings Releases" image.
 2. China/US/Japan macro, central-bank, auction, and market-event calendar for a week.
 3. Japan stock earnings calendar for a week, usually from SBI Securities settlement announcement data.
+4. Rolling monthly expiry, settlement and Japan SQ date markers. For recurring calendar maintenance or requests about these dates, read [monthly market structure maintenance](references/monthly-market-structure.md) and apply it alongside the weekly workflow.
 
 Default to the user's local timezone from the runtime environment. Use the current date and timezone from the environment to resolve "this week" and "next week". If the user's timezone is unavailable, ask for the target timezone before writing Calendar events.
 
@@ -181,7 +182,7 @@ Description:
 
 ```text
 排程时刻：
-・会社名（コード，HH:MM；SBI参考／预计）
+・会社名（コード，HH:MM；参考／预计）
 
 重点看点：
 ・会社名：一句话写业务/交易看点和财报重点。
@@ -189,7 +190,7 @@ Description:
 ```
 
 - Do not write redundant blocks like "时间分区", "标题重点", "本分区全部财报", or generic source disclaimers.
-- Briefly label each stock’s time as `SBI参考／预计`, an explicitly verified override, or a time-unannounced placeholder. No repeated official-confirmation disclaimer or historical-period research is needed.
+- Briefly label each stock’s time as `参考／预计`, an explicitly verified override, or a time-unannounced placeholder. Do not put SBI source URLs, page links, or source-method explanations in Calendar descriptions. Keep provenance in the working ledger; Calendar details need only the date/time status and market notes. No repeated official-confirmation disclaimer or historical-period research is needed.
 - Do not mechanically list `本決算`, forecast, or consensus for every stock. Mention estimates/consensus only when they are directly useful to the market note.
 - The note should explain why the stock matters: business line, sector read-through, orders, margins, guidance, shareholder returns, FX sensitivity, AI/semiconductor exposure, bank net interest margin, defense orders, commodity price exposure, or similar.
 
