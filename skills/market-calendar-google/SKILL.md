@@ -54,6 +54,7 @@ Default to the user's local timezone from the runtime environment. Use the curre
 - Use the user's local-time event times in Calendar. Convert source-market event times into the user's local timezone before writing events. In descriptions, write in Chinese unless the user asks otherwise.
 - For 5-star events, set Google Calendar event color to red (`color_id: "11"` after confirming colors if needed).
 - Prefer transparent events for informational market calendar items unless the existing event uses a different setting or the user asks to block the calendar.
+- Do not put research-material or scheduling-source links in Calendar descriptions, including SBI, company IR, exchange, news, report and other evidence URLs. Keep source links and provenance in the working ledger; descriptions present event facts, necessary expected/reference status and market implications.
 - Do not include process/source boilerplate such as "parsed from image", local file paths, or explanations of why something was included. Include actionable market notes instead.
 - Do not repeat information that is already obvious from the calendar title or time slot. For example, avoid writing "title focus", redundant timezone labels, session labels, or the same event list twice unless that detail adds new useful context.
 - In Google Calendar descriptions, use `・` for bullet-like lines instead of leading hyphen bullets. The connector may persist leading `-` as escaped `\-`.
